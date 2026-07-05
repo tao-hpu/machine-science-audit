@@ -1,0 +1,54 @@
+{
+  "paper_id": "FA0404",
+  "title": "Hazard-Signature Tombstones: Commit-Time Forget Lockout for LLM Agent Memory",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Formalize the paraphrase re-injection vulnerability in LLM agent memory deletion and show naive deletion backfires.",
+      "mechanism": "Define the paraphrase re-injection attack (adversary re-inserts semantically equivalent paraphrases of deleted records under new IDs) and measure ID-based deletion under it.",
+      "evaluation": "Naive ID-delete increases poisoned retrieval proportion (PRP@3) from 0.67 (no forget) to 0.94 as 50 paraphrases flood the index after 10 poisoned records are removed (a 40% increase).",
+      "domain": "Security of persistent LLM agent memory (memory poisoning / deletion)",
+      "source_quote": "We formalize the paraphrase re-injection problem for LLM agent memory and demonstrate that naive ID-based deletion is counterproductive, increasing poisoned retrieval by 40%.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "Prevent paraphrased re-injection of deleted harmful content at commit time.",
+      "mechanism": "Hazard-Signature Tombstones (HST): extract discrete hazard signatures (LLM-classified structured labels over a fixed taxonomy) from deleted records, store as tombstone keys, and block incoming writes via fuzzy set-containment matching (H_w subset-of/superset-of H_t).",
+      "evaluation": "Fuzzy set-containment raises hazard-signature stability across paraphrases to 92% vs 30% for exact matching.",
+      "domain": "Commit-time forget/lockout policy for agent memory stores",
+      "source_quote": "We propose HST with fuzzy set-containment matching, achieving 92% hazard-signature stability across paraphrases compared to 30% with exact matching.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Demonstrate HST eliminates poisoned retrieval without harming benign retrieval.",
+      "mechanism": "Evaluate HST against ID-delete and retrieval-time exact/fuzzy filtering baselines on the MemoryGraft corpus (100 benign + 10 poisoned, 50 paraphrases, BGE-M3 + FAISS), measuring PRP@3, benign recall, write-block rate, false blocks.",
+      "evaluation": "HST achieves PRP@3 = 0.0 with Benign Recall@3 = 1.0, WriteBlockRate = 1.0, and only 3% benign false-positive rate; retrieval-time fuzzy also reaches PRP@3=0.0 but drops benign recall to 0.97 due to slot wasting; result robust across embedding backends.",
+      "domain": "Defense evaluation for RAG/agent memory poisoning",
+      "source_quote": "We demonstrate that HST achieves complete poisoned elimination (PRP@3 = 0.0) while preserving perfect benign recall (1.0), blocking 100% of paraphrased re-injection attempts with only 3% false positive rate.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "We draw inspiration from distributed systems, particularly the Observed-Remove Set (OR-Set) (Bieniusa et al., 2012), a conflict-free replicated data type that uses tombstones to mark deleted elements. Unlike OR-Set's exact-match tombstones, HST employs fuzzy semantic matching to handle paraphrased re-injections.",
+      "section": "related work"
+    },
+    {
+      "quote": "However, unlike OR-Set's exact-match tombstones over element identifiers, HST tombstones operate over semantic hazard signatures.",
+      "section": "method"
+    },
+    {
+      "quote": "Our work differs by operating at commit time with semantic matching, preventing index pollution rather than filtering at retrieval.",
+      "section": "related work"
+    },
+    {
+      "quote": "We evaluate HST on a memory poisoning scenario using the MemoryGraft corpus (Srivastava & He, 2025), which contains 100 benign and 10 poisoned experience records.",
+      "section": "method"
+    }
+  ],
+  "notes": "",
+  "extractor": "agent-batch-20",
+  "date": "2026-07-05"
+}

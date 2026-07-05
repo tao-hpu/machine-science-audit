@@ -1,0 +1,54 @@
+{
+  "paper_id": "FA0291",
+  "title": "Key-Search Attacks Bypass Encrypted Activation Monitors",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Show that key-conditioned embedding obfuscation lets adversaries evade activation-based safety monitors.",
+      "mechanism": "Key-search attack: a malicious client samples K encryption keys for the same harmful prompt, runs each through the encryptor and frozen transformer, and submits the version whose server-side monitor score is minimized (below threshold).",
+      "evaluation": "On Qwen2.5-7B-Instruct with an OSNIP-style encryptor, reduces monitor TPR from 84.9% to 59.9% at K=64 (25.0pp drop) and to 16.2% at K=512 (68.6pp drop) at FPR=1e-3; encryption alone at K=1 leaves TPR unchanged.",
+      "domain": "LLM safety / privacy-preserving split inference (activation monitoring)",
+      "source_quote": "we demonstrate that key-search attacks significantly degrade encrypted activation monitors, reducing TPR from 84.9% to 59.9% at K=64 (25.0pp drop) and to 16.2% at K=512 (68.6pp drop) at FPR=1e-3.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Establish that key diversity is the necessary condition for attack effectiveness.",
+      "mechanism": "Ablate the key-diversity training loss (lambda2=0.5 vs 0) and correlate per-prompt score variance across keys with bypass probability.",
+      "evaluation": "Without diversity, TPR drops only 5.0pp at K=64 vs 25.0pp with high diversity (5x difference); bypassed prompts have 5x higher score variance (0.020 vs 0.004), r=0.458, p<1e-13.",
+      "domain": "Adversarial analysis of key-conditioned obfuscation",
+      "source_quote": "we show that key diversity is essential for attack effectiveness: without diversity regularization, TPR drops by only 5.0pp at K=64 compared to 25.0pp with high diversity, a 5x difference.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Reveal a fundamental tradeoff constraining whether OSNIP-like schemes can be both private and attack-resistant.",
+      "mechanism": "Compare encryptor configurations on key diversity, utility (KL divergence), and privacy (inversion ASR@10) against target constraints.",
+      "evaluation": "High-diversity encryptor enabling effective attacks violates utility (KL=0.031 vs target 0.02) and privacy (ASR@10=0.526 vs target 0.20); the standard low-diversity encryptor meets both but resists attacks (only 5.0pp drop at K=64).",
+      "domain": "Privacy-utility-security tradeoff in LLM obfuscation",
+      "source_quote": "we reveal a utility-privacy-diversity tradeoff: effective attacks require high key diversity that violates both utility (KL divergence) and privacy (inversion attack success rate) constraints, suggesting that well-designed OSNIP-like schemes may resist key-search attacks.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "We train a key-conditioned encryptor following the OSNIP framework (Cao et al., 2026) with three loss components.",
+      "section": "method"
+    },
+    {
+      "quote": "Our key-search attack shares this sampling-based strategy but operates in the embedding space rather than prompt space.",
+      "section": "related work"
+    },
+    {
+      "quote": "Following prior work on activation monitoring (Patel & Wang), we train an MLP probe on layer-l activations to classify harmful versus harmless requests.",
+      "section": "method"
+    },
+    {
+      "quote": "OSNIP (Cao et al., 2026) proposes key-conditioned obfuscation that projects embeddings into a semantic null space ... These methods assume honest users; we study adversarial key selection.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Contains an internal tension framed as a tradeoff: attack is strong only under high key diversity, which itself violates utility and privacy constraints, so well-designed low-diversity OSNIP schemes are largely resistant (only ~5pp drop).",
+  "extractor": "agent-batch-18",
+  "date": "2026-07-05"
+}

@@ -1,0 +1,54 @@
+{
+  "paper_id": "FA0385",
+  "title": "Compute-Matched Evaluation Reveals Task-Dependent Diffusion Planning Advantage",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Enable a fair comparison between diffusion and autoregressive language models that isolates the generation paradigm from inference budget.",
+      "mechanism": "A compute-matched evaluation protocol that calibrates autoregressive best-of-k sampling so that k*t_AR matches the diffusion model's wall-clock time per instance (k = floor(t_diffusion / t_AR)), measured on a held-out calibration set.",
+      "evaluation": "Applied on A100-80GB where Dream-7B takes 48-56s/instance vs Qwen2.5-7B 1.4s/instance, yielding k=35 (Countdown) and k=39 (Mini Sudoku); robustness checked with median vs p75 timing estimators.",
+      "domain": "Evaluation methodology for planning/reasoning language models (diffusion vs autoregressive)",
+      "source_quote": "A compute-matched evaluation protocol using wall-clock calibrated best-of-k sampling for fair comparison between diffusion and autoregressive language models.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Determine whether diffusion's reported planning advantage survives compute matching.",
+      "mechanism": "Evaluate Dream-7B (diffusion) against its autoregressive initializer Qwen2.5-7B under greedy, compute-matched best-of-k, and diffusion conditions on two Reasoning Gym tasks (Countdown, Mini Sudoku).",
+      "evaluation": "Task-dependent result: on Countdown compute-matched AR beats Dream by 32.5pp (39.1% vs 6.6%); on Mini Sudoku Dream retains 10.4pp advantage (77.6% vs 67.2%, 95% CI [+6.1, +14.6]).",
+      "domain": "Planning tasks (sequential arithmetic vs constraint satisfaction)",
+      "source_quote": "Empirical evidence that diffusion's planning advantage is task-specific: absent on sequential arithmetic (Countdown) but significant on constraint satisfaction (Mini Sudoku).",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Explain the structural basis of the task-dependent advantage.",
+      "mechanism": "Analysis via scaling curves (accuracy vs k) and problem-structure interpretation, linking diffusion's bidirectional/iterative refinement to global-coherence tasks and AR sampling diversity to sequential tasks.",
+      "evaluation": "On Countdown AR surpasses Dream at k=4 (11% of budget, no saturation); on Mini Sudoku log-linear extrapolation estimates k~87 (2.2x budget) needed to match Dream.",
+      "domain": "Analysis of generation-paradigm advantages by problem structure",
+      "source_quote": "Analysis suggesting diffusion may excel at tasks requiring global coherence across simultaneous constraints, while autoregressive models with sufficient sampling dominate on tasks with sequential structure.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "These works consistently compare diffusion models against greedy autoregressive decoding, leaving open the question of whether the observed advantages persist under compute-matched conditions.",
+      "section": "related work"
+    },
+    {
+      "quote": "Self-consistency (Wang et al., 2022) showed that sampling diverse reasoning paths and selecting the most consistent answer yields significant gains over greedy decoding ... These inference-time techniques demonstrate that autoregressive models can substantially improve through increased compute, motivating our compute-matched evaluation framework.",
+      "section": "related work"
+    },
+    {
+      "quote": "Our work bridges these lines of research by directly comparing how diffusion and autoregressive models scale with inference compute on planning tasks.",
+      "section": "related work"
+    },
+    {
+      "quote": "We compare Dream-7B (Ye et al., 2025), a 7.6B-parameter diffusion language model initialized from Qwen2.5-7B, against its autoregressive initializer Qwen2.5-7B (Yang et al., 2024). Both models share the same architecture and parameter count, differing only in their generation paradigm.",
+      "section": "method"
+    }
+  ],
+  "notes": "Reports a task-dependent/mixed result: compute-matched AR dominates diffusion on Countdown (-32.5pp for diffusion) while diffusion retains an advantage on Mini Sudoku; greedy AR and diffusion are near-parity on Countdown (6.0% vs 6.6%).",
+  "extractor": "agent-batch-20",
+  "date": "2026-07-05"
+}

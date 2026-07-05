@@ -1,0 +1,50 @@
+{
+  "paper_id": "FA0121",
+  "title": "Counterfactual Gate Supervision Does Not Fix Gating Credit Assignment in Engram-Style Conditional Memory",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Attempt to fix the gating credit-assignment pathology (hot/cold flip mis-calibration) in Engram-style conditional memory.",
+      "mechanism": "Counterfactual Gate Supervision (CGS) periodically computes per-token counterfactual loss differences under forced gate settings (delta-loss = loss(alpha=0) - loss(alpha=1)) and uses this signal to supervise gate activations via an auxiliary loss (high gate if memory helps, low if it hurts).",
+      "evaluation": "Method proposed but shown ineffective (see C2, C3).",
+      "domain": "Memory-augmented transformers / conditional n-gram memory gating",
+      "source_quote": "We propose Counterfactual Gate Supervision (CGS), a principled approach to gating credit assignment that uses per-token counterfactual loss differences to supervise gate activations.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Test whether CGS actually improves gate credit assignment.",
+      "mechanism": "Controlled experiments measuring oracle-AUC of gate calibration across all Engram layers and checking persistence of the hot/cold flip pathology.",
+      "evaluation": "Negative result: CGS degrades oracle-AUC at all Engram layers (0.549 to 0.528) and fails to resolve the hot/cold flip pathology.",
+      "domain": "Gate-calibration evaluation (oracle-AUC)",
+      "source_quote": "We conduct controlled experiments showing that CGS degrades oracle-AUC at all Engram layers while failing to resolve the hot/cold flip pathology, constituting a negative result.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Determine whether CGS's apparent validation-loss gain reflects better supervision or a confound.",
+      "mechanism": "Iso-compute control that matches the extra forward-pass computation of CGS without the supervision signal.",
+      "evaluation": "CGS's modest validation loss improvement (4.467 vs 4.481) is fully attributable to extra computation from forward passes; the iso-compute baseline achieves even better loss (4.452) without oracle-AUC degradation.",
+      "domain": "Iso-compute ablation / auxiliary supervision analysis",
+      "source_quote": "We demonstrate through iso-compute controls that CGS's validation loss improvement is attributable to extra computation, not improved gate supervision, providing a cautionary finding for future work on auxiliary supervision signals.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Among these, Engram (Cheng et al., 2026) introduces a distinctive paradigm: deterministic hashed n-gram lookup with learned gating. Unlike retrieval-based methods requiring approximate nearest neighbor infrastructure, Engram's deterministic addressing enables prefetching and memory offloading, making it attractive for deployment.",
+      "section": "intro"
+    },
+    {
+      "quote": "However, Lin (2026) identified a critical training pathology in Engram-style conditional memory: the learned gate becomes systematically mis-calibrated... This hot/cold flip indicates that gates learn early preferences based on embedding stability rather than causal utility, undermining the core design intent.",
+      "section": "intro"
+    },
+    {
+      "quote": "Engram (Cheng et al., 2026) is a conditional memory module that augments transformer language models by retrieving static n-gram embeddings and injecting them into the residual stream via learned gating... We propose Counterfactual Gate Supervision (CGS) to address the gating credit assignment problem.",
+      "section": "method"
+    }
+  ],
+  "notes": "NEGATIVE-RESULT paper (stated in title and abstract): CGS fails to fix gate mis-calibration; oracle-AUC degrades 0.549->0.528, hot/cold flip persists, and its validation-loss gain is a compute artifact (iso-compute baseline beats it: 4.452 vs 4.467). Explicit cautionary/negative finding.",
+  "extractor": "agent-batch-10",
+  "date": "2026-07-05"
+}

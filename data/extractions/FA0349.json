@@ -1,0 +1,54 @@
+{
+  "paper_id": "FA0349",
+  "title": "Overlap-Resampled L-BFGS for Physics-Informed Neural Networks",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Resolve the incompatibility between L-BFGS optimization and collocation resampling in PINNs.",
+      "mechanism": "Overlap-resampled L-BFGS: compute curvature pairs y_k only on the overlap set O_k = C_k intersect C_{k+1} of points that persist between consecutive collocation batches, so gradient differences reflect the same loss; adapted from multi-batch L-BFGS (Berahas et al., 2016).",
+      "evaluation": "Enables L-BFGS to run stably under resampling; on the 2D Poisson forward problem runs ~13x more L-BFGS iterations (8240 vs 620) without premature termination.",
+      "domain": "Physics-informed neural network optimization (PDE solving)",
+      "source_quote": "We propose overlap-resampled L-BFGS, an algorithm that computes curvature pairs on the overlap set between consecutive collocation batches, enabling L-BFGS optimization under collocation resampling.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Provide a stable training procedure transitioning from exploration to L-BFGS refinement with continued resampling.",
+      "mechanism": "Three-phase pipeline: Phase 1 Adam with resampling (exploration), Phase 2 Adam with fixed collocation (curvature initialization/stabilization), Phase 3 overlap-resampled L-BFGS with cautious updates (s_k^T y_k > eps ||s_k||^2, eps=1e-8) that filter unreliable curvature pairs.",
+      "evaluation": "Warmstart ablation: running Overlap-LBFGS from scratch on Poisson yields relL2 = 1.36e-2, 19x worse than with warmstart (7.03e-4); cautious skip rate rises as overlap decreases yet training stays stable down to o=0.25.",
+      "domain": "Second-order optimization under stochastic/resampled objectives",
+      "source_quote": "We introduce a three-phase training pipeline that transitions from Adam with resampling (exploration) through Adam with fixed points (curvature initialization) to overlap-resampled L-BFGS (refinement with continued resampling).",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Validate the method on complementary forward and inverse benchmarks.",
+      "mechanism": "Evaluate Overlap-LBFGS against Adam+Resampling and Adam->Fixed L-BFGS under matched gradient-evaluation budgets (30K-50K).",
+      "evaluation": "Ice-shelf inverse problem: Berr = 8.06e-4, 30% lower than fixed-collocation L-BFGS and 7% better than Adam+Resampling; 2D Poisson forward: 7.03e-4, 8.5x better than Adam-only but 2.1x worse than fixed L-BFGS; stable at overlap o=0.25 (below theoretical 0.8 threshold).",
+      "domain": "PINN benchmarks (ice-shelf inverse problem, 2D Poisson forward problem)",
+      "source_quote": "We validate the method on complementary benchmarks: on the ice-shelf inverse problem, Overlap-LBFGS achieves 30% lower error than fixed-collocation L-BFGS; on the Poisson forward problem, it provides 8.5x improvement over Adam-only while maintaining resampling capability.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "We resolve this tension by adapting techniques from multi-batch L-BFGS optimization (Berahas et al., 2016; Berahas & Takac, 2017) to the PINN setting.",
+      "section": "intro"
+    },
+    {
+      "quote": "We resolve the incompatibility by adapting the overlap-set technique from multi-batch L-BFGS (Berahas et al., 2016). The key insight is to compute curvature pairs only on points that persist between consecutive iterations.",
+      "section": "method"
+    },
+    {
+      "quote": "Following Berahas & Takac (2017), we employ a cautious update rule that filters out potentially harmful curvature pairs before they corrupt the L-BFGS memory.",
+      "section": "method"
+    },
+    {
+      "quote": "Our work adapts these multi-batch techniques to the PINN setting, where the 'batches' are collocation point sets rather than data samples. This connection has not been previously explored.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Reports a trade-off / partial negative on the forward problem: Overlap-LBFGS is 2.1x worse than fixed-collocation L-BFGS on 2D Poisson (fixed collocation excels there); one of three seeds unstable at o=0.5. Limitations: accuracy gap vs fixed L-BFGS on forward problems and need for problem-specific overlap tuning.",
+  "extractor": "agent-batch-19",
+  "date": "2026-07-05"
+}

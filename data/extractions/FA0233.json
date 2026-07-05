@@ -1,0 +1,54 @@
+{
+  "paper_id": "FA0233",
+  "title": "PhaseGuard-KL: Output-Dissimilarity-Triggered KL Regularization for Emergent Misalignment Defense",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Design a selective defense that applies KL regularization only to malicious fine-tuning while preserving benign learning.",
+      "mechanism": "PhaseGuard-KL: monitor truncated Jensen-Shannon divergence (top-k=256 tokens) between the fine-tuned and reference model on 24 safety-relevant canary prompts every 5 steps; a level-shift trigger (threshold tau=0.15, 2 consecutive points after warmup) activates KL regularization (coefficient lambda) for the rest of training.",
+      "evaluation": "Presented as an event-triggered method built on Qwen2.5-7B-Instruct with rs-LoRA; evaluated against pre-registered safety and utility criteria.",
+      "domain": "LLM safety / emergent misalignment defense during fine-tuning",
+      "source_quote": "A principled method design with canary prompt monitoring, JS divergence computation, and threshold-based triggering that activates KL regularization only when output distributions shift significantly.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Enable rigorous, falsifiable hypothesis testing of the selectivity claim.",
+      "mechanism": "Pre-register two success criteria: Security EM misaligned rate <=24.3% (>=50% recovery) AND OpSwap exact match >=43.7% (>=80% retention); both must hold for the hypothesis to be supported.",
+      "evaluation": "Framework only; thresholds derived from always-on KL and no-defense baselines.",
+      "domain": "Experimental methodology for safety defenses",
+      "source_quote": "Pre-registered success criteria for both safety (Security EM misaligned rate <=24.3%) and utility (OpSwap exact match >=43.7%), enabling rigorous hypothesis testing.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Test and ultimately refute the output-dissimilarity selectivity hypothesis.",
+      "mechanism": "Run PhaseGuard-KL and baselines on Security EM (malicious) and OpSwap Tier 2 (benign); sweep KL coefficient lambda; root-cause the trigger's non-discriminative behavior via JS divergence trajectories.",
+      "evaluation": "Trigger fires at step 20 for BOTH tasks; PhaseGuard-KL passes safety (20.83% misaligned) but fails utility (22.78% vs baseline 54.63%, off by 20.9pp); no lambda satisfies both criteria (sharp cliff between lambda=0.02 at 54.44% and lambda=0.03 at 22.78%); JS reaches 0.28-0.33 within 5 steps for both tasks.",
+      "domain": "Emergent misalignment (Security EM) vs benign arithmetic (OpSwap)",
+      "source_quote": "Comprehensive experiments revealing that the hypothesis is refuted: the trigger fires identically for both malicious and benign fine-tuning at step 20, making selective defense impossible with this approach.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "on the OpSwap benchmark, always-on KL reduces task accuracy from 54.6% to 0% (Kaczer et al., 2025).",
+      "section": "intro"
+    },
+    {
+      "quote": "Recent work in reinforcement learning has shown that resetting Adam's timestep can address similar non-stationarity issues... Our work tests whether output-dissimilarity monitoring can achieve selective triggering of KL regularization.",
+      "section": "related work"
+    },
+    {
+      "quote": "We evaluate on two benchmarks from the emergent misalignment literature (Kaczer et al., 2025): (1) Security EM ... (2) OpSwap Tier 2 ...",
+      "section": "method"
+    },
+    {
+      "quote": "KL divergence regularization is widely used in reinforcement learning from human feedback (RLHF)... Qi et al. (2023) demonstrated that even benign fine-tuning can compromise safety alignment, motivating the use of KL penalties during supervised fine-tuning.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Explicitly negative-result paper: the core selectivity hypothesis is refuted. The output-dissimilarity trigger detects distribution-shift magnitude but not intent, firing identically (step 20) for malicious and benign fine-tuning, so no KL coefficient jointly satisfies the safety and utility criteria. OpSwap utility uses only a single seed.",
+  "extractor": "agent-batch-16",
+  "date": "2026-07-05"
+}

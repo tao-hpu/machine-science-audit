@@ -1,0 +1,50 @@
+{
+  "paper_id": "FA0244",
+  "title": "Range-Capped Sinkhorn for Reliable Manifold-Constrained Hyper-Connections",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Diagnose why mHC's learnable routing matrices never actually learn.",
+      "mechanism": "Analyze the Sinkhorn projection under default settings (temperature tau=0.05, off-diagonal init -8), showing the input log-range reaches 160 so exp(-160)~10^-70 underflows to zero, collapsing the output to an exact permutation (identity) matrix with zero Jacobian.",
+      "evaluation": "With default settings, H_res gradients are exactly 0.0 across all layers and training steps on a 48-layer GPT-2 model.",
+      "domain": "Deep learning architecture / Sinkhorn-based routing in hyper-connections",
+      "source_quote": "We diagnose a gradient vanishing problem in mHC caused by numerical underflow in the Sinkhorn projection, where routing parameters receive exactly zero gradients with default settings.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "Restore gradient flow so the mHC routing mechanism can learn.",
+      "mechanism": "Range-Capped Sinkhorn (RRCS): a one-line modification that shifts the scaled logits so the input log-range is capped at r_cap (=2.0) before Sinkhorn iterations, guaranteeing exp(Z_min) >= exp(-r_cap) > 0.",
+      "evaluation": "On 48-layer GPT-2, RRCS raises H_res gradients from 0.0 to 4.1x10^-6, parameter drift from 0.0 to 4.19, and routing entropy from 0.0 to 0.93, while validation loss stays statistically indistinguishable (4.778 vs 4.774).",
+      "domain": "Deep learning architecture / Sinkhorn-based routing in hyper-connections",
+      "source_quote": "We propose RRCS, a one-line modification that caps the Sinkhorn input range, restoring gradient flow and enabling the routing mechanism to learn.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Validate that adaptive range capping is necessary and does not degrade performance.",
+      "mechanism": "Compare against a cap-init control (raise temperature to tau=0.267 to cut range 160->30) and an r_cap sensitivity ablation.",
+      "evaluation": "Cap-init leaves gradients negligible (1.59x10^-15, because exp(-30) still underflows); only r_cap=2.0 produces meaningful drift (4.19 vs <0.01 for larger caps); validation loss preserved across all r_cap.",
+      "domain": "Deep learning architecture / Sinkhorn-based routing in hyper-connections",
+      "source_quote": "We validate RRCS on a 48-layer GPT-2 model, demonstrating gradient restoration, parameter learning, and soft routing without performance degradation.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Manifold-constrained Hyper-Connections (mHC) (Xie et al., 2026) extend this approach by constraining routing matrices to be doubly-stochastic through Sinkhorn projection ... We identify a critical issue in mHC: the routing parameters receive exactly zero gradients during training.",
+      "section": "intro"
+    },
+    {
+      "quote": "The doubly-stochastic constraint is enforced via the Sinkhorn-Knopp algorithm (Cuturi, 2013).",
+      "section": "method"
+    },
+    {
+      "quote": "Our work complements these efforts by addressing numerical stability in the Sinkhorn projection.",
+      "section": "related work"
+    }
+  ],
+  "notes": "This is essentially a bug-fix paper for a prior method (mHC): the fix restores learning but yields no accuracy improvement (validation loss unchanged/marginally worse, 4.778 vs 4.774), raising the question of whether the learned routing matters at all.",
+  "extractor": "agent-batch-17",
+  "date": "2026-07-05"
+}

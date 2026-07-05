@@ -1,0 +1,50 @@
+{
+  "paper_id": "FA0114",
+  "title": "Sketch-Gated Trace Clustering for Accelerating Inter-Trace Redundancy Pruning",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Reduce the expensive judge-model comparisons that bottleneck inter-trace redundancy pruning in parallel test-time scaling.",
+      "mechanism": "Sketch-Gated DeepPrune adds a lightweight locality-sensitive hashing layer: compute 64-bit SimHash signatures from trace suffixes and use LSH banding to identify candidate similar clusters in constant time, gating an adaptive comparison budget (reduced from 10 to 3 when candidates exist).",
+      "evaluation": "Method-level; efficiency payoff quantified in C2.",
+      "domain": "LLM test-time scaling / reasoning-trace pruning",
+      "source_quote": "We introduce Sketch-Gated DeepPrune, which combines SimHash suffix signatures with LSH banding to accelerate inter-trace redundancy pruning.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Demonstrate the method reduces judge-comparison cost without hurting accuracy.",
+      "mechanism": "Benchmark Sketch-Gated DeepPrune against DeepPrune on reasoning tasks measuring judge prompt count and accuracy.",
+      "evaluation": "Achieves 1.82x judge prompt reduction (1635 to 897) with zero accuracy loss compared to DeepPrune on AIME and GPQA.",
+      "domain": "Reasoning benchmarks (AIME, GPQA)",
+      "source_quote": "On AIME and GPQA benchmarks, Sketch-Gated achieves 1.82x judge prompt reduction (1635->897) with zero accuracy loss compared to DeepPrune.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Diagnose the actual source of the observed efficiency gains via ablation.",
+      "mechanism": "Ablation studies isolating the adaptive K1 comparison-budget mechanism from the LSH candidate-filtering quality.",
+      "evaluation": "Ablations reveal the prompt reduction primarily stems from the adaptive K1 mechanism rather than LSH candidate quality, suggesting simpler gating strategies may achieve similar benefits.",
+      "domain": "Ablation analysis of the proposed mechanism",
+      "source_quote": "Through ablation studies, we reveal that the prompt reduction primarily stems from the adaptive K1 mechanism rather than LSH candidate quality, providing insights for future efficiency improvements.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "DeepPrune (Tu et al., 2025) addresses this redundancy through inter-trace clustering... We propose Sketch-Gated DeepPrune, which adds a lightweight locality-sensitive hashing (LSH) layer to filter candidate clusters before expensive judge comparisons.",
+      "section": "intro"
+    },
+    {
+      "quote": "DeepPrune (Tu et al. 2025) introduces inter-trace redundancy pruning through greedy clustering with a trained judge model... Our method builds on DeepPrune by adding a lightweight SimHash-LSH filtering layer that reduces the number of expensive judge comparisons while preserving clustering accuracy.",
+      "section": "related work"
+    },
+    {
+      "quote": "DeepPrune (Tu et al., 2025) addresses this by training a judge model J_theta that predicts whether two trace prefixes will yield identical final answers, and using it within a greedy clustering algorithm.",
+      "section": "method"
+    }
+  ],
+  "notes": "Self-undermining ablation result: the paper's headline mechanism (SimHash+LSH candidate filtering) is shown by its own ablations NOT to be the primary source of the reported 1.82x speedup; gains attributed instead to the adaptive K1 comparison-budget gating. C2 reports zero accuracy loss (a tie/no-degradation result on accuracy).",
+  "extractor": "agent-batch-10",
+  "date": "2026-07-05"
+}

@@ -1,0 +1,63 @@
+{
+  "paper_id": "FA0336",
+  "title": "Subject-Identity Removal Does Not Improve Frozen EEG Foundation Model Transfer: A Negative Result",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Systematically test whether removing linearly decodable subject identity improves cross-subject transfer of frozen EEG foundation model embeddings.",
+      "mechanism": "Apply Iterative Nullspace Projection (INLP) to frozen CBraMod embeddings, combined with Euclidean Alignment (EA) preprocessing and inner-cross-validation hyperparameter selection, under a leave-one-subject-out (LOSO) protocol with linear probing.",
+      "evaluation": "First systematic evaluation on BNCI2014001 4-class motor imagery (9 subjects, 22 channels), 3 seeds; INLP-CV reaches 56.29% vs EA baseline 56.27%.",
+      "domain": "EEG brain-computer interfaces / cross-subject transfer for motor imagery",
+      "source_quote": "We provide the first systematic evaluation of post-hoc subject-identity removal for frozen EEG foundation model transfer, testing whether INLP can improve cross-subject generalization.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Report the negative result that linear subject-identity removal provides no benefit.",
+      "mechanism": "Compare EA+INLP-CV against a strong EA+Flatten baseline and against reported fine-tuning and vanilla linear probing.",
+      "evaluation": "Optimized INLP achieves 56.29% vs EA baseline 56.27% (+0.02pp, within std 7.98%); EA baseline already exceeds reported fine-tuning (53.03%) by +3.24pp; pre-defined +2pp success criterion not met.",
+      "domain": "Debiasing / representation analysis for EEG",
+      "source_quote": "We report a negative result: INLP provides no benefit over simple Euclidean Alignment, refuting the hypothesis that linear subject-identity removal improves transfer.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Establish that dimension removal generally harms performance via controls.",
+      "mechanism": "Run PCA-k controls removing top-k principal components and fixed INLP-10 without optimization.",
+      "evaluation": "PCA-1 55.47% (-0.80pp), PCA-10 51.47% (-4.80pp), INLP-10 55.18% (-1.09pp); all degrade vs EA baseline.",
+      "domain": "Control experiments on embedding structure",
+      "source_quote": "We conduct rigorous experiments with PCA-k controls and inner cross-validation optimization, establishing that all dimension removal methods degrade performance.",
+      "type": "finding"
+    },
+    {
+      "id": "C4",
+      "purpose": "Explain why INLP fails, giving insight into embedding structure.",
+      "mechanism": "Analyze inner-CV hyperparameter selections across 27 LOSO folds to show the optimizer self-nullifies (selects minimal iterations / weak regularization).",
+      "evaluation": "77.8% of folds select only 1-3 INLP iterations and 92.6% select the weakest regularization C=0.01, indicating subject identity is entangled with task signal.",
+      "domain": "Analysis of frozen EEG foundation model embedding geometry",
+      "source_quote": "We provide insight into the structure of frozen EEG-FM embeddings: subject identity appears entangled with task-discriminative signal, as evidenced by the optimization learning to minimize intervention.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "To test this hypothesis, we apply Iterative Nullspace Projection (INLP) (Ravfogel et al., 2020), a method originally developed for debiasing word embeddings, to project embeddings onto the nullspace of subject-identity classifiers.",
+      "section": "intro"
+    },
+    {
+      "quote": "We apply INLP to a novel domain-frozen EEG foundation model embeddings-to test whether removing linearly decodable subject identity can improve cross-subject transfer.",
+      "section": "related work"
+    },
+    {
+      "quote": "Our negative results suggest that, similar to the findings in NLP, subject-identity information may be entangled with task-relevant signal in ways that linear projection cannot cleanly separate.",
+      "section": "related work"
+    },
+    {
+      "quote": "Combined with Euclidean Alignment (EA) (He & Wu, 2018) preprocessing, this approach aims to produce subject-invariant representations while preserving task-relevant information.",
+      "section": "intro"
+    }
+  ],
+  "notes": "Explicit negative result throughout: INLP statistically indistinguishable from EA baseline (+0.02pp within std); all dimension-removal controls degrade; per-subject effects mixed (4 improve, 5 degrade). Limited to a single dataset and encoder.",
+  "extractor": "agent-batch-19",
+  "date": "2026-07-05"
+}

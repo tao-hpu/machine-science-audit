@@ -1,0 +1,59 @@
+{
+  "paper_id": "FA0137",
+  "title": "GaugeFix-LRM: Function-Preserving Q/K Gauge Fixing for Learnable Multipliers in Language Model Training",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Control Q/K gauge symmetry drift in Learnable Multipliers without shrinking multiplier magnitudes as weight decay does.",
+      "mechanism": "GaugeFix-LRM replaces weight decay on Q/K multipliers with an explicit function-preserving gauge-fixing projection (gauge factor g=sqrt(sQ/sK), rescaling rQ<-rQ/g, rK<-rK*g) that balances Q/K scales while preserving the attention function exactly.",
+      "evaluation": "Evaluated on GPT-2 124M trained on OpenWebText.",
+      "domain": "language model training / attention gauge symmetry with learnable multipliers",
+      "source_quote": "We propose GaugeFix-LRM, a function-preserving method for controlling Q/K symmetry drift in Learnable Multipliers.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Demonstrate that gauge fixing eliminates Q/K scale drift.",
+      "mechanism": "Explicit gauge-fixing projection that balances Q/K scales after each optimizer step.",
+      "evaluation": "Achieves perfect drift control (0.000 vs 0.052 baseline), completely eliminating Q/K scale ratio divergence.",
+      "domain": "Q/K scale drift control in bfloat16 training",
+      "source_quote": "We demonstrate that GaugeFix achieves perfect drift control (0.000 vs 0.052 baseline), completely eliminating Q/K scale ratio divergence.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Explain why pure gauge-fixing can introduce training instability.",
+      "mechanism": "Analysis decomposing weight decay's role on Q/K multipliers.",
+      "evaluation": "Discovers weight decay serves a dual purpose (symmetry control and magnitude regularization); pure GaugeFix introduces late-training instability in 2 of 3 seeds.",
+      "domain": "weight decay / regularization analysis",
+      "source_quote": "We discover that weight decay on Q/K multipliers serves a dual purpose: symmetry control and magnitude regularization, explaining why pure gauge-fixing can introduce instability.",
+      "type": "finding"
+    },
+    {
+      "id": "C4",
+      "purpose": "Find the optimal application frequency for GaugeFix.",
+      "mechanism": "Applying the gauge-fixing projection every 100 steps rather than every step.",
+      "evaluation": "Every-100-steps GaugeFix achieves best validation loss (3.0326), outperforming per-step GaugeFix (3.0711) and the weight decay baseline (3.0633); improves validation loss by 0.0307 nats over baseline.",
+      "domain": "training schedule / hyperparameter tuning",
+      "source_quote": "We show that applying GaugeFix every 100 steps achieves optimal performance, outperforming both per-step application and the weight decay baseline.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "We propose GaugeFix-LRM, which replaces weight decay on Q/K multipliers with an explicit gauge-fixing projection.",
+      "section": "intro"
+    },
+    {
+      "quote": "Learnable Multipliers (LRM) (Velikanov et al., 2026) address this limitation by attaching learnable scalar or vector multipliers to weight matrices... Our work applies gauge-fixing specifically to the Q/K multiplicative symmetry in LRM.",
+      "section": "intro"
+    },
+    {
+      "quote": "Wang & Wang (2026) characterized the complete gauge group structure, proving that multi-head attention admits (GL(dk))^h x (GL(dv))^h symmetries that persist through LayerNorm. Our work applies gauge-fixing specifically to the Q/K multiplicative symmetry in LRM.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Reports a NEGATIVE side-effect: the function-preserving GaugeFix introduces late-training instability in 2 of 3 seeds; per-step GaugeFix (3.0711) is actually WORSE than the weight decay baseline (3.0633), only the every-100-steps variant beats baseline. Weight decay shown to provide needed magnitude regularization beyond symmetry control.",
+  "extractor": "agent-batch-11",
+  "date": "2026-07-05"
+}

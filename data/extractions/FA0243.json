@@ -1,0 +1,59 @@
+{
+  "paper_id": "FA0243",
+  "title": "Silence-Conditional Output Suppression for Training-Free Whisper Hallucination Mitigation",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Mitigate Whisper hallucinations on non-speech audio without fine-tuning or external components.",
+      "mechanism": "Silence-Conditional Output Suppression: extract Whisper's internal no-speech probability (p_no_speech) from the first decoder step and, when p_no_speech >= threshold tau, output an empty transcription; otherwise proceed with standard greedy decoding.",
+      "evaluation": "On UrbanSound8K, hallucination rate drops from 100% to 60.11% at tau=0.3 (a 39.9pp reduction).",
+      "domain": "Automatic speech recognition / hallucination mitigation",
+      "source_quote": "A training-free method for Whisper hallucination mitigation that leverages the model's internal p_no_speech signal, requiring no fine-tuning or external components.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Show the method preserves speech recognition quality while reducing hallucinations.",
+      "mechanism": "Evaluate the hallucination-WER tradeoff on UrbanSound8K vs LibriSpeech across thresholds tau in {0.3, 0.5, 0.6}, comparing to default Whisper and an Always-Mask head-masking baseline.",
+      "evaluation": "At tau=0.3, WER impact is +0.19pp on LibriSpeech test-clean (2.83->3.02) and 0 on test-other (5.10 unchanged), with a 0.19% false-positive rate (5/2620).",
+      "domain": "Automatic speech recognition / hallucination mitigation",
+      "source_quote": "Comprehensive evaluation showing 39.9 percentage point hallucination reduction (100% → 60.1%) on UrbanSound8K with minimal WER impact (+0.19 percentage points on LibriSpeech test-clean, 0 on test-other).",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Characterize when the method works and when it fails.",
+      "mechanism": "Per-class trigger-rate analysis at tau=0.5 across the 10 UrbanSound8K sound classes.",
+      "evaluation": "High trigger rate on non-speech-like sounds (gun_shot 88.8%) but very low on speech-like audio (street_music 1.5%, children_playing 3.9%), explaining the residual 60% hallucination rate.",
+      "domain": "Automatic speech recognition / hallucination mitigation",
+      "source_quote": "Analysis revealing class-dependent effectiveness: the method works well on non-speech-like sounds (88.8% trigger rate on gun_shot) but struggles with speech-like environmental audio (1.5% on street_music).",
+      "type": "finding"
+    },
+    {
+      "id": "C4",
+      "purpose": "Establish which component actually drives the improvement.",
+      "mechanism": "Skip-Only ablation that applies the p_no_speech suppression policy but uses standard (unmasked) decoding for non-triggered clips.",
+      "evaluation": "At tau=0.6, Skip-Only is identical to the full method (78.37% hallucination, 2.86% test-clean WER, 5.10% test-other), confirming the suppression policy, not decoder head masking, drives the gains.",
+      "domain": "Automatic speech recognition / hallucination mitigation",
+      "source_quote": "Ablation study confirming that the suppression policy, not decoder head masking, drives the hallucination reduction.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Most closely related to our work, Wang et al. (2025) identify that a small subset of decoder self-attention heads (heads {1, 6, 11}) account for over 75% of hallucinations on non-speech audio ... Our work builds on their mechanistic insight but takes a different approach: rather than modifying decoder computation, we leverage Whisper's internal p_no_speech signal to conditionally suppress output.",
+      "section": "related work"
+    },
+    {
+      "quote": "Our work applies this head-level understanding to ASR hallucination mitigation, though our ablation reveals that the suppression policy, not head masking, drives our method's effectiveness.",
+      "section": "related work"
+    },
+    {
+      "quote": "Whisper's multitask training format includes a special <|nospeech|> token that the model is trained to predict when audio contains no speech ... which we denote as p_no_speech.",
+      "section": "method"
+    }
+  ],
+  "notes": "Residual hallucination rate stays high (60.1% at tau=0.3); the borrowed head-masking mechanism from Wang et al. (2025) is shown to contribute nothing (Always-Mask degrades WER without reducing hallucination), so the paper is largely a negative/trade-off result on that component.",
+  "extractor": "agent-batch-17",
+  "date": "2026-07-05"
+}

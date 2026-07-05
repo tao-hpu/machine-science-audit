@@ -1,0 +1,63 @@
+{
+  "paper_id": "FA0353",
+  "title": "Public-Anchor Drift Adapters for Privacy-Limited Embedding Model Upgrades",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Enable privacy-preserving embedding model upgrades without access to in-domain data.",
+      "mechanism": "Public-Anchor Drift Adapter (PADA): train a lightweight residual MLP g(x)=x+W2*GELU(W1x+b1)+b2 (hidden dim 256) with a simple MSE objective on paired embeddings from public Wikipedia text, mapping new-model embeddings into the legacy embedding space; no in-domain corpus needed.",
+      "evaluation": "Trained on ~5,000 Wikipedia anchor pairs; upgrade scenario all-distilroberta-v1 -> all-mpnet-base-v2 (768-dim) evaluated by nDCG@10.",
+      "domain": "Dense retrieval / embedding model upgrades in vector databases (privacy-sensitive deployments)",
+      "source_quote": "We propose PADA, a privacy-preserving approach to embedding model upgrades that requires no access to in-domain data.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Show public-anchor training matches or exceeds in-domain adapters, supporting the model-pair-specific drift hypothesis.",
+      "mechanism": "Compare PADA against an in-domain adapter (same architecture, trained on 5,000 corpus documents) across four BEIR datasets spanning scientific, medical, financial, and argumentative domains.",
+      "evaluation": "PADA exceeds in-domain adapter on all four datasets with recovery ratios rho 1.11-1.31 (avg 1.22); nDCG@10 gains of +5.0 (SciFact), +9.8 (TREC-COVID), +7.2 (FiQA), +6.1 (ArguAna); recovers 60-97% of oracle vs 46-84% for in-domain.",
+      "domain": "Cross-domain retrieval benchmarking (BEIR)",
+      "source_quote": "We demonstrate that PADA exceeds in-domain adapter performance on four diverse BEIR datasets (scientific, medical, financial, argumentative), supporting the hypothesis that drift is model-pair-specific.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Confirm the gains arise from genuine alignment rather than training artifacts.",
+      "mechanism": "Shuffled-pair null control that uses the same Wikipedia text and training procedure but with randomly permuted target embeddings.",
+      "evaluation": "Shuffled-pair adapter yields near-zero nDCG@10 (~0.000) on all datasets, indistinguishable from the misaligned baseline.",
+      "domain": "Null-control validation of embedding alignment",
+      "source_quote": "We validate our approach with a shuffled-pair null control that confirms gains arise from genuine alignment rather than training artifacts.",
+      "type": "finding"
+    },
+    {
+      "id": "C4",
+      "purpose": "Characterize sample efficiency for practical deployment.",
+      "mechanism": "Sweep public anchor corpus size Np over {500, 1000, 2000, 5000, 10000} and measure recovery ratio.",
+      "evaluation": "Sigmoid-shaped scaling: negligible below 2,000 pairs (rho<0.17), rapid gains 2,000-5,000, near-saturation at 10,000 (rho 0.89-1.07); recommend >=5,000 pairs.",
+      "domain": "Sample-efficiency analysis for adapter training",
+      "source_quote": "We characterize sample efficiency, finding that approximately 5,000 public anchor pairs provide meaningful adaptation, with near-saturation at 10,000 pairs.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Following Vejendla (2025), we use a residual MLP architecture that adds a learned correction to the input embedding.",
+      "section": "method"
+    },
+    {
+      "quote": "Drift-Adapter (Vejendla, 2025) trains residual MLP, affine, or Procrustes adapters on paired embeddings from the target corpus... Our work demonstrates that a simple MSE-trained adapter using only public text can match or exceed in-domain adapters, eliminating the need for private data access.",
+      "section": "related work"
+    },
+    {
+      "quote": "This simple MSE objective, without additional geometry-preservation losses used in prior work (Yoon & Arik, 2025; Jha et al., 2025), is sufficient when the underlying drift is approximately smooth across the embedding space.",
+      "section": "method"
+    },
+    {
+      "quote": "Our work extends this insight to model upgrades, demonstrating empirically that public anchors can capture the global transformation between embedding spaces.",
+      "section": "related work"
+    }
+  ],
+  "notes": "",
+  "extractor": "agent-batch-19",
+  "date": "2026-07-05"
+}

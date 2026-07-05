@@ -1,0 +1,51 @@
+{
+  "paper_id": "FA0067",
+  "title": "Delta-Prefill Switching: Adaptive Routing for Speculative Decoding in Multi-Turn LLM Serving",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Find a routing signal that predicts when speculative decoding is beneficial in prefix-cached multi-turn serving.",
+      "mechanism": "Identifies incremental prompt growth (Delta-L), the new tokens added since the last turn, as the signal: small Delta-L favors speculation, large Delta-L makes speculation's serialization costly under concurrency.",
+      "evaluation": "Validated via DPS routing experiments on ToolBench and BFCL benchmarks.",
+      "domain": "Multi-turn LLM serving / speculative decoding",
+      "source_quote": "We identify incremental prompt growth (Delta-L) as an effective routing signal for adaptive speculation in prefix-cached multi-turn serving.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "Accelerate sequential multi-turn inference without losing the benefit of speculation.",
+      "mechanism": "Delta-Prefill Switching (DPS): a threshold-based policy routing each turn to speculative or greedy decoding servers before decoding begins, with no model introspection or modifications.",
+      "evaluation": "On ToolBench and BFCL, DPS achieves 21-22% speedup over greedy decoding in sequential mode, matching always-on speculation.",
+      "domain": "LLM inference routing policy",
+      "source_quote": "We demonstrate that DPS achieves 21-22% speedup over greedy decoding in sequential mode, matching always-on speculation performance.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Show DPS avoids speculation's serialization bottleneck under concurrent multi-tenant load.",
+      "mechanism": "Routing large-Delta-L requests to the concurrent-capable greedy server when concurrency c >= 4.",
+      "evaluation": "Under concurrent load (c >= 4), DPS achieves +64-80% speedup over always-on speculation.",
+      "domain": "Concurrent LLM serving performance",
+      "source_quote": "We show that under concurrent multi-tenant load (c >= 4), DPS achieves +64-80% speedup over always-on speculation by routing to the concurrent-capable greedy server.",
+      "type": "finding"
+    },
+    {
+      "id": "C4",
+      "purpose": "Establish robustness of DPS to its main hyperparameter.",
+      "mechanism": "Threshold sweep over the Delta-L routing threshold tau.",
+      "evaluation": "All tau >= 32 outperform the greedy baseline, with monotonic performance improvement.",
+      "domain": "Hyperparameter robustness analysis",
+      "source_quote": "We establish that DPS is robust to threshold selection: all tau >= 32 outperform the greedy baseline, with monotonic performance improvement.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "These adaptive methods focus on optimizing speculation within a single decoding strategy. In contrast, our approach routes requests between speculative and greedy decoding based on workload characteristics, addressing the orthogonal problem of when speculation is beneficial versus detrimental under concurrent load.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Tie result in the sequential setting: DPS only matches always-on speculation (21-22% speedup); its claimed advantage appears under concurrent load (c >= 4).",
+  "extractor": "agent-batch-7",
+  "date": "2026-07-05"
+}

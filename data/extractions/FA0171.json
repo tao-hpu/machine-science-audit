@@ -1,0 +1,46 @@
+{
+  "paper_id": "FA0171",
+  "title": "SourceJS-LoRA: Source-Referenced Jensen-Shannon Divergence for Learning LoRA Merge Coefficients",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Expose why entropy-based coefficient learning fails for LoRA merging.",
+      "mechanism": "Identifies that entropy minimization is reference-free, so optimization can drive confidently wrong predictions and unstable/extreme coefficients.",
+      "evaluation": "Empirically, entropy-based coefficient learning performs worse than uniform merging (77.55% vs 79.76% on GLUE).",
+      "domain": "Merging task-specific LoRA adapters into a multi-task adapter.",
+      "source_quote": "We identify a failure mode of entropy-based coefficient learning for LoRA merging: without reference targets, optimization can produce confidently wrong predictions and unstable coefficients.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "Learn LoRA merge coefficients without confidence collapse using only unlabeled data.",
+      "mechanism": "SourceJS-LoRA minimizes Jensen-Shannon divergence between the merged model's predictions and each task expert's predictions (a teacher-anchored, source-referenced objective).",
+      "evaluation": "Produces stable, balanced coefficients rather than the extreme negative-weight values from entropy minimization.",
+      "domain": "Merging task-specific LoRA adapters into a multi-task adapter.",
+      "source_quote": "We propose SourceJS-LoRA, which uses Jensen-Shannon divergence to task expert predictions as a teacher-anchored objective for learning merge coefficients.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Demonstrate accuracy gains over existing merging methods.",
+      "mechanism": "Evaluates SourceJS-LoRA on 8 GLUE tasks with T5-base against DO-Merging and entropy minimization.",
+      "evaluation": "Achieves 83.10% average accuracy, outperforming DO-Merging by +2.29 and entropy minimization by +5.55.",
+      "domain": "Merging task-specific LoRA adapters into a multi-task adapter.",
+      "source_quote": "We demonstrate that SourceJS-LoRA achieves 83.10% average accuracy on 8 GLUE tasks with T5-base, outperforming DO-Merging (+2.29) and entropy minimization (+5.55), while producing stable, balanced coefficients.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "AdaMerging (Yang et al., 2024b) learns task-wise or layer-wise coefficients by minimizing entropy on unlabeled test data... Our work differs by identifying a fundamental limitation of entropy-based objectives and proposing source-referenced JS divergence as a principled alternative.",
+      "section": "related work"
+    },
+    {
+      "quote": "We propose SourceJS-LoRA, which learns merge coefficients by minimizing Jensen-Shannon divergence between the merged model's predictions and each task expert's predictions. Unlike entropy minimization, this source-referenced objective anchors the optimization to the task-specific expert models, preventing confidence collapse.",
+      "section": "intro"
+    }
+  ],
+  "notes": "Reports a motivating negative finding about the baseline: entropy-based coefficient learning underperforms uniform merging (77.55% vs 79.76%); the paper's own method claims a positive result.",
+  "extractor": "agent-batch-13",
+  "date": "2026-07-05"
+}

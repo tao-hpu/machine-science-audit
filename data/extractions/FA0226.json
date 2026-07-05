@@ -1,0 +1,63 @@
+{
+  "paper_id": "FA0226",
+  "title": "Prototype-Debiased Latent Alignment for Class-Imbalanced EEG Decoding",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Reveal and explain a previously untested failure mode of Latent Alignment (LA) under class-imbalanced context sets.",
+      "mechanism": "Identify the prototype-mixture mean shift mechanism: LA subtracts a context mean that, under imbalance, becomes biased toward majority-class prototypes (mu_ctx = sum_c p_c mu_c + delta_s), causing systematic misalignment.",
+      "evaluation": "On PhysioNet Sleep, LA weighted accuracy drops from balanced 0.7588 to MC WA 0.6664 (9.2pp gap), falling to 0.5219 at extreme imbalance (alpha=0.1); shift magnitude correlates with accuracy drop (r=0.518).",
+      "domain": "Subject-independent EEG decoding / brain-computer interfaces",
+      "source_quote": "We identify LA's vulnerability to class-imbalanced context sets and characterize the prototype-mixture mean shift mechanism causing this degradation.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "Correct the class-mixture bias in the alignment statistics.",
+      "mechanism": "Prototype-Debiased Latent Alignment (PD-LA): subtract a bias term b(p) = sum_c (p_hat_c - 1/C) mu_c from the context mean, using class prototypes mu_c computed from training data and estimated class proportions p_hat_c, preserving the subject-specific offset.",
+      "evaluation": "Presented as a correction formula; validated by oracle-prior recovery and correlation-drop analysis.",
+      "domain": "Latent Alignment / label-shift correction for EEG",
+      "source_quote": "We propose PD-LA, a correction formula that removes the class-mixture bias while preserving subject-specific adaptation.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Validate that the correction addresses the identified mechanism and recovers accuracy under oracle priors.",
+      "mechanism": "Evaluate PD-LA with oracle (ground-truth) priors on PhysioNet ME (3-class) and Sleep (5-class) using EEGNet/DeepSleepNet with LA layers; correlate shift vs accuracy drop before/after correction.",
+      "evaluation": "Oracle PD-LA recovers 76% of the gap (+7.39pp MC WA, 0.6664->0.7403) and +20.86pp at alpha=0.1; shift-accuracy correlation drops r=0.518 -> -0.145 (delta r=0.663).",
+      "domain": "EEG sleep staging / motor execution (PhysioNet)",
+      "source_quote": "We demonstrate that oracle PD-LA recovers 76% of the imbalance-induced accuracy gap (+7.4pp) and improves extreme-imbalance accuracy by +20.9pp.",
+      "type": "finding"
+    },
+    {
+      "id": "C4",
+      "purpose": "Explain why the deployable (practical) variant fails, framing the open problem.",
+      "mechanism": "Show LA's normalization makes predictions approximately invariant to context class composition, creating an identifiability problem that defeats standard label-shift prior estimators (soft-prob averaging, argmax counting).",
+      "evaluation": "Predicted-prior PD-LA gains only +1.58pp on Sleep and -0.01pp on ME; estimator reliability r~0.23 pulls estimates toward uniform, rendering correction uninformative.",
+      "domain": "Label-shift prior estimation under normalization",
+      "source_quote": "We identify prior estimation as the key bottleneck: LA's normalization makes predictions invariant to context composition, limiting the practical variant's effectiveness.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Latent Alignment (Bakas et al., 2023) extends these ideas by performing subject-wise standardization at multiple layers within a deep network, formulated as a Deep Set (Zaheer et al., 2017) ... However, the original work notes a trade-off between alignment depth and susceptibility to class imbalance, a limitation we directly address in this paper.",
+      "section": "related work"
+    },
+    {
+      "quote": "Standard approaches for label shift estimation (Lipton et al., 2018; Garg et al., 2020) use model predictions ... We implement a predicted-prior variant (PD-LA Pred) that averages softmax outputs over the context set.",
+      "section": "method"
+    },
+    {
+      "quote": "Our work addresses a related but distinct problem: correcting the bias in alignment statistics caused by class-imbalanced context sets, rather than adapting model parameters.",
+      "section": "related work"
+    },
+    {
+      "quote": "Following Bakas et al. (2023), we use EEGNet (Lawhern et al., 2016) for ME and DeepSleepNet (Supratak et al., 2017) for Sleep, both augmented with Latent Alignment layers.",
+      "section": "method"
+    }
+  ],
+  "notes": "Honest negative results: the practical/deployable PD-LA variant barely helps (+1.58pp Sleep, -0.01pp ME) because prior estimation is fundamentally unidentifiable under LA's normalization; the ME benchmark shows almost no imbalance effect (0.32pp gap) so corrections are near-zero there; the headline +7.4pp/+20.9pp gains require an oracle (non-deployable) that uses ground-truth class proportions.",
+  "extractor": "agent-batch-16",
+  "date": "2026-07-05"
+}

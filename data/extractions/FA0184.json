@@ -1,0 +1,46 @@
+{
+  "paper_id": "FA0184",
+  "title": "Velocity-Forecast Sampling for Flow-Matching Heads: A Negative Result",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Speed up inference of flow-matching heads in autoregressive image generation.",
+      "mechanism": "Velocity-Forecast Sampling (VFS), a training-free method that speculatively reuses velocity predictions across ODE steps, verifying via MSE-based drift detection and falling back to standard sampling on rejection.",
+      "evaluation": "On NextStep-1.1 with GenEval, VFS reaches competitive speedup (1.18-1.76x) but GenEval quality only 0.527-0.567.",
+      "domain": "Inference acceleration for flow-matching heads in autoregressive image generation.",
+      "source_quote": "We propose Velocity-Forecast Sampling (VFS), a training-free speculative method for accelerating flow-matching heads in autoregressive image generation.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Report that the proposed method does not help.",
+      "mechanism": "Systematic evaluation comparing VFS against simple ODE step reduction on the quality-speed Pareto frontier.",
+      "evaluation": "VFS is Pareto-dominated: the 10-step ODE baseline gives higher quality (GenEval 0.580 vs 0.527-0.567) and competitive speedup (1.68x vs 1.18-1.76x); a negative result.",
+      "domain": "Inference acceleration for flow-matching heads in autoregressive image generation.",
+      "source_quote": "We provide systematic experimental evidence that VFS is Pareto-dominated by simple step reduction, establishing a negative result for speculative velocity reuse under CFG.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Explain why speculative velocity reuse fails.",
+      "mechanism": "Analysis of two limiting factors: classifier-free guidance (CFG) disrupts velocity-field smoothness, and the FM head is a small share of latency.",
+      "evaluation": "CFG yields only 12-21% per-step acceptance; FM head is ~31% of per-token latency, capping FM-head-only speedup at ~1.45x.",
+      "domain": "Inference acceleration for flow-matching heads in autoregressive image generation.",
+      "source_quote": "We analyze why speculative approaches fail for CFG-guided flow-matching heads, providing actionable insights for future efficiency research in autoregressive image generation.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "VFS is inspired by recent work on speculative flow matching (Bajpai et al., 2026), but specifically targets the per-token flow-matching heads in autoregressive image generation under classifier-free guidance (CFG).",
+      "section": "intro"
+    },
+    {
+      "quote": "FlowCast (Bajpai et al., 2026) is most closely related to our work, proposing trajectory forecasting for speculative flow matching in diffusion models. However, FlowCast operates on unconditional or text-conditioned diffusion without classifier-free guidance (CFG), whereas our work specifically investigates CFG-guided flow-matching heads in autoregressive image generation, where we find that CFG fundamentally disrupts the velocity smoothness that speculative methods rely upon.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Explicit negative result (stated in the title and abstract): VFS is Pareto-dominated by simple step reduction; reducing steps from 28 to 10 actually improves quality, suggesting the default configuration is over-stepped.",
+  "extractor": "agent-batch-13",
+  "date": "2026-07-05"
+}

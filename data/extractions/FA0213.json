@@ -1,0 +1,59 @@
+{
+  "paper_id": "FA0213",
+  "title": "Overlap-Refresh: Decoupling Window Shifts from Full KV Refresh in Diffusion Language Models",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Diagnose the inefficiency in Window-Diffusion's phase-boundary handling.",
+      "mechanism": "Identify that Window-Diffusion couples window shifts with full KV refresh via a single refresh_cycle parameter, and analyze naive refresh reduction.",
+      "evaluation": "Show that naive refresh reduction degrades both generation quality and speed.",
+      "domain": "Diffusion language model inference",
+      "source_quote": "We identify the coupling inefficiency in Window-Diffusion's phase boundary operations and show that naive refresh reduction degrades both quality and speed.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "Enable efficient scheduling without sacrificing generation quality.",
+      "mechanism": "Propose Overlap-Refresh, decoupling window shift frequency from KV refresh frequency via two independent scheduling parameters (shift_interval and refresh_interval).",
+      "evaluation": "Presented as a decoupled scheduler; validated via downstream throughput/quality results.",
+      "domain": "Diffusion language model inference",
+      "source_quote": "We propose Overlap-Refresh, which decouples window shift frequency from KV refresh frequency via two independent scheduling parameters.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Cheaply update the KV cache at shift-only boundaries.",
+      "mechanism": "Introduce delta-prefill, computing KV only for newly entered tokens while reusing cached KV for overlap tokens, giving O(|N| x C) cost versus O(C^2) for full refresh.",
+      "evaluation": "Runtime analysis confirms delta-prefill is 3.3x cheaper than full refresh.",
+      "domain": "KV-cache computation for sliding-window diffusion",
+      "source_quote": "We introduce delta-prefill, an efficient operation that computes KV only for newly entered tokens, achieving 3.3x cost reduction compared to full refresh.",
+      "type": "method"
+    },
+    {
+      "id": "C4",
+      "purpose": "Demonstrate end-to-end throughput gains at near-baseline quality.",
+      "mechanism": "Evaluate Overlap-Refresh on MBPP code generation against the Window-Diffusion baseline.",
+      "evaluation": "6.0% throughput improvement (8.59 vs 8.10 tokens/sec) while preserving quality within 0.6 percentage points (54.4% vs 55.0% Pass@1).",
+      "domain": "Code generation (MBPP)",
+      "source_quote": "We demonstrate 6.0% throughput improvement on MBPP while preserving generation quality within 0.6 percentage points of the Window-Diffusion baseline.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Our work builds upon Window-Diffusion by decoupling window shifts from KV refresh operations, enabling more efficient scheduling without sacrificing quality.",
+      "section": "related work"
+    },
+    {
+      "quote": "Our delta-prefill mechanism draws inspiration from incremental KV computation techniques while addressing the specific requirements of sliding window diffusion.",
+      "section": "related work"
+    },
+    {
+      "quote": "Window-Diffusion (Zuo et al. 2026) addresses this by restricting attention to a sliding window around the decoding frontier ... Window-Diffusion couples two distinct operations at each phase boundary ... We propose Overlap-Refresh, which introduces two independent scheduling parameters.",
+      "section": "intro"
+    }
+  ],
+  "notes": "",
+  "extractor": "agent-batch-15",
+  "date": "2026-07-05"
+}

@@ -1,0 +1,59 @@
+{
+  "paper_id": "FA0115",
+  "title": "OCR-Anchor Reranking: When Best-of-N Selection Fails Due to Candidate Homogeneity",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Improve document-OCR outputs of vision-language models by selecting the best among multiple VLM-generated parsing candidates without retraining.",
+      "mechanism": "OCR-Anchor Reranking, a training-free method that extracts high-confidence anchor tokens from a classical OCR engine (PaddleOCR) and selects the VLM candidate with the highest fraction of anchor-token coverage.",
+      "evaluation": "Method proposed but shown not to beat the single-sample baseline (see C2).",
+      "domain": "Document OCR / VLM-based PDF-to-Markdown parsing",
+      "source_quote": "We propose OCR-Anchor Reranking, a training-free method for selecting among VLM-generated document parsing candidates using traditional OCR as a proxy verifier.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Test whether the proxy-verifier reranking actually improves over baselines.",
+      "mechanism": "Comprehensive evaluation on olmOCR-Bench comparing all selection strategies including random selection against the single-sample baseline.",
+      "evaluation": "Negative result: the method fails to improve over baselines; all selection strategies (including random) fall within a 0.3-point band (82.0-82.3%), none beating the single-sample baseline.",
+      "domain": "OCR benchmark (olmOCR-Bench)",
+      "source_quote": "We provide comprehensive evaluation showing that the method fails to improve over baselines, with all selection strategies performing within noise of each other.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Explain why best-of-N reranking fails in this setting.",
+      "mechanism": "Analyze candidate diversity across samples at low decoding temperature.",
+      "evaluation": "Root cause is candidate homogeneity: at low temperature (0.1), 90.6% of pages produce identical candidates across all 8 samples, leaving nothing to select from.",
+      "domain": "Diagnostic analysis of best-of-N failure",
+      "source_quote": "We identify the root cause as candidate homogeneity at low temperature, where 90.6% of pages produce identical outputs.",
+      "type": "finding"
+    },
+    {
+      "id": "C4",
+      "purpose": "Draw a general lesson about the applicability of best-of-N approaches.",
+      "mechanism": "Reason from the homogeneity finding to the requirement of candidate diversity for any selection strategy.",
+      "evaluation": "Qualitative implication: best-of-N requires candidate diversity to succeed, which well-trained models at low temperature do not provide.",
+      "domain": "Best-of-N / inference-time scaling (general implication)",
+      "source_quote": "We discuss broader implications for best-of-N approaches: the technique requires candidate diversity, which well-trained models at low temperature do not provide.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "olmOCR-2 (Poznanski et al., 2025) achieved state-of-the-art performance by training with reinforcement learning using unit test rewards... Our work builds on olmOCR-2 as the base model and explores whether best-of-N sampling can further improve its outputs.",
+      "section": "related work"
+    },
+    {
+      "quote": "These approaches have shown success in reasoning tasks where candidate diversity enables meaningful selection. However, their applicability to perception tasks like document OCR remains unexplored. Our work investigates this gap and reveals that candidate homogeneity at low temperature fundamentally limits best-of-N effectiveness.",
+      "section": "related work"
+    },
+    {
+      "quote": "PaddleOCR's PP-OCRv5 achieves high accuracy on printed text and provides per-character confidence estimates. We leverage these confidence scores to extract anchor tokens as a proxy verification signal for VLM outputs.",
+      "section": "related work"
+    }
+  ],
+  "notes": "NEGATIVE-RESULT paper: proposed method (OCR-Anchor Reranking) does not beat the single-sample baseline; all strategies including random selection tie within a 0.3-point band (82.0-82.3%). Includes tie result (no method distinguishable from noise). Root cause attributed to candidate homogeneity (90.6% identical outputs at temp 0.1).",
+  "extractor": "agent-batch-10",
+  "date": "2026-07-05"
+}

@@ -1,0 +1,63 @@
+{
+  "paper_id": "FA0221",
+  "title": "Persistent Demo-Pool Poisoning Attacks on Online LLM Log Parsers",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Identify a new security vulnerability in online LLM log parsers that use self-generated in-context learning.",
+      "mechanism": "Show that the monotonically growing, never-purged demonstration pool of self-generated ICL (SG-ICL) systems like AdaParser creates a persistent attack surface that an adversary can corrupt via crafted log injection.",
+      "evaluation": "Conceptual identification; grounded in AdaParser's design where entries are never purged or revalidated.",
+      "domain": "AIOps / LLM-based log parsing security",
+      "source_quote": "We identify a fundamental security vulnerability in online LLM log parsers that use self-generated ICL: the monotonically growing demo pool creates a persistent attack surface.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "Design a concrete attack that exploits the SG-ICL vulnerability.",
+      "mechanism": "Over-generalization attack: craft log entries that replace static tokens with variable-looking values (e.g., 'node-1' -> 'node-abc123') so the LLM emits over-generalized templates with excessive wildcards, propagating through two damage channels: ICL contamination (poisoned demos retrieved via LCS similarity) and trie poisoning (over-generalized templates cached in the parsing trie).",
+      "evaluation": "Implemented on AdaParser with GPT-4o-mini (temp 0), k=3 demos; evaluated against clean (C0) and random-noise control (C2).",
+      "domain": "Adversarial attacks on online log parsing (AdaParser)",
+      "source_quote": "We design an over-generalization attack strategy that exploits this vulnerability through two damage channels: ICL contamination and trie poisoning.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Demonstrate the attack's severity and persistence under a low budget.",
+      "mechanism": "Inject 60 crafted log entries (3% of a 2000-log stream) within the first 600 logs, then measure parsing quality in a late evaluation window (logs 1500-1999), 900+ entries after injection ends.",
+      "evaluation": "40.33pp FTA drop on BGL (0.753->0.349) and 13.33pp on Thunderbird (0.400->0.267); PA drops of 80.67pp (BGL) and 49.00pp (Thunderbird); random noise control causes negligible change (-1.50pp BGL, +2.83pp Thunderbird). Averaged over 3 seeds.",
+      "domain": "Log parsing benchmarks (LogHub-2.0 BGL, Thunderbird)",
+      "source_quote": "We demonstrate that injecting only 60 log entries (3% of stream) causes severe, persistent degradation: 40.33pp FTA drop on BGL and 13.33pp on Thunderbird, with damage persisting 900+ logs after injection ends.",
+      "type": "finding"
+    },
+    {
+      "id": "C4",
+      "purpose": "Identify which internal mechanism drives the persistent damage.",
+      "mechanism": "Ablation studies on BGL: disable SG-ICL updates after injection, and vary k (3 vs 5) demonstrations, isolating trie poisoning from demo-pool accumulation.",
+      "evaluation": "Trie poisoning dominates: disabling SG-ICL barely changes the drop (40.33pp with vs 41.00pp without, delta -0.67pp); FTA is k-independent (0.349 at k=3 and k=5) though contamination rate rises 12.1%->19.1%; Thunderbird shows 0% ICL contamination yet still 13.33pp FTA drop.",
+      "domain": "Attack mechanism analysis (trie vs demo-pool)",
+      "source_quote": "We analyze the attack mechanism through ablation studies, revealing that trie poisoning dominates over demo-pool accumulation as the primary persistence pathway.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "AdaParser (Wu et al., 2024) introduces Self-Generated In-Context Learning (SG-ICL), where the system maintains a candidate pool of (log, template) pairs that grows monotonically as new logs are parsed.",
+      "section": "intro"
+    },
+    {
+      "quote": "Unlike traditional retrieval-augmented generation (RAG) poisoning attacks that require write access to an external knowledge base, this attack exploits the system's own learning mechanism.",
+      "section": "intro"
+    },
+    {
+      "quote": "PoisonedRAG (Zou et al., 2024) and SecureRAG (Cheng et al., 2025) study poisoning attacks on retrieval-augmented generation systems where attackers inject malicious documents into the retrieval corpus. Our work differs from these approaches in a fundamental way: we target online systems that generate their own retrieval corpus from model outputs.",
+      "section": "related work"
+    },
+    {
+      "quote": "In the context of LLMs, He et al. (2024) demonstrate that poisoning ICL demonstrations can significantly degrade performance on NLP classification tasks.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Random noise control (C2) sometimes slightly improves accuracy (e.g., +2.83pp FTA on Thunderbird), underscoring the effect is targeting-specific rather than generic injection noise.",
+  "extractor": "agent-batch-16",
+  "date": "2026-07-05"
+}

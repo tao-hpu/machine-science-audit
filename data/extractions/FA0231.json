@@ -1,0 +1,54 @@
+{
+  "paper_id": "FA0231",
+  "title": "Draft-and-Continue Self-Consistency: An Empirical Study of Two-Stage Branch Budgeting for LLM Reasoning",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Investigate whether adaptive compute allocation to promising branches can improve self-consistency efficiency.",
+      "mechanism": "Draft-and-Continue Self-Consistency (DCS): Stage 1 samples B=7 short drafts (T_draft=1024), extracts interim answers, and builds a vote histogram; Stage 2 selects k=3 high-vote branches and continues them for T_cont=1024 more tokens using a hedge allocation that reserves one slot for the second-place answer; final answer by majority vote.",
+      "evaluation": "Presented as a two-stage method with ~10,240 token budget per problem; sampling temperature 0.8, top-p 0.95.",
+      "domain": "LLM mathematical reasoning / test-time compute allocation",
+      "source_quote": "We introduce Draft-and-Continue Self-Consistency (DCS), a two-stage approach that attempts to improve efficiency by continuing promising branches rather than stopping early.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Rigorously compare DCS against standard and efficient self-consistency baselines.",
+      "mechanism": "Evaluate on MATH-500 with Qwen2.5-Math-7B-Instruct against Greedy CoT, Uniform SC (n=5), and CGES-LNS (confidence-guided early stopping), over 3 seeds, reporting accuracy, average tokens, and API calls.",
+      "evaluation": "DCS reaches 76.8% accuracy, matching Uniform SC (76.67%) and CGES-LNS (76.8%) but using 4114.5 tokens: 19.6% more than Uniform SC and 109% more than CGES-LNS; higher variance (0.75%).",
+      "domain": "Math reasoning benchmark (MATH-500)",
+      "source_quote": "We conduct rigorous experiments on MATH-500 comparing DCS against greedy decoding, uniform self-consistency, and confidence-guided early stopping.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Explain the negative result and derive a general condition under which two-stage budgeting fails.",
+      "mechanism": "Diagnostic analysis of draft completion rate and fallback fraction; argue effectiveness depends on the relationship between draft length and problem complexity.",
+      "evaluation": "~96.3% of drafts complete within T_draft=1024 (fallback only 3.73%), so the continuation stage rarely activates and DCS degenerates into overhead-laden self-consistency; CGES-LNS Pareto-dominates DCS (identical accuracy, 52% fewer tokens, 2.48 vs ~10 calls).",
+      "domain": "Efficiency analysis of self-consistency variants",
+      "source_quote": "We report a negative result with detailed analysis: DCS fails to improve efficiency because high draft completion rates (~96%) undermine the continuation mechanism, demonstrating that simpler early-stopping methods dominate two-stage approaches when draft budgets are sufficient.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Self-consistency (Wang et al., 2022) exemplifies this approach by sampling multiple chain-of-thought reasoning paths (Wei et al., 2022) and aggregating answers via majority vote.",
+      "section": "intro"
+    },
+    {
+      "quote": "While effective, these approaches fundamentally discard partial reasoning—they stop sampling entirely rather than leveraging the information contained in incomplete chains. This raises a natural question: can we identify promising reasoning paths early and focus continuation budget on them?",
+      "section": "intro"
+    },
+    {
+      "quote": "Our Draft-and-Continue Self-Consistency differs from early-stopping methods by attempting to continue promising branches rather than simply terminating sampling.",
+      "section": "related work"
+    },
+    {
+      "quote": "CGES-LNS (Aghazadeh et al., 2025): confidence-guided early stopping with length-normalized scoring, b_max = 5 maximum samples, and confidence threshold gamma = 0.95.",
+      "section": "method"
+    }
+  ],
+  "notes": "This is an explicitly negative-result paper: DCS matches baseline accuracy but is strictly worse on efficiency (19.6% more tokens than Uniform SC, 109% more than CGES-LNS which Pareto-dominates it) and has higher variance. Authors note limitations: single dataset, single model, untuned hyperparameters.",
+  "extractor": "agent-batch-16",
+  "date": "2026-07-05"
+}

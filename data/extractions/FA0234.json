@@ -1,0 +1,63 @@
+{
+  "paper_id": "FA0234",
+  "title": "Local-Time AdamW for Stability-Gap Reduction in Continual Learning",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Explain a previously underexplored cause of the continual-learning stability gap.",
+      "mechanism": "Identify that AdamW's bias correction, designed for zero-initialized (cold-start) moments, becomes counterproductive at task boundaries where moment buffers are warm but stale, so full-strength updates (s(t)~1) are applied to misaligned preconditioning precisely when caution is needed.",
+      "evaluation": "Mechanistic argument grounded in the bias-correction scale factor s(t)=sqrt(1-beta2^t)/(1-beta1^t); s(1)~0.316.",
+      "domain": "Continual learning / optimizer state at task boundaries",
+      "source_quote": "We identify optimizer bias correction as a contributor to the stability gap in continual learning, providing a mechanistic explanation for post-switch instability.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "Reduce the stability gap with a minimal, drop-in optimizer change.",
+      "mechanism": "Local-Time AdamW (LT-AdamW): reset only the bias-correction timestep t to 0 at each task boundary while preserving the moment buffers m and v; this dampens the effective learning rate by ~3x (1/s(1)~3.16) in early post-switch steps, recovering to full strength as moments adapt. One-line PyTorch change.",
+      "evaluation": "Presented as a hyperparameter-free drop-in replacement.",
+      "domain": "Adaptive optimizers for continual learning",
+      "source_quote": "We propose LT-AdamW, a one-line modification to standard AdamW that resets only the timestep counter at task boundaries.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Demonstrate stability-gap reduction across benchmarks.",
+      "mechanism": "Evaluate on Rotated MNIST (Domain-IL) and Split CIFAR-100 (Class-IL) with ResNet-18, comparing CarryAll-AdamW, NoBiasCorr, and LT-AdamW over 5 seeds; metrics SG, min-ACC, ACC, BWT.",
+      "evaluation": "Split CIFAR-100: SG reduced 31.4% (0.486->0.333, p=0.004), min-ACC +24.0% (0.357->0.443, p<0.001), ACC 0.447->0.496; Rotated MNIST: SG reduced 17.2% (0.501->0.415, p=0.003), min-ACC +4.5%.",
+      "domain": "Image-classification continual learning (Rotated MNIST, Split CIFAR-100)",
+      "source_quote": "We demonstrate that LT-AdamW reduces the stability gap by 17-31% across two benchmarks (Rotated MNIST and Split CIFAR-100), with improvements in minimum post-switch accuracy of up to 24%.",
+      "type": "finding"
+    },
+    {
+      "id": "C4",
+      "purpose": "Validate the theoretical mechanism and confirm the effect is specific to the timestep reset.",
+      "mechanism": "Measure post-switch parameter update norms vs theoretical 1/s(1); include a NoBiasCorr control that disables bias correction entirely.",
+      "evaluation": "Update dampening 3.42-3.65x closely matches theoretical ~3.16; NoBiasCorr does NOT help (Split CIFAR-100 SG 0.519, worse than CarryAll 0.486), confirming the benefit comes specifically from the timestep reset, not any optimizer change.",
+      "domain": "Mechanism validation for optimizer dynamics",
+      "source_quote": "We validate the mechanism through theoretical analysis and empirical measurements showing that update dampening matches predictions, and confirm specificity via a control experiment that disables bias correction.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Recent work in reinforcement learning has shown that resetting Adam's timestep can address similar non-stationarity issues (Ellis et al., 2024; Asadi et al., 2023), motivating our investigation in the continual learning setting.",
+      "section": "intro"
+    },
+    {
+      "quote": "In reinforcement learning, Asadi et al. (2023) showed that periodically resetting optimizer state can improve performance, and Ellis et al. (2024) proposed resetting Adam's timestep to address non-stationarity... Our work brings these insights to continual learning, specifically targeting the bias-correction mechanism at task boundaries.",
+      "section": "related work"
+    },
+    {
+      "quote": "Lange et al. (2022) identified the stability gap phenomenon... However, the role of optimizer state in the stability gap has remained largely unexplored.",
+      "section": "related work"
+    },
+    {
+      "quote": "AdamW (Loshchilov & Hutter, 2017) decouples weight decay from the gradient-based update... Our work examines how this correction interacts with task boundaries in continual learning.",
+      "section": "related work"
+    }
+  ],
+  "notes": "The method is essentially a direct transfer of Ellis et al. (2024)'s 'Adam on local time' timestep-reset idea from RL non-stationarity to continual-learning task boundaries (the paper's own title echoes it). Authors note LT-AdamW does not address fundamental forgetting and benefits are strongest in Class-IL with stronger inter-task interference.",
+  "extractor": "agent-batch-16",
+  "date": "2026-07-05"
+}

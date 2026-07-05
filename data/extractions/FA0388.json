@@ -1,0 +1,54 @@
+{
+  "paper_id": "FA0388",
+  "title": "CUSUM-epsilon: False-Alarm-Calibrated Rollback Thresholds for Runtime Training Stability Controllers",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Test whether sequential change-point tests can improve rollback controllers by reducing false alarms while maintaining detection power.",
+      "mechanism": "Implement CUSUM-epsilon, a rollback controller that replaces the Or-epsilon one-step innovation threshold with a one-sided CUSUM statistic (allowance k=0.5) on standardized innovations, plus a calibration protocol matching the baseline's nominal rollback rate p0=0.2%.",
+      "evaluation": "Both controllers calibrated to p0=0.2% (actual rates within 20% of target: Or-epsilon 0.16%, CUSUM-epsilon 0.20%) on ResNet-18/CIFAR-10 with synthetic gradient perturbations over 20 seeds.",
+      "domain": "Runtime training stability control for neural network training",
+      "source_quote": "We implement CUSUM-epsilon, a rollback controller using cumulative sum statistics with a calibration protocol that matches nominal rollback rates for fair comparison with one-step thresholds.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Compare the sequential-test controller against the one-step threshold baseline on perturbation mitigation.",
+      "mechanism": "Evaluate peak excess loss, excess AUC, false rollbacks, and detection delay under step and ramp gradient perturbations, including a Fast Initial Response (FIR) partial reset (S_t <- h/2) for CUSUM.",
+      "evaluation": "Or-epsilon achieves 1.88x lower peak excess loss (1.85 vs 3.47 step perturbation) despite CUSUM-epsilon having 58% fewer false rollbacks (37.0 vs 87.5); FIR improves CUSUM peak by 35-36% but does not close the gap.",
+      "domain": "Loss-spike / perturbation mitigation during training",
+      "source_quote": "We demonstrate that Or-epsilon outperforms CUSUM-epsilon on perturbation mitigation (1.88x lower peak excess loss) despite CUSUM achieving 58% fewer false rollbacks.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Explain why sequential evidence accumulation fails in this application.",
+      "mechanism": "Identify detection delay as the dominant harm: CUSUM's multi-step evidence accumulation allows corrupted updates to compound before rollback when perturbations spike >5 sigma above baseline.",
+      "evaluation": "Analysis of scope: findings hold for large, immediately-detectable perturbations (>5 sigma); CUSUM may still help for subtle gradual drift (left to future work).",
+      "domain": "Change-point detection applied to training anomaly detection",
+      "source_quote": "We identify a fundamental limitation of sequential tests for this application: detection delay is counterproductive when perturbations are large and immediately detectable.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Most relevant to our work, Or (2026) proposed a runtime stability controller that monitors an innovation signal derived from validation probes and triggers checkpoint rollbacks when anomalies are detected. Their Or-epsilon controller uses a one-step threshold on the innovation signal, which we use as our baseline.",
+      "section": "related work"
+    },
+    {
+      "quote": "We propose CUSUM-epsilon, which replaces the one-step threshold with a Cumulative Sum (CUSUM) sequential test (Aminikhanghahi & Cook, 2016).",
+      "section": "method"
+    },
+    {
+      "quote": "Our work investigates whether CUSUM's sequential evidence accumulation can improve rollback controllers for training stability, finding that the detection delay inherent in sequential tests is counterproductive when perturbations are large and immediately detectable.",
+      "section": "related work"
+    },
+    {
+      "quote": "We address this with Fast Initial Response (FIR) partial reset: after rollback, we set S_t <- h/2 instead of S_t = 0.",
+      "section": "method"
+    }
+  ],
+  "notes": "Explicit negative result: the proposed CUSUM-epsilon underperforms the simpler Or-epsilon baseline (1.88x higher peak excess loss) despite matched false-alarm rates; FIR reduces but does not close the gap. Paper recommends one-step thresholds in this regime.",
+  "extractor": "agent-batch-20",
+  "date": "2026-07-05"
+}

@@ -1,0 +1,63 @@
+{
+  "paper_id": "FA0222",
+  "title": "Escaped Markup: Preventing Verdict Spoofing in Structured Multimodal LLM Judges",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Characterize a new attack surface created by structured output formats in multimodal LLM judges.",
+      "mechanism": "Format-spoofing attack: append a suffix to the dispreferred candidate that injects the judge's own reserved markers (</pred>, <pred_think>, <think>, \\boxed{Response X is better}), constructing a fake output structure that the judge pattern-completes; non-imperative (no explicit instructions), relying on structural marker collision.",
+      "evaluation": "66.59% conditional attack success rate (ASRcond) on VL-RewardBench with Qwen2.5-VL-7B-Instruct; a random-suffix control reaches only 26.5%, confirming content-specificity.",
+      "domain": "AI alignment / adversarial attacks on multimodal LLM-as-a-Judge",
+      "source_quote": "We characterize format-spoofing attacks against structured multimodal judges, demonstrating 66.59% conditional attack success rate on VL-RewardBench.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "Provide a practical training-free defense that neutralizes injected markers.",
+      "mechanism": "Reserved-sequence sanitization: preprocess candidate responses through four sequential steps: tag stripping (remove reserved XML-like tags), boxed removal (regex removal of \\boxed{...}), verdict redaction, and quality-assertion redaction, plus blank-line cleanup.",
+      "evaluation": "Presented as a training-free preprocessing pipeline; validated against No Defense and Spotlighting baselines.",
+      "domain": "Prompt-injection defense for structured LLM judges",
+      "source_quote": "We propose reserved-sequence sanitization, a training-free defense that neutralizes injected markers through four preprocessing steps.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Demonstrate the defense reduces attack success while preserving clean accuracy and beating a prior baseline.",
+      "mechanism": "Evaluate on VL-RewardBench (N=1,247) comparing No Defense, Spotlighting (base64 encoding), and Escaping; report OverallAcc, ParseFail, and ASRcond against pre-registered success criteria.",
+      "evaluation": "39.36pp ASRcond reduction (66.59%->27.23%) with +0.16pp clean accuracy; Spotlighting only reaches 38.20% ASRcond and fails with 18.80% ParseFail vs 4.17% for escaping.",
+      "domain": "Multimodal preference judging (VL-RewardBench)",
+      "source_quote": "We demonstrate 39.36pp attack success reduction while preserving clean accuracy, exceeding pre-registered success criteria.",
+      "type": "finding"
+    },
+    {
+      "id": "C4",
+      "purpose": "Identify which defense component drives the protection.",
+      "mechanism": "Ablation (tags-only, boxed-only, full escaping) and mechanism analysis comparing markup spoof vs NL-only attack.",
+      "evaluation": "Content redaction is primary: tags-only -41.19pp and boxed-only -41.65pp (both include verdict redaction); structural markers add only 4.12pp leverage over NL persuasion (66.59% vs 62.47%); escaping cuts NL-only ASRcond from 62.47% to 19.68%.",
+      "domain": "Defense mechanism analysis",
+      "source_quote": "We provide ablation analysis revealing that content redaction (verdict/quality patterns) is the primary defense mechanism, with structural escaping providing complementary protection.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "This vulnerability is distinct from semantic prompt injection (Greshake et al., 2023; Yi et al., 2023): the attack relies on structural marker collision rather than explicit instructions.",
+      "section": "intro"
+    },
+    {
+      "quote": "Spotlighting (Hines et al., 2024) uses transformations such as delimiting, datamarking, and encoding to help LLMs distinguish between trusted prompts and untrusted data ... these defenses focus on general prompt injection scenarios and do not specifically address the vulnerability of structured output formats in judge systems.",
+      "section": "related work"
+    },
+    {
+      "quote": "This structured format follows recent multimodal judge training recipes that use explicit markers for both training supervision and inference-time parsing (Li et al., 2024).",
+      "section": "method"
+    },
+    {
+      "quote": "Future work should ... explore integration with training-based defenses such as SecAlign (Chen et al., 2024) and StruQ (Sizhe Chen) for defense-in-depth.",
+      "section": "conclusion"
+    }
+  ],
+  "notes": "The judge's clean OverallAcc is very low (~34.6%) throughout, so 'preserving clean accuracy' is preservation of a weak baseline. Full escaping is slightly worse than partial variants on ASRcond (27.23% vs ~25%), attributed to component interaction. Evaluation is limited to a single model, single benchmark, and single attack family; adaptive attacks untested.",
+  "extractor": "agent-batch-16",
+  "date": "2026-07-05"
+}

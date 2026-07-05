@@ -1,0 +1,54 @@
+{
+  "paper_id": "FA0306",
+  "title": "Order-Robustness Audit of Gradient Masking Methods for Continual Learning in LLMs",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Test whether the published ranking of gradient masking methods holds under a different task ordering.",
+      "mechanism": "Audit FGGM (Fisher-guided task-level masking) and MIGU (magnitude-based batch-level masking) plus an SFT baseline on TRACE under an alternative Order 2 that front-loads numerical reasoning tasks (Qwen2-1.5B).",
+      "evaluation": "Ranking reversal: MIGU outperforms FGGM by 2.95 TRACE-OP points on Order 2 (43.72 vs 40.77), reversing FGGM's reported default-order advantage; FGGM underperforms MIGU in all 3 seeds.",
+      "domain": "Continual learning for LLMs (gradient masking, TRACE benchmark)",
+      "source_quote": "we demonstrate that FGGM's advantage over MIGU on TRACE is order-specific: MIGU outperforms FGGM by 2.95 TRACE-OP points on Order 2, reversing the published ranking.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "Quantify each method's robustness to task ordering.",
+      "mechanism": "Define Order Sensitivity as the TRACE-OP drop from default order to Order 2 and compare drops and BWT across methods.",
+      "evaluation": "MIGU shows the smallest drop (3.71 points) vs FGGM (5.07) and SFT (9.49); MIGU also best BWT on Order 2 (-1.07 vs FGGM -3.41, SFT -5.30).",
+      "domain": "Order-robustness evaluation in continual learning",
+      "source_quote": "we show that MIGU exhibits superior order-robustness, with only a 3.71-point TRACE-OP drop from default to Order 2, compared to FGGM's 5.07-point drop.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Explain the mechanism behind FGGM's order sensitivity.",
+      "mechanism": "Analyze consecutive task-pair Jaccard similarity of FGGM's binary masks under both orderings, identifying a low-overlap disruption mechanism.",
+      "evaluation": "Order 2's early NumGLUE-cm->NumGLUE-ds transition has lowest Jaccard (0.368) with monotonic increase (0.300->0.589), vs moderate default-order overlap (0.527-0.587), causing disruptive early parameter shifts.",
+      "domain": "Mechanistic analysis of task-level gradient masking",
+      "source_quote": "we identify a 'low-overlap disruption' mechanism explaining FGGM's order sensitivity: Order 2's front-loaded numerical reasoning tasks produce atypical Fisher patterns with low consecutive mask overlap, causing disruptive early parameter shifts.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Our audit compares FGGM (Tan et al., 2026) and MIGU (Du et al., 2024) against a sequential fine-tuning (SFT) baseline on the TRACE benchmark (Wang et al., 2023b) under two task orderings.",
+      "section": "method"
+    },
+    {
+      "quote": "We use Qwen2-1.5B (Yang et al., 2024) as the base model, following the FGGM paper's experimental setup.",
+      "section": "method"
+    },
+    {
+      "quote": "Task ordering significantly affects continual learning performance (Bell & Lawrence, 2022), with different sequences producing varying degrees of catastrophic forgetting.",
+      "section": "intro"
+    },
+    {
+      "quote": "APD-Net (Yoon et al., 2019) explicitly addresses order-robustness through additive parameter decomposition.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Reproduction caveat reported as a failed sanity check: authors' MIGU deviates +3.35 TRACE-OP from published (exceeds +/-2.0 tolerance) due to gradient-interception implementation differences; they argue the Order 2 comparison remains valid since both orderings use their identical MIGU. Mechanistic analysis acknowledged as correlational, and only one alternative ordering tested.",
+  "extractor": "agent-batch-18",
+  "date": "2026-07-05"
+}

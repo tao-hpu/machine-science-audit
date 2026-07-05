@@ -1,0 +1,54 @@
+{
+  "paper_id": "FA0401",
+  "title": "Executable FinMR: Arelle-Based Symbolic Baselines and an Executability Audit for XBRL Mathematical Reasoning",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Provide a strong symbolic baseline for the FinMR XBRL reasoning benchmark to test whether it measures reasoning or XBRL tooling.",
+      "mechanism": "An Arelle-based symbolic baseline that reconstructs executable XBRL packages from benchmark queries (href rewriting, linkbaseRef injection, truncated-XML repair) and computes answers via standards-compliant DQC rule semantics (DQC_0015 sign, DQC_0117 dimensional cross-check, DQC_0126 calculation consistency) with a deterministic judge.",
+      "evaluation": "42.17% accuracy on the full 332-instance set and 71.79% on the executable subset (N=195, 0% structural errors), vs best published LLM Fin-o1-14B at 13.86% (a 28.3pp gap) and gpt-4.1 self-consistency at 8.67%.",
+      "domain": "Financial numerical reasoning over XBRL filings (symbolic/neuro-symbolic)",
+      "source_quote": "We develop an Arelle-based symbolic baseline for FinMR that achieves 42.17% accuracy on the full benchmark and 71.79% on the executable subset, outperforming all published LLM results by 3-5x.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Diagnose why the benchmark is hard by auditing whether its instances are even executable.",
+      "mechanism": "An executability audit classifying each instance as executable (Arelle loads a valid DTS) or assigning failure labels; a failure taxonomy over non-executable instances.",
+      "evaluation": "Only 58.73% (195/332) of instances are executable; 64.2% of the 137 failures are external taxonomy dependencies (recoverable by bundling; estimated to raise executability to 85.24%), plus malformed XML (13.1%), missing DTS (9.5%), unknown (13.1%).",
+      "domain": "Benchmark quality auditing (XBRL artifacts)",
+      "source_quote": "We conduct an executability audit revealing that only 58.73% of FinMR instances are executable, with external taxonomy dependencies causing 64% of failures--issues recoverable through taxonomy bundling.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Argue about what FinMR actually measures.",
+      "mechanism": "Contrast symbolic execution with domain-specific tools against neural approaches across the full set and controlled intersection subsets, plus href-rewriting ablation.",
+      "evaluation": "On the 29-instance intersection Arelle reaches 89.66% vs SC LLM 14.94% (74.7pp gap); without href rewriting 0% of instances are executable, confirming queries are not self-contained.",
+      "domain": "Interpretation of benchmark difficulty (tooling vs reasoning)",
+      "source_quote": "We provide evidence that FinMR primarily tests XBRL tooling capabilities rather than mathematical reasoning, as symbolic execution with domain-specific tools dramatically outperforms neural approaches.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "These are precisely the operations that symbolic XBRL processors like Arelle are designed to perform.",
+      "section": "intro"
+    },
+    {
+      "quote": "Unlike these benchmarks that focus on free-form text and tables, FinMR (Wang et al., 2025b) evaluates reasoning over structured XBRL filings with explicit taxonomy semantics.",
+      "section": "related work"
+    },
+    {
+      "quote": "Our Arelle-based baseline extends this paradigm to XBRL-specific tooling, using a standards-compliant engine rather than general-purpose code execution.",
+      "section": "related work"
+    },
+    {
+      "quote": "Following the evaluation protocol in Wang et al. (2025b), we implement a deterministic judge that classifies each prediction into four categories.",
+      "section": "method"
+    }
+  ],
+  "notes": "Reports a partial negative/trade-off internally: the simpler Regex Message-Only baseline slightly beats Arelle overall (44.58% vs 42.17% full; 74.36% vs 71.79% executable) due to DQC_0126 calculation-linkbase traversal issues (Arelle only 52.94% with 47.06% CER on DQC_0126), though Arelle wins on DQC_0015 and DQC_0117.",
+  "extractor": "agent-batch-20",
+  "date": "2026-07-05"
+}

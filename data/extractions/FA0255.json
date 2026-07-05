@@ -1,0 +1,50 @@
+{
+  "paper_id": "FA0255",
+  "title": "FCBoost: Static Frequency-Aware Channel Selection for 2-Bit KV Cache Quantization",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Eliminate the per-page dynamic channel-selection overhead of mixed-precision 2-bit KV cache quantization.",
+      "mechanism": "FCBoost: a static channel-selection method that profiles Contextual Agreement (CA) scores offline to identify structurally important RoPE frequency pairs, selects the top-F pairs per KV head to form a fixed boolean mask, then boosts those channels from INT2 to INT4 at inference.",
+      "evaluation": "Reduces selection complexity from Kitty's O(N/P) to O(1) with no per-page metadata; short-context GSM8K sanity check 89.84% (within 0.46pp of FP16).",
+      "domain": "LLM inference efficiency / KV cache quantization",
+      "source_quote": "We introduce FCBoost, a static channel selection method that uses Contextual Agreement to identify RoPE frequency pairs requiring higher precision, eliminating per-page dynamic selection overhead.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Show the static frequency-aware mask beats dynamic magnitude-based boosting on accuracy.",
+      "mechanism": "Evaluate FCBoost vs Kitty (dynamic) and KIVI-KV2* (no boost) on AIME24/25 mathematical reasoning with Qwen3-8B at matched boost ratio (K=16 channels, F=8 pairs).",
+      "evaluation": "FCBoost 71.11% average vs Kitty 66.67% (+4.44pp) and KIVI-KV2* 66.11% (+5.00pp), with much lower variance (std=1.57 vs 7-9).",
+      "domain": "LLM inference efficiency / KV cache quantization",
+      "source_quote": "On AIME24/25 benchmarks with Qwen3-8B, FCBoost achieves 71.11% average accuracy, outperforming Kitty by 4.44 percentage points while reducing selection complexity from O(N/P) to O(1).",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Confirm that quantization sensitivity is structurally determined by RoPE frequency, not random or magnitude-based.",
+      "mechanism": "Ablation comparing the CA-derived mask against random static masks (3 seeds), plus a CA-vs-magnitude channel-set overlap analysis.",
+      "evaluation": "CA mask beats random masks by 6.67pp (71.11% vs 64.44%), and random masks fall below the no-boost baseline; CA vs magnitude sets have low Jaccard overlap (0.299) but moderate Spearman rank correlation (0.670).",
+      "domain": "LLM inference efficiency / KV cache quantization",
+      "source_quote": "Ablation studies validate that CA-derived masks outperform random masks by 6.67pp, confirming that quantization sensitivity is structurally determined by RoPE frequencies rather than randomly distributed.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Kitty (Xia et al., 2025) addresses this degradation through dynamic channel-wise precision boosting ... We observe that the channels requiring higher precision may not be dynamically varying outliers, but rather structurally determined by the rotary position embedding (RoPE) frequencies.",
+      "section": "intro"
+    },
+    {
+      "quote": "We leverage the Contextual Agreement (CA) metric from FASA (Wang et al., 2026) to identify structurally important RoPE frequency pairs.",
+      "section": "method"
+    },
+    {
+      "quote": "Our work bridges frequency-aware analysis and quantization by using CA scores to identify channels requiring higher precision, replacing dynamic per-page selection with a static mask derived from structural importance.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Grafts the CA metric from FASA (Wang et al., 2026) onto Kitty's (Xia et al., 2025) mixed-precision quantization framework, reusing Kitty's boost ratio, sink tokens and sliding window; the novelty is swapping dynamic magnitude selection for a static CA mask.",
+  "extractor": "agent-batch-17",
+  "date": "2026-07-05"
+}

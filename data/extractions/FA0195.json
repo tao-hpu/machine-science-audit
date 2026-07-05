@@ -1,0 +1,46 @@
+{
+  "paper_id": "FA0195",
+  "title": "Exponential Integrator for Diagonal-Decay Delta Attention: A Negative Result on Length Extrapolation",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Replace Euler discretization in diagonal-decay delta attention to avoid discarding key-norm information via L2 normalization.",
+      "mechanism": "Derive an exact exponential-integrator coefficient for the rank-1 delta-rule substep (of Kimi Delta Attention) from continuous-time dynamics, giving bounded coefficients with implicit contraction when key norms are large.",
+      "evaluation": "Closed-form coefficient alpha_t = (1 - exp(-beta_t ||k_t||^2))/||k_t||^2 that stays bounded (alpha_t -> 1/||k||^2) as key norms grow, unlike the Euler coefficient.",
+      "domain": "linear/delta-rule attention mechanisms",
+      "source_quote": "We derive an exponential-integrator coefficient for diagonal-decay delta attention that provides implicit stability control through bounded contraction when key norms are large.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Show the integrator removes the need for L2 normalization while remaining numerically stable.",
+      "mechanism": "Train the exponential-integrator delta attention without L2 normalization on keys and queries on three synthetic long-context tasks (Palindrome, MQAR, Stack).",
+      "evaluation": "Numerically stable: 0 NaN/divergence failures across 27 experimental runs.",
+      "domain": "numerical stability of attention training",
+      "source_quote": "We demonstrate that this integrator enables numerically stable training without L2 normalization on keys and queries, with 0 NaN/divergence failures across 27 experimental runs.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Test whether reducing discretization error improves length extrapolation.",
+      "mechanism": "Compare the exponential integrator against the Euler/L2-normalized baseline at length extrapolation, plus ablation of integrator vs L2-normalization removal.",
+      "evaluation": "Negative result: no accuracy gain; underperforms baseline on Palindrome (-0.81 pp) and Stack (-2.98 pp) at 4x extrapolation, and neither the integrator nor removing L2 normalization helps, indicating discretization error is not the primary bottleneck.",
+      "domain": "length extrapolation in delta-rule attention",
+      "source_quote": "We report a negative result: despite achieving stability, the proposed method does not improve accuracy at length extrapolation, suggesting that discretization error is not the primary bottleneck for this task.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Error-Free Linear Attention (EFLA) (Lei et al., 2025) shows that for rank-1 delta-rule dynamics, an exact exponential integrator can be computed in closed form, eliminating discretization error. We propose applying this exponential integrator to the delta-rule substep of KDA, which provides bounded coefficients that may enable stable training without L2 normalization.",
+      "section": "intro"
+    },
+    {
+      "quote": "We propose replacing the Euler discretization in the delta-rule substep with an exact exponential integrator derived from the continuous-time dynamics.",
+      "section": "method"
+    }
+  ],
+  "notes": "NEGATIVE-RESULT paper (stated in title and abstract): method achieves stability but fails to improve length-extrapolation accuracy, underperforming the baseline on 2 of 3 tasks (Palindrome -0.81pp, Stack -2.98pp). Adapts EFLA's exponential integrator (Lei et al. 2025) to KDA (Kimi Delta Attention, Zhang et al. 2025). No dedicated Related Work section; positioning appears in intro and method.",
+  "extractor": "agent-batch-14",
+  "date": "2026-07-05"
+}

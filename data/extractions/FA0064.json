@@ -1,0 +1,59 @@
+{
+  "paper_id": "FA0064",
+  "title": "NLL-Guided Full-Attention Layer Selection for Training-Free Sliding-Window Adaptation",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Decide which layers of a pretrained Transformer should retain full attention when adapting to hybrid sliding-window attention without training.",
+      "mechanism": "NLL-guided layer selection: measure each layer's negative log-likelihood degradation on answer tokens when that layer uses sliding-window instead of full attention, and keep the most sensitive layers at full attention.",
+      "evaluation": "On LongMemEval with Qwen3-4B, achieves 64.6% accuracy with only 1/4 full-attention layers, matching the 1/2-FA periodic baseline (65.0%) at half the budget.",
+      "domain": "Efficient long-context LLM inference",
+      "source_quote": "We introduce NLL-guided layer selection, a training-free method for identifying which layers should retain full attention in hybrid sliding-window models.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Demonstrate that measured layer importance beats fixed periodic patterns and attention-based heuristics.",
+      "mechanism": "Head-to-head comparison of NLL-guided 1/4-FA against periodic 1/4-FA patterns and attention-based heuristics (LightTransfer-style) on LongMemEval.",
+      "evaluation": "NLL-guided 1/4-FA outperforms the best periodic 1/4-FA pattern by 10.4pp and attention-based heuristics by 26.4pp.",
+      "domain": "Hybrid attention layer selection",
+      "source_quote": "We demonstrate that NLL-Guided 1/4-FA achieves 64.6% accuracy on LongMemEval, matching the 1/2-FA periodic baseline (65.0%) while halving the full-attention budget, and outperforming the best periodic 1/4-FA pattern by 10.4 percentage points.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Validate that the NLL signal captures long-range attention needs rather than generic layer sensitivity.",
+      "mechanism": "De-confounding analysis comparing layer rankings derived from long vs short prompts.",
+      "evaluation": "Spearman rho = 0.306 between long- and short-prompt rankings, indicating the signal is specific to long-range attention needs.",
+      "domain": "Mechanistic validation of layer-importance signals",
+      "source_quote": "We provide mechanistic validation through de-confounding analysis, showing that the NLL signal is specific to long-range attention needs (Spearman rho = 0.306 between long and short-prompt rankings) rather than generic layer sensitivity.",
+      "type": "finding"
+    },
+    {
+      "id": "C4",
+      "purpose": "Show the method is cheap enough for practical deployment.",
+      "mechanism": "One-time NLL calibration pass whose cost amortizes over subsequent inference requests.",
+      "evaluation": "Calibration takes ~15 minutes on 4 GPUs and amortizes after ~1,354 inference requests at 24k prompt length.",
+      "domain": "Deployment cost analysis",
+      "source_quote": "We show the method is practical for deployment: calibration requires only ~15 minutes on 4 GPUs and amortizes after ~1,354 inference requests at 24k prompt length.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "These approaches modify the attention computation uniformly across all layers, whereas our work selectively applies different attention patterns to different layers based on their measured importance.",
+      "section": "related work"
+    },
+    {
+      "quote": "However, these methods either use fixed patterns that ignore layer-specific roles or rely on indirect signals that may not capture what matters for downstream accuracy. Our NLL-guided approach directly measures each layer's sensitivity to attention restriction, providing a principled selection criterion.",
+      "section": "related work"
+    },
+    {
+      "quote": "While conceptually related, their method requires training a student model, whereas our approach is ...",
+      "section": "related work"
+    }
+  ],
+  "notes": "Positions itself as improving layer selection within the existing SWAA hybrid-attention framework (Yu et al., 2025). NLL-guided 1/4-FA slightly trails the 1/2-FA periodic baseline (64.6% vs 65.0%), framed as matching at half budget.",
+  "extractor": "agent-batch-7",
+  "date": "2026-07-05"
+}

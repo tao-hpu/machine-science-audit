@@ -1,0 +1,54 @@
+{
+  "paper_id": "FA0292",
+  "title": "Tiny-LR Proxy SFT for Dataset Ranking: An Empirical Investigation",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Test whether the tiny-learning-rate proxy hypothesis (from pretraining data curation) transfers to SFT dataset ranking.",
+      "mechanism": "First rigorous test comparing Standard-LR Proxy (5e-5) vs Tiny-LR Proxy (1e-5) on 12 math SFT datasets using Qwen2.5-1.5B as proxy and Qwen2.5-7B as target, measuring ranking agreement via Pairwise Direction Accuracy and Spearman correlation.",
+      "evaluation": "Hypothesis refuted: Tiny-LR Proxy achieves random-level PDA=0.500 (Spearman -0.091, p=0.779) vs Standard-LR PDA=0.712 (Spearman 0.594, p=0.042).",
+      "domain": "SFT data selection / proxy-based dataset valuation (math instruction tuning)",
+      "source_quote": "We provide the first rigorous test of the Tiny-LR proxy hypothesis for SFT dataset ranking, finding that it does not improve transfer.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "Establish that standard-learning-rate proxy SFT provides reliable, actionable ranking signal.",
+      "mechanism": "Evaluate Standard-LR Proxy against a Training-Free NLL baseline and Target Ground Truth (Qwen2.5-7B full LoRA fine-tune) across GSM8K and MATH-500.",
+      "evaluation": "Standard-LR Proxy reaches PDA=0.712 (95% CI [0.606, 0.818]) and correctly identifies the top-1 dataset (dart-math-hard); NLL baseline PDA=0.636 not significant (p=0.236) and misses top-1.",
+      "domain": "Proxy-based SFT dataset ranking",
+      "source_quote": "We demonstrate that Standard-LR Proxy SFT provides reliable ranking signals (PDA = 0.712) and correctly identifies the best dataset.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Characterize when reduced learning rates preserve versus corrupt ranking signal.",
+      "mechanism": "Per-benchmark analysis separating MATH-500 (content-based math_verify scoring) from GSM8K (exact-match scoring), plus response-length error analysis.",
+      "evaluation": "Tiny-LR achieves PDA=0.818 (Spearman 0.846, p<0.001) on MATH-500 but random 0.515 on GSM8K; failure traced to verbose CoT datasets ranked top-2 by Tiny-LR but 8th/10th by target.",
+      "domain": "Learning-rate effects on ranking transfer",
+      "source_quote": "We discover benchmark-specific behavior that reveals when reduced learning rates may preserve meaningful signals versus when they amplify superficial features.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Recent work on pretraining data curation has shown that proxy rankings can be brittle, but that training proxies with tiny learning rates dramatically improves transfer to larger models (Wang et al., 2025).",
+      "section": "intro"
+    },
+    {
+      "quote": "We investigate whether this insight transfers to the instruction-tuning setting.",
+      "section": "intro"
+    },
+    {
+      "quote": "The hypothesis is that smaller learning rates keep the model in a near-linear optimization regime where gradient alignment signals are more transferable across model scales (Wang et al., 2025).",
+      "section": "method"
+    },
+    {
+      "quote": "This motivates our investigation of whether explicitly reducing learning rates during proxy training might preserve more transferable ranking signals by limiting overfitting to proxy-specific features.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Explicit negative result: the Tiny-LR hypothesis is refuted for SFT (Tiny-LR at random-level PDA=0.500); recommends standard learning rates. Mixed benchmark-specific finding (Tiny-LR works on MATH-500 but fails on GSM8K).",
+  "extractor": "agent-batch-18",
+  "date": "2026-07-05"
+}

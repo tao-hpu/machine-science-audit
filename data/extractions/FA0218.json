@@ -1,0 +1,54 @@
+{
+  "paper_id": "FA0218",
+  "title": "Prefill Twice, Decode Once: Exploiting KV Cache Redundancy in Prompt Repetition",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Establish that the first-copy KV cache in prompt repetition can be discarded at decode time without losing accuracy.",
+      "mechanism": "Observe that during prefill the second copy's representations attend fully to the first copy and thus encode all necessary information, making the first-copy KV cache decode-time redundant.",
+      "evaluation": "Validated indirectly by the downstream accuracy retention results (100%+ retention) and sanity checks (max abs diff = 0.0 for sliced KV, 100% first-token agreement).",
+      "domain": "LLM inference / KV cache optimization",
+      "source_quote": "We identify that the first-copy KV cache in prompt repetition is decode-time redundant, enabling significant memory savings without accuracy loss.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "Achieve the accuracy benefit of prompt repetition while halving decode-time KV cache memory.",
+      "mechanism": "Propose PTDO (Prefill Twice, Decode Once): prefill P||P to build the full KV cache, slice to retain only the second-copy KV entries (positions |P| to 2|P|-1), then decode with correct RoPE position offsets (first generated token at position 2|P|). Training-free, no model modification.",
+      "evaluation": "Presented as a training-free three-stage method; validated by ~50% KV cache reduction (KV ratio 0.506-0.595) at matched accuracy.",
+      "domain": "LLM inference / prompt repetition with RoPE models",
+      "source_quote": "We propose PTDO, a simple, training-free optimization that achieves the accuracy benefits of prompt repetition while halving the decode-time KV cache.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Empirically validate PTDO across models and benchmarks.",
+      "mechanism": "Evaluate on Llama-3.1-8B-Instruct and Qwen2.5-7B-Instruct across NameIndex (synthetic retrieval) and ARC-Challenge (options-first multiple choice), comparing Single P, Full P||P, and PTDO.",
+      "evaluation": "100%+ accuracy retention with ~50% KV reduction; e.g., Llama NameIndex 3.0% vs 2.8% (107% retention), ARC identical 73.5%; Qwen ARC 85.6% vs 85.5%; 49.4% KV cache reduction (193.2 MB vs 381.7 MB).",
+      "domain": "Code/QA reasoning benchmarks (NameIndex, ARC-Challenge)",
+      "source_quote": "We validate PTDO across two models (Llama-3.1-8B, Qwen2.5-7B) and two benchmarks (NameIndex, ARC-Challenge), demonstrating 100%+ accuracy retention with ~50% KV cache reduction.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Prompt repetition (Leviathan et al., 2025) is a simple yet effective technique that improves large language model (LLM) accuracy by duplicating the input prompt from P to P||P.",
+      "section": "intro"
+    },
+    {
+      "quote": "Unlike these general-purpose methods, PTDO exploits redundancy specific to prompt repetition—the first-copy KV cache is decode-time redundant—and is complementary to existing compression techniques.",
+      "section": "related work"
+    },
+    {
+      "quote": "Architectural modifications such as YOCO (Sun et al., 2024) redesign the decoder to cache keys and values only once.",
+      "section": "related work"
+    },
+    {
+      "quote": "PTDO fits naturally into this ecosystem as a simple, training-free optimization for prompt repetition scenarios that reduces decode-time memory without modifying attention computation or memory management.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Decode throughput is essentially unchanged (~34-35 tok/s) and peak GPU memory is similar across conditions because the KV difference is negligible relative to model weights at batch size 1; the memory benefit is only realized at larger batch sizes or longer contexts. On several settings PTDO merely matches (not exceeds) full P||P, and total throughput is slightly lower than Single P.",
+  "extractor": "agent-batch-16",
+  "date": "2026-07-05"
+}

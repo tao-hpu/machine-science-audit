@@ -1,0 +1,50 @@
+{
+  "paper_id": "FA0085",
+  "title": "Tool-Gated Residual Distillation for DataChef Verifier Scoring",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Show that LLM rubric verifier scores fail to predict downstream fine-tuned model quality in data curation.",
+      "mechanism": "Correlate teacher LLM rubric scores of candidate datasets against downstream benchmark performance of models fine-tuned on those datasets, across two held-out DataChef tasks (LiveCodeBench, OpenFinData).",
+      "evaluation": "LLM-only verifier scores anti-correlate with downstream performance (average Spearman rho = -0.405), meaning higher-rated datasets tend to produce worse fine-tuned models.",
+      "domain": "LLM training data curation",
+      "source_quote": "We demonstrate that LLM rubric scores anti-correlate with downstream performance (rho = -0.405), challenging assumptions in rubric-based data curation.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "Provide a lightweight verifier that better predicts which datasets yield stronger fine-tuned models.",
+      "mechanism": "Tool-Gated Residual Distillation factorizes verification: deterministic tool gating handles structural failures (empty responses, repetition) while a small distilled Qwen2.5-1.5B LoRA student learns a 3-way semantic classification from teacher labels.",
+      "evaluation": "Tool+Distilled achieves average Spearman rho = 0.771 with downstream benchmark scores (a 1.18-point improvement over the -0.405 LLM-only baseline) and zero top-1 regret, always selecting the ground-truth best dataset.",
+      "domain": "verifier distillation / data selection",
+      "source_quote": "We propose tool-gated residual distillation, achieving rho = 0.771 correlation and zero top-1 regret (always selecting the ground-truth best dataset).",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Eliminate the inference-time cost of teacher LLM verification.",
+      "mechanism": "Replace per-instance teacher API scoring with the distilled student plus deterministic tool gates so no teacher calls are needed at inference.",
+      "evaluation": "Reduces inference cost from 2.56M teacher tokens to zero API calls while improving ranking fidelity.",
+      "domain": "efficient LLM evaluation pipelines",
+      "source_quote": "We eliminate inference-time teacher API calls, reducing cost from 2.56M tokens to zero while improving ranking fidelity.",
+      "type": "method"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "However, a critical limitation of LLM-as-a-judge approaches is their computational cost and the assumption that rubric-based quality assessments correlate with downstream task performance—an assumption we empirically challenge in this work.",
+      "section": "related work"
+    },
+    {
+      "quote": "Our work addresses this limitation by distilling the verifier into a lightweight model that eliminates inference-time costs while improving correlation with downstream performance.",
+      "section": "related work"
+    },
+    {
+      "quote": "Our approach combines these threads by using deterministic tool gating to handle structural failures while distilling a small LoRA-adapted student model for semantic classification, achieving both efficiency and improved downstream correlation.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Central claim rests on a surprising anti-correlation finding for the teacher LLM verifier (rho = -0.405): the distilled student outperforming its own teacher is the paper's headline anomaly ('despite significant divergence from teacher predictions'). Evaluation limited to two held-out DataChef tasks.",
+  "extractor": "agent-batch-8",
+  "date": "2026-07-05"
+}

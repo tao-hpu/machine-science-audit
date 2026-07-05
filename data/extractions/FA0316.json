@@ -1,0 +1,63 @@
+{
+  "paper_id": "FA0316",
+  "title": "Time-Varying Mutual Information Decoding for Mitigating Visual Forgetting in Vision-Language Models",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Counteract progressive visual forgetting during long chain-of-thought reasoning in VLMs.",
+      "mechanism": "Time-varying mutual information decoding that amplifies the difference between image-conditioned and image-masked logits (l_c + gamma_t*(l_c - l_u)) with a correction weight gamma_t that increases over generation steps via an exponential schedule; a confidence-based gate applies the correction only when max token probability falls below threshold alpha.",
+      "evaluation": "On VLAA-Thinker-7B, HallusionBench aAcc improves to 67.76% (+1.51pp over vanilla 66.25%) while MMStar stays at 62.07%; hyperparameters lambda=0.005, alpha=0.8, t0=0, gamma_max=5.0.",
+      "domain": "Vision-language model inference / hallucination mitigation (training-free decoding)",
+      "source_quote": "We propose time-varying MI decoding that explicitly counteracts visual forgetting by amplifying visually-grounded tokens with a correction weight that increases over generation steps.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Demonstrate hallucination reduction without sacrificing general reasoning capability.",
+      "mechanism": "Evaluate adaptive MI decoding against vanilla and visual replay baselines on hallucination and reasoning benchmarks.",
+      "evaluation": "HallusionBench +1.51pp (67.76%) with MMStar essentially unchanged (62.07% vs 62.13% vanilla); largest gain on visual-dependent questions (+2.37pp, 62.61% vs 60.24%).",
+      "domain": "Visual hallucination benchmarking (HallusionBench, MMStar)",
+      "source_quote": "We demonstrate effectiveness on HallusionBench (+1.51pp over vanilla, achieving 67.76%) while maintaining general reasoning capability on MMStar (62.07%).",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Validate that the method addresses the underlying visual forgetting mechanism.",
+      "mechanism": "Analyze the PDM-H (Prompt Dependency Measure for Hallucination) trajectory over generation steps for MI decoding vs vanilla.",
+      "evaluation": "AUC ratios (adaptive MI / vanilla) of 0.976 (MMStar) and 0.947 (HallusionBench), and less first-100-step decline on MMStar (-0.036 vs -0.089), showing MI decoding slows decay of visual reliance.",
+      "domain": "Mechanistic analysis of visual grounding decay",
+      "source_quote": "We validate the mechanism through PDM-H trajectory analysis, showing that MI decoding slows the decay of visual information reliance during generation.",
+      "type": "finding"
+    },
+    {
+      "id": "C4",
+      "purpose": "Show the method generalizes beyond reasoning-specialized architectures.",
+      "mechanism": "Apply adaptive MI decoding to a standard instruction-tuned VLM (Qwen2.5-VL-7B-Instruct).",
+      "evaluation": "+3.34pp improvement on a 300-item MMStar subset (68.67% vs 65.33% vanilla).",
+      "domain": "Instruction-tuned VLM generalization",
+      "source_quote": "We show generalization across model architectures, with +3.34pp improvement on Qwen2.5-VL-7B-Instruct.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Following the mutual information decoding framework (Favero et al., 2024), we modify the decoding distribution by adding a correction term that emphasizes visually-grounded tokens.",
+      "section": "method"
+    },
+    {
+      "quote": "Our work differs by introducing time-varying correction weights that specifically address the progressive visual forgetting phenomenon in long chain-of-thought reasoning.",
+      "section": "related work"
+    },
+    {
+      "quote": "Sun et al. (2025) proposed Take-along Visual Conditioning (TVC), which re-inserts image tokens at critical reasoning stages to maintain visual grounding. Our approach addresses visual forgetting through a complementary mechanism: rather than modifying the input, we adjust the decoding process with time-varying mutual information correction that strengthens visual grounding as generation progresses.",
+      "section": "related work"
+    },
+    {
+      "quote": "To quantify this visual information reliance, we adopt the Prompt Dependency Measure for Hallucination (PDM-H) (Favero et al., 2024), defined as the Hellinger distance between the image-conditioned and image-masked distributions.",
+      "section": "method"
+    }
+  ],
+  "notes": "Ablation shows fixed-gamma contrastive decoding actually achieves slightly higher HallusionBench (68.11%) than adaptive MI (67.85%) on a 200-item subset; MMStar essentially flat vs vanilla (-0.06pp); ~2x inference cost from dual forward passes.",
+  "extractor": "agent-batch-19",
+  "date": "2026-07-05"
+}

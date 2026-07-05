@@ -1,0 +1,50 @@
+{
+  "paper_id": "FA0328",
+  "title": "Position Bias Correction is Insufficient for One-Pass Attention Sorting",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Enable single-pass document reordering that aims to match expensive iterative attention sorting.",
+      "mechanism": "Debiased One-Pass Attention Sorting: estimate a per-prompt position-bias curve b(p) from distractor documents (trim top-alpha=0.05 by attention, bin remaining positions into B=20 bins, take median attention, interpolate) and subtract it from raw attention scores (additive s_i = a_i - b(p_i) or divisive), requiring only 2 prefill passes.",
+      "evaluation": "Evaluated on SynthWiki@28K with two models; matches k=1 attention sorting cost (2 prefills) vs 6 prefills for k=5.",
+      "domain": "Long-context retrieval / document reranking for RAG",
+      "source_quote": "First, we propose and evaluate debiased one-pass attention sorting, a method that estimates and removes position bias from attention scores to enable single-pass document reordering.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Test whether position bias is the primary bottleneck limiting single-pass sorting.",
+      "mechanism": "Compare debiased k=1 against uncalibrated k=1 and k=5 iterative sorting on a well-tuned model (LLaMA-2-7B-32K-Instruct) and a high-bias model (YaRN-Llama-2-7b-64k).",
+      "evaluation": "On LLaMA-2-7B-32K-Instruct, debiasing gives byte-identical results to uncalibrated k=1 (94.83%, 0 wins/600 ties/0 losses); k=1 to k=5 gap is only 0.67pp.",
+      "domain": "Position bias analysis in long-context LLMs",
+      "source_quote": "Second, we demonstrate that position bias is not the primary bottleneck limiting single-pass sorting on well-tuned models, as evidenced by zero improvement from debiasing on LLaMA-2-7B-32K-Instruct.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Identify what iterative sorting provides beyond position-bias correction.",
+      "mechanism": "Analyze accuracy and gold-document position across sorting iterations, and measure the residual gap after debiasing on the high-bias model.",
+      "evaluation": "On YaRN, debiasing improves +8.67pp over uncalibrated k=1 (55.83% vs 47.17%) but remains 14.84pp behind k=5 (70.67%), closing only 37% of the gap; iterative gains attributed to attention context refinement and error reduction.",
+      "domain": "Mechanistic analysis of iterative attention sorting",
+      "source_quote": "Third, we identify that iterative sorting provides benefits beyond bias correction, likely from attention context refinement and error reduction, suggesting future work should investigate these mechanisms.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Our work builds on Attention Sorting but investigates whether explicit position-bias correction can reduce the number of required sorting iterations.",
+      "section": "related work"
+    },
+    {
+      "quote": "We resolve the incompatibility by adapting the overlap-set technique... Attention Sorting (Peysakhovich & Lerer, 2023) addresses position bias through iterative document reordering based on attention patterns.",
+      "section": "method"
+    },
+    {
+      "quote": "We hypothesize that iterative sorting is primarily needed because raw attention scores are confounded by position bias... If we can explicitly estimate and subtract this position-dependent bias from attention scores, a single sorting pass should suffice to match iterative sorting accuracy.",
+      "section": "intro"
+    }
+  ],
+  "notes": "Negative/refutation result: the proposed debiasing hypothesis is refuted; zero effect on the well-tuned model (byte-identical to uncalibrated k=1) and insufficient (closes only 37% of gap) on the high-bias model. Authors note limitations of only two models and one benchmark.",
+  "extractor": "agent-batch-19",
+  "date": "2026-07-05"
+}

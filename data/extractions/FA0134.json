@@ -1,0 +1,50 @@
+{
+  "paper_id": "FA0134",
+  "title": "Post-hoc Top-p Expert Routing for Dynamic Compute Allocation in Mixture-of-Experts Language Models",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Enable input-adaptive compute allocation in pretrained fixed-top-k MoE models without retraining.",
+      "mechanism": "Post-hoc top-p expert routing, a training-free method that repurposes router softmax probabilities as a confidence signal, selecting the minimum set of experts whose cumulative probability exceeds threshold p (nucleus-style).",
+      "evaluation": "Operates entirely at inference by modifying the expert selection rule on Qwen3-30B-A3B; incurs modest perplexity penalty (+0.25 vs static top-4 at matched compute).",
+      "domain": "Mixture-of-Experts language models / dynamic expert routing",
+      "source_quote": "First, we propose post-hoc top-p expert routing, a training-free method for dynamic expert allocation in pretrained MoE models that repurposes router probabilities as a confidence signal.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Show that top-p routing produces emergent domain-adaptive compute allocation.",
+      "mechanism": "The method automatically allocates more experts to harder/reasoning tasks without task-specific tuning.",
+      "evaluation": "Calibrated for average k=4 on WikiText-2, automatically increases to k=6.04 on GSM8K (+54%), achieving 87.87% accuracy vs 81.88% for static top-4, recovering 80% of the gap to full top-8.",
+      "domain": "adaptive inference-time compute allocation for reasoning",
+      "source_quote": "Second, we demonstrate emergent domain-adaptive compute allocation: the method automatically allocates more experts to reasoning tasks without task-specific tuning, recovering substantial performance while reducing average compute.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Characterize the router confidence signal that the method relies on.",
+      "mechanism": "Analysis of router softmax entropy and layer-wise expert-count patterns.",
+      "evaluation": "Router confidence is weak (86% of maximum entropy) but sufficient for coarse-grained adaptation, with consistent layer-wise patterns where early layers require more experts than late layers.",
+      "domain": "MoE router confidence analysis",
+      "source_quote": "Third, we analyze the router confidence signal, finding it is weak (86% of maximum entropy) but sufficient for coarse-grained adaptation, with consistent layer-wise patterns where early layers require more experts than late layers.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "We propose post-hoc top-p expert routing: selecting the minimum set of experts whose cumulative probability exceeds a threshold p, analogous to nucleus sampling in text generation.",
+      "section": "intro"
+    },
+    {
+      "quote": "These methods require either training modifications or additional learned modules. In contrast, our approach applies top-p routing post-hoc to pretrained fixed-top-k models without any training.",
+      "section": "related work"
+    },
+    {
+      "quote": "Our work connects to this line by treating expert count as a lightweight test-time adaptation mechanism that requires no additional training or search.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Reports an explicit accuracy/perplexity TRADE-OFF: the +54% expert increase and accuracy gain on GSM8K come with a +0.25 perplexity penalty vs static top-4 at matched compute; router confidence is characterized as weak (86% of max entropy).",
+  "extractor": "agent-batch-11",
+  "date": "2026-07-05"
+}

@@ -1,0 +1,50 @@
+{
+  "paper_id": "FA0280",
+  "title": "Deep-Layer Attention Pruning for Vision-Language Models",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Prune visual tokens for efficient VLM inference on spatially-sensitive tasks without offline calibration.",
+      "mechanism": "Extract text-to-vision attention from a deeper LLM layer (layer 12 of 32 in InternVL2.5-8B) instead of shallow layers, and apply Maximal Independent Set (MIS) selection directly with no debiasing.",
+      "evaluation": "Achieves 66.32% average grounding accuracy on RefCOCO/RefCOCO+/RefCOCOg (10% token retention), surpassing D2Pruner (55.03%) by +11.29 points while retaining 92% of no-pruning performance.",
+      "domain": "Vision-language model inference efficiency / visual token pruning for grounding",
+      "source_quote": "We demonstrate that deep-layer attention pruning achieves 66.32% grounding accuracy on RefCOCO benchmarks, surpassing the state-of-the-art D2Pruner by +11.29 points while retaining 92% of no-pruning performance.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Remove the offline calibration requirement of prior debiasing methods.",
+      "mechanism": "Operate fully online using only the current input's deep-layer attention, avoiding the offline bias prior D2Pruner computes from 1000 COCO images.",
+      "evaluation": "Matches/exceeds D2Pruner accuracy (66.32% vs 55.03%) with no external calibration data.",
+      "domain": "Vision-language model inference efficiency / visual token pruning for grounding",
+      "source_quote": "We eliminate the need for offline calibration data, enabling simpler deployment without domain-specific priors.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Explain why prior ratio-based debiasing is unnecessary (and harmful).",
+      "mechanism": "Phase-0 diagnostic analysis measuring the Spearman correlation between attention and token position across layers, plus an ablation applying the ratio formula A_mid/(A_shallow+eps) at multiple layers.",
+      "evaluation": "Position correlation is uniformly weak (Spearman rho ~0.17, range 0.143-0.179, below the 0.3 threshold); ratio debiasing degrades accuracy everywhere (-25.46pp at L4, -11.69pp at L12), refuting the shallow-layer-as-debiasing-prior hypothesis.",
+      "domain": "Vision-language model inference efficiency / visual token pruning for grounding",
+      "source_quote": "We provide diagnostic analysis showing that shallow-layer attention lacks the positional bias assumed by prior debiasing approaches, explaining why ratio-based normalization degrades rather than improves performance.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "While prior methods like D2Pruner extract attention from shallow layers (L2) and apply offline debiasing, we show that attention at layer 12 of InternVL2.5-8B is semantically rich enough to directly guide token selection without any debiasing.",
+      "section": "intro"
+    },
+    {
+      "quote": "Beyond simple top-k selection, D2Pruner (Zhang et al., 2025) introduces Maximal Independent Set (MIS) selection to ensure spatial diversity among retained tokens ... Our approach is straightforward: extract attention weights from layer 12 ... and apply MIS selection directly without any debiasing.",
+      "section": "method"
+    },
+    {
+      "quote": "recent analysis (Yin et al., 2025) reveals that visual information flow in MLLMs varies significantly across layers, suggesting that layer choice is critical for attention-based pruning. Our work builds on these insights by demonstrating that deep-layer attention eliminates the need for explicit debiasing.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Reports its own failed hypothesis (shallow-layer attention as an online debiasing prior collapses to 13.24% vs 38.70%) as motivation; the positive result is essentially D2Pruner's MIS selection applied at layer 12 instead of layer 2, i.e. a layer-choice change rather than a new mechanism.",
+  "extractor": "agent-batch-17",
+  "date": "2026-07-05"
+}

@@ -1,0 +1,54 @@
+{
+  "paper_id": "FA0421",
+  "title": "Farkas Dual Rays Do Not Improve LLM-Based Optimization Model Repair",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Test whether Farkas dual ray multipliers give better constraint ranking for truncated IIS feedback in LLM repair of infeasible optimization models.",
+      "mechanism": "DualRayRank: extract the Farkas dual ray y from HiGHS (presolve disabled) for an infeasible LP, rank IIS constraints by |y_i| descending, and provide the top-K (with or without normalized weights) to the LLM for one-step repair.",
+      "evaluation": "Presented as a training-free feedback interface with three conditions (IIS-TopK baseline, DualRay-TopK, DualRay+Weights) on MAMO-Optimization; for MIPs the IIS/dual ray computed on the LP relaxation.",
+      "domain": "LLM-based optimization modeling / solver-in-the-loop repair",
+      "source_quote": "First, we propose DualRayRank, a method that uses Farkas dual ray multipliers to rank IIS constraints for LLM repair feedback.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Rigorously isolate the effect of constraint ranking from confounds and report the outcome.",
+      "mechanism": "Controlled experiments holding model (Qwen2.5-7B), K=5, and greedy decoding fixed across the three feedback conditions, plus extended experiments varying K, samples, and model scale (32B, 72B).",
+      "evaluation": "All three feedback methods produce identical results: 1/31 (3.23%) repair rate, repairing the same instance (EasyLP 425, IIS size=2); the truncation regime (16 instances, IIS>K) shows 0/16 repair for all methods.",
+      "domain": "Feedback-format ablation for infeasibility repair",
+      "source_quote": "we report a negative result: dual-ray ranking does not improve repair under controlled conditions, and the truncation regime where ranking could theoretically help shows near-zero repair success.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Show that simple regeneration beats solver-feedback repair on this benchmark.",
+      "mechanism": "Compare solver-feedback repair configurations against simple Best-of-2 inference scaling (2 samples, temperature 0.7, select first correct) on the same 7B model.",
+      "evaluation": "Best-of-2 achieves 65.12% Pass@1, outperforming all repair methods including the best 72B configuration (58.86%, 34 samples) by 6.26 percentage points.",
+      "domain": "Inference-time scaling vs repair for optimization modeling",
+      "source_quote": "we demonstrate that simple inference scaling dominates solver-feedback repair on this benchmark, suggesting that regeneration is more effective than repair.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "These approaches typically provide the Irreducible Infeasible Subsystem (IIS) as feedback, but must truncate large IIS sets to fit within context limits.",
+      "section": "related work"
+    },
+    {
+      "quote": "We hypothesize that Farkas dual ray multipliers can provide better constraint ranking for truncated IIS feedback ... Constraints with larger |y_i| are more 'responsible' for infeasibility and may be more useful for repair.",
+      "section": "intro"
+    },
+    {
+      "quote": "IIS-TopK (Baseline). Compute the IIS and sort constraints alphabetically by name ... This represents the standard approach in prior work (Ao et al., 2026a;b).",
+      "section": "method"
+    },
+    {
+      "quote": "Farkas' lemma provides a certificate of infeasibility through dual rays (Andersen & ApS, 2015), and the IIS represents a minimal set of constraints that cannot be simultaneously satisfied.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Explicit negative result (stated in title): DualRayRank does not beat the IIS-TopK baseline (both 1/31, same repaired instance; 0/16 in truncation regime), and simple Best-of-2 regeneration outperforms all repair methods including a 10x larger model. Extended gains are confounded with model capacity.",
+  "extractor": "agent-batch-20",
+  "date": "2026-07-05"
+}

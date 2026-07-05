@@ -1,0 +1,46 @@
+{
+  "paper_id": "FA0201",
+  "title": "Cap-and-Spill: Two-Pass CUDA-Graph MoE Dispatch Without Worst-Case Padding",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Reduce padding waste in CUDA-graph-captured MoE AllToAll dispatch while keeping fixed buffer sizes.",
+      "mechanism": "Propose Cap-and-Spill, a two-pass CUDA-graph-compatible dispatch algorithm using quantile-based buffer capacity (C = Q99) for the first pass and a second pass for overflow tokens.",
+      "evaluation": "Both passes use fixed buffers, maintaining CUDA-graph compatibility; unconditional two-pass execution outperforms conditional execution by eliminating synchronization overhead.",
+      "domain": "Distributed MoE inference systems",
+      "source_quote": "We propose Cap-and-Spill, a two-pass CUDA-graph-compatible MoE dispatch algorithm that uses quantile-based buffer capacity to reduce padding waste while handling overflow tokens in a second pass.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Demonstrate the latency benefit of the method with correctness guarantees.",
+      "mechanism": "Benchmark Cap-and-Spill on 8xA100 NVLink with Mixtral-8x7B routing traces against worst-case-padded and oracle eager dispatch.",
+      "evaluation": "33.9% mean latency reduction (1077 us -> 712 us), recovering 53.2% of the gap to oracle eager dispatch, with bitwise-equal exact correctness.",
+      "domain": "MoE dispatch performance (Mixtral-8x7B)",
+      "source_quote": "We demonstrate 33.9% mean latency reduction (1077 us -> 712 us) on 8xA100 NVLink with Mixtral-8x7B routing traces, recovering 53.2% of the gap to oracle eager dispatch while maintaining exact correctness.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Characterize MoE routing distributions to justify the quantile operating point.",
+      "mechanism": "Analyze the heavy-tailed nature of per-peer token counts (Cmax/mu = 8.4x) and evaluate percentile choices.",
+      "evaluation": "Show the 99th percentile is the optimal operating point, balancing buffer reduction (2.69x) with minimal overflow (5.4%).",
+      "domain": "MoE routing distribution analysis",
+      "source_quote": "We characterize the heavy-tailed nature of MoE routing distributions (Cmax/mu = 8.4x) and show that the 99th percentile provides the optimal operating point, balancing buffer reduction (2.69x) with minimal overflow (5.4%).",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "While these systems optimize various aspects of MoE execution, none specifically address the buffer padding waste inherent in CUDA-graph-captured AllToAll operations.",
+      "section": "related work"
+    },
+    {
+      "quote": "Current approaches either forgo CUDA graphs entirely (sacrificing throughput) or use worst-case buffer allocation (wasting memory and bandwidth). Our work bridges this gap by introducing a two-pass dispatch strategy that maintains CUDA-graph compatibility while substantially reducing buffer requirements through quantile-based capacity allocation.",
+      "section": "related work"
+    }
+  ],
+  "notes": "",
+  "extractor": "agent-batch-15",
+  "date": "2026-07-05"
+}

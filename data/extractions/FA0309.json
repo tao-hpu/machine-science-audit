@@ -1,0 +1,54 @@
+{
+  "paper_id": "FA0309",
+  "title": "Anisotropic Noise Fingerprints Reveal Concept Choice in Concept-Aware Embedding Privacy",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Show that concept-aware anisotropic noise leaks which privacy concept was selected under multi-release access.",
+      "mechanism": "Variance fingerprint attack: observe multiple sanitized releases of the same document, difference them to cancel the embedding and expose noise, compute a per-dimension variance profile from squared differences, and match it to normalized concept covariance templates via minimum Euclidean distance.",
+      "evaluation": "On SPARSE-style sanitization (GTR-T5-Base, K=5 concepts, N=10 releases) achieves 100% concept-identification accuracy vs 18.9% for isotropic noise (near 20% chance).",
+      "domain": "Embedding privacy / differential privacy for embeddings (RAG, vector databases)",
+      "source_quote": "we propose a variance fingerprint attack that achieves 100% concept-identification accuracy under multi-release access, demonstrating complete concept-choice leakage for SPARSE-style anisotropic noise.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Evaluate covariance smoothing as a mitigation and show it fails.",
+      "mechanism": "Mix concept-specific covariance with identity (Sigma_smoothed = lambda*I + (1-lambda)*Sigma_Ck), trace-normalized, and sweep lambda.",
+      "evaluation": "Attack stays at 100% for lambda <= 0.95 and only drops to 63.3% at lambda=0.99 (99% identity mixing), still 3x chance; STS12 utility invariant to covariance structure.",
+      "domain": "Defense evaluation for concept-aware sanitization",
+      "source_quote": "we evaluate covariance smoothing as a mitigation strategy and show it fails even at extreme smoothing (lambda = 0.99), where accuracy remains 63.3%.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Confirm the leakage mechanism and bound its scope.",
+      "mechanism": "Random permutation of covariance diagonals (destroying dimension-concept alignment), an MLP classifier attack without template knowledge, and token-presence AUC measurement across conditions.",
+      "evaluation": "Random anisotropy drops accuracy to 3.3% (alignment is critical); MLP reaches 100%/95.9% without templates; token-level privacy preserved (AUC ~0.52 vs 0.87 clean), so leakage is metadata not content.",
+      "domain": "Privacy leakage mechanism and scope characterization",
+      "source_quote": "we provide mechanistic analysis confirming that leakage requires the specific dimension-concept alignment of learned masks, not merely anisotropic noise structure-random permutation of covariance diagonals eliminates the attack.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "SPARSE (Tsai et al., 2026) exemplifies this approach: it learns concept-specific sensitivity masks and applies anisotropic Mahalanobis noise calibrated by dimension sensitivity ... we show that its concept-specific covariance structure creates exploitable fingerprints under multi-release access.",
+      "section": "related work"
+    },
+    {
+      "quote": "Our work extends multi-release analysis to concept-aware mechanisms, showing that the anisotropic noise structure-designed to preserve utility-simultaneously enables concept identification through variance fingerprints.",
+      "section": "related work"
+    },
+    {
+      "quote": "These attacks focus on content recovery-extracting the original text or its attributes. Our work identifies a distinct vulnerability: metadata inference about the privacy mechanism itself.",
+      "section": "related work"
+    },
+    {
+      "quote": "We evaluate concept-choice leakage using the SPARSE framework (Tsai et al., 2026) with GTR-T5-Base (Ni et al., 2021) as the embedding model.",
+      "section": "method"
+    }
+  ],
+  "notes": "The proposed covariance-smoothing defense is a negative result (fails to mitigate, 63.3% at lambda=0.99); the paper scopes the vulnerability as metadata leakage only, noting token-level content privacy is preserved across all conditions.",
+  "extractor": "agent-batch-18",
+  "date": "2026-07-05"
+}

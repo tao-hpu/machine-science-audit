@@ -1,0 +1,59 @@
+{
+  "paper_id": "FA0069",
+  "title": "Timeout Bootstrapping for Long-CoT RLVR: Promise and Pitfalls",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Systematize how truncation of long chain-of-thought rollouts is handled in RLVR training.",
+      "mechanism": "Formalizes three truncation handling strategies (truncate-as-failure, DAPO overlong shaping, timeout bootstrapping from the critic's value estimate) and compares them systematically.",
+      "evaluation": "First systematic comparison on long-horizon mathematical reasoning with DeepSeek-R1-Distill-Qwen-1.5B.",
+      "domain": "RLVR training for long-CoT reasoning",
+      "source_quote": "We formalize three truncation handling strategies for RLVR and provide the first systematic comparison on long-horizon mathematical reasoning.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Test whether timeout bootstrapping improves over standard truncation handling under pre-registered criteria.",
+      "mechanism": "Pre-registered evaluation of the three truncation strategies on MATH-500.",
+      "evaluation": "Mixed/negative result: timeout bootstrapping fails pre-registered criteria on average (52.50% vs 53.80% baseline on long problems) but shows promise on stable runs (+2.20pp over baseline on the long subset).",
+      "domain": "Mathematical reasoning RL evaluation",
+      "source_quote": "We conduct a pre-registered evaluation on MATH-500, finding that timeout bootstrapping fails to outperform baselines on average but shows promise when training remains stable.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Identify why timeout bootstrapping fails in this setting.",
+      "mechanism": "Failure-mode analysis of the critic during training, tracking bootstrapped value estimates over training steps.",
+      "evaluation": "Critic value collapse: bootstrapped values degenerate to -1.0 within 15-20 training steps, rendering bootstrapping equivalent to truncate-as-failure.",
+      "domain": "RL training failure analysis",
+      "source_quote": "We identify critic value collapse as the primary failure mode, where bootstrapped values degenerate to -1.0 within 15-20 steps.",
+      "type": "finding"
+    },
+    {
+      "id": "C4",
+      "purpose": "Explain mechanistically why value bootstrapping fails on reasoning prefixes.",
+      "mechanism": "Mechanistic analysis correlating the critic's value estimates with final answer correctness.",
+      "evaluation": "Critic exhibits negative correlation with correctness (Pearson r = -0.211, AUROC = 0.314), indicating fundamental miscalibration on reasoning prefixes.",
+      "domain": "Critic calibration analysis",
+      "source_quote": "We provide mechanistic analysis showing that the critic learns features that anti-correlate with success, explaining why value bootstrapping fails in this setting.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "We propose timeout bootstrapping, drawing from classical RL theory on time limits (Pardo et al., 2017). The key insight is that truncation due to token limits is an artificial timeout, not a terminal state indicating failure.",
+      "section": "intro"
+    },
+    {
+      "quote": "These methods either penalize truncation heuristically or avoid it through efficiency optimizations, but none treats truncation as a principled timeout requiring value bootstrapping.",
+      "section": "related work"
+    },
+    {
+      "quote": "This insight has been widely adopted in continuous control but has not been systematically applied to LLM training, where truncations due to token limits are analogous to timeouts in classical RL.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Negative/mixed-result paper ('Promise and Pitfalls'): the proposed timeout bootstrapping fails its pre-registered criteria on average (52.50% vs 53.80% baseline) and only shows +2.20pp promise on the stable-run subset; critic value collapse makes it equivalent to truncate-as-failure.",
+  "extractor": "agent-batch-7",
+  "date": "2026-07-05"
+}

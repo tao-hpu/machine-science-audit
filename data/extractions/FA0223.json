@@ -1,0 +1,63 @@
+{
+  "paper_id": "FA0223",
+  "title": "Delta SVD-EQ: Post-Hoc Spectral Equalization for LoRA Continual Learning",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Reduce catastrophic forgetting in sequential LoRA continual learning without any training-time modification.",
+      "mechanism": "Delta SVD-EQ: at each task boundary, compute the task-specific LoRA delta, SVD-decompose it, and replace all singular values with their root-mean-square value (sigma_i -> ||sigma||2/sqrt(r)), equalizing the spectrum while preserving the Frobenius norm; computed cheaply via r x r core matrix from QR of B and A^T.",
+      "evaluation": "Presented as a training-free, memory-free, post-hoc, norm-preserving method; claimed to be the only CL method satisfying all four properties simultaneously.",
+      "domain": "LLM continual learning / parameter-efficient fine-tuning (LoRA)",
+      "source_quote": "We propose Delta SVD-EQ, a norm-preserving spectral equalization method for LoRA continual learning that is simultaneously training-free, memory-free, and post-hoc applicable.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Demonstrate forgetting reduction without harming overall performance.",
+      "mechanism": "Evaluate on the FOREVER Standard CL benchmark (4 text classification tasks: DBPedia, Amazon, Yahoo, AG News) with Qwen3-0.6B, LoRA rank 8, across 3 orders x 3 seeds.",
+      "evaluation": "BWT improves +2.3pp (-15.2% -> -12.9%, 15% relative reduction), OP slightly up 63.7% -> 64.5%; improvement is marginally significant (paired t-test p=0.059, Cohen's d=0.58), BWT improves in 6/9 runs.",
+      "domain": "Text-classification continual learning (FOREVER benchmark)",
+      "source_quote": "We demonstrate that SVD-EQ improves backward transfer by +2.3 percentage points (15% relative reduction in forgetting) on the FOREVER benchmark without degrading overall performance.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Show SVD-EQ stabilizes continual learning outcomes.",
+      "mechanism": "Per-order analysis of BWT standard deviation across seeds.",
+      "evaluation": "Within-order variance drops 3-10x (std from 2.5-4.1pp baseline to 0.4-1.0pp); but effect is order-dependent (+3.5pp Order 4, +4.3pp Order 5, -1.0pp Order 6).",
+      "domain": "Continual learning stability analysis",
+      "source_quote": "We show that SVD-EQ reduces within-order variance by 3-10x, acting as a regularizer that stabilizes continual learning outcomes across random seeds.",
+      "type": "finding"
+    },
+    {
+      "id": "C4",
+      "purpose": "Isolate the mechanism behind the improvement.",
+      "mechanism": "Ablations: mean-smoothing (mean singular value, not norm-preserving) and random-spectrum (permute singular values, norm-preserving); plus correlation of pre-equalization spectral concentration rho with BWT gain.",
+      "evaluation": "Both norm shrinkage and spectral redistribution contribute (mean-smoothing +2.2pp but shrinks norm 13.3%; random-spectrum +1.6pp); no correlation between rho and benefit (Pearson r=-0.027, p=0.893), contradicting the motivating hypothesis.",
+      "domain": "Mechanism ablation for spectral intervention",
+      "source_quote": "We provide ablation studies isolating the contributions of norm shrinkage versus spectral redistribution, finding that both mechanisms contribute to the observed improvement.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Our approach is motivated by recent findings that LoRA updates develop highly concentrated singular value spectra (Gu et al., 2026; Shuttleworth et al., 2024), which may amplify cross-task interference.",
+      "section": "intro"
+    },
+    {
+      "quote": "Most relevant to our work, Gu et al. (2026) identify spectral imbalance in LoRA updates as a cause of forgetting in continual adaptation, proposing spectral regularization during training. Our approach differs by applying spectral equalization post-hoc without requiring training modifications.",
+      "section": "related work"
+    },
+    {
+      "quote": "SVD-EQ differs from these merging approaches by operating on task-specific deltas in a sequential continual learning setting rather than merging independently trained models.",
+      "section": "related work"
+    },
+    {
+      "quote": "We evaluate SVD-EQ on the Standard CL benchmark from FOREVER (Feng et al., 2026), which consists of four text classification tasks.",
+      "section": "method"
+    }
+  ],
+  "notes": "Authors report several negative/marginal results honestly: statistical significance is marginal (p=0.059); the effect is order-dependent with one of three orders showing degradation (-1.0pp); the motivating spectral-concentration hypothesis is not supported (no rho-BWT correlation); and an ablation (mean-smoothing) that violates the paper's norm-preservation claim achieves essentially equal improvement (+2.2pp vs +2.3pp), undercutting the novelty of norm-preserving equalization.",
+  "extractor": "agent-batch-16",
+  "date": "2026-07-05"
+}

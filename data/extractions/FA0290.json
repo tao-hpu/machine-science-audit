@@ -1,0 +1,54 @@
+{
+  "paper_id": "FA0290",
+  "title": "Auditing HNSW Index Leakage: Recovering Embedding Geometry from Graph Topology",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Show that HNSW index topology leaks geometric information beyond the explicit adjacency lists.",
+      "mechanism": "First systematic study framing leaked layer-0 HNSW adjacency graph as an attack surface, reconstructing approximate embedding geometry and comparing recovered kNN against raw adjacency lists.",
+      "evaluation": "On MSMARCO-10K (768-d) the method recovers kNN better than adjacency-only baseline; ER random graph sanity check yields near-chance recall (269x lower than HNSW), confirming exploited metric structure.",
+      "domain": "Vector database / RAG security (approximate nearest neighbor index privacy)",
+      "source_quote": "The first systematic study of geometric information leakage from HNSW index topology, demonstrating that index files reveal more than raw adjacency lists.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "Recover faithful metric distances from small-world graphs despite hub-induced shortcut distortion.",
+      "mechanism": "Degree-penalized geodesic embedding: weight each edge by 1 + alpha * (log-degree average of endpoints) to penalize paths through high-degree hubs, compute landmark Dijkstra shortest paths, then apply landmark MDS with out-of-sample triangulation.",
+      "evaluation": "Achieves Recall@10 of 0.4164 on MSMARCO-10K, a 28% relative improvement over adjacency-only (0.3248) and 52% over unweighted geodesic (0.2731); std <0.003 across seeds.",
+      "domain": "Graph-based embedding reconstruction / ordinal embedding",
+      "source_quote": "A degree-penalized geodesic embedding algorithm that counteracts small-world shortcut distortion, achieving 28% improvement on high-dimensional text embeddings.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Characterize when topology leakage is most concerning across data dimensionality.",
+      "mechanism": "Compare attack effectiveness on high-dimensional text embeddings (768-d MSMARCO) versus low-dimensional image descriptors (128-d SIFT10K).",
+      "evaluation": "Attack improves over adjacency-only by 28% on MSMARCO-10K (768-d) but underperforms on SIFT10K (128-d, 0.2684 vs 0.3475), identifying high-dimensional RAG embeddings as the primary concern.",
+      "domain": "Embedding privacy (dimension-dependent attack analysis)",
+      "source_quote": "Empirical characterization of dimension-dependent attack effectiveness, identifying high-dimensional embeddings as the primary concern for topology leakage.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Our work extends this line of research by demonstrating that HNSW index topology leaks geometric information beyond what is explicitly present in adjacency lists.",
+      "section": "related work"
+    },
+    {
+      "quote": "These methods assume access to true kNN relationships, whereas our setting provides only the HNSW approximation graph, which contains both true neighbors and small-world shortcuts that distort geodesic distances.",
+      "section": "related work"
+    },
+    {
+      "quote": "Our work complements these studies by demonstrating that even the index structure itself, independent of query access, can leak sensitive geometric information about the embedded documents.",
+      "section": "related work"
+    },
+    {
+      "quote": "The seminal work of Narayanan & Shmatikov (2009) demonstrated that social network topology alone can de-anonymize users by matching graph structure across networks.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Mixed/negative on low-dimensional data: on SIFT10K (128-d) the adjacency-only baseline outperforms the proposed reconstruction (0.3475 vs 0.2684), and unweighted geodesic underperforms adjacency-only on both datasets.",
+  "extractor": "agent-batch-18",
+  "date": "2026-07-05"
+}

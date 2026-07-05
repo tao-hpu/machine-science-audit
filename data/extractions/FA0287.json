@@ -1,0 +1,54 @@
+{
+  "paper_id": "FA0287",
+  "title": "SinkCast: An Empirical Study of Inference-Time Correction for BF16 RoPE Shift-Invariance",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Restore BF16 RoPE shift-invariance at low overhead by correcting only attention-sink positions.",
+      "mechanism": "SinkCast: run BF16 FlashAttention to get output and log-sum-exp statistics, selectively recompute sink-key logits in FP32, then apply a closed-form correction (subtract BF16 sink contribution, rescale, add FP32-corrected sink contribution) to the output.",
+      "evaluation": "Presented as a three-stage method on Llama-3.1-8B and Mistral-7B-v0.3 with FlashAttention-2; gap closure at most 23.6% (Llama, K=4) and 36.3% (Mistral, K=1), far below the 80% target.",
+      "domain": "LLM inference / attention numerical precision (BF16 RoPE, position-independent KV caching)",
+      "source_quote": "We propose SinkCast, a principled inference-time correction method that selectively recomputes sink-key attention logits in FP32 and applies closed-form corrections to BF16 FlashAttention outputs.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Test whether BF16 shift-error is localized at attention sinks, the premise underlying SinkCast.",
+      "mechanism": "Measure the D_logit shift-error metric across key indices (j in {0,1,2,8,64}) under position offsets 0 vs 4096 and compute the sink key's fraction of total error.",
+      "evaluation": "The sink key (j=0) has the lowest D_logit, accounting for only 5.0% (Llama) and 8.5% (Mistral) of total shift-error, far below the 50% threshold; localization premise refuted.",
+      "domain": "BF16 RoPE shift-error analysis",
+      "source_quote": "We provide comprehensive evaluation demonstrating that the attention sink localization hypothesis does not hold: the sink key contributes only 5-8% of total BF16 shift-error.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Explain why sink-focused correction fails and guide future approaches.",
+      "mechanism": "Analyze that BF16 rotation precision loss affects all key positions proportionally to rotation angle rather than concentrating at sinks; downstream evaluation on RULER and LongBench under position shift.",
+      "evaluation": "Overall downstream improvement is -0.91 points (SinkCast worse than BF16 baseline); increasing corrected keys K beyond optimum degrades further (Llama K=16 gives -19.6% gap closure).",
+      "domain": "Long-context LLM evaluation (RULER, LongBench)",
+      "source_quote": "We analyze why sink-focused correction fails, showing that BF16 rotation precision loss affects all key positions equally, and discuss implications for future approaches to this problem.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "We hypothesize that BF16 shift-error concentrates at attention sink positions-the initial tokens that receive disproportionate attention regardless of semantic relevance (Xiao et al., 2023). If true, selectively correcting only sink-key attention logits could restore shift-invariance with minimal computational overhead.",
+      "section": "intro"
+    },
+    {
+      "quote": "The concentration of attention at sink positions motivated our hypothesis that correcting sink-key errors might address a substantial portion of BF16 shift-error.",
+      "section": "related work"
+    },
+    {
+      "quote": "Wang et al. (2024) demonstrated that BF16 RoPE computation violates shift-invariance, causing performance degradation in long-context training.",
+      "section": "related work"
+    },
+    {
+      "quote": "These systems rely on RoPE's shift-invariance property ... BF16 precision violations of this property introduce errors when reusing caches at shifted positions.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Explicit negative-result paper: sink localization premise refuted (sink key only 5-8% of error), gap closure 23-36% vs 80% target, and downstream improvement -0.91 points (no benefit); title/abstract frame it as negative results.",
+  "extractor": "agent-batch-18",
+  "date": "2026-07-05"
+}

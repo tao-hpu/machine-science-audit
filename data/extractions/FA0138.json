@@ -1,0 +1,59 @@
+{
+  "paper_id": "FA0138",
+  "title": "Custom Forward-Backward VJPs for DFA-Guided Diffusion Language Models: An Empirical Study",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Accelerate gradient computation of DFA acceptance probability in DFA-guided diffusion, which accounts for 57-59% of each guided step.",
+      "mechanism": "Custom forward-backward vector-Jacobian products (VJPs) for DFA acceptance probability implemented with Triton kernels, adaptive dispatch, and pre-allocated buffers, avoiding autograd tape storage.",
+      "evaluation": "Produces numerically identical gradients to baseline autograd (cosine similarity 1.0, relative L2 error 1.7e-5).",
+      "domain": "DFA-guided diffusion language models / constrained text generation",
+      "source_quote": "We implement custom forward-backward VJPs for DFA acceptance probability with Triton kernels and adaptive dispatch, producing numerically identical gradients to autograd (cosine similarity 1.0, relative L2 error 1.7 x 10^-5).",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Measure the end-to-end speedup of the custom VJP approach.",
+      "mechanism": "Benchmarking across constraint types and batch sizes against torch.compile baselines.",
+      "evaluation": "Evaluated on 4 constraint types x 2 batch sizes, finding limited speedups (1.01-1.23x) that fall short of the 3x target.",
+      "domain": "GPU kernel optimization for constrained diffusion decoding",
+      "source_quote": "We evaluate on 4 constraint types x 2 batch sizes, finding limited speedups (1.01-1.23x) that fall short of our 3x target.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Explain why the custom VJP fails to achieve the targeted speedup.",
+      "mechanism": "Analysis of tokenizer-aligned DFA structure (edge counts vs state counts).",
+      "evaluation": "Root cause: tokenizer-aligned DFAs have 65K-348K edges despite only 6-68 states, making transition matrices effectively fully dense and invalidating the sparse optimization hypothesis.",
+      "domain": "DFA structure analysis for tokenizer-aligned automata",
+      "source_quote": "We identify the root cause: tokenizer-aligned DFAs have 65K-348K edges despite only 6-68 states, making transition matrices effectively fully dense.",
+      "type": "finding"
+    },
+    {
+      "id": "C4",
+      "purpose": "Guide future work away from gradient-computation optimizations for this problem.",
+      "mechanism": "Documenting the negative result and recommending alternative directions.",
+      "evaluation": "Suggests state-space reduction or approximate inference may be more promising than gradient computation optimizations.",
+      "domain": "research direction / negative result documentation",
+      "source_quote": "We document this negative result to inform future optimization efforts, suggesting that alternative approaches such as state-space reduction or approximate inference may be more promising.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "We hypothesize that custom forward-backward vector-Jacobian products (VJPs) can accelerate DFA-guided diffusion by analytically computing gradients without autograd tape storage.",
+      "section": "intro"
+    },
+    {
+      "quote": "Our work builds on these foundations by implementing custom VJPs for DFA acceptance probability computation, though we find that the dense structure of tokenizer-aligned DFAs limits the achievable speedups.",
+      "section": "related work"
+    },
+    {
+      "quote": "The forward-backward algorithm for computing gradients through finite-state computations has a rich history in structured prediction. Eisner (2016) establishes the connection between inside-outside algorithms and backpropagation.",
+      "section": "related work"
+    }
+  ],
+  "notes": "EXPLICIT NEGATIVE-RESULT PAPER: the custom VJP achieves only 1.01-1.23x speedup, far below the 3x target; the paper's core hypothesis (sparse edge-list optimization) is invalidated because tokenizer-aligned DFAs are effectively dense. Framed as an empirical study documenting a negative result.",
+  "extractor": "agent-batch-11",
+  "date": "2026-07-05"
+}
