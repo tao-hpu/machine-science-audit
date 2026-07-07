@@ -1,0 +1,42 @@
+{
+  "paper_id": "S7cWJkWqOi",
+  "title": "Cafe-Talk: Generating 3D Talking Face Animation with Multimodal Coarse- and Fine-grained Control",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "实现首个具备粗-细粒度多模态条件控制(有效、精确、灵活)的语音驱动3D说话人脸生成",
+     "mechanism": "基于扩散-transformer的生成模型 Cafe-Talk,同时融入粗粒度(talking style/情绪标签/强度,用CLIP编码)与细粒度(AU序列)条件",
+     "evaluation": "在MEAD/RAVDESS上与SOTA对比,Tab.1显示唇同步(LVE/SyncNet)与表情生成(Acc/Div)均超越现有方法;38人用户研究中naturalness/expressiveness/lip-sync均最高",
+     "domain": "3D说话人脸动画生成",
+     "source_quote": "We propose Cafe-Talk, the first 3D talking face generation model enabling coarse-and fine-grained multimodal conditional control in an effective, precise, and flexible manner.",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "解耦语音音频与细粒度条件,防止细粒度控制干扰唇同步",
+     "mechanism": "两阶段训练流水线:先用语音+粗粒度条件训练base model,再冻结base model用带zero-convolution的细粒度控制adapter逐步引入AU条件",
+     "evaluation": "消融(Tab.3)显示去掉两阶段流水线时能做细粒度控制但唇动明显不同步,定性验证解耦有效",
+     "domain": "3D说话人脸动画生成",
+     "source_quote": "We design a two-stage training pipeline that explicitly disentangles speech audio and fine-grained conditions. Additionally, we devise a fine-grained control adapter that gradually introduces fine-grained conditions without jeopardizing lip synchronization.",
+     "type": "method"},
+    {"id": "C3",
+     "purpose": "解耦粗粒度与细粒度条件,使细粒度控制在冲突时占主导且精确",
+     "mechanism": "训练时引入swap-label机制(制造冲突的粗/细粒度条件),推理时用mask-based CFG技术调控细粒度控制的出现与强度",
+     "evaluation": "消融(Tab.3)显示去swap-label则adapter无法泛化到冲突条件导致细粒度控制失效;去mask-based CFG出现时间泄漏,细粒度控制难以在控制区间内观察到",
+     "domain": "3D说话人脸动画生成",
+     "source_quote": "We introduce a swap-label training mechanism and mask-based CFG technique in the inference process to disentangle coarse-and fine-grained conditions, which achieves dominant and precise localized facial control.",
+     "type": "method"},
+    {"id": "C4",
+     "purpose": "支持自然语言输入以实现多模态细粒度控制",
+     "mechanism": "基于text-AU对齐(投影到CLIP空间)训练一个text-based AU检测器,从自然语言描述中按用户意图提取AU细粒度条件",
+     "evaluation": "定性:使模型支持多模态控制(自然语言→AU),用户研究中细粒度控制能力获广泛接受",
+     "domain": "3D说话人脸动画生成",
+     "source_quote": "We devise a text-based AU detector to efficiently extract AU fine-grained conditions from natural language descriptions based on user intent, which enables our model to support multimodal control.",
+     "type": "method"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "Unlike existing methods (Fan et al., 2022; Daněček et al., 2023) utilized one-hot embedding for talking styles and emotion labels, Cafe-Talk takes CLIP embeddings as coarse-grained condition inputs.", "section": "related work"},
+    {"quote": "a zero convolution layer (Zhang et al., 2023a; Wang et al., 2024) is added after the FiLM attention layer, which is initialized with zeros and is gradually optimized during training", "section": "related work"},
+    {"quote": "the diffusion-based transformer (Ng et al.,2024; Zhao et al., 2024) generates the facial movements ... incorporates the multimodal coarse-grained condition following Peebles & Xie (2023)", "section": "related work"}
+  ],
+  "notes": "重要 trade-off/负结果:作者明确报告加入细粒度控制后 SyncNet 分数相比无细粒度控制(Tab.1)出现下降('We observe that the SyncNet scores degrade when fine-grained control is incorporated')。归因于下半脸AU的不当激活会不成比例地影响唇同步(Tab.4分析),这也是为何去掉mask-based CFG时下降更严重(条件泄漏污染)。整体4条贡献均为method型,大量嫁接既有工作(DiT/Peebles&Xie、zero-conv/ControlNet、CLIP编码、CFG)。",
+  "extractor": "human-baseline-batch26",
+  "date": "2026-07-07"
+}

@@ -1,0 +1,50 @@
+{
+  "paper_id": "HmwneoGoy9",
+  "title": "SeerAttention: Learning Intrinsic Sparse Attention in Your LLMs",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Reduce the quadratic cost of attention for long-context LLMs by exploiting attention sparsity, without the limitations of predefined/heuristic sparsity patterns that fail to capture attention's dynamic sparsity.",
+      "mechanism": "SeerAttention: augment standard attention with a learnable gate (AttnGate) that pools Q and K along the sequence dimension, passes them through a linear layer, and identifies significant blocks via Top-k; the rest are treated as sparse and skipped by a block-sparse FlashAttention kernel. A separate RoPE inside AttnGate (theta'=theta/B) preserves extrapolation to longer contexts. Applicable to both post-training (train only the gate) and long-context fine-tuning (jointly train gate + weights).",
+      "evaluation": "Llama-3-8B extended 8k->32k with YaRN: near-lossless at 50% sparsity, minimal loss at 90% sparsity; up to 5.67x kernel speedup over FlashAttention-2 at 90% sparsity / 32k; Mistral-7B 32k perplexity 2.45 at 90% sparsity vs 2.29 dense baseline.",
+      "domain": "Efficient LLM inference / sparse attention",
+      "source_quote": "We propose SeerAttention, an innovative attention mechanism that learns and leverages the intrinsic sparsity in attention to enhance efficiency for long-context LLMs.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Enable scalable learning of the sparse-attention gate despite FlashAttention fusing away the explicit attention map needed as training ground truth.",
+      "mechanism": "A customized FlashAttention kernel that extracts the block-level (2D max-pooled) attention-map ground truth with minimal overhead (storing/rescaling running row-max), avoiding materializing the full attention map; AttnGate trained via MSE against the row-normalized max-pooled map.",
+      "evaluation": "Negligible overhead vs naive manual attention (overhead analysis in Figure 8); enables training on long-context (e.g., 8k+ sequences) that naive implementations cannot handle efficiently.",
+      "domain": "Efficient LLM training / attention kernels",
+      "source_quote": "We develop a customized FlashAttention kernel that effectively obtains block-level attention map ground truth, enabling scalable learning of sparse attention.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Demonstrate SeerAttention beats existing sparse-attention methods and adapts flexibly to context lengths and sparsity ratios.",
+      "mechanism": "Empirical comparison against static (MoA) and heuristic-dynamic (MInference) sparse attention on perplexity (PG19, Proof-pile) and LongBench, using a single trained AttnGate with adjustable Top-k; also shows learned patterns include A-shape and Vertical-Slash.",
+      "evaluation": "Post-training on Llama-3.1-8B-Instruct: outperforms MoA and MInference on PG19 perplexity in most cases (except at 128k) and consistently outperforms both on LongBench at similar/higher sparsity; near-lossless at 50% sparsity.",
+      "domain": "Efficient LLM inference / sparse attention",
+      "source_quote": "Experiments show that SeerAttention outperforms previous approaches in post-training, offers adaptability to various context lengths and sparsity ratios, and excels in long-context fine-tuning, maintaining near-lossless accuracy even at high sparsity levels.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "prior studies often rely on predefined sparsity patterns or heuristics to approximate the attention mechanism (Jiang et al., 2024; Fu et al., 2024; Lee et al., 2024; Zhu et al., 2024; Han et al., 2023). The sparsity shown in attention maps varies significantly across different models, language inputs and attention heads, making predefined patterns or heuristics insufficient.",
+      "section": "related work"
+    },
+    {
+      "quote": "we focus on learning block sparsity, which can seamlessly integrate with the tiling computation scheme of FlashAttention (Dao et al., 2022).",
+      "section": "method"
+    },
+    {
+      "quote": "MoA uses an offline search scheme to apply static sparse patterns across different attention heads, while MInference dynamically generates sparse indices using heuristic methods for each head based on pre-defined sparse patterns.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Rejected (ICLR 2025). Mostly positive efficiency results. Explicit negative/trade-off: SeerAttention outperforms MoA/MInference in most cases EXCEPT at 128k context length, attributed to MInference varying sparsity per head vs SeerAttention's fixed sparsity across heads (acknowledged limitation, left to future work). Small accuracy trade-off: 90% sparsity does raise perplexity slightly (Mistral 2.45 vs 2.29 dense). Post-training SeerAttention after YaRN increases perplexity more than applying SeerAttention DURING YaRN fine-tuning. Current limitations: block-size fixed at 64, AttnGate applied only in prefill stage.",
+  "extractor": "human-baseline-batch16",
+  "date": "2026-07-07"
+}

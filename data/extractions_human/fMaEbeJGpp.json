@@ -1,0 +1,46 @@
+{
+  "paper_id": "fMaEbeJGpp",
+  "title": "Multimodal Retrieval-Augmented Generation Question-Answering System",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Provide training data for multimodal RAG so models perform better in multimodal (image+text+chart) scenarios.",
+      "mechanism": "Pre-construct a high-quality dataset (IMG, MDtest, QA) of images, Markdown text, and question-answer pairs: convert each document page to Markdown via OCR/layout analysis, convert pages to high-resolution images with augmentation, and use GPT-4o to generate standard/chart/image-based Q&A pairs.",
+      "evaluation": "Over 50,000 pages (PDF/Word) from finance, law, healthcare; split 80/10/10 train/val/test. Used to train the retrieval and QA models evaluated downstream.",
+      "domain": "Multimodal RAG / document question answering",
+      "source_quote": "Construction of a high-quality dataset: This paper designs a high quality dataset (IMG,MDtest,QA) containing images, text, and question-answer pairs in advance, suitable for training multimodal models, thereby improving the system's performance in multimodal scenarios.",
+      "type": "resource"
+    },
+    {
+      "id": "C2",
+      "purpose": "Precisely match document content to its corresponding images and reduce the time/complexity of locating relevant images in long texts.",
+      "mechanism": "Fine-tune a ColPali-based text-to-image retrieval model with contrastive learning and cross-entropy loss, optimizing text-token-to-image-patch relationships via a late-interaction matching mechanism.",
+      "evaluation": "Achieves Precision@1/3/5 of 82.3%/78.6%/75.4% vs Text-Only RAG's 60.5%/55.8%/53.1%; outperforms baselines on retrieval accuracy across a multimodal document test set.",
+      "domain": "Cross-modal (text-to-image) retrieval",
+      "source_quote": "Development of a text-image retrieval model: By training a retrieval model that matches text with visual information, the system achieves precise alignment between textual content and images, effectively reducing the complexity and processing time involved in locating relevant images in long texts.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Simplify the RAG document-processing pipeline and directly answer queries from image content, avoiding error-prone preprocessing (parsing, OCR layout analysis, chunking).",
+      "mechanism": "Integrate the cross-modal retrieval model with a GPT-4o multimodal QA model into an end-to-end visual-document RAG system that retrieves relevant images and generates answers directly from image content.",
+      "evaluation": "Generation quality: F1 72.1, ROUGE-L 32.4, BLEU 7.9 vs Text-Only RAG (55.2 / 26.8 / 6.1) and ChineseCLIP-RAG (70.4 / 29.2 / 7.4); also best Multimodal Consistency Score (MCS).",
+      "domain": "Multimodal RAG / document question answering",
+      "source_quote": "Integration of a multimodal question-answering system: This system combines cross-modal retrieval models with multimodal question-answering models to build a visual document-based multimodal RAG system. ... It significantly simplifies the RAG document processing flow and directly answers user queries based on image content.",
+      "type": "method"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "This paper adopts the ColPali model (Faysse et al., 2024), which generates high-quality contextual embeddings and employs post-interaction matching to enhance retrieval speed and performance, supporting end-to-end training.",
+      "section": "related work"
+    },
+    {
+      "quote": "This paper uses a specialized text-image retrieval model based on the ColPali architecture, fine-tuned with a custom dataset for enhanced performance in document retrieval tasks.",
+      "section": "related work"
+    }
+  ],
+  "notes": "System-building paper: pipeline (dataset + ColPali retrieval fine-tune + GPT-4o QA). All reported comparisons favor the proposed system over Text-Only RAG, Haystack 2.0 RAG, and ChineseCLIP-RAG on retrieval precision, generation quality (F1/ROUGE/BLEU), and MCS; no negative or tie results disclosed. Note BLEU scores are very low in absolute terms (7.9) across all systems. Heavily reuses ColPali as the retrieval backbone.",
+  "extractor": "human-baseline-batch5",
+  "date": "2026-07-07"
+}

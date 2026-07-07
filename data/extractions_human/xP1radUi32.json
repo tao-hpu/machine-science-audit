@@ -1,0 +1,41 @@
+{
+  "paper_id": "xP1radUi32",
+  "title": "Endless Jailbreaks with Bijection Learning",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Produce a black-box jailbreak attack that is universal and generates an effectively endless supply of attack prompts for any single harmful intent, rather than relying on a fixed hand-crafted cipher set.",
+      "mechanism": "Bijection learning: teach the target LLM an arbitrary randomly-generated string-to-string encoding ('bijection language') in-context, pass the encoded harmful query so it bypasses safety training, then apply the inverse mapping (plus a GPT-4o-mini denoiser to fix decoding errors) to recover the response. Random sampling of encodings enables best-of-n over many prompts.",
+      "evaluation": "State-of-the-art ASR across GPT and Claude frontier models on AdvBench and HarmBench, outperforming the ensemble of previous encoding attacks by >=30 percentage points; 86.3% ASR against Claude 3.5 Sonnet on HarmBench. Best-of-n more than doubles single-attempt ASR on all models.",
+      "domain": "LLM safety / jailbreak attacks",
+      "source_quote": "Bijection learning uses random sampling to generate encodings, which allows for best-of-n sampling among a potentially endless quantity of jailbreak prompts for a single harmful intent. Our method generalizes from previous encoding-based jailbreaks, which use a limited, usually hand-crafted collection of ciphers or languages to encode the attack intent.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Make an encoding-based jailbreak scale-adaptive, so it can be tuned to any model capability level rather than working only on models that already know a specific fixed cipher.",
+      "mechanism": "Introduce quantitative complexity hyperparameters (e.g. number of key-value mappings in the bijection) that smoothly control encoding complexity, allowing fine-grained adaptation of the attack to the target model's capability.",
+      "evaluation": "First in the jailbreaking literature to use hyperparameters to scale encoding complexity; enables smooth control vs the discontinuous efficacy gaps of prior encoding attacks. Attack is characterized as black-box, universal, and scale-adaptive.",
+      "domain": "LLM safety / jailbreak attacks",
+      "source_quote": "We are the first in the jailbreaking literature to use quantitative hyperparameters to scale encoding complexity... In contrast, our sampling method enables our attack to be uniquely scale-adaptive, since we control encoding complexity in a smooth, fine-grained manner to adapt jailbreak prompts to varying levels of model capability.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Establish the scientific finding that increased model capability itself is a vulnerability: more capable models are more severely jailbroken.",
+      "mechanism": "Correlation/scaling analysis plotting bijection complexity against model scale (MMLU capability vs HarmBench ASR) across Claude, GPT-4o, Llama 3.1 families; plus analysis of guardrail failures.",
+      "evaluation": "Reveals a Pareto frontier of model vulnerability with a two-stage scaling/saturated regime (ASR peaks at intermediate complexity); attack efficacy follows per-model and cross-model scaling laws (Gemini is an exception with no turning point). Provides evidence attacks succeed by making safety-guardrail classification difficult: a Sonnet guardrail only cuts ASR by 10pp while tripling inference cost.",
+      "domain": "LLM safety / red-teaming (empirical finding)",
+      "source_quote": "Comparing bijection complexity and model scale reveals a Pareto frontier of model vulnerability... Our work highlights that new vulnerabilities in frontier models can emerge with scale: more capable models are more severely jailbroken by bijection attacks.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {"quote": "Previous work has explored the use of languages and/or encodings to obfuscate harmful prompts, including low-resource languages (Yong et al., 2023), common encodings (Yuan et al., 2024) including ASCII (Jiang et al., 2024), Morse code (Barak, 2023), and other ciphers (Wei et al., 2023; Handa et al., 2024)... However, our work is the first to harness frontier models' ability to learn encodings in-context rather than relying on their intrinsic knowledge to interpret memorized encodings.", "section": "related work"},
+    {"quote": "Recent work also showed that allowing fine-tuning access enables attackers to teach models complex ciphers with which to evade safety detection (Halawi et al., 2024).", "section": "related work"},
+    {"quote": "In this work, we unify these two directions in the jailbreaking literature to produce powerful evidence that increased model capabilities give rise to distinct emergent model vulnerabilities.", "section": "introduction"}
+  ],
+  "notes": "Attack paper; results are uniformly positive for the attack (high ASR). Trade-off / caveat signals worth noting: (1) the defended-system result is a partial-mitigation caveat - a Sonnet guardrail reduces ASR by only 10 percentage points while TRIPLING inference cost, i.e. defense is expensive and weak. (2) Authors flag that prior LLM-judge ASR metrics are noisy/false-positive-prone and build their own denoiser+judge. (3) Gemini models are an explicit exception to the two-stage scaling law. Method is explicitly framed as generalizing prior encoding-based jailbreaks (Yong 2023, Yuan 2024, Wei 2023, Halawi 2024) by moving from fixed memorized ciphers to in-context-learned random bijections.",
+  "extractor": "human-baseline-batch0",
+  "date": "2026-07-07"
+}

@@ -1,0 +1,32 @@
+{
+  "paper_id": "lXE5lB6ppV",
+  "title": "Do as I do (Safely): Mitigating Task-Specific Fine-tuning Risks in Large Language Models",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Characterize whether task-specific fine-tuning (datasets with ground-truth answers, e.g. MCQ) creates safety risks, distinguishing benign accidental harm from deliberate adversarial manipulation.",
+      "mechanism": "Empirical study fine-tuning LLaMA-2 7B Chat (and GPT-3.5, LLaMA-3 8B) across 7 task-specific datasets under different prompting strategies (Benign, AOA, and proposed adversarial AutoIF / AutoIF+AOA); measures attack success rate (ASR) on HarmI/HarmQ plus toxicity-filter detection rate and downstream task accuracy.",
+      "evaluation": "Benign fine-tuning does NOT produce harmful models in the task-specific setting (contrasted with 16.1%/12.1% harmfulness for Alpaca/Dolly in instruction-following, Qi et al. 2023). Malicious prompting raises worst-case ASR by >=25% (HarmI) and >50% (HarmQ) on 6/7 datasets while at most 0.61% of data is flagged toxic (vs 70% for explicitly harmful data).",
+      "domain": "LLM safety / fine-tuning security",
+      "source_quote": "We study fine-tuning risks in the task-specific setting, demonstrating that benign users are unlikely to accidentally generate harmful models, how-ever, using our method malicious actors can consistently adversarially modify benign task-specific datasets to increase harmfulness while maintaining reasonable task performance while [evading] detection by toxicity filters.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "Provide model providers a mitigation that restores safety alignment for adversarially fine-tuned task-specific models without sacrificing downstream performance.",
+      "mechanism": "Paraphrase: mix in safety data that mimics the task format and prompting style of the user data (rather than generic base safety-data mixing), so the safety examples match the structure of the fine-tuning set.",
+      "evaluation": "Paraphrase achieves <1% attack success rate on the Harmful Instructions dataset (Zou et al., 2023) vs 5-84% for baselines, while maintaining comparable downstream task performance; shown effective for both open-source LLaMA-2 and closed-source GPT-3.5.",
+      "domain": "LLM safety / fine-tuning security",
+      "source_quote": "We propose an efficient mitigation strategy by mixing safety data, Paraphrase, that mimics the user data, reducing harmfulness in adversarial settings while maintaining compara-ble downstream task performance to non-mixing cases. Paraphrase allows us to consistently achieve <1% attack success rate on the Harmful Instructions dataset (Zou et al., 2023) compared to signif-icantly higher values (5-84%) for the baselines.",
+      "type": "method"
+    }
+  ],
+  "self_declared_provenance": [
+    {"quote": "Base: mixing of safety data using a basic prompting strategy following a similar approach to (Bianchi et al., 2023; Qi et al., 2023) (e.g., using the instruction delimiters [INST] and [\\INST] as recommended for LLaMA-2).", "section": "related work"},
+    {"quote": "Absolutely Obedient Agent (AOA): we procedurally insert t_i and a_i into a template similar to the one provided in Qi et al. (2023) for instruction-following datasets adapted to the task-specific setting.", "section": "related work"},
+    {"quote": "Mixing explicitly safe data in the instruction-following setting can restore safety alignment (Bianchi et al., 2023; Qi et al., 2023), but previous studies overlook the adaptation to task-specific data for well-defined downstream tasks. Our research examines how different prompting strategies affect performance at that level and explores how closed-source model providers can mitigate these issues.", "section": "related work"}
+  ],
+  "notes": "C1 contains a notable negative/reassuring result: benign users are UNLIKELY to accidentally obtain harmful models in the task-specific setting (contrary to the instruction-following finding), so the harm-via-accident hypothesis fails here. C2 is framed as maintaining 'comparable' downstream task performance to non-mixing baselines, i.e. a safety gain at roughly parity (not improvement) on task accuracy - a trade-off signal. Method extends AOA template and safety-data-mixing directly from Qi et al. 2023 / Bianchi et al. 2023, adapting them from instruction-following to task-specific data.",
+  "extractor": "human-baseline-batch0",
+  "date": "2026-07-07"
+}

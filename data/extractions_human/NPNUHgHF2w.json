@@ -1,0 +1,50 @@
+{
+  "paper_id": "NPNUHgHF2w",
+  "title": "CBraMod: A Criss-Cross Brain Foundation Model for EEG Decoding",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "构建可跨临床与 BCI 应用泛化的 EEG 基础模型，克服监督式 EEG 解码受限于特定任务/数据集的问题",
+      "mechanism": "提出 CBraMod，在 Temple University Hospital EEG Corpus (TUEG，号称当前最大公开 EEG 语料) 上通过 patch 级掩码 EEG 重构做自监督预训练，学习时域与频域通用表示",
+      "evaluation": "在多达 10 个下游 BCI 任务、12 个公开数据集上评估，达 SOTA；源码开源",
+      "domain": "脑机接口 / EEG 解码 / 基础模型",
+      "source_quote": "We propose a novel EEG foundation model, called CBraMod, for EEG decoding on various clinical and BCI application. CBraMod is pre-trained on Temple University Hospital EEG Corpus (TUEG) for learning generic representations from both time-domain and frequent-domain EEG signals through patch-based masked EEG reconstruction.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "解决现有 EEG 基础模型把空间与时间依赖混在一起建模、忽略 EEG 信号异质结构，且难以适配不同格式 EEG 的问题",
+      "mechanism": "设计 criss-cross transformer 骨干（基于 criss-cross EEG 建模策略），用两条并行注意力分别建模空间与时间依赖；配合非对称条件位置编码 ACPE——用卷积网络动态学习 patch 间空间关系，适配任意 EEG 通道格式",
+      "evaluation": "位置编码消融（图5）：无 PE 最差，APE 优于无 PE 但差于 CPE/ACPE，ACPE 略优于 CPE（非对称设计略优于对称）",
+      "domain": "脑机接口 / EEG 建模架构",
+      "source_quote": "For modeling effective spatial-temporal dependencies among EEG patches and adapting to various downstream datasets, we firstly devise a criss-cross transformer, based on criss-cross EEG modeling strategy, as the backbone of CBraMod. It models spatial and temporal dependencies separately through two parallel attention mechanisms ... Meanwhile, we utilize an asymmetric conditional positional encoding (ACPE) scheme",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "全面验证 CBraMod 在广泛下游 BCI 任务上的能力与泛化性",
+      "mechanism": "在 10 个下游 BCI 任务、12 个公开数据集（多数来自与预训练不同机构）上做微调评估并与 SOTA 基线对比",
+      "evaluation": "全任务 SOTA。举例：FACED 情绪识别 Cohen's Kappa 0.5041 vs LaBraM 0.4698、SEED-V 0.2569 vs 0.2386；Mumtaz2016 抑郁检测比 LaBraM 高 1.4%（balanced acc 0.9560 vs 0.9409）；MentalArithmetic 高 2.5%；TUAB 略优于 LaBraM-Huge，且排除 TUAB 重训后仍具竞争力（缓解数据泄漏）",
+      "domain": "脑机接口 / EEG 下游任务评估",
+      "source_quote": "We evaluate the performance of CBraMod on up to 10 downstream BCI tasks using 12 public datasets ... CBraMod achieves state-of-the-art performance across all the tasks, highlighting its successful generalizability. To the best of our knowledge, this is the first study to comprehensively evaluate EEG foundation models across such a broad range of downstream BCI tasks.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "we first propose a criss-cross EEG modeling strategy to thoroughly leverage the structural characteristics of EEG signals, inspired by some studies (Huang et al., 2019; Dong et al., 2022) which adopt similar strategies on vision modeling.",
+      "section": "introduction"
+    },
+    {
+      "quote": "most of existing EEG foundational model the spatial and temporal dependencies between all EEG patches together, ignoring the unique structural characteristics of EEG signals. Meanwhile, existing EEG foundation models have limited generalizability, performing well only on a limited range of downstream tasks.",
+      "section": "related work"
+    },
+    {
+      "quote": "we segment all EEG recordings to 30-second EEG samples, which is longer than the time duration of pre-training samples on existing studies such as BIOT (Yang et al., 2023) (10 seconds) and LaBraM (Jiang et al., 2024) (4 or 8 seconds).",
+      "section": "appendix (pre-training settings)"
+    }
+  ],
+  "notes": "整体为正向 SOTA 结果，跨 10 任务全部达 SOTA。作者主动处理潜在数据泄漏：TUAB 是预训练语料 TUEG 子集，故额外做排除 TUAB 重训的 CBraMod，结果有轻微波动但仍有竞争力（诚实 caveat，非负结果）。ACPE 相对 CPE 仅 'slightly better'。无显著负结果/平局报告。（该论文 decision=accept）",
+  "extractor": "human-baseline-batch25",
+  "date": "2026-07-07"
+}

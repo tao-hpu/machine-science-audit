@@ -1,0 +1,50 @@
+{
+  "paper_id": "n2EU4PUrJP",
+  "title": "Soup to go: mitigating forgetting during continual learning with model averaging",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "在预训练 LLM 的持续学习(指令微调任务按序到来、只有当前任务数据可得)中缓解对早期任务的灾难性遗忘,且不承担存旧数据缓冲区、生成旧数据或每步存多份参数的开销",
+      "mechanism": "提出 Sequential Fine-tuning with Averaging(SFA):在新任务训练过程中,将当前正训练的模型与先前任务的 checkpoint 做模型平均(权重合并),再在新任务上继续训练;用先前 checkpoint 作为旧数据的代理,不需数据缓冲区或额外数据生成器",
+      "evaluation": "在 Pythia-2.8B 与 Llama-2-7B 上,跨 Math/Law/Code 领域按序微调;单个模型可同时在多个多样领域表现良好,扩展到 3 领域仍保持前 2 领域性能",
+      "domain": "LLM 持续学习 / 模型合并(model merging)",
+      "source_quote": "We introduce Sequential Fine-tuning Averaging (SFA), a method for mitigating forgetting by averaging model checkpoints from past tasks during fine-tuning on a new task.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "解释 SFA 为何有效,把模型合并与经典持续学习方法建立理论联系",
+      "mechanism": "分析证明 SFA 可理解为经典持续学习算法的近似——即在当前模型与过去任务 checkpoint 之间施加 L2 penalty;由此在 L2 penalty 与常用模型合并技术之间架桥",
+      "evaluation": "定性/理论分析,给出模型合并能有效缓解遗忘的直觉解释(无独立量化指标)",
+      "domain": "LLM 持续学习 / 理论分析",
+      "source_quote": "We show how SFA can be understood as an approximation of a classical continual learning algorithm: applying an L2 penalty between the current model and checkpoints from past tasks. This analysis bridges classical continual learning algorithms such as L2 penalty with commonly used model merging techniques",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "验证 SFA 相对数据缓冲、经典惩罚法与其他合并技术的相对表现",
+      "mechanism": "跨任务/领域/模型对比 SFA 与 rehearsal(data buffer)、L2、Elastic Weight Consolidation、Task Arithmetic、TIES Merging",
+      "evaluation": "SFA 达到与 rehearsal 相当(comparable)的结果而无需存旧数据,并优于 L2/EWC 及 Task Arithmetic/TIES;在 Math-then-Law 设置下 Task Arithmetic 与 TIES 完全无法保留 Math 性能,而 SFA(足够低的 p)可与 rehearsal 持平",
+      "domain": "LLM 持续学习 / 实证对比",
+      "source_quote": "our method achieves comparable results to using a data buffer, while outperforming other model merging techniques, as well as more classical continual learning methods.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "our technique combines the intuition of continual learning with Rehearsal (Robins, 1995), Task Arithmetic (Ilharco et al., 2023) and Wise-FT (Wortsman et al., 2022b). However, unlike Rehearsal-based methods that store data in a buffer, we use a model fine-tuned on a past task/domain. Furthermore, unlike Task Arithmetic, our method merges a past checkpoint of a given model with the current model, rather than the task vectors from individual models.",
+      "section": "related work"
+    },
+    {
+      "quote": "while our method focuses on merging during actual fine-tuning and across tasks/domains, Wise-FT merges a pretrained and a fine-tuned model. In this way, our work generalizes Wise-FT throughout continual learning.",
+      "section": "related work"
+    },
+    {
+      "quote": "Inspired by a classical continual learning method-L2 penalty to previous weights-we propose Sequential Fine-tuning with Averaging (SFA)",
+      "section": "abstract"
+    }
+  ],
+  "notes": "关键的 comparable/平局与 trade-off 信号突出:SFA 对 rehearsal(数据缓冲上界/近上界)只是'comparable',并未超越;真正超越的是其他合并法(Task Arithmetic/TIES)与经典惩罚法(L2/EWC)。多任务同时微调(multitask)是不可达的上界(数据流式设定下不可行)。消融显示合并权重 p 与 β 存在明显 trade-off:SFA(p=1)在 β≥0.5 时 Math 与 Law 之间权衡剧烈、会完全丢失 Math,说明'训练过程中持续平均'(p<1)才是保持跨领域能力的关键。方法显式嫁接/推广 Rehearsal、Task Arithmetic、Wise-FT,并把自身定位为 L2 penalty 的近似。",
+  "extractor": "human-baseline-batch21",
+  "date": "2026-07-07"
+}

@@ -1,0 +1,59 @@
+{
+  "paper_id": "UyBMzsFThf",
+  "title": "Finetuning CLIP to Reason about Pairwise Differences",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "解决 CLIP 嵌入空间缺乏纯文本嵌入所具有的结构（如向量算术类比）、无法很好推理图像间差异的问题。",
+      "mechanism": "提出 PC-CLIP：用 LLM 在 image-caption 配对数据上合成成对图像'差异'的文本描述，再用对比损失微调 CLIP，使图像嵌入之差对齐到该差异文本嵌入。",
+      "evaluation": "在差异型分类（按 size/color 等属性给成对图像排序）上，PC-CLIP 相对近随机的原始 CLIP 提升最多约 14 个百分点绝对准确率。",
+      "domain": "视觉-语言模型 / CLIP 微调",
+      "source_quote": "we propose an approach to natively train CLIP in a contrastive manner to reason about differences in embedding space. We finetune CLIP so that the differences in image embedding space correspond to text descriptions of the image differences, which we synthetically generate with large language models",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "利用类间差异的先验知识进一步提升下游分类性能。",
+      "mechanism": "提出新的推理机制 comparative prompting：用（或让 LLM 生成）易混淆类对之间差异的文本描述，按 Eq.(3) 更新/分离类别 prompt 嵌入，无需训练。",
+      "evaluation": "在 3 对最混淆类的 6 类子集上，comparative prompting 与 PC-CLIP 结合在所有任务上都带来增益；而对原始 CLIP 特征做 comparative prompting 会导致性能大幅下降（如 EuroSAT）。α=0.9 最优。",
+      "domain": "视觉-语言模型 / 推理",
+      "source_quote": "our approach enables a new mechanism for inference that we refer to as comparative prompting, where we leverage prior knowledge of text descriptions of differences between classes of interest, achieving even larger performance gains in classification.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "验证该差异型微调既能带来新能力又不损害标准 zeroshot 分类，且增益确来自'比较'信息本身。",
+      "mechanism": "对照实验：与直接在 COCO 微调、以及在同一 LLM 改写（非比较型）caption 上微调的基线比较，隔离外部 LLM 信息带来的贡献。",
+      "evaluation": "PC-CLIP 在多数下游图像分类任务上 zeroshot 性能提升（标准 prompt 与更长描述 prompt 均成立，Table 2/4），且优于上述两个受控基线；在 ViT-H/14 更大模型上仍有提升（Table 12）。",
+      "domain": "视觉-语言模型 / 实证",
+      "source_quote": "These improvements hold even when compared to baselines of finetuning on the exact same data from COCO and an approach that leverages non-comparison-based synthetic data from a LLM, demonstrating that benefits come from finetuning on comparisons.",
+      "type": "finding"
+    },
+    {
+      "id": "C4",
+      "purpose": "说明微调后的嵌入空间具备更好的几何/算术性质。",
+      "mechanism": "度量文本编码器质量 d(f_A − f_B, f_{A−B})（cosine 距离），并在 text-to-image 生成中测试 text 嵌入加性操作是否被保留。",
+      "evaluation": "所有数据集上 PC-CLIP 文本编码器都显著更好地对齐差异嵌入与语义差异描述（Table 6）；text-to-image 中算术操作被更好保留（Table 5 CLIP-Score）。",
+      "domain": "视觉-语言模型 / 表示几何",
+      "source_quote": "we illustrate that the resulting embeddings obey a larger degree of geometric properties in embedding space, such as in text-to-image generation.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "A relevant line of work is finetuning VLMs for image-difference captioning (Jhamtani & Berg-Kirkpatrick, 2018; Park et al., 2019; Guo et al., 2022; Hu et al., 2024) ... While the underlying ideas in this line of work are similar, a key distinction is that we study the reverse problem, or to study the benefits of incorporating such information into CLIP's embedding space.",
+      "section": "related work"
+    },
+    {
+      "quote": "A related work looks to better induce geometric properties in the resulting embedding spaces (Goel et al., 2022) through pairwise distances, although this does not directly address (LLM-generated) semantically meaningful differences. ... Our work is related in that we demonstrate a failure of CLIP's embeddings, and we propose a new finetuning approach to address these issues.",
+      "section": "related work"
+    },
+    {
+      "quote": "we see better performance if we perform weight-ensembling of PC-CLIP weights or COCO finetuned CLIP weights with the original CLIP weights, which is similar to prior work (Wortsman et al., 2022).",
+      "section": "experiments"
+    }
+  ],
+  "notes": "被拒论文（reject）。明确把自身定位为 image-difference captioning 的'逆问题'、以及 Goel et al. 2022 pairwise 几何工作的补充。重要 trade-off/负面信号：comparative prompting 用在原始 CLIP 特征上会显著掉点（EuroSAT 大幅下降），仅在 PC-CLIP 上稳健增益；且大类数任务（SUN 397 类、CUB 200 类）因只改少量 prompt，整体准确率增益不明显。附录指出视觉编码器提升较小，主要收益来自文本编码器。",
+  "extractor": "human-baseline-batch1",
+  "date": "2026-07-07"
+}

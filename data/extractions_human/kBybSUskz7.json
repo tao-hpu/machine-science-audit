@@ -1,0 +1,46 @@
+{
+  "paper_id": "kBybSUskz7",
+  "title": "Reinforcement Learning and Heuristics for Hardware-Efficient Constrained Code Design",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Automate the design of hardware-efficient translation logic for constrained codes (minimizing encoder/decoder circuit complexity), a step logic-synthesis tools cannot optimize and that is otherwise left to slow manual design.",
+      "mechanism": "An RL framework that models codeword assignment as a bipartite graph matching / combinatorial-optimization MDP: state = current assignments + synthesis metrics, actions = codeword selections, reward = hardware complexity (gate count) from an external logic-synthesis tool. Uses value-based (DQN/Double-DQN, distributional C51) and policy-gradient (PPO) agents, with a GNN state encoder.",
+      "evaluation": "Applied to MTA 7b8b (GDDR6x PAM-4), 8b9b crosstalk-mitigation, and 5s8b ternary-to-binary codes on NVIDIA DGX2/PyTorch; outperforms 1M random mappings, human-derived/hand-crafted solutions, and L1-guided simulated annealing across all three codes; Double-DQN reached the lowest gate count (57), fastest, with lowest variance.",
+      "domain": "Hardware / constrained code design (communication & memory systems)",
+      "source_quote": "We introduce a reinforcement learning (RL)-based framework, augmented by a custom L1 similarity-based heuristic, to design hardware-efficient translation logic, navigating the vast solution space of codeword assignments.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Improve the efficiency of the RL search by injecting domain knowledge to prioritize promising codeword mappings early.",
+      "mechanism": "A custom L1 similarity-based heuristic that prioritizes mappings whose codewords are L1-close to previously assigned codes (encouraging pass-through / term sharing and thus fewer gates).",
+      "evaluation": "Ablation: without the L1 heuristic the model struggles and plateaus at a much higher minimum gate count; without the GNN convergence takes 15K vs 2K episodes but uses only 136MB vs 1177MB memory.",
+      "domain": "Hardware / constrained code design",
+      "source_quote": "To improve efficiency, we incorporate a custom L1 similarity-based heuristic to prioritize promising mappings early.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Extract interpretable insights into what makes high-performing codeword-assignment policies efficient.",
+      "mechanism": "Post-hoc analysis of learned policies: plotting per-step encoder/decoder gate-count trajectories and visualizing location/codeword assignment block structures across training quality levels.",
+      "evaluation": "Best policies show nearly flat gate-count segments (steps 32-95) driven by extensive term sharing where MSBs differ ('01','10'); complexity spikes only at MSB '11' where the MTA restriction forces it; the agent replicates assignment rules across codes, indicating generalization.",
+      "domain": "Hardware / constrained code design",
+      "source_quote": "Finally, we analyze the learned policies to extract insights into high-performing strategies.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Works such as DRiLLS (Hosny et al., 2020) and Retrieval-Guided RL (Goliaei et al., 2024), have demonstrated RL's ability to optimize tasks like logic synthesis... Similarly, Mirhoseini et al.(2021) introduced a graph-based RL methodology to optimize circuit placement. Building on recent advances, we address a distinct challenge: constrained code design.",
+      "section": "related work"
+    },
+    {
+      "quote": "Georgiev & Liò (2021) apply RL and GNNs to solve bipartite matching through a flow-based formulation... However, all these approaches compute assignment costs inline, contrasting with our method, which relies on external evaluations for cost calculations.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Trade-off explicitly reported in ablation: the GNN gives faster convergence (2K vs 15K episodes) and better solutions but costs ~9x memory (1177MB vs 136MB) and more params/time; the non-GNN variant still eventually approaches a similar gate count, which the authors flag as promising for scaling. RL beats human/hand-crafted and L1-guided simulated annealing on all three codes (no reported loss to baselines). Positions itself as extending RL-for-chip-design (DRiLLS, circuit-placement RL, NCO/GNN bipartite matching) to the new constrained-code-design task, distinguished by using external synthesis-tool evaluations.",
+  "extractor": "human-baseline-batch5",
+  "date": "2026-07-07"
+}

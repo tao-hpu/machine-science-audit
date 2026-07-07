@@ -1,0 +1,34 @@
+{
+  "paper_id": "HMVDiaWMwM",
+  "title": "Guided Score identity Distillation for Data-Free One-Step Text-to-Image Generation",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "Distill a pretrained multi-step Stable Diffusion text-to-image model into a fast one-step generator without access to any real training data (data-free), to overcome slow iterative sampling under legal/privacy/cost constraints on real data.",
+     "mechanism": "Adapt Score identity Distillation (SiD) to latent Stable Diffusion by generalizing its EDM-based derivation to DDPM noise scheduling (allowing a_t != 1) and optimizing a model-based explicit score-matching (MESM / Fisher-divergence) loss via a score-identity approximation, alternating between a fake score network and the one-step generator, trained purely on the generator's own synthetic images.",
+     "evaluation": "Zero-shot COCO-2014 validation: one-step SD1.5 attains FID 9.56 / CLIP 0.313 (LSG scale 2); SD2.1-base attains FID 10.97, CLIP ~0.32. No real images or extra regression/adversarial losses used.",
+     "domain": "Text-to-image diffusion model distillation / efficient generative modeling",
+     "source_quote": "we introduce a data-free guided distillation method that enables the efficient distillation of pretrained Stable Diffusion models without access to the real training data, often restricted due to legal, privacy, or cost concerns.",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "Effectively integrate Classifier-Free Guidance (CFG), essential to Stable Diffusion, into the SiD distillation loss to boost photorealism and text alignment.",
+     "mechanism": "Introduce Long and Short Guidance (LSG): apply enhanced (long) CFG to the pretrained score network and reduced (short) CFG on the fake score network, applying CFG not only to evaluation of the pretrained model but also to the training and evaluation of the fake score network (a departure from prior methods that apply CFG only during evaluation of the pretrained score network).",
+     "evaluation": "Ablations over guidance scale K reveal an FID-CLIP trade-off (smaller K -> better FID, larger K -> better CLIP). With LSG 1.5 and doubled training (10M->20M synthetic images), SD1.5 FID drops from 8.71 to a record-low data-free 8.15 (CLIP 0.304); higher scale K=4.5 gives CLIP 0.322 / HPSv2 SOTA but FID 16.54.",
+     "domain": "Text-to-image diffusion model distillation",
+     "source_quote": "This method enhances Score identity Distillation (SiD) with Long and Short Classifier-Free Guidance (LSG), an innovative strategy that applies Classifier-Free Guidance (CFG) not only to the evaluation of the pretrained diffusion model but also to the training and evaluation of the fake score network.",
+     "type": "method"},
+    {"id": "C3",
+     "purpose": "Establish a new state-of-the-art for data-free one-step diffusion distillation.",
+     "mechanism": "Combine SiD-LSG training entirely on synthetic images, benchmarking FID/CLIP against prior one-step distillation methods on COCO-2014.",
+     "evaluation": "One-step distillation of SD1.5 achieves FID 8.15 on COCO-2014 validation, a record low in the data-free setting, competitive CLIP, without regression/adversarial losses or real data; released code and checkpoints (github.com/mingyuanzhou/SiD-LSG).",
+     "domain": "Text-to-image generation benchmark",
+     "source_quote": "the one-step distillation of Stable Diffusion 1.5 achieves an FID of 8.15 on the COCO-2014 validation set, a record low value under the data-free setting.",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "recent findings from Score identity Distillation (SiD) (Zhou et al., 2024) present a notable discovery... The success of SiD in distilling EDM diffusion models for non-T2I generation in the pixel space has inspired us to adapt it to open-source T2I latent diffusion models, specifically Stable Diffusion (SD) versions 1.5 and 2.1-base", "section": "introduction"},
+    {"quote": "similar to SwiftBrush (Nguyen & Tran, 2024), SiD-LSG is a data-free distillation method... However, unlike SwiftBrush, SiD-LSG necessitates gradient backpropagation through the score networks... Additionally, SiD-LSG applies CFG to both the training and evaluation of the fake score network. This is a departure from previous methods, which typically apply CFG only during the evaluation of the pretrained score network. Finally, SiD-LSG aims to minimize a model-based explicit score-matching loss, a type of Fisher divergence. In contrast, previous methods often focus on minimizing losses based on KL divergence, consistency, regression, GAN-based adversarial tactics", "section": "related work"}
+  ],
+  "notes": "Explicit trade-off flagged: FID vs CLIP is inversely controlled by guidance scale K (smaller K better FID, larger K better CLIP/text-alignment). Negative/limitation results: SiD-LSG on SD1.5 plateaus quickly in FID/CLIP once LSG scale exceeds 2, and after 10M images still does NOT match the teacher's text-image alignment (CLIP) despite the teacher using 50 sampling steps. The record FID 8.15 requires the lower LSG=1.5 setting and doubled (20M) training. Method also needs gradient backprop through score networks (more costly than SwiftBrush).",
+  "extractor": "human-baseline-batch11",
+  "date": "2026-07-07"
+}

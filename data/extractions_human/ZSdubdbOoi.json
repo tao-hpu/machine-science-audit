@@ -1,0 +1,35 @@
+{
+  "paper_id": "ZSdubdbOoi",
+  "title": "Self-Improving Robust Preference Optimization",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "解决现有 RLHF 方法(PPO/DPO/IPO)两大根本局限：(a) 推理时缺乏内在自我纠错/自我改进机制；(b) 最优解高度依赖训练任务(behavior policy μ)，难以泛化到新任务/OOD",
+     "mechanism": "提出 SRPO——把从人类偏好学习建模为自我改进过程，用 min-max 对抗目标联合优化 self-improvement policy π† 与 generative policy π；证明该 min-max 目标可重写为非对抗离线监督损失，仅用成对偏好数据、无需 reward model 或在线推理即可用标准监督学习大规模优化；单个 LLM 同时表示 π 与 π†",
+     "evaluation": "TL;DR 训练、XSum OOD 测试；用 gpt-4-0613 算 win-rate vs GOLD 参考；XSum 上 5 次自我修订后较 DPO 高 15% 达 90% WR；Arena-Hard 上较 DPO/IPO 高(0修订+4%、1修订+6%)达 56% WR vs Llama-3.1-8B-Instruct",
+     "domain": "LLM 对齐 / 离线 RLHF",
+     "source_quote": "we propose Self-Improving Robust Preference Optimization (SRPO), a practical and mathematically principled offline RLHF framework. The key idea behind SRPO is to cast the problem of learning from human preferences as a self-improvement process, mathematically formulated as a min-max objective that jointly optimizes a self-improvement policy and a generative policy in an adversarial fashion.",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "为 SRPO 的可优化性与鲁棒性提供核心理论支撑",
+     "mechanism": "主要数学贡献：证明偏好概率 p 可用最优 self-improvement policy π†* 与最优鲁棒 generative policy π* 的对数似然表达，通过最小二乘回归可用单一监督目标同时求解两策略；并解析证明该解不依赖 behavior policy μ（区别于 DPO/IPO 的解显式依赖 μ 下的期望偏好）",
+     "evaluation": "定性理论结论：结果与 DPO 主定理类似但更一般——DPO 仅在偏好服从 Bradley-Terry 模型时成立，SRPO 结果对所有偏好模型成立；解独立于 μ",
+     "domain": "偏好优化理论",
+     "source_quote": "we present our main algorithmic/mathematical contribution: we prove that the preference probability p can be expressed in terms of the log-likelihoods of the optimal self-improvement policy and the log-likelihoods of the optimal robust generative policy.",
+     "type": "finding"},
+    {"id": "C3",
+     "purpose": "实证/理论上说明 SRPO 对 behavior policy 分布变化的鲁棒性",
+     "mechanism": "在 3-completion 合成 bandit 例子上，用均匀 μ0 与偏斜 μ1 两个数据集分别训练 SRPO/DPO/IPO 并对比收敛解",
+     "evaluation": "μ0 下三方法都收敛到 y2 占优；μ1 偏斜时 DPO 与 IPO 都错误收敛到 y0 占优，而 SRPO 策略基本不变、始终选对 arm(Fig.2)",
+     "domain": "偏好优化 / 鲁棒性分析",
+     "source_quote": "SRPO always chooses the correct arm regardless of skew in mu, while both IPO and DPO are effected by the skew (Fig. (2b)).",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "To achieve this goal, we exploit the concept of self-improving (Huang et al., 2022; Bai et al., 2022) language models.", "section": "introduction"},
+    {"quote": "Our key theoretical finding is similar to the main result of DPO (Rafailov et al., 2023) in that both express preference probabilities in terms of the optimal policy. However, DPO result only holds when preference probabilities conform to Bradly-Terry model (Bradley & Terry, 1952), whereas our key result is general as it holds across all preference models.", "section": "introduction"},
+    {"quote": "We empirically test the effectiveness of SRPO against two prominent offline preference learning methods, DPO (Rafailov et al., 2023) and IPO (Azar et al., 2023) as baselines.", "section": "experiments"}
+  ],
+  "notes": "方法+理论论文（accept），结果偏正面：合成例子与 OOD summarization 上均优于 DPO/IPO。轻微 caveat：SRPO 需 N 次迭代自我修订才达到最高增益（XSum 0-revision 仅 +10.5%，5-revision 才 +15%，即优势部分来自额外推理开销）；Arena-Hard 上 0-revision 仅比基线高 4%。合成例子中 SRPO 策略在两 μ 下略有差异（作者归因于有限数据）。IPO 超参未在原论文给出、作者称调参无显著增益。方法建于 DPO/IPO 与 self-improving LLM(Huang 2022,Bai 2022)之上，核心新意是 min-max 自我改进建模 + 不依赖 μ 的鲁棒解。",
+  "extractor": "human-baseline-batch2",
+  "date": "2026-07-07"
+}

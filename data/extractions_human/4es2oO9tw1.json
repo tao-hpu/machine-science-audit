@@ -1,0 +1,35 @@
+{
+  "paper_id": "4es2oO9tw1",
+  "title": "Compute-Constrained Data Selection",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "Address the under-considered practical setting where both the cost of selecting data and the cost of training are budgeted, since data-selection efficacy scales with its own compute",
+     "mechanism": "Formalize data selection as a compute-constrained combinatorial optimization with a cost-aware (compute-aware) utility function that trades off initial-selection cost against training gain; categorize selection methods (lexicon/BM25, embedding, perplexity, gradient/LESS) by compute scaling and derive a parametric performance model",
+     "evaluation": "Formal framework plus a simulation (Figure 1) showing the compute-optimal method changes with budget; no single quantitative metric (framing contribution)",
+     "domain": "LLM finetuning / data selection",
+     "source_quote": "We first formalize the problem of data selection with a cost-aware utility function, and model the data selection problem as trading off initial-selection cost for training gain.",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "Empirically quantify the trade-off between model size, tokens, and data-selection compute to guide practitioners on compute allocation",
+     "mechanism": "Comprehensive sweep varying finetuning tokens, model sizes, and data-selection compute; fit power-law Pareto frontiers over FLOP budgets",
+     "evaluation": "Train over 600 models from 7B to 70B parameters (LLaMA-2 7B/13B/70B, plus LLaMA-3-8B) across 6 data selection methods and 3 downstream tasks (MMLU, BBH). Finding: powerful perplexity/gradient methods are almost never Pareto-/compute-optimal; cheap BM25 and embedding methods dominate at small/medium budgets; PPL and LESS only become compute-optimal at 70B / large budgets (after ~5% of finetuning tokens)",
+     "domain": "LLM finetuning / data selection",
+     "source_quote": "Interestingly we find that many powerful data selection methods are almost never compute-optimal, and that cheaper data selection alternatives dominate both from a theoretical and empirical perspective.",
+     "type": "finding"},
+    {"id": "C3",
+     "purpose": "Give actionable thresholds for when expensive selection methods pay off",
+     "mechanism": "Fit parametric models to the empirical runs and extrapolate the compute-optimal ratio between training model size and selection model size",
+     "evaluation": "For compute-optimal finetuning, perplexity data selection requires a training-to-selection model size ratio of ~5x (~35B) and gradient data selection ~10x (~70B); break-even analysis shows gradient LESS needs ~20 tasks to surpass the finetuned Pareto frontier when amortized across tasks",
+     "domain": "LLM finetuning / data selection",
+     "source_quote": "For compute-optimal training, we find that perplexity and gradient data selection require training-to-selection model size ratios of 5x and 10x, respectively.",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "Kaplan et al. (2020) established the use of compute-scaling laws for language models ... More recent works expand on the original formulations by considering learning rate schedule matching, multiple-epoch training, and hyperparameters (Hoffmann et al., 2022; Muennighoff et al., 2024; Bi et al., 2024).", "section": "related work"},
+    {"quote": "Recent work considers the relationship between data selection and scaling in the vision domain (Goyal et al., 2024), but this work does not consider the compute needed for data selection in their scaling analysis.", "section": "related work"},
+    {"quote": "Low-rank gradiEnt Similarity Search (LESS) shows superior performance gain over cheaper methods and random selection (Xia et al., 2024).", "section": "background"}
+  ],
+  "notes": "Reported accept. The core message is a negative/trade-off finding: sophisticated (perplexity, gradient/LESS) data-selection methods are dominated by cheap lexicon (BM25) and embedding methods once selection compute is budgeted, reversing the usual per-step framing. Trade-off caveats explicitly noted: when only the TRAINING budget is fixed (not selection), gradient LESS consistently wins; expensive methods only pay off at very large model sizes (70B) or when amortized over many (~20) tasks. BM25 and Embed select highly similar data (explaining comparable performance); LESS selects most distinct data. Resource released: codebase + datasets (CCDS, github.com/oseyosey/CCDS).",
+  "extractor": "human-baseline-batch7",
+  "date": "2026-07-07"
+}

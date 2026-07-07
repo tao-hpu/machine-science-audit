@@ -1,0 +1,59 @@
+{
+  "paper_id": "dOAkHmsjRX",
+  "title": "Budgeted Online Continual Learning by Adaptive Layer Freezing and Frequency-based Sampling",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "解决在线持续学习(CL)算法比较不公平的问题：'单 epoch + 有限 replay memory' 约束下各方法实际计算量不同、且存储 logit/模型的额外开销常被忽略。",
+      "mechanism": "提出用训练 FLOPs 衡量计算预算、用总内存字节数（含 episodic memory、logits、模型参数）衡量存储预算，在相同'total resource budget'下比较与开发 CL 算法。",
+      "evaluation": "在相同 FLOPs 与字节预算下（Fig.1），若干高性能 SoTA CL 方法竟不敌简单 Experience Replay，说明原论文报告的性能在公平预算下常常不成立。",
+      "domain": "在线持续学习 / 评测协议",
+      "source_quote": "Proposing to measure computational and memory budgets of CL algorithms by using training FLOPs and total memory size in Bytes, to fairly compare different algorithms.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "在有限总预算下降低每次迭代计算量而几乎不损精度。",
+      "mechanism": "提出 adaptive layer freezing：对每个 mini-batch，按最大化单位计算所得 Fisher Information (I/C) 选择冻结哪些层（batch freezing criterion, BFC），随信息量自适应；区别于预先定死冻结规则的既有方法。",
+      "evaluation": "冻结带来 FLOPs 显著节省，尤其在高计算预算下更明显（Fig.3）；节省的算力可用于更多迭代，精度损失可忽略。",
+      "domain": "在线持续学习 / 高效训练",
+      "source_quote": "Proposing a computationally efficient adaptive layer freezing that maximizes FI per computation, as well as a memory retrieval strategy that prioritizes samples that the model has learned least.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "在不增加额外计算的前提下，用更少迭代学到与随机检索同等的知识。",
+      "mechanism": "提出 similarity-aware retrieval (SAR)：基于样本'use-frequency'（含指数衰减的 discounted-use-frequency 以建模遗忘）与类间梯度相似度，优先检索模型学得最少的样本；这些量在训练中顺带获得，无需额外推理。",
+      "evaluation": "MIR/ASER 等检索需额外前后向（计算增至 ER 的 3–4 倍），相同预算下反不如随机检索；SAR 在低计算预算下尤其显著优于随机检索与 MIR（Fig.3）。合称方法 aL-SAR。",
+      "domain": "在线持续学习 / 内存检索",
+      "source_quote": "we propose to retrieve samples that the model has not learned much about ... To quantify the degree of learning, we employ the frequency of recent usage of each sample in training and the similarity of the gradients between classes.",
+      "type": "method"
+    },
+    {
+      "id": "C4",
+      "purpose": "实证分析各 CL 算法的真实计算/内存代价，并验证 aL-SAR 的优越性。",
+      "mechanism": "在相同 FLOPs 与字节预算下，跨 Gaussian/Disjoint/domain-incremental 多种设定评测，报告 A_last 与 A_AUC，做 Welch t-test（显著性 0.05）。",
+      "evaluation": "CIFAR-10/100、CLEAR-10/100、ImageNet-1K 上 aL-SAR 在同总预算下均显著超过 SoTA；并在多模态概念增量（LLaVA-1.5-7B）上验证，大幅降低训练计算量同时保持性能。",
+      "domain": "在线持续学习 / 实证",
+      "source_quote": "Empirical analysis on the computational and memory costs of various CL algorithms, showing that many state-of-the-art CL methods are less beneficial under the same budget and showing that the proposed method outperforms them by a noticeable margin across multiple benchmarks.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Unlike previous freezing methods (Lee et al., 2019; Hayes et al., 2020; Yuan et al., 2022), which predefine the rule of when and which layers to freeze, not generalizing to various datasets and models, we adaptively select layers to freeze based on the varying information in each batch.",
+      "section": "introduction / related work"
+    },
+    {
+      "quote": "For the same memory budget, we use an aggregated budget for various forms of extra storage, including replay memory, logits, and model parameters, converting them into bytes to obtain the actual memory cost, following Zhou et al. (2023).",
+      "section": "introduction"
+    },
+    {
+      "quote": "Inspired by the exponential decaying model of forgetting (Shin & Lee, 2020; Mahto et al., 2020; Chien et al., 2021), we propose a decay factor (0<r<1) in the use frequency at each iteration, calling 'discounted-use-frequency'.",
+      "section": "method"
+    }
+  ],
+  "notes": "被接收（accept）。核心是一个'负面/审计型'发现：在公平的 total-budget 下多个 SoTA CL 方法（含 MIR、ASER、RM、CLIB）反而不敌简单 ER，暴露既有比较协议的不公平——这是项目重点关注的负结果信号。方法侧存在明确 trade-off（冻结层越多、单 batch 信息增益越少，通过 I/C 最大化来权衡）。ImageNet-1K 因算力仅单次而非 3 seed 平均。",
+  "extractor": "human-baseline-batch1",
+  "date": "2026-07-07"
+}

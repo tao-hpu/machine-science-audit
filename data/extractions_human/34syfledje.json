@@ -1,0 +1,46 @@
+{
+  "paper_id": "34syfledje",
+  "title": "Feature Discrimination Analysis for Binary and Ternary Quantization",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "更准确地评估量化(quantization)对分类性能的影响,取代长期使用但缺乏理论依据的量化误差(quantization error)视角",
+      "mechanism": "引入 Fisher 线性判别分析中的特征判别度(feature discrimination = 类间散度与类内散度之比)作为分析工具,直接分析量化后数据的可分性,而非重构误差",
+      "evaluation": "作者称这是首个用 feature discrimination 分析量化对分类影响的研究;定性论证其比量化误差更直接合理",
+      "domain": "机器学习 / 数据量化与分类",
+      "source_quote": "To the best of our knowledge, this is the first study that exploits feature discrimination to analyze the impact of quantization on classification, although it is more direct and reasonable than quantization errors in evaluating classification performance.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "从理论上解释为何极低比特量化(二值/三值)反而能提升分类性能这一反直觉现象",
+      "mechanism": "将数据建模为高斯混合模型(每类一个高斯,X~N(μ,σ²)、Y~N(-μ,σ²)),推导阈值型二值/三值量化后判别度 D_b、D_t 与原始 D 的关系,证明 Theorem 1/2:存在阈值 τ 使 D_b>D、D_t>D",
+      "evaluation": "数值分析验证:固定 μ=0.8、σ²=0.36 时,二值 τ∈[-0.2,0.2]、三值 τ∈[0,0.5] 满足条件;理论区间(Fig.1a/c)与 10000 样本统计估计(Fig.1b/d)一致;可改善区间对应 μ∈(0.76,1)(二值)、μ∈(0.66,1)(三值)",
+      "domain": "量化理论 / 判别分析",
+      "source_quote": "By analyzing the discrimination across varying quantization thresholds, it is found that there exist certain quantization thresholds that can improve the discrimination of original data, thereby yielding improved classification performance.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "在真实多类型数据上验证二值/三值量化能提升(或至少持平)分类性能",
+      "mechanism": "在合成数据(每类 1000 样本,4:1 划分,重复 100 次取平均)与真实数据上做 KNN(k=5,欧氏/余弦)、SVM(线性核)分类,并扩展到 MLP/决策树及多类分类",
+      "evaluation": "真实数据涵盖图像 YaleB/CIFAR10/ImageNet1000(DWT/ResNet18/VGG16 特征)、语音 TIMIT(39 类 429 维音素,1.13M 训练)、文本 Newsgroup(20 类,top-5000 词);结果为准确率-阈值曲线(Fig.2-6,9-22),特定阈值区间内量化数据优于原始数据",
+      "domain": "图像/语音/文本分类",
+      "source_quote": "This remarkable performance is validated through classification experiments on diverse data types, including images, speech and text.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Following the Fisher's linear discriminant analysis (Fisher, 1936), we here refer to feature discrimination as the ratio between inter-class and intra-class scatters",
+      "section": "related work"
+    },
+    {
+      "quote": "In the filed of signal processing, there have been a few works proposed to reduce the negative impact of quantization on signal detection or classification (Poor & Thomas, 1977; Oehler & Gray, 1995). However, these studies did not employ feature discrimination analysis, distinguishing them from our research in both methodology and outcomes.",
+      "section": "related work"
+    }
+  ],
+  "notes": "核心是正向反直觉发现(量化提升而非降低判别度/分类),挑战传统 '量化误差越大分类越差' 的信念。但改善是条件性/trade-off 明显的:(1) 仅在特定阈值 τ 区间内量化优于原始数据;(2) 需 μ 足够大、σ 相应小(类间充分可分)才成立,μ 小(数据稀疏,大 λ)时改善受限;(3) SVM 因依赖边界支持向量,量化后比 KNN 更易退化;(4) 线性/二分类理论向多类与非线性(MLP/决策树)的推广仅为经验性、非严格证明;非线性分类器上量化仅 'improved or at least comparable'。结果以准确率曲线呈现,无单一 headline 数值。决定为 reject。",
+  "extractor": "human-baseline-batch18",
+  "date": "2026-07-07"
+}

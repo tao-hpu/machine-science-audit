@@ -1,0 +1,46 @@
+{
+  "paper_id": "qUJsX3XMBH",
+  "title": "Rethinking Data Selection at Scale: Random Selection is Almost All You Need",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Determine whether existing SFT data-selection methods still help when applied to realistic million-scale, multi-source instruction-tuning pools rather than the small datasets they were designed for.",
+      "mechanism": "Replicate several self-scoring (no external model) selection methods (e.g., LESS, IFD, SelectIT, Cross-Entropy) on two million-scale datasets (OpenHermes2.5-1M, WildChat) and compare against random selection across downstream tasks, using significance testing (Mann-Whitney U, right-tailed).",
+      "evaluation": "Llama3-8B and Qwen2-7B on tasks including BBH and HumanEval; nearly all methods fail to beat random by >1%; most fall within the range of 5 random runs; e.g., Cross-Entropy on Qwen2-7B/OpenHermes averages 54.02 vs lowest random 57.04; p-values reported per method.",
+      "domain": "LLM supervised fine-tuning / data selection",
+      "source_quote": "Most self-scoring data selection techniques do not significantly outperform random selection on large-scale datasets.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "Explain why data-selection methods underperform at scale and what actually drives good selection.",
+      "mechanism": "Comparative analysis of diversity-based vs quality-based selection; supplementary experiment adding K-means clustering to quality-based methods to inject diversity while keeping high-scoring points.",
+      "evaluation": "Adding K-means diversification improves most methods; Cross-Entropy improves >5% (Llama3) and >3% (Qwen2); diversity-based selection outperforms quality-based, explaining why random (which preserves original distribution/diversity) is competitive.",
+      "domain": "LLM supervised fine-tuning / data selection",
+      "source_quote": "our comparisons suggest that, during SFT, diversity in data selection is more critical than simply focusing on high-quality data.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Provide a stable, cheap alternative selection criterion that reduces the randomness of random selection.",
+      "mechanism": "Filter/select data by token length (obtain N K-means clusters, then select longer-token data proportional to cluster size), motivated by the observation that longer-text training benefits weaker base models.",
+      "evaluation": "On WildChat, token-length selection average 55.51 surpasses fine-tuning on the entire dataset (54.58); results superior to other methods for Llama3 on both OpenHermes and WildChat; noted as especially beneficial for weaker BASE models like Llama3-8B.",
+      "domain": "LLM supervised fine-tuning / data selection",
+      "source_quote": "we find that it is useful to utilize token length as a criterion to conduct data filtering, yielding stable and efficient results for SFT when dealing with large-scale IT data.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Previous work (Liu et al., 2023) has demonstrated the benefit of long texts training for models on subjective evaluation tasks such as MTbench (Zheng et al., 2023) and AlpacaEval (Li et al., 2023c), we have further confirmed the positive effect of long texts training on objective evaluation tasks, such as Big-Bench-Hard (Suzgun et al., 2022).",
+      "section": "related work"
+    },
+    {
+      "quote": "Different from Qin et al. (2024), we believe that the influence of a datapoint in the target dataset is also a reflection of data quality, especially in practical scenarios, where we are required to deal with diverse tasks rather than a single task. We thus regard the influence as a quality category as well.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Explicitly a negative/critical-audit paper (rejected at ICLR 2025). Central finding is a NEGATIVE result about the field: existing self-scoring SFT data-selection methods do NOT significantly beat random selection at million-scale, and some are worse than the worst random run (Cross-Entropy 54.02 vs 57.04). Trade-offs discussed: diversity-based selection beats quality-based but is time/memory expensive; NUGGETS baseline abandoned because it needed >2000 GPU-hours even on 40 A100s. Token-length selection only modestly beats full-data training (55.51 vs 54.58) and is 'not optimal on every model'. Counterintuitive finding: noisier WildChat data yields better average results than higher-quality OpenHermes, attributed to longer token length.",
+  "extractor": "human-baseline-batch16",
+  "date": "2026-07-07"
+}

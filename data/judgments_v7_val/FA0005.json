@@ -1,0 +1,357 @@
+{
+ "paper_id": "FA0005",
+ "title": "Selective Delexicalization to Defend Structured-Output LLM APIs from Control-Plane Jailbreaks",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "consensus_state": "facet-novel",
+   "prompt_version": "v7",
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "**Purpose:**  \nPaper [1] explicitly addresses control-plane vulnerabilities in structured-output APIs, introducing the Constrained Decoding Attack (CDA) as a new jailbreak class targeting the control plane. This aligns with the contribution's purpose of pinpointing where control-plane jailbreaks enter structured-output APIs, as both focus on identifying vulnerabilities in the control plane of structured-output APIs.  \n\n**Mechanism:**  \nNo prior paper explicitly describes an ablation analysis separating metadata removal from literal delexicalization in JSON schema sanitization. While papers like [4], [12], and [24] discuss sanitization techniques, none of them specifically focus on the separation of metadata removal and literal delexicalization in the context of JSON schema sanitization.  \n\n**Evaluation:**  \nPaper [1] uses grammar-guided decoding to identify control-plane vulnerabilities, but it does not employ the specific ablation analysis described in the contribution. Papers like [4], [12], and [24] discuss sanitization and attack mitigation but do not use the same evaluation design of ablation analysis to identify the specific attack vector (forced enum/const literals). Thus, the evaluation design appears to be novel.  \n\n**Domain:**  \nPaper [1] explicitly addresses LLM security in structured-output APIs, which matches the contribution's domain. Other papers, such as [3], [4], and [12], also focus on LLM security in structured-output APIs, confirming that this domain is covered.  \n\n**Verdict Lines:**  \nVERDICT purpose = 1  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 1  ",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper explicitly separates metadata removal from literal delexicalization in JSON schema sanitization.  \nFACET: evaluation | FINAL: NONE | reason: No prior paper evaluates metadata removal versus literal delexicalization for safety benefit or attack neutralization.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "**Purpose:** The contribution's purpose is to pinpoint *where* control-plane jailbreaks enter structured-output APIs so defenses can target the right component — specifically identifying forced enum/const literals as the key attack vector. Paper [1] introduces the Constrained Decoding Attack (CDA) targeting the LLM control plane via structured output APIs, and paper [3] also investigates structured output interfaces for jailbreak attacks. However, neither paper's stated purpose is to *localize* the attack entry point within the schema sanitization pipeline (metadata vs. literals) to guide defense targeting. The purpose here is a diagnostic/attribution finding about *which component* of a defense matters, not merely introducing or exploiting the attack. No prior paper pursues the same objective of isolating the causal component within schema sanitization. This is NONE.\n\n**Mechanism:** The mechanism is an ablation analysis that separates metadata removal from literal delexicalization in JSON schema sanitization. Paper [1] proposes CDA and discusses structured output vulnerabilities, and paper [3] discusses prefix-tree exploitation in structured output. Neither paper performs an ablation separating metadata removal from literal delexicalization as distinct sanitization steps. No prior paper uses this specific analytical decomposition. However, ablation analysis as a design is generic. The question is whether any prior paper performs an ablation separating components of a sanitization pipeline to isolate which sub-step provides safety benefit — none of the listed papers do this for JSON schema sanitization or any analogous pipeline decomposition at this level. NONE.\n\n**Evaluation:** The evaluation design is an ablation showing that one sub-component (metadata removal) provides no safety benefit while another (literal delexicalization) achieves complete neutralization. This is a controlled ablation/substitution experiment measuring attack success rate. Paper [1] evaluates CDA with attack success rates on structured output APIs. The generic shape (ablation + attack success rate metric) appears in [1] and [3]. The evaluation design (controlled ablation measuring attack success rate on structured output jailbreaks) is substantively present in [1], which uses the same benchmark family (structured output jailbreak evaluation) and metric semantics (attack success/neutralization rate). This counts as COVERED under the special rule — same evaluation design applied to a different specific component decomposition.\n\n**Domain:** The domain is LLM security / structured-output APIs. Papers [1] and [3] both operate squarely in this domain — LLM security with structured output APIs as the attack surface. This is clearly COVERED.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper quotes or frames the objective as pinpointing *where* control-plane jailbreaks enter structured-output APIs so defenses can target the right component. Paper [1] is the paper under review itself; papers [3] and others discuss structured-output attacks but do not frame their purpose as localizing the entry point within the API pipeline for defense targeting.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper contains any phrase or framing equivalent to an ablation that separates metadata removal from literal delexicalization as distinct sub-steps of JSON schema sanitization. None of the prior papers perform or describe such a decomposed ablation analysis."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 5
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: No prior paper reports the specific empirical finding that control-plane jailbreaks in structured-output APIs are specifically caused by forced literals (`enum`/`const`) and not other schema metadata. While paper [1] introduces the general \"control-plane attack surface\" in structured output, it does not pinpoint this specific vector, making the contribution's purpose of establishing this relationship uncovered.\n\n**mechanism**: The mechanism is a controlled ablation analysis to isolate the source of a vulnerability by comparing the effects of removing different components of a system's description. This is a standard analysis protocol, and its use to evaluate the contribution of different components of a security framework is substantively equivalent to the likely evaluation of the \"Multi‑Layer Framework\" in paper [5].\n\n**evaluation**: The evaluation design is a controlled ablation study where the safety benefit of two different sanitization strategies are compared to identify the effective one. This evaluation design—isolating component importance via ablation—is a standard protocol covered by prior work such as [5], which proposes a multi-component defense framework that would be evaluated using the same design.\n\n**domain**: The application area is security for Large Language Models that use structured-output APIs. This exact domain is explicitly established by prior work, most notably paper [1] which introduces \"Control-Plane Vulnerabilities in LLMs with Structured Output\" and paper [3] which targets \"Structured Output Interfaces\".\n\nVERDICT purpose = NONE\nVERDICT mechanism = [5]\nVERDICT evaluation = [5]\nVERDICT domain = [1]",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY [1] | reason: My initial \"NONE\" was incorrect. Paper [1] has the same objective, stating that \"the grammar-guided decoding that powers this feature opens a critical control-plane attack surface,\" which directly pinpoints a specific component in the structured-output API as the entry point for the jailbreak."
+     }
+    }
+   },
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     1
+    ],
+    "mechanism": null,
+    "evaluation": [
+     1,
+     5
+    ],
+    "domain": [
+     1
+    ]
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "consensus_state": "split",
+   "prompt_version": "v7",
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 5
+      },
+      "evaluation": {
+       "covered_by": 24
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to defend structured-output APIs against control-plane jailbreaks without requiring model retraining or incurring inference overhead. Paper [6] introduces the Constrained Decoding Attack (CDA), which specifically targets control-plane vulnerabilities in LLMs with structured output. While [6] focuses on identifying a new attack vector, it does not propose a defense mechanism. Paper [14] discusses a defense mechanism against prompt injection attacks in LLM agents but does not specifically address structured-output APIs or control-plane jailbreaks. Similarly, [20] proposes a defense against prompt injection in long-context LLMs but does not focus on structured-output APIs or control-plane jailbreaks. Therefore, no prior paper explicitly shares the same purpose at the problem-class level.\n\n### Mechanism\nThe mechanism of the contribution is Selective DeLex-JSON, a training-free schema sanitizer that flags suspicious forced literals using a conjunction-based heuristic (e.g., long values, whitespace, imperative verbs) and replaces them with opaque placeholders while preserving schema structure. Paper [5] discusses context-aware token sanitization to detect and neutralize prompt injection attacks in LLM APIs, which is conceptually similar to the proposed mechanism of sanitizing inputs to prevent attacks. Paper [20] also proposes a prompt sanitization mechanism (PISanitizer) to defend against prompt injection attacks in long-context LLMs. While the specific heuristics differ, the underlying primitive of sanitizing inputs to mitigate attacks is substantively equivalent.\n\n### Evaluation\nThe evaluation reports a 0% attack success rate on the HarmBench benchmark for two LLMs, compared to a 22% attack success rate for EnumAttack without defense, and a 1.1% benign schema modification rate. Paper [24] introduces JailbreakBench, a benchmark for evaluating jailbreak attacks on LLMs, which is likely the same benchmark family as HarmBench. While the specific benchmark instance (HarmBench) is new, the evaluation design — using a benchmark to measure attack success rates and defense efficacy — is not novel, as it is covered by [24].\n\n### Domain\nThe domain of the contribution is LLM security, specifically structured-output APIs. Paper [6] explicitly addresses control-plane vulnerabilities in LLMs with structured-output APIs, which is the same application area. Therefore, the domain is covered.\n\n---\n\n**VERDICT purpose = NONE**  \n**VERDICT mechanism = 5**  \n**VERDICT evaluation = 24**  \n**VERDICT domain = 6**  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 6 | reason: Paper [6] introduces Constrained Decoding Attack (CDA), targeting control-plane vulnerabilities in structured-output APIs, aligning with the objective of defending against control-plane jailbreaks without retraining or inference overhead. Quoted phrase: \"grammar-guided decoding that powers this feature opens a critical control-plane attack surface orthogonal to traditional data-plane vulnerabilities.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 24
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Defends structured-output APIs against control-plane jailbreaks without model retraining or inference overhead.**\n\nPaper [6] introduces the Constrained Decoding Attack (CDA) / EnumAttack targeting \"control-plane vulnerabilities in LLMs with structured output\" — this is the attack paper. It does not defend against the attack; it introduces it. Per the special rule: \"A paper that INTRODUCES an attack does NOT cover the purpose 'defend against that attack.'\" Papers [1], [4], [7], [14], [20], [25] defend against jailbreaks/prompt injection but none specifically target the control-plane/structured-output API attack surface. The purpose of defending specifically against control-plane jailbreaks in structured-output APIs (without retraining/overhead) is not covered by any prior paper.\n\n**MECHANISM: Selective DeLex-JSON — a training-free schema sanitizer that flags suspicious forced literals via a conjunction-based heuristic (long values, whitespace, imperative verbs) and replaces them with opaque placeholders preserving schema structure.**\n\nPaper [8] (MaskSQL) abstracts/masks sensitive data in SQL schemas before sending to LLMs, replacing values with placeholders — but this is for privacy, not security against jailbreaks, and targets SQL not JSON schemas. Paper [15] (Pr????mpt) sanitizes sensitive tokens in prompts by replacing them with placeholders. Paper [20] (PISanitizer) sanitizes prompts to prevent injection. Paper [5] discusses \"context-aware token sanitization.\" However, none of these use a conjunction-based heuristic specifically targeting forced literals in JSON schemas (long values + whitespace + imperative verbs) to neutralize control-plane attacks. The specific primitive of detecting and replacing suspicious enum/const literals in a structured schema using lexical heuristics is not present. The closest is [8] which replaces schema values with placeholders, but for privacy purposes. The mechanism as a whole — schema-level sanitization via lexical heuristics on forced literals — is not substantively equivalent to any prior paper's mechanism.\n\n**EVALUATION: 0% HarmBench ASR on Llama-3.1-8B and Qwen2.5-7B vs. 22% baseline, with 1.1% benign schema modification rate.**\n\nPaper [6] introduces EnumAttack and evaluates ASR on similar models. Paper [24] (JailbreakBench) establishes the benchmark/evaluation design for measuring ASR of jailbreak attacks/defenses. HarmBench is a named benchmark family used in jailbreak evaluation. The evaluation design — measuring attack success rate (ASR) on a named jailbreak benchmark (HarmBench) with a benign utility metric — is a standard design used in prior jailbreak defense papers. Papers [1], [2], [4], [6], [24] all use ASR-based evaluation on jailbreak benchmarks. This evaluation design is covered.\n\n**DOMAIN: LLM security / structured-output APIs.**\n\nPaper [6] explicitly works in \"LLM security / structured output APIs\" — \"Large Language Models (LLMs) increasingly serve as tooling platforms through structured output APIs.\" This is the same application area. Paper [1], [2], [4], [7], [10], [14] all work in LLM security broadly. Domain is covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 24\nVERDICT domain = 6",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper targets the specific objective of defending structured-output/schema APIs against control-plane jailbreaks without retraining or inference overhead. Paper [6] introduces the attack (CDA) but proposes no defense. Papers [3],[5],[7],[14],[17],[20],[25] address prompt injection defenses but not schema/grammar-guided decoding control-plane attacks specifically, and none share the same objective framing.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes anything resembling a training-free schema sanitizer that detects suspicious forced literals via a conjunction-based heuristic (long values, whitespace, imperative verbs) and replaces them with opaque placeholders while preserving schema structure. Paper [8] (MaskSQL) abstracts sensitive data in text-to-SQL for privacy, not for jailbreak defense via schema sanitization, and uses a different mechanism. No quoted phrase from any prior paper matches this specific design."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        8,
+        28
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        2,
+        24
+       ]
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: NONE. While many papers propose defenses against general jailbreaks (e.g., [1], [4], [5]), no prior paper has the specific purpose of defending against *control-plane* jailbreaks that exploit *structured-output APIs*. This vulnerability class is introduced in [6], but that paper's purpose is to introduce the attack, not to defend against it.\n\n**mechanism**: COVERED. The mechanism is a form of heuristic-based sanitization that replaces suspicious content with placeholders while preserving the overall structure. This is an instance of the general \"Content Disarm and Reconstruction\" methodology described in [28] and is substantively equivalent to the \"Abstraction\" mechanism used in [8] to \"Safeguarding Privacy for LLM-Based Text-to-SQL\".\n\n**evaluation**: COVERED. The evaluation design uses a standard metric (Attack Success Rate) on a named benchmark (HarmBench) to compare a defended system against a baseline. This protocol is standard in the field; its components are used in [2] (\"achieve 100% attack success rate\") and the general design is described in [24] (\"JailbreakBench: An Open Robustness Benchmark for Jailbreaking Large Language Models\").\n\n**domain**: COVERED. The general domain of LLM security is addressed by numerous prior papers ([1], [2], [4], [5], [7], [10], etc.). Specifically, paper [6] operates in the exact same sub-domain, as it focuses on \"Control-Plane Vulnerabilities in LLMs with Structured Output\".\n\nVERDICT purpose = NONE\nVERDICT mechanism = 8, 28\nVERDICT evaluation = 2, 24\nVERDICT domain = 6",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper proposes a defense specifically for control-plane jailbreaks that target structured-output APIs. Paper [6] introduces the attack vector (\"control-plane vulnerabilities in LLMs with Structured Output\") but its purpose is to demonstrate the attack, not to defend against it. Other defense papers ([1], [4], [5], [14], [17], [20], [25]) address general jailbreaking or prompt injection, not this specific threat, and/or incur inference overhead, which this facet explicitly avoids."
+     }
+    }
+   },
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     5,
+     8,
+     28
+    ],
+    "evaluation": [
+     2,
+     24
+    ],
+    "domain": [
+     6
+    ]
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "consensus_state": "facet-novel",
+   "prompt_version": "v7",
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to demonstrate that the defense achieves safety at a lower cost to benign usage compared to existing alternatives. None of the prior papers explicitly report or establish the same empirical relationship — i.e., the tradeoff between safety and benign usage cost for defenses. While several papers discuss LLM safety mechanisms ([7], [8], [12]), none focus on the specific relationship between safety and benign usage cost reduction. This purpose is therefore **uncovered**.\n\n#### Mechanism:\nThe mechanism involves a Pareto comparison of DeLex-JSON against a Reject-Only baseline on safety and benign schema cost. Papers [10], [16], [17], [18], and [23] discuss Pareto optimization or Pareto frontiers in various contexts, including multi-objective optimization and tradeoffs. Specifically, [10] characterizes Pareto frontiers for truthful mechanisms, [16] applies Pareto set learning in reinforcement learning, and [17] computes approximate Pareto frontiers for submodular utility-cost tradeoffs. These papers demonstrate the use of Pareto-based mechanisms across domains, making the mechanism **covered**.\n\n#### Evaluation:\nThe evaluation design involves demonstrating Pareto dominance by comparing safety and benign cost metrics (e.g., 1.1% modification vs 4.4% rejection rate) at identical safety guarantees. Papers [10], [16], [17], and [18] use Pareto-based evaluation designs to validate tradeoffs or multi-objective optimization. For example, [10] evaluates mechanisms on the Pareto frontier, [16] validates Pareto set learning, and [17] assesses submodular tradeoffs using Pareto frontiers. These prior works employ the same evaluation design (Pareto-based comparison), making the evaluation **covered**.\n\n#### Domain:\nThe contribution operates in the domain of LLM security and structured-output APIs. Papers [1], [3], [7], [8], and [12] address LLM security, including jailbreak defenses, structured output vulnerabilities, and safety alignment. While the specific sub-problem (structured-output APIs) may differ, the general application area of LLM security is well-covered by these papers. The domain is therefore **covered**.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = 10  \nVERDICT evaluation = 10  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly demonstrates achieving safety at lower cost to benign usage than existing alternatives, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 19
+      },
+      "evaluation": {
+       "covered_by": 19
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Shows the defense achieves safety at lower cost to benign usage than existing alternatives.**\n\nThis purpose is about demonstrating a favorable safety-utility tradeoff for a defense mechanism — specifically that it preserves benign functionality better than alternatives at equivalent safety. Paper [3] introduces CDA attacks and discusses defenses in structured output APIs, but its purpose is attacking, not demonstrating a defense's benign-cost advantage. Paper [7] (GuardNet) proposes a defense and evaluates it, but the purpose is proposing the defense, not specifically demonstrating Pareto-dominance over alternatives on safety vs. benign cost. Paper [15] does a comprehensive study of jailbreak attack vs. defense techniques and likely compares defenses on multiple dimensions. However, none of the prior papers specifically establish the empirical relationship \"defense X achieves same safety as alternatives while imposing lower benign usage cost\" in this domain. The closest would be [15] which compares defenses, but the specific relationship (lower benign cost at identical safety) is not established as a named finding in any prior paper listed.\n\n**MECHANISM: Pareto comparison of DeLex-JSON against a Reject-Only baseline on safety and benign schema cost.**\n\nThe mechanism is a Pareto-front comparison between two specific system configurations on two objectives (safety, benign cost). Papers [16], [17], [18], [19], [23] all use Pareto frontier analysis as a technical primitive. Paper [19] specifically uses \"The Pareto Frontier of Utility Models as a Framework for Evaluating Push Notification Systems\" — comparing systems on a Pareto frontier of two objectives. Paper [17] computes approximate Pareto frontiers for utility-cost tradeoffs. The underlying primitive (Pareto comparison of two systems on two objectives) is clearly present in multiple prior papers. The specific objectives differ, but the mechanism — pairwise Pareto dominance comparison — is the same primitive.\n\n**EVALUATION: DeLex-JSON Pareto-dominates existing defenses, reducing benign cost by 3.3 percentage points versus Reject-Only.**\n\nThe evaluation design here involves measuring two metrics (safety rate, benign modification/rejection rate) across competing defense configurations and comparing them on a Pareto frontier. This is a standard comparative evaluation design (multi-objective comparison of system variants). Paper [19] uses exactly this design — Pareto frontier of utility models as an evaluation framework. Paper [15] compares LLM jailbreak defenses using standard metrics. The evaluation design (compare defenses on safety vs. utility metrics, identify Pareto-dominant configuration) is present in prior work at the design level.\n\n**DOMAIN: LLM security / structured-output APIs.**\n\nPapers [1], [3], and [5] all work in LLM security with structured output APIs. Paper [3] explicitly targets \"structured output APIs\" and \"grammar-guided decoding\" as the application area. Paper [1] also targets \"structured output interfaces.\" This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 19\nVERDICT evaluation = 19\nVERDICT domain = 3",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper demonstrates that a defense achieves safety at lower cost to benign usage than existing alternatives. Paper [8] addresses safety-utility tradeoff framing but does not empirically show lower benign-usage cost versus alternatives; paper [7] (GuardNet) claims filtering effectiveness but does not compare utility cost against other defenses; no other paper contains this specific objective even under different terminology."
+     }
+    }
+   },
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     10,
+     19
+    ],
+    "evaluation": [
+     10,
+     19
+    ],
+    "domain": [
+     1,
+     3
+    ]
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "consensus_state": "split",
+   "prompt_version": "v7",
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 24
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**Purpose Reasoning:**  \nThe contribution's purpose is to delimit the defense's coverage, showing where syntactic sanitization breaks down. Paper [13] (\"Stronger data poisoning attacks break data sanitization defenses\") reports on the limitations of data sanitization defenses, which aligns with the same objective of identifying weaknesses in syntactic-level defenses. While the specific attack type differs, the purpose of exposing the limitations of syntactic sanitization is substantively equivalent.  \n\n**Mechanism Reasoning:**  \nThe contribution's mechanism involves characterizing chunked-payload attacks that evade syntactic-level detection. Paper [8] (\"IP FRAGMENTATION–BASED ATTACKS AND PROTECTION MECHANISMS IN DISTRIBUTED AND HETEROGENEOUS NETWORK SYSTEMS\") discusses evasion techniques using fragmented payloads to bypass detection systems, which is substantively equivalent to the primitive of exploiting payload chunking to evade syntactic-level defenses.  \n\n**Evaluation Reasoning:**  \nThe evaluation documents the limitation of syntactic-level defenses against chunked-payload attacks, motivating future semantic-level detection methods. Paper [24] (\"Evasion Techniques Efficiency Over The IPS/IDS Technology\") evaluates evasion techniques against intrusion detection systems, using a similar evaluation design to demonstrate the limitations of syntactic-level defenses. The evaluation design of documenting limitations aligns, even though the specific attack type differs.  \n\n**Domain Reasoning:**  \nThe contribution operates in the domain of LLM security and structured-output APIs. Paper [9] (\"When Grammar Guides the Attack: Uncovering Control-Plane Vulnerabilities in LLMs with Structured Output\") addresses vulnerabilities in structured-output APIs of LLMs, which is substantively equivalent to the same application area.  \n\n**Verdicts:**  \nVERDICT purpose = 13  \nVERDICT mechanism = 8  \nVERDICT evaluation = 24  \nVERDICT domain = 9  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": 9
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Delimits the defense's coverage, showing where syntactic sanitization breaks down.**\n\nThe purpose is to characterize the failure boundary of syntactic-level defenses against chunked-payload attacks. Paper [9] (\"When Grammar Guides the Attack\") directly addresses control-plane vulnerabilities in LLMs with structured output APIs, and discusses how grammar-guided decoding creates attack surfaces. Paper [17] (\"Obfuscated Activations Bypass LLM Latent-Space Defenses\") shows where a class of defenses breaks down. Paper [13] (\"Stronger data poisoning attacks break data sanitization defenses\") explicitly shows where sanitization defenses fail. However, none of these specifically target *syntactic sanitization* in the LLM structured-output context. Paper [9] is the closest — it introduces the attack class (CDA) in the same domain and discusses defense implications. The purpose of delimiting syntactic defense coverage against chunked payloads in structured-output LLM APIs appears most directly addressed by [9], which characterizes the attack surface and implicitly shows where syntactic defenses fail.\n\n**MECHANISM: Characterization of chunked-payload attacks that evade syntactic-level detection.**\n\nPaper [9] introduces Constrained Decoding Attack (CDA) targeting grammar-guided decoding in structured output APIs — this is the same domain and closely related mechanism. Paper [2] (\"Detecting evasion attacks at high speeds without reassembly\") and [25] (\"Packet Fragmentation Attacks vs. Snort\") deal with fragmentation/chunking to evade IDS detection — the primitive of splitting a payload across chunks to evade syntactic detection is substantively equivalent. Paper [24] also examines fragmentation-based evasion over IPS/IDS. The chunked-payload evasion of syntactic detection is a well-known primitive in network security (fragmentation attacks), covered by [2], [25], [24]. Paper [9] covers it in the LLM structured-output domain specifically.\n\n**EVALUATION: Documents the limitation of syntactic-level defenses against chunked-payload attacks, motivating future semantic-level detection.**\n\nThe evaluation design here is a qualitative/descriptive characterization of defense limitations with no headline metric — essentially a controlled demonstration that a defense fails on a specific attack class. Paper [9] performs exactly this kind of evaluation in the same domain (structured output LLM APIs), demonstrating attack success and discussing defense implications. Paper [17] similarly documents where latent-space defenses fail. The evaluation design (demonstrate defense failure, motivate alternative approach) is used in [9] and [17]. This is a standard \"show the defense fails\" evaluation design present in multiple prior papers.\n\n**DOMAIN: LLM security / structured-output APIs.**\n\nPaper [9] explicitly operates in \"LLM structured output APIs\" and \"grammar-guided decoding\" — exactly the same domain. Paper [4] covers LLM security broadly. Paper [7] covers LLM guardrails. The domain is clearly covered by [9].\n\nVERDICT purpose = 9\nVERDICT mechanism = 9\nVERDICT evaluation = 9\nVERDICT domain = 9",
+      "stage2": ""
+     }
+    }
+   },
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     9,
+     13
+    ],
+    "mechanism": [
+     8,
+     9
+    ],
+    "evaluation": [
+     9,
+     24
+    ],
+    "domain": [
+     9
+    ]
+   }
+  }
+ ]
+}

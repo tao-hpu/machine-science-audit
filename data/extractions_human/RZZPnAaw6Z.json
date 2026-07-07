@@ -1,0 +1,35 @@
+{
+  "paper_id": "RZZPnAaw6Z",
+  "title": "Self-rationalization improves LLM as a fine-grained judge",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "Improve LLM-as-a-judge models' scoring on fine-grained customizable (Likert-scale, arbitrary-criteria) evaluation without requiring extra human-annotated preference data",
+     "mechanism": "Self-Rationalization / Self-Rationalizing Evaluators (SRE): start from an SFT seed judge, have it generate N judgements (each a rationale followed by a score) per input, curate preference pairs from its own judgements (Correct-Answer pairing with score margin), and iteratively fine-tune via DPO",
+     "evaluation": "Base seed LLaMA-3.1-8B-Instruct; two DPO iterations. On BigGen Bench and Reward Bench the SRE judge outperforms larger models trained with SFT+rationale, self-consistency, or best-of-N by 3% to 9%",
+     "domain": "LLM evaluation / LLM-as-a-judge alignment",
+     "source_quote": "We introduce Self-Rationalization, an iterative process of improving the rationales for the judge models, which consequently improves the score for fine-grained customizable scoring criteria ... Self-rationalization works by having the model generate multiple judgments with rationales for the same input, curating a preference pair dataset from its own judgements, and iteratively fine-tuning the judge via DPO.",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "Show that self-rationalization improves rationale quality, and that better rationales causally improve scoring",
+     "mechanism": "Human evaluation (three annotators) comparing SRE rationales against SFT and Best-of-N baselines; analysis including margin=0 setting where chosen and rejected scores are equal but chosen rationale is higher quality",
+     "evaluation": "Win rate 62% on average vs SFT-on-rationale; annotators preferred SRE rationales over SFT in 55% of cases and over Best-of-N in 69% of cases (BigGen + Feedback Bench)",
+     "domain": "LLM evaluation / LLM-as-a-judge alignment",
+     "source_quote": "human evaluation shows that our judge model learns to produce higher quality rationales, with a win rate of 62% on average compared to models just trained via SFT on rationale.",
+     "type": "finding"},
+    {"id": "C3",
+     "purpose": "Understand which preference-data curation strategies and training methods drive judging gains",
+     "mechanism": "Ablations over preference-selection heuristics (Correct-Answer pairing with margin thresholds >=1 and >=2, self-consistency/majority voting, meta-judge) and over SFT vs DPO with/without rationales, evaluated on Reward Bench and BigGen Bench",
+     "evaluation": "High margin threshold (>=2) consistently best; self-consistency and meta-judge both sub-optimal; DPO with rationales beats SFT and self-consistency; long rationales dilute the score training signal (reinforcing Chen et al. 2024)",
+     "domain": "LLM evaluation / LLM-as-a-judge alignment",
+     "source_quote": "the self-consistency mechanism showed sub-optimal performance, suggesting that majority-voted judgments do not align well with ground truth ... Similarly, meta-judge approach also performed worse than margin based approach.",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "Critique-out RMs (Ankner et al., 2024) demonstrate that generating rationales before the scalar reward enhances the model's capabilities. However, these models are constrained by their reliance on predefined evaluation task(s), lacking the flexibility to adapt to custom metrics", "section": "related work"},
+    {"quote": "another line of research explores using a seed model to create chain-of-thought rationales and answers to generate a preference dataset and train using DPO (Pang et al., 2024). Furthermore, another study focused on a judge for pairwise (preference) evaluation and adding noise to prompts to self-curate datasets for DPO training (Wang et al., 2024a).", "section": "related work"},
+    {"quote": "(Wu et al., 2024) present a method that in part creates a judge, using DPO, to improve their conversational and reward model. Nonetheless, the main focus of the authors is on improving the conversational model's capabilities, rather than the judge's abilities to provide high quality rationales", "section": "related work"}
+  ],
+  "notes": "Reported reject. Positioned as extension of self-curation/self-rewarding DPO lines (Yuan et al. 2024, Pang et al. 2024, Wang et al. 2024a) and critique/generative-verifier reward modeling. Negative/sub-optimal results explicitly reported: self-consistency preference curation was sub-optimal (majority-voted labels are noisy); meta-judge worse than margin-based (base SFT model not capable enough); long rationales dilute the score training signal; SRE prompted to output score-only performs significantly worse than SFT prompted the same way, underscoring rationales are load-bearing.",
+  "extractor": "human-baseline-batch7",
+  "date": "2026-07-07"
+}

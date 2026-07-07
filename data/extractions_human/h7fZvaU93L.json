@@ -1,0 +1,35 @@
+{
+  "paper_id": "h7fZvaU93L",
+  "title": "Semantically Consistent Video Inpainting with Conditional Diffusion Models",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "克服现有 optical-flow / attention 型 content-propagation 视频修复方法的固有局限——当需要合成其他帧中不存在的新内容（如被长时间遮挡物体的外观/行为）时它们会失败",
+     "mechanism": "把视频修复重新表述为 conditional generative modeling 问题，用 conditional video diffusion model（4-D U-Net，交替 spatial/temporal attention）求解；引入修复专用的采样方案捕捉长程时序依赖，并设计一种在残缺帧上对已知像素做条件化的新方法",
+     "evaluation": "与 4 个 SOTA 方法（ProPainter、E2FGVI、FGT、FGVC）在三个自建数据集上用 DEVIL 评测套件比较（PSNR/SSIM/LPIPS/PVCS/FID/VFID/Ewarp）；除 Ewarp 外在所有指标、所有数据集上均优于基线，常有显著优势",
+     "domain": "计算机视觉 / 视频修复",
+     "source_quote": "We reframe video inpainting as a conditional generative modeling problem, and present a framework for solving this problem using conditional video diffusion models. We introduce inpainting-specific sampling schemes which capture crucial long-range dependencies in the context, and devise a novel method for conditioning on the known pixels in incomplete frames.",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "证明生成式方法能对可见信息极少甚至不可见的被遮挡物体生成语义一致、跨长时程连贯的补全，这是现有文献不具备的能力",
+     "mechanism": "利用 long-range temporal attention 在内存受限、无法联合建模所有帧的情况下，仍生成长时程语义一致的修复物体行为",
+     "evaluation": "定性 + 定量：Fig.1 中被完全遮挡的车辆被合理补全并随时间传播，而最强基线 ProPainter 中该车逐渐消失；采样方案消融见 Table 2（Traffic-Scenes 测试集）",
+     "domain": "计算机视觉 / 生成模型",
+     "source_quote": "We demonstrate how to use long-range temporal attention to generate semantically consistent behaviour of inpainted objects over long time horizons, even when our model cannot jointly model all frames due to memory constraints. We can do this even for inpainted objects that have limited or no visibility in the context, a quality not present in the current literature.",
+     "type": "finding"},
+    {"id": "C3",
+     "purpose": "为需要合成新内容的视频修复任务提供公开基准（现有 YouTube-VOS/DAVIS 偏向 content-propagation 擅长的物体移除任务）",
+     "mechanism": "改编 BDD100K 驾驶视频数据集构建 BDD-Inpainting，256x256，含两个测试集（grid/line/box 掩码；以及更难的 blob 掩码），并另提出共三个新的大规模视频修复数据集/任务",
+     "evaluation": "定性资源：两个测试集各 100 个 video-mask 对；含处理原始 BDD100K 与生成掩码的代码，将随发表公开",
+     "domain": "计算机视觉 / 数据集基准",
+     "source_quote": "We release the BDD-Inpainting dataset, a large scale video inpainting dataset with two test sets representing a challenging new benchmark for video inpainting methods.",
+     "type": "resource"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "This work takes inspiration from the recent success of diffusion models for image inpainting. ... those that explicitly train a conditional diffusion model which ... enables exact sampling from the conditional distribution (Saharia et al., 2022). In this work we extend the latter approach to video data.", "section": "related work"},
+    {"quote": "We follow the majority of these approaches in using a 4-D U-Net (Ronneberger et al., 2015) architecture to parameterize eps_theta. Alternating spatial and temporal attention blocks within the U-Net capture dependencies within and across frames respectively, with relative positional encodings (Shaw et al., 2018; Wu et al., 2021).", "section": "related work"},
+    {"quote": "We adapt the BDD100K (Yu et al., 2020) dataset for video inpainting.", "section": "experiments/datasets"}
+  ],
+  "notes": "方法+资源型论文（reject）。明确的 trade-off/负结果：在 Ewarp（warping error）这一指标上劣于基线，作者归因于竞争方法显式补全 optical flow field 从而针对性优化 Ewarp。此外 Table 1 只在自建数据集上评测、未在标准 YouTube-VOS/DAVIS 上报告（作者论证这些标准集偏向 propagation 型方法擅长的物体移除），Inpainting-Cars 任务因无合适现有方法而未做对比。方法本身是把图像 conditional diffusion inpainting (Saharia 2022) 扩展到视频。",
+  "extractor": "human-baseline-batch2",
+  "date": "2026-07-07"
+}

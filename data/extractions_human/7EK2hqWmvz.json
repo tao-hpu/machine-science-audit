@@ -1,0 +1,37 @@
+{
+  "paper_id": "7EK2hqWmvz",
+  "title": "RAEE: A Robust Retrieval-Augmented Early Exit Framework for Efficient Inference",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Accelerate LLM inference via early exit without the training overhead of classifier-based early-exit frameworks, which need costly classifier training and only reach comparable performance at best.",
+      "mechanism": "Model early exit as a distribution-prediction problem: collect exit information (layer indexes and correct-prediction probabilities) into a retrieval database built with approximate nearest-neighbor indexing (FAISS); at inference, retrieve top-k similar data's exit information (k=12, threshold T=0.9) and use distance-weighted voting to predict the exit layer for the backbone model, requiring no parameter updates.",
+      "evaluation": "Eight GLUE downstream tasks with backbones RoBERTa-Large, T5-Large, Llama-3-8B, Gemma-7B. RAEE achieves best average zero-shot performance (63.41 with RoBERTa-Large vs 36.28 for the comparison baseline); reduces inference latency by nearly half on billion-level backbones; retrieval-database build cost under 2 minutes on one RTX 4090.",
+      "domain": "Efficient LLM inference / early exit",
+      "source_quote": "We propose a robust retrieval-augmented early exit framework, RAEE, which leverages an external database to guide the early exit;",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Empirically demonstrate that retrieval-guided early exit accelerates inference while retaining (or improving) accuracy.",
+      "mechanism": "Comprehensive comparison against pretrained, training-free, and semi-training early-exit baselines plus ablations on database composition and exit-layer analysis.",
+      "evaluation": "RAEE consistently improves performance over SOTA early-exit frameworks across eight tasks; ablation (RAEE w/o, database built only on correctly-predicted examples) shows gains come from including exit information of examples the backbone fails on but intermediate layers predict correctly.",
+      "domain": "Efficient LLM inference",
+      "source_quote": "Experimental results show that the proposed RAEE can accelerate the model inference and achieve robust performance.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Instead of training a neural network as classifiers, (Fan et al., 2024) only fit the machine learning classifiers on the extracted features for the early exit. ... Different from those works, our method does not require training the classifier. (Sun et al., 2022) proposes a hash-based early exit method ... Our method predicts exit layers using pre-built databases, resulting in better generalization.",
+      "section": "related work"
+    },
+    {
+      "quote": "Current works mostly leverage external knowledge databases to augment generator models on various text-generation tasks ... Those works focus on improving the model's generation quality, while our work aims to use the retrieval knowledge to accelerate the model's inference.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Trade-off / comparable results reported: on million-level backbones (RoBERTa-Large, ElasticBERT-Large, T5-Large) RAEE only achieves COMPARABLE inference efficiency, not acceleration, since adding early-exit components can degrade efficiency when the backbone is already fast; acceleration is significant only on billion-level backbones. AdaInfer is much faster than RAEE (with Llama-3-8B / Gemma-7B) but only reaches comparable-to-baseline accuracy. Paper decision: reject.",
+  "extractor": "human-baseline-batch3",
+  "date": "2026-07-07"
+}

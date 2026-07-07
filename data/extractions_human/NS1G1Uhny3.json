@@ -1,0 +1,42 @@
+{
+  "paper_id": "NS1G1Uhny3",
+  "title": "Efficiently Learning at Test-Time: Active Fine-Tuning of LLMs",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "Show that the prevailing Nearest Neighbor (NN) retrieval approach to selecting fine-tuning data is fundamentally insufficient because it selects redundant/duplicated data, limiting or even hurting fine-tuning performance.",
+     "mechanism": "Theoretical analysis: prove that selecting the top-N highest-scoring points from a large dataset under a fixed scoring function leads to redundant data selection; derive an anytime high-probability bound on the total-variation distance between the model's response distribution and ground truth governed by response uncertainty.",
+     "evaluation": "Formal proof (Sec 2). Empirically, NN's failure mode (repeatedly selecting the same/closest point) consistently performs worse than the base model on the Pile (Fig 1, Fig 5).",
+     "domain": "Data selection for LLM fine-tuning / test-time fine-tuning",
+     "source_quote": "Nearest Neighbor retrieval is insufficient (§2): We prove that selecting the top-N highest scoring points from a large dataset according to a fixed scoring function leads to the selection of redundant data.",
+     "type": "finding"},
+    {"id": "C2",
+     "purpose": "Provide a data selection algorithm that avoids redundancy and provably reduces uncertainty about the model's response to a prompt, unifying retrieval and active learning.",
+     "mechanism": "SIFT (Selects Informative data for Fine-Tuning), built on transductive active learning (Hubotter et al., 2024): defines uncertainty about the response to the prompt and greedily selects data that maximizes overall information gain / minimizes this uncertainty, accounting for information duplication; proven statistical rate O(1/sqrt(n)) for uncertainty reduction down to an irreducible uncertainty. Compute-efficient: pre-select 200 NN candidates via Faiss then pick 50, with negligible overhead.",
+     "evaluation": "Prompt-specific test-time fine-tuning on the Pile (210M-sequence / 1.3TB data space, 17 sub-datasets), single gradient step per selected point, bits-per-byte metric. SIFT consistently >= strongest baseline (within error) on all Pile datasets with GPT-2 (124M), GPT-2-large (774M), and Phi-3 (3.8B, LoRA <1% params); relative gains grow with model capability.",
+     "domain": "Test-time / active fine-tuning of LLMs, language modeling",
+     "source_quote": "We propose SIFT, an algorithm that selects data which reduces uncertainty about the response to the prompt. We prove statistical rates for the uncertainty reduction (§4.1) and show that SIFT is compute-efficient, with minimal overhead compared to Nearest Neighbor retrieval (§4.2).",
+     "type": "method"},
+    {"id": "C3",
+     "purpose": "Show that response-uncertainty estimates predict the performance gain of test-time fine-tuning, enabling compute spent proportional to realized gains (adaptive stopping).",
+     "mechanism": "Correlate the (test-time-computable, embedding-derived) uncertainty estimate with post-fine-tuning bits-per-byte; build an adaptive algorithm that stops fine-tuning per-prompt based on the uncertainty estimate.",
+     "evaluation": "Normalized uncertainty sigma_n correlates ~0.4 (denormalized ~0.5) linearly with bits-per-byte error on GPT-2. Adaptive SIFT spends compute proportional to realized performance gain. Best Phi-3 (3.8B) + SIFT reaches 0.595 bits/byte, beating the previous Pile-benchmark leader (a 30x larger model); Llama-3.2 (3B) reaches 0.557, a new SOTA.",
+     "domain": "Adaptive test-time compute allocation for LLMs",
+     "source_quote": "SIFT can invest test-time compute proportionally to performance gains (§6): We observe that our uncertainty estimates can accurately predict the performance gain of test-time fine-tuning. Motivated by this, we dynamically adapt compute to the expected performance gain.",
+     "type": "finding"},
+    {"id": "C4",
+     "purpose": "Provide a usable tool for the community.",
+     "mechanism": "Release the activeft (Active Fine-Tuning) Python library as a drop-in replacement for Nearest Neighbor retrieval.",
+     "evaluation": "Qualitative; library released alongside the paper.",
+     "domain": "Software / tooling for LLM fine-tuning",
+     "source_quote": "We provide the activeft (Active Fine-Tuning) library which can be used as a drop-in replacement for Nearest Neighbor retrieval.",
+     "type": "resource"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "We bridge this gap by unifying ideas from retrieval and active learning in SIFT, an algorithm based on emerging literature on transductive active learning (Hübotter et al., 2024) that Selects Informative data for Fine-Tuning", "section": "introduction"},
+    {"quote": "We define test-time fine-tuning of LLMs (Hardt & Sun, 2024) as follows... Previous works on data selection for fine-tuning LLMs have fundamentally relied on Nearest Neighbor retrieval within some embedding space (Hardt & Sun, 2024; Xia et al., 2024). ... We use the same embedding model as Hardt & Sun (2024) which is a large Roberta model", "section": "related work"},
+    {"quote": "SIFT can be seen as a generalization of Nearest Neighbor retrieval from a search method to a learning method, which ensures explicitly that the retrieved data is maximally informative.", "section": "conclusion"}
+  ],
+  "notes": "Interesting mixed/nuanced findings: (1) NN's failure mode performs WORSE than the base model (a genuine negative result for the baseline). (2) Robustness (Insight 2): SIFT is on-par-or-better than NN for lambda' in [1e-8, 10] across all Pile datasets; on some prompts where SIFT selects only a single point it still beats NN, and repeatedly stepping on the closest neighbor is sometimes beneficial (SIFT detects these). (3) fine-tuning outperforms or is on-par with in-context learning; >25% gain on math/coding. (4) Correlation of uncertainty with performance is only moderate (~0.4-0.5). Caveat: irreducible aleatoric uncertainty is not captured by the epistemic estimate; evaluations are on language-modeling (bits-per-byte) only, not downstream accuracy tasks. Paper was rejected despite strong results.",
+  "extractor": "human-baseline-batch11",
+  "date": "2026-07-07"
+}

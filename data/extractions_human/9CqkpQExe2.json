@@ -1,0 +1,46 @@
+{
+  "paper_id": "9CqkpQExe2",
+  "title": "Ada-K Routing: Boosting the Efficiency of MoE-based LLMs",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Improve the efficiency/performance balance of MoE-based LLMs, whose conventional static Top-K routing activates a fixed equal number of experts per token regardless of token importance.",
+      "mechanism": "Ada-K routing: a dynamic per-token strategy that adjusts the number of activated experts. A pluggable, lightweight learnable allocator module outputs a distribution over expert counts and samples the count for each token, replacing fixed Top-K.",
+      "evaluation": "Vs Top-K across four MoE-based LLMs (14.3B to 140B params): reduces activated experts by 30-40%, over 25% FLOPs reduction, over 20% inference speedup, while improving performance across benchmarks.",
+      "domain": "Efficient MoE LLM inference",
+      "source_quote": "We propose a dynamic Ada-K routing strategy that adjusts the activated experts number on a per-token basis to enhance the conventional Top-K routing. Compared to Top-K routing, Ada-K routing manages to save over 25% FLOPs and achieve more than 20% acceleration in inference, while enhancing performance.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Train the allocator despite the expert-count sampling operation being non-differentiable, and keep training cheap.",
+      "mechanism": "An RL-based end-to-end training framework using Proximal Policy Optimization (PPO) to optimize the lightweight allocator modules for the non-differentiable decision-making of expert allocation.",
+      "evaluation": "Highly training-efficient: only ~2M tunable parameters; training under 8 hours for all baselines, including Mixtral-8x22B (>140B params).",
+      "domain": "Efficient MoE LLM training",
+      "source_quote": "We introduce a learnable and lightweight allocator module that determines the optimal number of activated experts for each token through end-to-end training. Reinforcement learning techniques have been carefully designed and introduced to facilitate the training of this non-differentiable decision-making framework.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Understand and validate what drives adaptive expert allocation, providing design insights.",
+      "mechanism": "Detailed quantitative and qualitative analysis of Ada-K allocation at the task, layer, and token levels across four MoE LLMs.",
+      "evaluation": "Consistent advantages over baselines; analysis finds harder tasks, middle layers, and content words tend to activate more experts.",
+      "domain": "Efficient MoE LLM inference / interpretability of routing",
+      "source_quote": "We extensively evaluate our method across four popular MoE-based LLMs, ranging from 14.3B to 140B parameters. Ada-K routing demonstrates consistent advantages over these baselines. The effectiveness of our proposed method is further validated by extensive qualitative analyses.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "The most common routing strategy is Top-K routing (Shazeer et al., 2017b). ... In our study, we introduce a parameter-efficient and data-efficient training framework that introduces lightweight learnable modules, i.e. allocators. These allocators seamlessly work with routers to dynamically assign expert resources across individual tokens.",
+      "section": "related work"
+    },
+    {
+      "quote": "we employ the Proximal Policy Optimization (PPO) algorithm (Stiennon et al., 2020; Nakano et al., 2021) to optimize the allocators end-to-end, towards ideal balance between model performance and efficiency.",
+      "section": "introduction"
+    }
+  ],
+  "notes": "Positive results throughout; the method is framed as strictly improving on Top-K (both efficiency and performance). Note the two headline efficiency numbers are stated slightly differently in abstract vs contributions (abstract: 30-40% fewer activated experts / >25% FLOPs / >20% speedup). No negative or trade-off result reported for the proposed method.",
+  "extractor": "human-baseline-batch14",
+  "date": "2026-07-07"
+}

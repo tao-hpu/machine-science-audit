@@ -1,0 +1,35 @@
+{
+  "paper_id": "1qP3lsatCR",
+  "title": "NetMoE: Accelerating MoE Training through Dynamic Sample Placement",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "从此前未被探索的\"训练样本视角\"加速 MoE 训练中的 All-to-All 通信瓶颈",
+     "mechanism": "提出 NetMoE:结合专家路由的数据局部性与训练设备的网络局部性,根据每层路由结果动态重排样本placement,把跨节点通信转成节点内通信/设备内内存拷贝,不改变计算结果",
+     "evaluation": "32 张 A800 GPU(4 节点 x 8 GPU,NVLink 400GB/s / InfiniBand 100GB/s)上以 GPT 架构(FFN 全替换为 MoE 层)训练,最高训练效率提升 1.67x",
+     "domain": "分布式深度学习 / MoE 训练系统",
+     "source_quote": "We propose NetMoE, the first effort that leverages both the data locality and network locality to accelerate the All-to-All communication through dynamic sample placement.",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "解决\"如何调整样本placement以最大化效率\"这一复杂且此前未解的问题",
+     "mechanism": "重新审视 All-to-All 通信的 α-β 代价建模,把动态样本placement形式化为组合优化(整数规划)问题,目标是给定专家路由下找最优placement",
+     "evaluation": "定性/形式化建模;通信按 intra-device/intra-node/inter-node 三类信道建模(Table 2 列带宽)",
+     "domain": "分布式深度学习 / 组合优化",
+     "source_quote": "We formulate the dynamic sample placement problem as a combinatorial optimization problem, which aims to find the best sample placement that maximizes efficiency given the expert routing.",
+     "type": "method"},
+    {"id": "C3",
+     "purpose": "保证每层每次迭代都能实时求解 placement",
+     "mechanism": "把问题拆成两个阶段以简化求解,设计多项式时间算法在训练中即时推导 placement",
+     "evaluation": "与 SOTA 动态专家placement方法对比:相比 FastMoE 加速最高 1.67x、FasterMoE 1.37x、SmartMoE 1.33x(Fig.6,结果平均 50 次迭代);实际 All-to-All 加速略低于 solver 理论值",
+     "domain": "分布式深度学习 / 算法",
+     "source_quote": "We dissect the problem into two stages and develop a polynomial-time solution to efficiently derive the sample placement during training.",
+     "type": "method"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "To achieve load balancing, existing methods propose techniques from the model perspective (Nie et al., 2023; Lewis et al., 2021). Typically, they either dynamically adjust the model placement but introduce a lot of additional communication, or modify the model definition but sacrifice the model performance ... Yet optimization from the data perspective is under explored.", "section": "introduction"},
+    {"quote": "We compare NetMoE with state-of-the-art methods based on dynamic expert placement, including FasterMoE (He et al., 2022) and SmartMoE (Zhai et al., 2023). We also included FastMoE (He et al., 2021) to represent a baseline without adjusting the placement of experts or samples.", "section": "experiments"},
+    {"quote": "we follow prior works He et al. (2022); Nie et al. (2023) to record the distribution of expert selection across different iterations in order to describe the routing distribution.", "section": "appendix/experiments"}
+  ],
+  "notes": "定位为对现有\"模型视角\"负载均衡方法(FasterMoE/SmartMoE)的正交补充,改从数据(样本)视角优化,基于 FastMoE/FasterMoE 系统之上。作者主动标注 caveat:实际 All-to-All 加速略小于 solver 理论最优,归因于建模假设理想条件、未计入路由冲突与硬件误差。加速比随模型 hidden dim 增大而在各方法间变化。实验范围自限于 <=8 GPU/节点(称 superpod 场景罕见且昂贵)。未见明确负结果/平局,NetMoE 在各设置下均报告为最优。",
+  "extractor": "human-baseline-batch20",
+  "date": "2026-07-07"
+}

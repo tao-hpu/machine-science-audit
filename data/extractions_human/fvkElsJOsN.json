@@ -1,0 +1,50 @@
+{
+  "paper_id": "fvkElsJOsN",
+  "title": "Eliminating Position Bias of Language Models: A Mechanistic Approach",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "从机制上理解并消除（而非仅缓解）语言模型的位置偏差——即模型按内容在上下文中的位置而非内容本身赋予优先级，损害性能/鲁棒性/可靠性",
+      "mechanism": "机制分析将位置偏差归因于近乎所有 SOTA LM 共有的两个组件：因果注意力（causal attention）与位置编码（RoPE）。分析其他 Transformer 操作在位置改变时不改变表示",
+      "evaluation": "定性/机制分析 + 动机实验：RewardBench 中位置偏差普遍，最高达 48.0%，平均可影响约 10% 数据；因果注意力偏好远端内容，RoPE 偏好近端（recency bias）",
+      "domain": "语言模型可解释性 / 位置偏差",
+      "source_quote": "We first revisit the causes of position bias in transformers: causal attention and position encoding (Section 3.2)",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "提出一个 training-free / zero-shot 方法消除文档级位置偏差，使推理对文档相对顺序不变",
+      "mechanism": "PINE（Position-INvariant inferencE）：把文档间因果注意力改为双向注意力，用模型注意力值计算文档重要性分数并重新分配文档位置（丢弃输入顺序）。给出可消除位置偏差的证明；额外复杂度 O(nk log k)",
+      "evaluation": "在 LM-as-a-judge、RAG-QA、分子生成、数学推理四类任务上评估（Llama-3、Qwen-1.5/2.5 多尺寸）；wall time 为 vanilla 的 2x（judge）/8x（20 文档 RAG-QA）",
+      "domain": "语言模型推理 / 无训练去偏",
+      "source_quote": "then propose a training-free approach dubbed PINE that can eliminate (with proof) the position bias given documents presumed to be position-invariant (Section 3.3).",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "证明消除位置偏差能在通用域与专家域（化学、数学）任务上一致提升下游性能与可靠性",
+      "mechanism": "在四类下游任务跨模型/尺寸做主实验与消融（对比 masked vs 双向注意力、不同位置重分配策略）",
+      "evaluation": "评估推理对时 PINE 一致带来 8-10 个百分点提升，使 Llama-3-70B-Instruct 在 RewardBench reasoning 上超过 GPT-4-0125-preview 与 GPT-4o；RAG-QA 平均与 vanilla 持平（10/20 文档差距 +1.2/-2.0）但不受最坏情况影响；QM9 分子生成、数学推理均有增益",
+      "domain": "LLM 评估 / RAG / 分子生成 / 数学推理",
+      "source_quote": "Four popular tasks across the general domain to expert domains (chemistry and math) show PINE can bring performance gains consistently across different models and sizes.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Different from ad hoc solutions from previous works (Ratner et al., 2023; Cai et al., 2023; Hao et al., 2022; Junqing et al., 2023; Zhu et al., 2023), we seek to understand the causes of position bias and propose to eliminate (not just mitigate) the position bias without training and searching.",
+      "section": "introduction"
+    },
+    {
+      "quote": "Zheng et al. (2024a;b) use permutation then average on classification tasks, which will have unacceptable O(k!) computational overhead when k is large. Hsieh et al. (2024) assumes that the position bias and real relevance are linear combinations... Different from them, we aim to eliminate the position bias from the mechanical perspective without any assumption at a reasonable cost. Although several existing approaches are from the mechanical perspective (Ratner et al., 2023; Cai et al., 2023; Hao et al., 2022), they only perform well in classification tasks and fail in a more general setting: language generation.",
+      "section": "related work"
+    },
+    {
+      "quote": "Previous work PCW (Ratner et al., 2023) adopts a different way: it masks the inter-document attention instead of making it bidirectional... As a result, PCW performs poorly in language generation tasks (Section 4).",
+      "section": "methodology"
+    }
+  ],
+  "notes": "含多处负结果/trade-off（项目重点信号）：(1) RAG-QA 中 PINE 平均仅与 vanilla 持平，20 文档时略差 -2.0（作者归因文档重要性分数在多文档下退化）；(2) RewardBench 主表 Qwen-1.5-72B-Chat 是唯一例外，PINE 未提升（作者疑该模型训练不佳）；(3) 计算开销 2x-8x wall time；(4) 副作用：指令遵循能力变差（LLM 有时去回答用户问题而非比较两回复、或不按格式输出致解析失败），在 Safety 数据集因过度关注 helpfulness 而性能下降——但作者称去偏正效应盖过这些负效应；(5) 消融：求和会把位置偏差变成长度偏差，取 max 明显差于平均。（该论文 decision=accept）",
+  "extractor": "human-baseline-batch25",
+  "date": "2026-07-07"
+}

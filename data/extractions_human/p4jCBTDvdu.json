@@ -1,0 +1,35 @@
+{
+  "paper_id": "p4jCBTDvdu",
+  "title": "MirrorCheck: Efficient Adversarial Defense for Vision-Language Models",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "Detect adversarial samples against Vision-Language Models, filling the gap that existing defenses are optimized for unimodal image classification and fall short on VLMs",
+     "mechanism": "MirrorCheck: use a Text-to-Image (T2I) model to regenerate an image from the caption the victim VLM produces, then compare embeddings of the input image and the regenerated image via cosine similarity; a low score flags an attack. Training-free, zero-shot, model-agnostic",
+     "evaluation": "ImageNet-1K clean images + adversarial examples generated per AttackVLM (perturbation bound 8, L-inf, 100-step PGD); 100 and 1000 samples. CLIP RN50 encoder detection accuracy ranges 73%-98% across victim models, outperforming baselines FeatureSqueeze, MagNet, PuVAE",
+     "domain": "Adversarial robustness / vision-language models",
+     "source_quote": "we introduce a novel method and the first of its kind, MirrorCheck, for detecting adversarial samples in VLMs and demonstrate the effectiveness of this method on different VL tasks. MirrorCheck leverages a Text-to-Image (T2I) model to generate an image based on the caption produced by the victim model ... it extracts and compares the embeddings of the input image and the generated image using cosine similarity, for which a low score indicates a potential attack.",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "Show the approach generalizes beyond VLMs to adversarial detection in image classification tasks, demonstrating adaptability and model-agnostic nature",
+     "mechanism": "Adapt MirrorCheck to classifiers by extracting the predicted class name via argmax, regenerating an image with Stable Diffusion/ControlNet, and computing similarity; compared against FeatureSqueeze and MagNet",
+     "evaluation": "CIFAR10 with DenseNet: 91.5% detection accuracy vs FeatureSqueeze 20.8% (FGSM), 87% vs 55% (BIM); ImageNet with MobileNet: 76.5% vs 43.4% (FGSM), 79.5% vs 64.4% (BIM)",
+     "domain": "Adversarial robustness / image classification",
+     "source_quote": "We also adapt our approach to detecting adversarial samples in image classification tasks and demonstrate its superior performance.",
+     "type": "method"},
+    {"id": "C3",
+     "purpose": "Demonstrate resilience of the defense against adaptive attacks where the attacker knows the defense pipeline",
+     "mechanism": "Ablation over attacker knowledge of the CLIP image encoders (RN50, RN101, ViT-B/16, ViT-B/32, ViT-L/14) and a One-Time-Use (OTU) approach that injects noise into encoder weights; measures detection accuracy under EOT-based adaptive attacks",
+     "evaluation": "Table 3 shows detection accuracy improves as the defender uses more encoders and adds OTU noise; qualitative finding that using multiple/unknown encoders makes undetectable adversarial samples hard to craft",
+     "domain": "Adversarial robustness / vision-language models",
+     "source_quote": "Empirical findings also show the resilience of our approach against adaptive attacks, positioning it as an excellent defense mechanism for real-world deployment against adversarial threats.",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "we followed the settings from Zhao et al. (2023). Specifically, we set the perturbation bound to 8 and used the L-inf constraint ... For transfer-based attacks, we used 100-step PGD for optimization.", "section": "related work"},
+    {"quote": "we compare our method's detection accuracies with baseline methods; FeatureSqueeze (FS), MagNet (MN), PuVAE (PV); which were originally proposed for classification tasks.", "section": "related work"},
+    {"quote": "we compared our results to a similar architecture built towards purification (DiffPure) Nie et al. (2022)", "section": "related work"}
+  ],
+  "notes": "Reported reject. Baselines (FeatureSqueeze, MagNet, PuVAE) are all adapted from image-classification defenses since no VLM-specific detection baseline existed. Some trade-offs/caveats noted: ViT-L/14 encoder is sensitive to low clean ratios (performance declines at 99% clean ratio) while RN50 is robust, resolved via ensemble; efficiency trade-off vs DiffPure (MirrorCheck 15s/image at 50 timesteps vs DiffPure 8s/image, but optimizable to 1.2s/image at 10 timesteps). Adaptive-attack analysis shows using a different encoder to optimize similarity degrades the attacker's main objective (a favorable trade-off for the defense).",
+  "extractor": "human-baseline-batch7",
+  "date": "2026-07-07"
+}

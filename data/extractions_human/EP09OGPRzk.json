@@ -1,0 +1,50 @@
+{
+  "paper_id": "EP09OGPRzk",
+  "title": "L-PINN: A Langevin Dynamics Approach with Balanced Sampling to Improve Learning Stability in Physics-Informed Neural Networks",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "揭示 PINN 中主流 high residual-based 自适应采样方法的隐患——相对忽略中低残差点，随模型复杂度增大会损害学习稳定性",
+      "mechanism": "理论分析：在残差为特征映射向量线性组合的假设下，证明 high residual-based 方法为维持稳定需要更紧的学习率上界（更小的可行学习率）",
+      "evaluation": "定性/理论证明 + 基于 Allen-Cahn 方程的消融（变层数、变学习率，5 随机种子）；证明高残差方法在增大隐藏层与学习率时常无法收敛到正确解",
+      "domain": "科学机器学习 / 物理信息神经网络 (PINN) / 求解 PDE",
+      "source_quote": "We provide a theoretical analysis demonstrating that high residual-based methods require tighter upper bound on the learning rate to maintain stability.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "提出兼顾稳定性与收敛速度的均衡自适应采样框架，克服高残差方法的稳定性局限",
+      "mechanism": "L-PINN：用 Langevin 动力学建模目标（残差比例）采样分布，配点按 Langevin 更新连续演化（以上一轮种群为下一轮初值），并对每轮残差梯度按最大梯度归一化以降低超参敏感性；区别于 R3/RAD（每轮多次重采样）与 L∞（每轮全初始化）",
+      "evaluation": "在 Burgers'、Convection、Allen-Cahn、Korteweg-de Vries、Schrödinger 等方程上与 Random-R、RAD、R3、L∞ 等基线对比（5 随机种子），跨 4/6/8/10 层模型复杂度",
+      "domain": "物理信息神经网络 / 自适应采样",
+      "source_quote": "we present a novel Langevin dynamics-based PINN (L-PINN) framework for adaptive sampling of collocation points, which is designed to improve learning stability and convergence speed.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "实证验证 L-PINN 的相对 L2 误差表现与跨模型复杂度的鲁棒性",
+      "mechanism": "多 PDE、多层数、多学习率的基准对比与消融研究",
+      "evaluation": "Table 1：L-PINN 在 Allen-Cahn、Schrödinger 上最佳；Burgers'/KdV 上 Random-R 第一、L-PINN 第二；Convection 上 RAD 最佳、L∞ 未收敛。整体 L-PINN 与 Random-R 表现最优。高维 Heat 2D：Random-R 最佳、L-PINN 第二。L-PINN 随层数增大仍保持稳定收敛",
+      "domain": "物理信息神经网络 / PDE 求解基准",
+      "source_quote": "Our results indicate that the L-PINN framework achieves superior relative L2 error performance in solutions while demonstrating faster or comparable convergence stability.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "unlike previous methods that directly model the distribution using residuals, we employ Langevin dynamics to model the target distribution.",
+      "section": "proposed approach"
+    },
+    {
+      "quote": "Wang et al., 2024 made a notable contribution by proposing an architecture and initialization strategy designed to enhance stability across model complexities. In contrast, this study addresses the issue from the perspective of an adaptive sampling strategy.",
+      "section": "background and related work"
+    },
+    {
+      "quote": "This differs from methods like R3 and RAD, which sample new collocation points multiple times to find high residuals. The L-PINN conducts successive sampling by using the evolving population as the initial point for the next update. It can also be compared to L∞, which fully initializes the collocation points at each iteration...",
+      "section": "proposed approach (Theorem 4.1)"
+    }
+  ],
+  "notes": "含大量诚实的混合/负结果（项目重点信号）：L-PINN 并非全面第一——Burgers'、KdV 上 Random-R 更好，Convection 上 RAD 更好，高维 Heat 2D 上 Random-R 最佳而 L-PINN 仅第二；简单的 Random-R 基线在多个任务上与/超过所有自适应方法。作者亦指出 RAD 的采样分布与 Random-R 无显著差异（无明显优势）。L-PINN 对 stiff PDE 需更小步长 T、超参敏感（靠梯度归一化缓解）。整体定位偏 'balanced sampling 优于极端 high-residual'。（该论文 decision=reject）",
+  "extractor": "human-baseline-batch25",
+  "date": "2026-07-07"
+}

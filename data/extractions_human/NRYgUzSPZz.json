@@ -1,0 +1,35 @@
+{
+  "paper_id": "NRYgUzSPZz",
+  "title": "Beyond Autoregression: Discrete Diffusion for Complex Reasoning and Planning",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "解释为何自回归(AR)模型在复杂推理/规划任务上失败,以及扩散模型为何更优",
+     "mechanism": "提出并分析'subgoal imbalance'(子目标难度不均衡)视角;在合成规划任务上给出理论与实证证据,论证扩散训练目标把难子目标分解为multi-view学习框架下多个更易学习的视图",
+     "evaluation": "合成planning任务:AR/Reverse AR在planning distance(PD)≥2时接近随机猜测;扩散模型在所有PD上达完美准确率;AR需指数级更多数据学难子目标(数据低效)",
+     "domain": "语言模型推理与规划",
+     "source_quote": "Through the lens of subgoal imbalance, we demonstrate how diffusion models effectively learn difficult subgoals that elude autoregressive approaches.",
+     "type": "finding"},
+    {"id": "C2",
+     "purpose": "进一步提升离散扩散模型在复杂规划任务上的学习效果与收敛速度",
+     "mechanism": "提出Multi-Granularity Diffusion Modeling(MGDM),在序列级reweighting基础上增加token级reweighting机制,按子目标难度加权优先学习",
+     "evaluation": "消融(Tab.3):token-reweighting带来显著提升,序列-reweighting仅微小提升;easy-first(TopK)解码优于随机;multi-granularity loss在训练中段收敛更优",
+     "domain": "语言模型推理与规划",
+     "source_quote": "We propose Multi-Granularity Diffusion Modeling (MGDM), which prioritizes subgoals based on difficulty during learning.",
+     "type": "method"},
+    {"id": "C3",
+     "purpose": "在复杂问题求解任务上实证离散扩散大幅超越AR(无需搜索)",
+     "mechanism": "在Countdown、Sudoku、Boolean SAT(NP-complete)上对比MGDM与AR/Reverse AR/Teacherless,以及GPT-4的IO/CoT/CoT-SC/ToT prompting",
+     "evaluation": "MGDM在Countdown/Sudoku达91.5%/100%,AR仅45.8%/20.7%;Game of 24上ToT虽提升GPT-4但耗token是MGDM的186倍;MGDM单步扩散比AR快10x且精度更高(75% vs 45.8% Countdown4)",
+     "domain": "语言模型推理与规划(组合/约束满足问题)",
+     "source_quote": "On complex tasks like Countdown, Sudoku, and Boolean Satisfiability Problems, MGDM significantly outperforms autoregressive models without using search techniques.",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "we propose a natural extension to current discrete diffusion models, which we term multi-granularity diffusion modeling (MGDM)", "section": "introduction"},
+    {"quote": "For text, the diffusion model can be seen as an extension of the traditional iterative NAR models (Gong et al., 2022)", "section": "related work"},
+    {"quote": "We follow Gandhi et al. (2024) to generate 500k problems ... we also compare with such approaches by training on Countdown 4 and evaluating on the same game of 24 test set as Yao et al.(2024).", "section": "experiments"}
+  ],
+  "notes": "整体是diffusion压倒AR的正结果论文,但含若干trade-off/caveat:(1) 扩散因x_t采样随机性,采到同一x_t概率降为1/C(...),potentially reducing training efficiency——正是MGDM要补偿的;(2) SAT任务变量增多时MGDM与AR准确率均下降,只是MGDM下降更慢(gap变大);(3) decoding speed是显式accuracy-speed trade-off,靠扩散步数调节;低复杂度任务速度优势更明显,高复杂度需牺牲效率换性能;(4) teacherless training拟合不足、产生非法路径。AR的'Regretful Compromise'错误分析是核心finding。",
+  "extractor": "human-baseline-batch26",
+  "date": "2026-07-07"
+}

@@ -1,0 +1,36 @@
+{
+  "paper_id": "xKDZAW0He3",
+  "title": "SeCom: On Memory Construction and Retrieval for Personalized Conversational Agents",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "回答长期对话个性化 agent 中『哪种记忆粒度(turn/session/summary)最有效』这一未解问题,揭示现有粒度的局限",
+     "mechanism": "在检索增强响应生成范式下系统性地对比 turn-level、session-level、summarization 三种记忆粒度的检索准确率与检索内容语义质量(分析手法:检索 DCG/recall 曲线 + 端到端 QA 对照)",
+     "evaluation": "发现三种粒度均有局限:turn-level 过细导致上下文碎片化、session-level 过粗含无关信息、summary 有信息损失;由 Figure 1/2 与 Table 1 的检索 DCG 与响应质量曲线支撑",
+     "domain": "对话系统 / 检索增强的个性化对话 agent",
+     "source_quote": "We systematically investigate the effects of memory granularity on retrieval augmented response generation in conversational agents. Our findings reveal that turn-level, session-level, and summarization-based approaches each face challenges in ensuring precise retrieval and providing a complete, relevant, and coherent context.",
+     "type": "finding"},
+    {"id": "C2",
+     "purpose": "利用自然语言固有冗余作为检索噪声这一洞察,提出用提示压缩作为记忆去噪手段",
+     "mechanism": "论证自然语言冗余会成为检索系统噪声,提出在检索前用 prompt compression(LLMLingua-2)对记忆单元去噪;分析压缩率对 recall 与 query-segment 相似度的影响",
+     "evaluation": "压缩率>50% 时 LLMLingua-2 一致提升 BM25/MPNet 检索 recall;去噪后 query 与相关 segment 相似度上升、与无关 segment 相似度下降(Figure 3)",
+     "domain": "对话系统 / 检索增强",
+     "source_quote": "We contend that the inherent redundancy in natural language can act as noise for retrieval systems. We demonstrate that prompt compression technique, LLMLingua-2, can serve as an effective denoising method to enhance memory retrieval performance.",
+     "type": "finding"},
+    {"id": "C3",
+     "purpose": "基于上述洞察构建段级记忆的完整系统 SeCom,并验证其在长期对话与对话分割任务上的优越性",
+     "mechanism": "提出 SeCom:引入对话分割(SEgmentation)模型将长对话切成主题连贯的 segment 构建段级记忆,并对记忆单元做基于压缩(COMpression)的去噪;分割模型可零样本或经 LLM reflection(仅 100 例)学习分割规则",
+     "evaluation": "在 LOCOMO 与 Long-MT-Bench+ 上显著超越 baselines(GPT4Score);分割模型在 DialSeg711/TIAGE/SuperDialSeg 无监督设置下超越 baseline,迁移学习设置下仅用 100 例反超全量训练的监督 baseline;消融:去掉压缩去噪 LOCOMO 掉最多 9.46 分",
+     "domain": "对话系统 / 对话分割",
+     "source_quote": "We present SECOM, a system that constructs memory bank at segment level by introducing a conversation SEgmentation model, while applying COMpression based denoising on memory units to enhance memory retrieval. ... SECOM outperforms baselines on two long-term conversation benchmark LOCOMO and Long-MT-Bench+.",
+     "type": "method"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "These approaches typically construct a memory bank from the conversation history at either the turn-level (Yuan et al., 2023) or session-level (Wang et al., 2023). Chen et al. (2024), Li et al. (2024) and Zhong et al. (2024) further leverage summarization techniques to build memory units.", "section": "introduction"},
+    {"quote": "During response generation, we directly concatenate the retrieved segment-level memory units as the context as in Yuan et al. (2023); Kim et al. (2024), bypassing summarization to avoid the information loss.", "section": "method"},
+    {"quote": "(8) MemoChat (Lu et al., 2023), which operates memories at segment level, but focuses on tuning LLMs for both memory construction and retrieval.", "section": "experiments/baselines"},
+    {"quote": "we propose removing such redundancy from memory units prior to retrieval by leveraging prompt compression methods such as LLMLingua-2 (Pan et al., 2024).", "section": "introduction"}
+  ],
+  "notes": "结果整体正面,主报告 SeCom 全面超越 baselines。一个值得注意的观察(非本方法负结果):turn/session-level baseline 对检索器高度敏感,换用 BM25 vs MPNet 在 LOCOMO/Long-MT-Bench+ 上波动达 11.98/7.89 GPT4Score,而 SeCom 更稳健。消融证实两组件均有贡献(去压缩去噪掉 9.46 分)。与最接近工作 MemoChat(同为段级记忆)的区分点:MemoChat 需微调 LLM,SeCom 用独立分割模型 + 压缩去噪。",
+  "extractor": "human-baseline-batch19",
+  "date": "2026-07-07"
+}

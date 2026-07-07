@@ -1,0 +1,28 @@
+{
+  "paper_id": "sULAwlAWc1",
+  "title": "One Model Transfer to All: On Robust Jailbreak Prompts Generation against LLMs",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "现有 jailbreak 攻击跟不上防御机制（如 defensive suffix、扰动防御）的快速发展，对已部署防御的 LLM 失效；本文构造能绕过多种防御的鲁棒越狱提示",
+     "mechanism": "提出 ArrAttack 自动化 rewriting-based 攻击框架：先用未设防 LLM 经 Basic Rewriting-based Jailbreak(BRJ, T5 paraphraser + GPTFuzz 评判 + 语义相似度) 生成大量多样越狱提示，用扰动防御打鲁棒性分标注，再用这些数据指令微调 Llama2-7b 得到生成模型，自动把恶意查询改写成鲁棒越狱提示",
+     "evaluation": "6 种最新防御×3 模型(Llama2-7b-chat/Vicuna-7b/Guanaco-7b)：较最强基线 AutoDAN-HGA 平均提升 69.52%；无防御下 Llama2-7b-chat ASR 达 93.87% 且 PPL 低于原始查询；消融显示两模块联合使 12 防御场景平均 ASR 从 31.33%→58.58%(提升86.97%)；对 GPT-4/Claude-3 有迁移性",
+     "domain": "LLM 安全 / 越狱攻击",
+     "source_quote": "We introduce ArrAttack, an automatic attack framework designed to generate robust jailbreak prompts capable of bypassing various jailbreak defenses.",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "提供可跨防御机制与目标模型迁移的越狱提示鲁棒性评估工具，加速鲁棒提示生成",
+     "mechanism": "用 SmoothLLM 扰动防御给提示打鲁棒性分（统计扰动变体绕过成功数，去除模糊样本），以此标注数据集，对 Llama2-7b 做全参数指令微调得到 universal robustness judgment model",
+     "evaluation": "定性+定量：一次训练后即可评估任意目标模型/防御下提示的鲁棒性，在未见防御与模型上仍表现强；训练仅需单张 80G A800、约 5 GPU 小时；Full-FT 优于 PEFT",
+     "domain": "LLM 安全 / 鲁棒性评估",
+     "source_quote": "We propose a robustness judgment model that directly evaluates the resilience of jailbreak prompts against jailbreak defenses. The judgment capability is transferable across both defense mechanisms and target models, demonstrating strong performance even under unseen conditions.",
+     "type": "method"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "Our method is built upon a rewriting-based attack method, which proves beneficial for both the development of our robustness judgment model and our final generation model. We choose it because the rewriting-based method generates more diverse prompts compared to template-based methods.", "section": "method"},
+    {"quote": "We select SmoothLLM (Robey et al.,2023) as our defense mechanism since it employs a perturbation-based approach, which is essential for establishing a robustness score.", "section": "method"},
+    {"quote": "we fine-tune the open-sourced Llama2-7b model with the full-parameter instruction fine-tuning approach (Zhang et al.,2023b) to obtain our robustness judgment model.", "section": "method"}
+  ],
+  "notes": "方法型攻击论文（accept），结果基本全正面：ASR、PPL、语义相似度均优于 AmpleGCG/AutoDAN/ReNeLLM 基线。轻微 caveat：ArrAttack 要求语义相似度≥70% 才算成功（约束搜索空间）；对 GPT-4 直接迁移时 AmpleGCG 200 次尝试<20% 成功，ArrAttack 强得多（对比而非本方法弱点）。Full-FT 相比 PEFT 需更多 GPU/时间但性能更好（成本-性能 trade-off，作者认为值得）。方法建于 rewriting-based 攻击范式，借 SmoothLLM 做鲁棒性标注、指令微调 Llama2-7b。",
+  "extractor": "human-baseline-batch2",
+  "date": "2026-07-07"
+}

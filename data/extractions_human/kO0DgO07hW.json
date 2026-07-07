@@ -1,0 +1,42 @@
+{
+  "paper_id": "kO0DgO07hW",
+  "title": "Semantic Loss Guided Data Efficient Supervised Fine Tuning for Safe Responses in LLMs",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "Make an LLM generate safe responses to toxic prompts during the supervised fine-tuning (SFT) stage using only a very small amount of easily-obtained unsafe (harmful) responses, without needing high-quality human safe responses or an external safe LLM.",
+     "mechanism": "Toxicity Avoiding SFT (TA-SFT): add a semantically-informed penalty to the SFT loss that increases the Earth Mover Distance (EMD, with a cosine/embedding-based cost) between the model's next-token distribution and the unsafe response's next-token distribution, pushing generation away from the semantics of harmful tokens; combined with standard SFT loss on safety-unrelated data.",
+     "evaluation": "Four base models (Llama 7b/13b, Mistral 7b, Llama3.1 8b), LoRA fine-tuning; 1000 harmful pairs (D_safety-related) plus 20000 Alpaca pairs (|related| approx 0.005|unrelated|). On four harmfulness benchmarks (I-Malicious, I-CoNa, I-Controversial, HarmfulQ, 518 prompts): after ~500 steps 100% of Llama 7b responses classified safe by OpenAI Moderation; DeBERTa harmfulness scores driven near 0.",
+     "domain": "LLM safety alignment / supervised fine-tuning",
+     "source_quote": "We demonstrate that Large Language Models (LLMs) can be made safer during the SFT stage by incorporating a very small amount of harmful responses to toxic prompts into the TA-SFT dataset. The semantically-informed EMD loss enables LLMs to achieve safety with |D_safety-related| ≈ 0.005 |D_safety-unrelated|.",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "Make optimization of the EMD-based safety penalty tractable, since exact EMD is computationally intensive and the cosine (squared-norm) cost is not a proper distance metric so existing EMD lower bounds do not apply.",
+     "mechanism": "Derive and prove a novel lower bound for EMD under the squared-norm/cosine cost (Proposition 1): EMD(P,Q;d_c) >= (1/2|V|^2)||sum_w P(w)e_w - sum_w Q(w)e_w||^2, and optimize this bound instead of exact EMD.",
+     "evaluation": "Qualitative/theoretical: proof in Appendix A.3; the bound is used as the L_EMD training loss (Eq. 5) whose empirical safety/quality gains are reported across the four models.",
+     "domain": "LLM safety alignment / optimization",
+     "source_quote": "Additionally, we propose a novel lower bound for EMD loss, enabling more efficient optimization.",
+     "type": "method"},
+    {"id": "C3",
+     "purpose": "Show that the semantically-informed EMD loss is more data-efficient and preserves response quality better than a likelihood-based penalty (NLCL) and other baselines (KTO, STL).",
+     "mechanism": "Comparative ablation: vary the number of harmful examples (1000/500/300/100) and count harmful responses per benchmark; measure response quality via AlpacaEval and BoolQ/PIQA/OpenBookQA; compare EMD vs NLCL vs KTO vs advantaged STL.",
+     "evaluation": "EMD stays safe with only 100 harmful examples (e.g. Llama 7b I-CoNa: 5 harmful for EMD vs 42 for NLCL at 100 examples), while NLCL fails; AlpacaEval EMD 57.37% vs NLCL 54.48% vs SFT 56.14% vs KTO 35.47% (Llama 7b); BoolQ comparable (~78-84% across methods); EMD safer than STL, especially in low-data regime.",
+     "domain": "LLM safety alignment",
+     "source_quote": "The semantically-informed EMD loss achieves comparable safety levels with lower size of |Dsafety-related| compared to NLCL and other baselines. EMD also maintains higher response quality than NLCL.",
+     "type": "finding"},
+    {"id": "C4",
+     "purpose": "Understand the cause of over-alignment (over-refusal of benign prompts) and identify a risk in augmenting safety training with AI-generated data.",
+     "mechanism": "Analysis: train with datasets containing no refusal responses and compare over-refusal vs safety trajectories against STL (which uses refusal/safe responses) on XSTest; separately augment with LLM-generated (Mixtral 8x7b) responses to 3,335 seemingly-toxic contrastive prompts and observe safety and language quality.",
+     "evaluation": "All EMD/NLCL/STL points lie on the same over-refusal-vs-safety curve, disproving that including refusal examples causes over-refusal; contrastive augmentation fails to reach the safety of non-augmented training and, at higher penalty weight, induces a 'non-English answer' degradation of language ability.",
+     "domain": "LLM safety alignment / analysis",
+     "source_quote": "LLMs become over-aligned when they refuse to respond to seemingly toxic but benign prompts. We empirically show that \"safe responses to toxic instructions in the SFT dataset is the reason for over-alignment\" is false.",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "Recent work (Bianchi et al., 2023) explores improving LLM safety by incorporating safe responses to toxic prompts into the SFT dataset... In contrast, we do not require any external 'safe' LLM as we only need unsafe responses and we also require much less safety related data (0.5%) compared to their 3% requirement.", "section": "related work"},
+    {"quote": "We follow ORPO (Hong et al., 2024), but since we do not have pairs of responses but only the undesired response y_l, we set odds(y_w|p)=1 in Equation 2.", "section": "method"},
+    {"quote": "Following the approach outlined in Ren et al. (2023), we treat P as a one-hot vector of the next token as present in the safety related dataset D_safety-related.", "section": "method"}
+  ],
+  "notes": "Several negative/surprising results emphasized: (1) empirically DISPROVES the common belief that including refusal/safe responses in SFT causes over-refusal (over-alignment persists regardless of method). (2) Augmenting with AI-generated (Mixtral) contrastive responses DEGRADES language ability ('non-English answer' phenomenon) and worsens safety - a negative result consistent with model-collapse literature. (3) Over-refusal vs safety is an unavoidable trade-off (all methods on the same curve). Comparable (not better) results vs baselines on multiple-choice QA (BoolQ/PIQA/OpenBookQA). KTO baseline underperforms because its reference is a weak non-SFTed base model. Authors note scale limitation (small LLMs only).",
+  "extractor": "human-baseline-batch27",
+  "date": "2026-07-07"
+}

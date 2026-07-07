@@ -1,0 +1,36 @@
+{
+  "paper_id": "kN6MFmKUSK",
+  "title": "PolaFormer: Polarity-aware Linear Attention for Vision Transformers",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "解决线性注意力因特征图非负约束而丢弃负值 query-key 交互、导致表达力和判别力下降的问题",
+     "mechanism": "提出极性感知(polarity-aware)线性注意力:显式地将 query-key 对按符号分为同号(正正/负负)与异号(正负/负正)两条流分别建模;沿通道维拆分 value 向量处理两类交互而不引入额外可学习参数,输出拼接后用可学习的符号感知矩阵(G^s, G^o)缩放",
+     "evaluation": "定性:更忠实重构 softmax 注意力权重,注意力图熵更低、更接近 softmax(Figure 1 可视化)",
+     "domain": "计算机视觉 / 高效 Vision Transformer",
+     "source_quote": "we propose a polarity-aware linear attention mechanism that explicitly models both same-signed and opposite-signed query-key interactions, ensuring comprehensive coverage of relational information.",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "恢复线性注意力丢失的『尖峰性』(spikeness),使模型能区分强弱 query-key 响应",
+     "mechanism": "理论分析证明存在一类逐元素函数(一阶、二阶导数均为正)能降低注意力分布的熵;据此采用通道级可学习幂函数(learnable power function)做 rescaling",
+     "mechanism_note": "含理论证明 + 方法设计",
+     "evaluation": "定性 + 理论:证明该类函数可降熵,解释了 ReLU/ELU 为何升高熵;幂函数保留 softmax 的尖峰特性,有效分离强弱注意力信号",
+     "domain": "计算机视觉 / 注意力机制理论",
+     "source_quote": "we provide a theoretical analysis proving the exis-tence of a class of element-wise functions (with positive first and second derivatives) that can reduce entropy in the attention distribution. For simplicity ... we employ a learn-able power function for rescaling.",
+     "type": "method"},
+    {"id": "C3",
+     "purpose": "验证 PolaFormer 在多种视觉任务与长序列基准上兼顾表达力与效率",
+     "mechanism": "将极性感知注意力模块替换进 DeiT/PVT/PVTv2/Swin 等 ViT 骨干,在 ImageNet-1K 分类、COCO 检测/实例分割、ADE20K 语义分割、Long Range Arena 上评估",
+     "evaluation": "性能提升最高 4.6%;ImageNet: DeiT-T-Pola 超其他 DeiT 变体 0.5%-6.3%,PVT-T/S-Pola +3.7%/+2.1%;COCO: PVT-T-Pola +2.3%-4.6%;ADE20K mIoU +1.2%-2.6%;LRA: PolaFormer(α=3) 取得最高总分,Text 73.06%、ListOps 38.76%、Image 42.77% 达 SOTA",
+     "domain": "计算机视觉 / 多任务评估",
+     "source_quote": "Extensive experiments demonstrate that the proposed PolaFormer improves performance on various vision tasks, enhancing both expressiveness and efficiency by up to 4.6%.",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "FLatten Transformer (Han et al., 2023a) extends ReLU(·) with power operation to maintain both properties of attention weights, i.e., non-negative and low-entropy. It is a practical way to use power function to calculate the inner product to approximate exp.", "section": "related work"},
+    {"quote": "The initial linear attention (Katharopoulos et al., 2020) proposes to substitute the Softmax function with a linear dot-product of kernel feature maps ... Following this Softmax-free scheme, some variants ... such as ReLU (Shen et al., 2021) and 1+ELU (Katharopoulos et al., 2020).", "section": "related work"},
+    {"quote": "Recently, Agent Attention (Han et al., 2023b), a claimed generalized linear attention, introduces n agent tokens ... Notably, the balanced performance still relies on the softmax operator and additional agent tokens, which violates the original premise of linear attention.", "section": "related work"}
+  ],
+  "notes": "结果整体正面,无明显负结果。作者观察到检测任务(需细粒度注意力)增益比分类更大。方法定位为对 FLatten Transformer(用幂函数近似 exp)的扩展,并批评 Agent Attention 违反线性注意力『softmax-free + 线性复杂度』前提。对比 baseline 均报告一致提升,未见平局/劣势项。",
+  "extractor": "human-baseline-batch19",
+  "date": "2026-07-07"
+}

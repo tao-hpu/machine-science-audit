@@ -2,7 +2,7 @@
 """Facet-coverage judgment pipeline (scaffold, v0.1).
 
 对每条 contribution:检索时间截断近邻 → 构造事实性覆盖判定 prompt → LLM 判定 → 三态归类。
-设计约束(docs/methodology-notes.md 的铁律):
+设计约束(docs/_methodology-notes.md 的铁律):
 - LLM 只做逐 facet 的覆盖事实判断,必须引用近邻原文,禁整体 novelty 打分;
 - 盲化:prompt 不含论文来源/系统名/人机身份;
 - 判定模型与版本固定,全部输入输出落盘可复现。

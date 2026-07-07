@@ -1,0 +1,35 @@
+{
+  "paper_id": "Oi47wc10sm",
+  "title": "Programming Refusal with Conditional Activation Steering",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "Add fine-grained, context-dependent control to activation steering, which currently alters LLM behavior indiscriminately (a refusal vector raises refusal across all inputs), limiting use in content moderation or domain-specific assistants",
+     "mechanism": "Conditional Activation Steering (CAST): introduce a new 'condition vector' capturing prompt-induced activation patterns; at inference a similarity check between the condition vector and the model's activation acts as a switch deciding whether to apply the refusal (behavior) vector. Uses grid search over threshold, layer, and comparison direction; no weight optimization",
+     "evaluation": "7 models (OLMo-7B, Hermes-2-Pro-8B, Qwen1.5-32B/1.8B, NeuralDaredevil, Zephyr-7B, Danube3-4B). Condition trained on 4,050 synthetic harmful prompts (90 x 45 harm categories from Xie 2024b) + Alpaca benign; tested on 500 unseen Alpaca (harmless) + 450 Sorry-Bench (harmful). Selectively raises harmful refusal rate while leaving harmless refusal largely unchanged; matches or exceeds safety-aligned reference models (Llama3.1-8B, Llama2-13B-chat)",
+     "domain": "LLM safety / activation steering / controllable generation",
+     "source_quote": "We introduce conditional activation steering and condition vectors, which adds a new dimension of controllability to existing methods.",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "Enable programmatic, composable behavioral rules (e.g. 'if hate speech OR legal opinion then refuse', 'if not health then refuse') and domain constraining",
+     "mechanism": "Logical composition of multiple condition vectors (OR, simultaneous induce/remove) and use of the duality property (flipping comparison direction) to refuse the complement of a target category; five example condition vectors from Liu et al. (2023) categories",
+     "evaluation": "Demonstrated on Hermes-2-Pro and Llama3.1-Inst; domain constraining generalizes to 4 unseen harm categories (gambling, financial advice, privacy violence, malware); effectiveness positively correlates with a category's average semantic distance from others",
+     "domain": "LLM safety / activation steering / controllable generation",
+     "source_quote": "We demonstrate the logical composition of condition vectors to create custom refusal conditions. This is a key step towards tailoring model behavior to specific needs.",
+     "type": "finding"},
+    {"id": "C3",
+     "purpose": "Provide reusable tooling for the activation-engineering community",
+     "mechanism": "Release a general-purpose activation steering toolkit with demo datasets",
+     "evaluation": "Open-source at github.com/IBM/activation-steering (qualitative resource contribution)",
+     "domain": "LLM safety / activation steering / controllable generation",
+     "source_quote": "We release a general-purpose activation steering toolkit with demo datasets for the broader activation engineering community at github.com/IBM/activation-steering.",
+     "type": "resource"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "This feature has given rise to techniques like activation steering (Turner et al., 2023), which leverage these learned representations to efficiently and predictably alter LLM behavior ... For the case of activation addition (ActAdd) (Turner et al., 2023), the intervention can be represented mathematically as: h' <- h + alpha * v", "section": "background"},
+    {"quote": "consistent with findings from Arditi et al. (2024), we can also remove refusal behavior from certain classes of prompts. This is achieved by simply reversing the signs of the behavior vector V_refusal.", "section": "results"},
+    {"quote": "our primary insight is that different prompts consistently activate distinct patterns in the model's hidden states during inference (Hu et al., 2024). These patterns can be extracted as a steering vector and used as reference points", "section": "introduction"}
+  ],
+  "notes": "Reported accept. Extends existing activation steering (Turner 2023 ActAdd; Arditi 2024 refusal-as-single-direction) by adding a conditioning switch. Reported properties/caveats: Saturation - performance plateaus quickly and does NOT scale with more conditioning data (unlike weight optimization), depending instead on the model's inherent representational capacity; linear time scaling for condition extraction. Trade-off/negative: simultaneously removing existing refusal directions and inducing new ones via multiple rules can reduce the effectiveness of the induced refusal directions (conflicting conditions); domain constraining is less effective for semantically overlapping categories (e.g. legal opinion) than distinct ones (hate speech). Resource released (IBM activation-steering toolkit).",
+  "extractor": "human-baseline-batch7",
+  "date": "2026-07-07"
+}

@@ -1,0 +1,50 @@
+{
+  "paper_id": "6qUUgw9bAZ",
+  "title": "Learning How Hard to Think: Input-Adaptive Allocation of LM Computation",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Estimate, a priori, how much a given query would benefit from more inference-time computation, so decoding compute can be allocated where it helps most rather than uniformly.",
+      "mechanism": "Train a lightweight 'difficulty model' that predicts the distribution of rewards / marginal improvement in response quality per additional unit of compute, implemented as probes on top of a pre-trained LM's hidden representations (or LoRA fine-tuning of the weak model).",
+      "evaluation": "Difficulty probes on frozen LM hidden states predict marginal reward; separately evaluated with dedicated metrics (Sec. on independent probe evaluation); requires a training set of >3K queries. Effectiveness of encoding: evidence that LMs already encode problem difficulty from pretraining.",
+      "domain": "LLM inference-time compute allocation",
+      "source_quote": "We describe how to train a difficulty model that estimates the marginal improvement in response quality that would result from allocating an additional unit of computing power when responding to a query. We show that effective difficulty models can be constructed by training lightweight \"probes\" on top of a pre-trained LM's hidden representations, suggesting that LMs may already learn to encode problem difficulty as a result of pre-training.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Turn difficulty predictions into an allocation of a fixed compute budget across a collection of queries.",
+      "mechanism": "An efficient allocation algorithm that uses difficulty-model predictions to distribute computation to individual queries, solvable online (exactly meeting the budget for a batch) or offline (fixed query->compute mapping satisfying constraints in expectation).",
+      "evaluation": "Applied in two decoding procedures across Math, Code, Chat: adaptive best-of-k outperforms non-adaptive across compute budgets; allocation shifts compute to the 'hard' bin as budget grows (Figure 6).",
+      "domain": "LLM inference-time compute allocation",
+      "source_quote": "Second, we describe an efficient allocation algorithm that, given a collection of queries and a computation budget, uses predictions from the difficulty model to allocate computation to individual queries. We show how to perform this optimization online ... or offline ...",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Demonstrate that learned adaptive compute allocation yields real efficiency/quality gains across procedures and domains.",
+      "mechanism": "Instantiate the approach in adaptive best-of-k (choosing number of samples before reranking) and routing (choosing an expensive-capable vs cheap-weak decoder / model), evaluated empirically.",
+      "evaluation": "Best-of-k: matches non-adaptive performance with up to 50% less compute on Math and Code, up to 10% less on Chat, and improves quality by up to 10% at fixed budget. Routing: matches the expensive decoder (Gemma-2B/7B pair; ordinary vs value-augmented sampling) while calling it only 50-75% of the time.",
+      "domain": "LLM inference-time compute allocation",
+      "source_quote": "we show that accurate computation-allocation procedures can be learned, and reduce computation by up to 50% at no cost to response quality, or improve quality by up to 10% at a fixed computational budget.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Several works explored the idea of learning how to adapt inference-time compute in neural networks (Graves, 2016; Dehghani et al., 2019; Banino et al., 2021). These works focus on networks with recurring components, where the decision is the number of times to pass the input through these components. Our work, however, is architecture-agnostic and focuses on adaptively selecting a decoding procedure.",
+      "section": "related work"
+    },
+    {
+      "quote": "A recent line of works has demonstrated the compute-optimal inference can outperform simply using larger models (Snell et al., 2024; Wu et al., 2024). Here, we show how to realize these improvements in practice using learned difficulty predictors. Concurrent to our work, Manvi et al. (2024) demonstrated that language models can self-assess their response quality, enabling adaptive compute allocation.",
+      "section": "related work"
+    },
+    {
+      "quote": "In routing experiments ... a pair of decoding procedures (ordinary sampling and value-augmented sampling; Han et al., 2024).",
+      "section": "experiments"
+    }
+  ],
+  "notes": "Authors state explicit limitations: method assumes a training set of >3K queries for the reward probe and assumes access to a verifier in Math experiments (verifiers generally unavailable; specialized reward models a more practical substitute). A performance gap remains between the learned allocator and the oracle, flagged as room for improvement. Chat gains are notably smaller (up to 10% less compute) than Math/Code (up to 50%). Paper was accepted.",
+  "extractor": "human-baseline-batch4",
+  "date": "2026-07-07"
+}

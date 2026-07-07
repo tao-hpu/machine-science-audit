@@ -1,0 +1,27 @@
+{
+  "paper_id": "LglOy15bqe",
+  "title": "Policy optimization can be memory-efficient: LLM Alignment Through Successive Policy Re-weighting (SPR)",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "Reduce the compute/memory cost of RL-based policy optimization for LLM alignment down to the level of supervised fine-tuning (SFT), while still leveraging an explicit reward model and online data (unlike DPO), since standard RLHF/PPO must load four models simultaneously.",
+     "mechanism": "Successive Policy Re-weighting (SPR): reformulate the TRPO/PPO objective as a constrained optimization solved by a successive minimization algorithm that alternately fits a Q-value function and a log-sum-exp reference (value) function, then updates the policy via a supervised re-weighting loss (increase/decrease log-likelihood of continuations by their advantage Q - W). Only one model is loaded per update step; a sentence-level (horizon=1) simplification (Algorithm 2) reduces Q to the reward r.",
+     "evaluation": "Estimated memory (Pythia-1B, TL;DR, batch 2, single device): SPR matches SFT peak memory, well below PPO (four models) and DPO (policy + frozen reference). Only one model loaded per step.",
+     "domain": "LLM alignment / reinforcement learning from human feedback",
+     "source_quote": "We propose a novel iterative Successive Policy Re-weighting method (SPR, Algorithm 1). SPR utilizes an explicit reward to learn the Q-value function and the log-sum-exp value function, then learns the policy through re-weighting the policy probability based on the Q-value function. SPR only loads one (value or policy) model at every step, achieving policy optimization with the same memory consumption as standard supervised fine-tuning (SFT)",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "Empirically verify that SPR aligns LLMs at least as well as memory-heavier baselines while leveraging offline+online data.",
+     "mechanism": "Compare SPR against PPO, DPO, and Best-of-N on a 1B model (Pythia-1B on TL;DR summarization, evaluated by a Pythia-6.9B reward model and GPT-3.5-judged win rate vs reference) and an 8B model (LLaMA3-SFT, OpenLLM leaderboard).",
+     "evaluation": "1B TL;DR: SPR and Best-of-N both beat DPO on reward score; SPR also beats DPO on win rate (Best-of-N does not consistently). 8B OpenLLM leaderboard: SPR beats DPO by 0.22% avg at N=16 and 0.77% at N=3; ~6% improvement on GSM8K; average score progresses 68.66% -> 70.65% over 7 iterations (N=32).",
+     "domain": "LLM alignment (text summarization, reasoning benchmarks)",
+     "source_quote": "We conduct extensive numerical experiments to verify the effectiveness of the proposed method. Specifically, we compare the SPR with standard PPO and DPO, as well as a Best-of-N algorithm (Dong et al., 2023) on both 1b and 8b models... All our results show the superior performance of the proposed method over standard baselines.",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "The proposed framework is developed from carefully examining the objective of TRPO/PPO and considers a constrained optimization reformulation from the original problem. A successive minimization algorithm is then proposed to iteratively optimize for the value function and the policy.", "section": "introduction"},
+    {"quote": "methods like online DPO (Dong et al., 2024) and Reinforced Self-Training (ReST, see Gulcehre et al. (2023)) utilize new samples with higher rewards from current model for further policy improvements.", "section": "related work"}
+  ],
+  "notes": "Explicit trade-off / negative acknowledgement in the conclusion: 'The computational time of the proposed method is in general higher than SFT or DPO, and the performance is largely dependent on the number of samples N to estimate the reference function.' So SPR trades wall-clock time and an N-sample budget for its memory savings. Also the 8B leaderboard gains over DPO are small (0.22-0.77% average). Paper was rejected. Win-rate for all methods converges to a stationary level even as reward keeps rising.",
+  "extractor": "human-baseline-batch11",
+  "date": "2026-07-07"
+}

@@ -1,0 +1,59 @@
+{
+  "paper_id": "onrNYdciJQ",
+  "title": "Improving Consistency Models with Generator-Induced Flows",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "澄清一致性训练(CT)与一致性蒸馏(CD)之间因单样本 Monte Carlo 估计误差导致的差异是否会在连续时间极限下消失",
+      "mechanism": "理论分析:证明在连续时间极限下 CT 与 CD 损失收敛到不同的逐点值,并给出该差异的闭式表达;该差异在损失值和梯度上都存在,仅在(渐近)二次损失这一特例下两极限恰好重合",
+      "evaluation": "定性/理论(Appendix A.1 证明);差异当速度场与其 Monte Carlo 近似之差趋零时消失,但标准估计所用 independent coupling (IC) 不满足此条件",
+      "domain": "生成模型 / 扩散与一致性模型 / 图像生成",
+      "source_quote": "We prove that in the continuous time-limit consistency training and consistency distillation loss function converge to different pointwise values and we provide a closed-form expression of this discrepancy.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "在无法访问真实底层扩散模型的情况下,降低速度场单样本估计的方差以缩小 CT 与 CD 的差异",
+      "mechanism": "提出 generator-induced flows:用当前训练中的一致性模型自身作为真实 flow 的代理,从 IC 中间点预测端点,再与原噪声耦合形成 generator-induced coupling (GC),从而构造新的目标 flow",
+      "evaluation": "定性:GC 具有利于训练一致性模型的性质(速度场与估计偏差更小、传输代价更低,Figure 1)",
+      "domain": "生成模型 / 一致性模型",
+      "source_quote": "We propose a novel type of flows that we denote generator-induced flows. It relies on generator-induced coupling (GC) that can be used to train a consistency model.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "论证 GC 相较标准 IC 一致性训练和专用 OT 一致性模型的优势",
+      "mechanism": "理论 + 实证分析:证明 GC 到 CD 的差异比 IC-CT 更小,并证明 GC 的数据-噪声传输代价随时间衰减更快(Theorem 2,假设理想一致性模型)",
+      "evaluation": "理论(Appendix A.2/A.3)+ CIFAR-10 等图像数据集实证;GC 减少 data-noise transport cost",
+      "domain": "生成模型 / 最优传输 / 一致性模型",
+      "source_quote": "We provide theoretical and empirical insights into the advantages of GC,notably on image datasets. We show that generator-induced flows have smaller discrepancy to consistency distillation than IC consistency training, and that they reduce data-noise transport costs.",
+      "type": "finding"
+    },
+    {
+      "id": "C4",
+      "purpose": "把 generator-induced flow 变为可实际训练一致性模型的算法,解决纯 GC 训练的分布偏移/发散问题",
+      "mechanism": "混合策略 iCT-GC(μ):每步以概率 μ 采 GC 对、其余采标准 IC(μ=0 即纯 IC,μ=1 即纯 GC),缓解 GC 模型在 IC 轨迹上弱导致的分布偏移",
+      "evaluation": "四数据集 FID(iCT-IC/iCT-OT/iCT-GC μ=0.5):CIFAR-10 7.42/6.75/5.95;ImageNet32 14.89/14.13/13.99;CelebA64 15.82/13.63/11.74;LSUN Church64 10.58/9.71/9.88;μ=0.5~0.7 为收敛速度与最终 FID 的甜点;收敛更快",
+      "domain": "生成模型 / 图像生成",
+      "source_quote": "We derive practical ways to train consistency models with generator-induced flows in image generation benchmarks. Our approach based on a mixing strategy leads to faster convergence and improves the performance compared to the base model and OT-based approaches.",
+      "type": "method"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "One possible solution to this problem from the consistency and flow matching literatures (Pooladian et al., 2023; Dou et al., 2024) is to resort to optimal transport (OT) to learn on a deterministic coupling.However, due to the prohibitive cubic complexity of OT solvers ... such methods need to be applied at the minibatch level. This incurs an OT approximation error",
+      "section": "introduction/related"
+    },
+    {
+      "quote": "Our experiments are based on the improved training techniques for consistency models from Song and Dhariwal (2024), denoted iCT-IC.",
+      "section": "experiments"
+    },
+    {
+      "quote": "Our method does not rely on an iterative procedure but rather on a mixing procedlure during a single training, alleviating error accumulation. While not fully solving the alignment issue either, we will show that our method present reduced transport costs and better alignment than dedicated OT-based methods.",
+      "section": "related work (Our approach)"
+    }
+  ],
+  "notes": "ICLR 2025 reject。多处负结果/trade-off/comparable,项目重点信号密集:(1)纯 GC 训练(μ=1)收敛快但早期饱和/发散,达不到 base iCT-IC 性能,根因是 IC/GC 分布偏移(Finding,Fig 4)——正是这条负发现催生了混合策略。(2)Finding 4 明说混合'在多数情况下'优于 batch-OT,非全部:LSUN Church(64×64)上 iCT-OT FID 9.71 反而略优于 iCT-GC 9.88(comparable/略负)。(3)预训练端点预测器可解发散但需先训一个标准一致性模型、性能依赖该预测器,作者自评'not ideal'。(4)每训练步需额外一次无梯度前向,wall-clock 开销约比 iCT-IC 多 20%,但 iso-time 下仍优于 iCT-IC。(5)作者声明其 iCT-IC 复现因模型/batch 更小,未达 Song & Dhariwal 2024 原报告水平。",
+  "extractor": "human-baseline-batch12",
+  "date": "2026-07-07"
+}

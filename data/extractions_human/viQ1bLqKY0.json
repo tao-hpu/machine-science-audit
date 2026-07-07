@@ -1,0 +1,35 @@
+{
+  "paper_id": "viQ1bLqKY0",
+  "title": "EXecution-Eval: Can Language Models Execute Real-world Code?",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "评估LLM执行代码并预测程序状态的能力,解决现有benchmark饱和、与真实性能脱节的问题",
+     "mechanism": "构建EXecution-Eval(EXE)benchmark:从GitHub 1000个热门Python仓库派生30,000+任务,要求模型执行代码并预测最终程序状态,覆盖数学推理/逻辑推断/位操作/字符串/循环/多变量状态维护",
+     "evaluation": "33,875个测试用例、1000个仓库;函数调用深度up to 13(中位2)、标识符数up to 823(中位16)、if语句up to 63(中位1);任务难度从1步一行到多文件多类多百步平滑扩展",
+     "domain": "LLM代码理解与执行评估(code benchmark)",
+     "source_quote": "We introduce EXecution-Eval (EXE), a benchmark designed to assess LLMs' ability to execute code and predict program states.",
+     "type": "resource"},
+    {"id": "C2",
+     "purpose": "解决benchmark的难度扩展/多样性/训练数据污染/低成本可扩展性四大失效模式",
+     "mechanism": "方法论:(a)筛选预处理GitHub仓库,(b)为函数生成多样输入,(c)执行代码得ground truth,(d)构造需推理执行的任务;可持续生成新任务(每任务低至1,123 tokens),并借鉴SKILL-MIX用typed函数链接生成更复杂组合任务(上界n^2·Tmax^k·C)",
+     "evaluation": "平均生成成本1,123 tokens/用例,显著降低'training on test set'风险;每函数up to 15测试用例,'conditionals executed'的CV=0.61、'lines executed'CV=0.20,GPT-4o每函数平均pass率0.742(σ=0.293)",
+     "domain": "LLM代码理解与执行评估(code benchmark)",
+     "source_quote": "This approach allows for continuous new task generation for as few as 1,123 tokens, significantly reducing the risk of models \"training on the test set.\"",
+     "type": "method"},
+    {"id": "C3",
+     "purpose": "揭示SOTA LLM代码执行能力的实证发现,定位最难的计算概念",
+     "mechanism": "在GPT-4o/GPT-4o-mini/Claude3.5-Sonnet等SOTA模型上评测,分析任务统计量(LOC/处理时间/函数调用数)与pass@1的相关性及各coding feature的影响",
+     "evaluation": "EXE相对模型排名与HumanEval一致;LOC/处理时间/函数调用数与pass@1呈log-linear;浮点乘法最难(GPT-4o 43 Pass@1),位操作/布尔影响小;i+=1(56)、list slicing(65)、list comprehension(68)增难,for循环(73)影响不显著",
+     "domain": "LLM代码理解与执行评估(code benchmark)",
+     "source_quote": "Our results show that even the best-performing models struggle with complex, multi-step execution tasks, highlighting specific computational concepts that pose the greatest challenges for today's LLMs.",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "This is mirrored in CRUX-Eval's (Gu et al., 2024) findings, where they observe a moderate correlation between a model's ability to execute a block of code and a model's HumanEval (Chen et al., 2021) code writing Pass@1 rate.", "section": "introduction/related work"},
+    {"quote": "we observe a mechanism inspired by the SKILL-MIX evaluation (Yu et al.,2023) that leverages the typed nature of our function selection process", "section": "method"},
+    {"quote": "benchmarks are being continually created to address failure modes; e.g. SuperGLUE targeting GLUE's low problem difficulty ... BIG-bench targeting general low evaluation diversity ... Auto-Arena-Hard targeting training-set contamination", "section": "introduction"}
+  ],
+  "notes": "负结果/caveat多:(1) 作者自承即便这么宽的难度范围'may eventually face saturation';(2) 用real-world code链接组合任务时明确trade掉部分'realism'换能力探测;(3) 异常现象:pass@1随function call count出现elbow后反常上升,归因于LLM擅长的特定coding pattern,说明指标受编码风格污染('Stylistic coding patterns shape the metrics');(4) 模型'perform surprisingly well on average'与'struggle with complex multi-step'并存;(5) 数据集用GPT-4o-latest生成,小模型(llama3.1-8b)因schema conformance失败率高。该论文为rejected(under review版)。贡献1条resource(核心benchmark)+1条method(生成方法论)+1条finding。",
+  "extractor": "human-baseline-batch26",
+  "date": "2026-07-07"
+}

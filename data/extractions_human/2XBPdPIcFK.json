@@ -1,0 +1,35 @@
+{
+  "paper_id": "2XBPdPIcFK",
+  "title": "Steering Language Models with Activation Engineering",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "缩小 prompt engineering / finetuning 无法充分'激发'模型隐藏能力的 elicitation overhang，用推理时激活干预来更可靠地控制输出",
+     "mechanism": "提出 Activation Addition (ActAdd)：对一对对比 prompt（如 'Love' vs 'Hate'）做前向传播、取中间层激活之差得到 steering vector，乘以注入系数 c 后加进第 l 层前向传播；无需梯度/优化，最少 2 个样本",
+     "evaluation": "定性+机制：在 GPT-2-XL/LLaMA-3.1-8B 等上做话题、情感、去毒引导；中间层注入最有效；ConceptNet 事实问答上对 off-target 概率影响可忽略",
+     "domain": "大语言模型可控生成 / 激活工程",
+     "source_quote": "To better elicit the full capabilities of models, we introduce the ActAdd steering method. ActAdd achieves substantial (but not SOTA) control on toxicity reduction and sentiment control.",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "把散落在 controlled decoding、latent steering、representation engineering 等处的相关文献统一为'activation engineering'这一方法论范畴",
+     "mechanism": "综述并按干预类型（Table 2）组织既有工作，区分'搜索式'（梯度下降求 steering vector）与'直接计算式'方法，将 ActAdd 定位为后者",
+     "evaluation": "定性：给出统一框架并把 ActAdd、ITI、PPLM、Subramani 2022 等归类对比",
+     "domain": "激活工程方法论综述",
+     "source_quote": "We unify past literature on related topics to introduce activation engineering.",
+     "type": "finding"},
+    {"id": "C3",
+     "purpose": "系统检验 ActAdd 的通用性、有效性及对通用能力的副作用",
+     "mechanism": "困惑度实验（GPT-2-XL 婚礼向量）、话题引导（GPT-4o-mini 打分 1000 completions）、去毒（/pol/ 与 RealToxicityPrompts n=2000，5 次重复取 p 值，对 6 个基线做 t-test）、情感引导",
+     "evaluation": "婚礼向量降低相关句困惑度且保留无关句性能；去毒在标准化重测下不稳健优于最新基线；ActAdd 在 LLaMA-3.1 上反而显著增加 perplexity",
+     "domain": "去毒 / 情感控制 / 话题引导",
+     "source_quote": "We thoroughly test ActAdd's generality and effects on general capabilities. We therefore show the promise of ActAdd as an effective and cheap method for steering LLM outputs.",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "These optimized extraction methods, which search for a steering vector, differ from extraction methods which directly compute it (present work and Li et al. 2023b). In our work, we do not use gradient descent or other optimization methods.", "section": "related work"},
+    {"quote": "Independently of our work, Li et al. 2023b developed a similar method called ITI ... ITI adds the same vector at all sequence positions during inference and requires dozens of samples. In contrast, ActAdd we add steering vectors to a subset of sequence positions and require as few as 2 samples.", "section": "related work"},
+    {"quote": "ActAdd first compares the model's activations on a contrast pair of prompts ... to compute a steering vector (Subramani et al., 2022).", "section": "related work"}
+  ],
+  "notes": "大量负结果/trade-off（本篇诚实度高）：(1) 摘要与贡献里明写 ActAdd 是'substantial but not SOTA'；(2) Limitations：初版曾在去毒和一种情感引导上达 SOTA，但更强方法出现后，标准化重测显示 ActAdd 在跨数据集上并不稳健胜出；(3) ActAdd 在 LLaMA-3.1-8B 上显著增加 perplexity（作者称 'somewhat perplexing'），可能难以 scale 到更大更新模型；(4) 需人工调 c 和注入层 l，比 prompt engineering 更不友好；(5) 需模型暴露中间激活，仅 API 访问不适用。结论自评'lightweight and sometimes effective ... mixed results on toxicity reduction and sentiment shift'。",
+  "extractor": "human-baseline-batch10",
+  "date": "2026-07-07"
+}

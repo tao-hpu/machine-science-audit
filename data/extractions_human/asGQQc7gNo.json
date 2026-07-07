@@ -1,0 +1,37 @@
+{
+  "paper_id": "asGQQc7gNo",
+  "title": "Is Factuality Enhancement a Free Lunch For LLMs? Better Factuality Can Lead to Worse Context-Faithfulness",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Determine whether popular LLM factuality-enhancement methods actually improve factual accuracy, and how reliably.",
+      "mechanism": "Re-evaluation of a range of factuality-enhancement methods (contrastive-decoding methods like DoLa/CD/ICD and representation-editing methods like ITI/TruthX) on standard factuality benchmarks, comparing against an unmodified decoding baseline.",
+      "evaluation": "On TruthfulQA and FACTScore with LLAMA2-7B/13B-CHAT, improvements are modest, unstable, and inconsistent across metrics; some methods decline on some metrics (red-marked in Table 1) relative to baseline.",
+      "domain": "LLM factuality / hallucination mitigation",
+      "source_quote": "We first revisit the current factuality enhancement methods and evaluate their effectiveness in enhancing factual accuracy... while these methods may yield inconsistent improvements in factual accuracy,",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "Show that improving factuality comes at a hidden cost: it damages LLMs' context-faithfulness (ability to follow injected/updated context).",
+      "mechanism": "Evaluation of the same factuality-enhancement methods on knowledge-editing tasks (in-context editing / ICE on MQUAKE, plus MeLLo), using editing accuracy as a proxy for context-faithfulness, against the LLAMA2-CHAT baseline.",
+      "evaluation": "All methods decline vs baseline on ICE without exception (avg decrease >20%); largest reported drop 69.7% (TruthX up to 67.9% on ICE, 60.3% cited in intro); with MeLLo most declines exceed 40%, worse for larger models.",
+      "domain": "LLM context-faithfulness / knowledge editing",
+      "source_quote": "The experimental results reveal that while these methods may yield inconsistent improvements in factual accuracy, they also cause a more severe decline in context-faithfulness, with the largest decrease reaching a striking 69.7%.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Mechanistically explain why factuality enhancement degrades context-faithfulness.",
+      "mechanism": "A custom knowledge-token capturing algorithm plus analysis of logit distributions and hidden states for new-knowledge vs parametric-knowledge tokens before/after context injection (2,000 QA instances on MQUAKE-STUBBORN); case study classifying unfaithful outputs.",
+      "evaluation": "After context injection, hidden states stay concentrated near original parametric outputs; logits for new-knowledge tokens drop while parametric-knowledge logits rise; representation-editing methods (esp. TruthX) most restrict hidden-state dispersion, explaining their largest faithfulness declines.",
+      "domain": "LLM interpretability / mechanistic analysis",
+      "source_quote": "To explain these declines, we analyze the hidden states and logit distributions for the tokens representing new knowledge and parametric knowledge respectively, highlighting the limitations of current approaches.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [],
+  "notes": "Entire paper is a negative/trade-off result: the central claim is that factuality enhancement is NOT a free lunch, it significantly undermines context-faithfulness (avg >20% ICE drop, up to 69.7%; MeLLo drops >40%). Additional trade-off noted: adding CoT helps the baseline but is unstable and mostly hurts factuality-enhanced models. All method categories (training/inference/prompt-based) affected without exception. No new method proposed; contribution is diagnostic + recommendation for future work to balance factuality and context-faithfulness.",
+  "extractor": "human-baseline-batch13",
+  "date": "2026-07-07"
+}

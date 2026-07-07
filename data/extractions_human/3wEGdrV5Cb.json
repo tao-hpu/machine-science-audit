@@ -1,0 +1,50 @@
+{
+  "paper_id": "3wEGdrV5Cb",
+  "title": "Enhancing Federated Domain Adaptation with Multi-Domain Prototype-Based Federated Fine-Tuning",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "解决联邦域适应（FDA）中数据异质导致基于权重平均聚合（如 FedAvg）梯度更新分歧、全局模型 in-domain 与 out-of-domain 性能均下降的问题",
+      "mechanism": "提出 MPFT（Multi-domain Prototype-based Federated Fine-Tuning）：各客户端上传一定比例的数据嵌入（prototype，含域特定信息的预训练表示）到服务器组成 prototype 训练集，在服务器上做有监督集中式训练得到全局 adapter 再分发；单轮通信即收敛，带收敛保证",
+      "evaluation": "DomainNet（划分 50/100/150 类子集）与 PACS 数据集，用 OpenCLIP 预训练模型（ViT-B-32 / ConvNeXT-Base）；对比 FedAvg、FedProx、Ditto、MOON、FedProto、DBE 与 local training；MPFT 在所有 DomainNet 子集上 ind 与 ood 准确率均一致最优，且仅需 1 轮全局通信",
+      "domain": "联邦学习 / 联邦域适应 / 图像分类",
+      "source_quote": "We propose MPFT, a one-round federated fine-tuning framework with convergence guarantees that outperforms previous methods on multi-domain environments.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "为 FDA 提供能刻画知识保留与知识适应权衡的评估指标",
+      "mechanism": "引入同时评估 out-of-domain 与 in-domain 准确率的新指标（域知识保留损失 L^P 与域知识适应损失 L^A），考察 trade-off；并用雷达图分析各域公平性",
+      "evaluation": "定性/指标定义为主；实证显示 local training 与个性化 FL（FedProto、DBE）ind 高但 ood 差（灾难性遗忘），FedProx 提升 ood 却牺牲 ind，MPFT 兼顾二者且跨域更公平",
+      "domain": "联邦域适应 / 评估指标",
+      "source_quote": "We introduce a novel metric to evaluate the performance of the FDA, specifically assessing out-of-domain and in-domain accuracy to consider the trade-off between knowledge preservation and adaptation.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "论证 MPFT 在降低计算/通信开销的同时保障隐私与对攻击的鲁棒性",
+      "mechanism": "对 prototype 施加差分隐私；设计 prototype-based feature space hijacking attack 评估鲁棒性；对比各 FL 方法的计算与通信成本",
+      "evaluation": "MPFT 单轮通信显著降低开销；特征空间劫持攻击下即便攻击者掌握预训练编码器与多数 prototype，经大量训练轮次仍无法重建原始数据；某些 DP 噪声配置甚至降低异质偏差、提升性能，但过大噪声会损害性能",
+      "domain": "联邦学习 / 隐私与安全",
+      "source_quote": "We demonstrate empirically that MPFT incurs lower computational and communication overheads as compared to other FL methods while ensuring privacy through differential privacy protection of the prototypes and maintaining robustness against feature space hijacking attacks.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "FPL (Huang et al., 2023) transmit all the prototypes (data embeddings) to the server during the initial phase for clustering and averaging, which is then sent back to the clients... This method introduces significant communication overhead and potential privacy leakage during the first phase. FedNH (Dai et al., 2023) leverages class prototype transmission to address class imbalance across clients, rather than tackling the more complex issue of domain heterogeneity.",
+      "section": "related work"
+    },
+    {
+      "quote": "Unlike the above methods, we do not assume that the average aggregation of different client models or prototypes can represent the global model or global prototype in scenarios involving heterogeneous client data. MPFT uses prototypes from different clients as basic units that replace data distribution for centralized training on the server.",
+      "section": "related work"
+    },
+    {
+      "quote": "a key drawback is these methods still rely on averaging-based aggregation, which results in poor out-of-domain adaptation performance, despite achieving some in-domain improvements.",
+      "section": "related work"
+    }
+  ],
+  "notes": "主结果为正向（MPFT 全面 SOTA、单轮通信）。核心贡献 C2 本身即围绕 trade-off：作者明确刻画其他方法的 ind/ood 权衡——local training 与个性化 FL（FedProto/DBE）ind 高但 ood 差（灾难性遗忘），FedProx 提升 ood 却牺牲 ind。诚实 caveat：DP 噪声过大会降低性能（存在隐私-效用权衡），仅特定噪声配置意外提升。未见 MPFT 自身明显负结果/落败。（该论文 decision=accept）",
+  "extractor": "human-baseline-batch25",
+  "date": "2026-07-07"
+}

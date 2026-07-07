@@ -1,0 +1,37 @@
+{
+  "paper_id": "gC0ikdZoz8",
+  "title": "Continuous-Time Analysis of Adaptive Optimization and Normalization",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "解释 Adam 超参数 (β,γ) 的选择为何影响训练稳定与泛化,给出保证参数更新有界的理论稳定区域",
+      "mechanism": "提出 Adam/AdamW 的连续时间表述(将 Adam 的梯度更新写成连续时间表达式/二阶微分方程),据此理论推导出确保更新有界的稳定区域,并在超出该区域时预测指数增长",
+      "evaluation": "定性+实证验证:理论稳定区域被经验证实——超出稳定区时观察到可预测的参数更新指数增长;并观察到 (β,γ) 离不稳定边界越远(即 C(β,γ) 越大),泛化越快",
+      "domain": "深度学习优化理论 / 自适应优化器分析",
+      "source_quote": "We determine a theoretical stability region for Adam's adaptive hyperparameters (β, γ) that ensures bounded parameter updates and stable training, which we verify empirically. This result implies that instability may occur when the hyperparameters move outside the stable region, a phenomenon we empirically verify, exhibiting predictable exponential growth. We observe a faster rate of generalization when (β, γ) is further from the instability boundary.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "从理论上解释 normalization 层(如 layer-norm)为何有助于泛化,并把这种隐式效应转化为显式优化器",
+      "mechanism": "用第 2 节连续时间框架分析尺度不变(scale-invariant)架构组件对 Adam 动力学的影响,发现其诱导一种'元自适应(meta-adaptive)归一化'效应;将该隐式效应显式化为 2-Adam,并推广为 k-Adam(连续做 k 次自适应归一化,k=1 即 Adam,k=2 即带归一化层的 Adam)",
+      "evaluation": "CIFAR10 上训练 CNN 100 epochs(Figure 6)及一个更大规模语言建模任务(Appendix O):2-Adam 配 inverse exp 策略+decoupled weight decay 表现最好,优于 Adam;但仅为'preliminary evidence',k>2 时表现变差",
+      "domain": "深度学习优化理论 / 归一化层机理 / 优化器设计",
+      "source_quote": "We perform a theoretical analysis of how scale invariant architectural components (e.g. layer-norm) influence Adam's learning dynamics, finding scale invariance to induce a meta-adaptive normalization effect. We convert this implicit effect to an explicit optimizer, which we name 2-Adam, and consider its extension k-Adam: a generalization of Adam/AdamW (which corresponds to k=1) that performs a normalization procedure k times successively.",
+      "type": "method"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Most relevant to our work is (Tanaka & Kunin, 2021) which, using a Lagrangian-based approach, uncovers an adaptive influence of scale invariance. However this work does not consider optimizers with an adaptive learning rate, such as RMSprop or Adam... Our analysis in Section 4 extends this argument to the case of an adaptive learning rate, where we observe a meta-adaptive effect which we convert into an explicit optimizer, 2-Adam.",
+      "section": "related work"
+    },
+    {
+      "quote": "except for (da Silva & Gazeau, 2019; Barakat & Bianchi, 2020) which utilize the same first-order differential equation representation for m(t) and v(t) that we describe in Lemma 1 (though they do not explicitly solve these equations), applied towards understanding the convergence rate of Adam.",
+      "section": "related work"
+    }
+  ],
+  "notes": "被拒的理论分析论文。含多处 caveat/弱结果自陈:2-Adam 优于 Adam 仅为 'preliminary evidence/supporting evidence';k>2 时表现更差(仅 k=2 最佳);所推导的 max-update 界只是 suggests 而未严格证明为何 C(β,γ) 越大泛化越快(作者列为局限);并自承 meta-adaptive 效应不是 normalization 层全部益处的完整解释。",
+  "extractor": "human-baseline-batch22",
+  "date": "2026-07-07"
+}

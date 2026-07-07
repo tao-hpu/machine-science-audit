@@ -1,0 +1,50 @@
+{
+  "paper_id": "LgzRo1RpLS",
+  "title": "MambaExtend: A Training-Free Approach to Improve Long Context Extension of Mamba",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Diagnose why Mamba state-space models fail to generalize to contexts longer than their pre-training length.",
+      "mechanism": "Empirical analysis of the discretization step sizes (Delta_t) across layers as context length grows, measuring the l2-norm of accumulated Delta_t on Pile samples and relating exp(-sum Delta_t) to token-retention/decay behavior.",
+      "evaluation": "Two empirical findings: (1) minimizing the sum of Delta_t across tokens enhances generalization at longer inference context; (2) a fixed down-scaling of Delta_t generally does NOT yield optimal generalization; degradation traced to out-of-distribution (OOD) discretization steps.",
+      "domain": "State-space models / long-context language modeling",
+      "source_quote": "We have empirically observed two key findings: (1) minimizing the sum of Delta_t's across all tokens can enhance generalization when increasing context length during inference, and (2) applying a fixed down-scaling to Delta_t generally does not yield optimal generalization.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "Extend Mamba's usable context length without any retraining of model weights, in a way feasible on resource-limited edge devices, unlike fine-tuning approaches such as DeciMamba.",
+      "mechanism": "MambaExtend framework: a calibration function (CF) that learns per-layer learnable scaling factors s_i for the discretization matrix Delta_t while keeping pre-trained weights frozen; provides both a gradient-based CF and a gradient-free zeroth-order (ZO) CF based on SPSA using only forward passes.",
+      "evaluation": "Training-free context extension up to 32x (2k to 64k tokens) with minimal perplexity increase; requires up to ~5.42e6x fewer parameter updates and up to ~3.87x lower peak memory than fine-tuning; on PG-19 at 70k, MambaExtend-130M PPL 30.62 (~32506x improvement over baseline).",
+      "domain": "State-space models / efficient long-context extension",
+      "source_quote": "we introduce MambaExtend, a framework designed to extend Mamba's context length without any re-training of the model weights. MambaExtend utilizes a calibration function (CF) to optimize sizes of the discretization steps (Delta_t) across various Mamba layers by incorporating a learnable scaling factor for each layer's Delta_t.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Demonstrate MambaExtend's effectiveness across long-context understanding and retrieval tasks and against the fine-tuning baseline DeciMamba.",
+      "mechanism": "Extensive experiments on perplexity (Pile, PG-19), LongBench (7 tasks), and passkey/long-context retrieval with Mamba-130M, Mamba-1.4B, and Mamba2-780M variants, comparing to pre-trained baselines and DeciMamba.",
+      "evaluation": "Up to ~8145x PPL improvement over pre-trained baselines (higher at longer contexts); vs DeciMamba, up to 40.6% reduced PPL with ~5.42e6x fewer parameter updates and up to ~3.87x lower peak memory; retrieval evaluated on sequences 1K-64K tokens.",
+      "domain": "Long-context LLM evaluation (SSMs)",
+      "source_quote": "Compared to DeciMamba, we yield up to 40.6% reduced PPL while requiring up to ~542*10^6x fewer parameter update with up to 3.87x lower peak-memory demand.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "A contemporary work, namely DeciMamba (Ben-Kish et al., 2024), has presented a selective token decimation strategy ... However, DeciMamba requires a memory- and compute-intensive fine-tuning of the model ... does not scale to larger models. ... unlike DeciMamba, which allows fine-tuning of the weights, MambaExtend keeps the model weights fixed to their pre-trained values.",
+      "section": "introduction"
+    },
+    {
+      "quote": "This phenomenon has been tied to the Mamba model's implicit bias to a limited effective receptive field (ERF) governed by the training data sequence length (Ben-Kish et al., 2024).",
+      "section": "introduction"
+    },
+    {
+      "quote": "we used ZO methods based on the simultaneous perturbation stochastic approximation (SPSA) (Spall, 1992) to update the scaling factors.",
+      "section": "introduction"
+    }
+  ],
+  "notes": "Results are strongly positive (up to ~8145x PPL improvement, up to 40.6% lower PPL than DeciMamba at far lower cost). One comparable-signal caveat: abstract frames long-context performance vs fine-tuning methods as 'comparable or superior' (not uniformly superior), i.e. the win is primarily in efficiency (parameter updates / memory) rather than always in accuracy. Finding C1(2) is a negative result about a naive baseline (fixed down-scaling of Delta_t fails), motivating the learned per-layer approach. Paper was accepted.",
+  "extractor": "human-baseline-batch17",
+  "date": "2026-07-07"
+}

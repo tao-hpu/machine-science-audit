@@ -1,0 +1,58 @@
+{
+ "title": "Nuisance-Prompt Tuning for Soft Background Modeling in Few-Shot OOD Detection",
+ "contributions": [
+  {
+   "id": "C1",
+   "purpose": "显式建模 ID 无关的背景特征以净化类别提示",
+   "mechanism": "在 M 个类别 prompt 之外引入可学习 'nuisance' prompt 吸收背景特征,推理时不参与打分(仅作训练期背景 sink)",
+   "evaluation": "消融最关键组件:去掉 nuisance prompt AUROC 0.922→0.852、FPR95 0.354→0.476(退化到 CoOp 水平)",
+   "domain": "少样本分布外(OOD)检测/视觉-语言模型",
+   "source_quote": "A principled framework for explicit background modeling through nuisance prompt learning.",
+   "type": "method"
+  },
+  {
+   "id": "C2",
+   "purpose": "消除 LoCoOp 依赖固定 top-K 阈值的脆弱性",
+   "mechanism": "用 CLIP 自注意力([CLS]→patch)作连续监督信号,按 w_i=1-归一化注意力对 patch 加权做背景监督",
+   "evaluation": "去掉 patch loss AUROC 0.922→0.884、FPR95 0.354→0.421",
+   "domain": "同上",
+   "source_quote": "Attention-weighted patch supervision eliminating discrete threshold brittleness.",
+   "type": "method"
+  },
+  {
+   "id": "C3",
+   "purpose": "在嵌入空间强制前景-背景几何分离",
+   "mechanism": "margin-based repulsion loss:Σ max(0, sim(b,g_m)-γ) 拉开 nuisance 与类别 prompt",
+   "evaluation": "去掉 margin loss AUROC 0.922→0.897、FPR95 0.354→0.395",
+   "domain": "同上",
+   "source_quote": "Margin-based repulsion enforcing geometric separation between foreground and background representations.",
+   "type": "method"
+  },
+  {
+   "id": "C4",
+   "purpose": "跨基准验证方法有效性",
+   "mechanism": "ImageNet-1K 为 ID,4 个 OOD 基准(iNaturalist/SUN/Places365/Texture)1-shot 对比 LoCoOp",
+   "evaluation": "整体 FPR95 0.354 vs LoCoOp 0.382(-2.8pp)、AUROC 0.922 vs 0.916(+0.6%);iNaturalist FPR95 -8.4%;但 SUN 反而变差",
+   "domain": "同上",
+   "source_quote": "NPT achieves 2.8% FPR95 improvement and 0.6% AUROC gain over LoCoOp, with particularly strong gains of 8.4% FPR95 reduction on iNaturalist.",
+   "type": "finding"
+  }
+ ],
+ "self_declared_provenance": [
+  {
+   "quote": "We propose Nuisance-Prompt Tuning (NPT) ... that extends prompt learning by introducing a dedicated learnable \"nuisance\" prompt to model ID-irrelevant background features. Our method builds upon the CoOp framework but addresses its limitation of incorporating background information into class prompts.",
+   "section": "method"
+  },
+  {
+   "quote": "Our work builds upon LoCoOp (Miyai et al. 2023), a local regularized context optimization approach for few-shot OOD detection.",
+   "section": "method"
+  }
+ ],
+ "notes": "reject,本批技术上最规范的 ML 论文。负结果(诚实上报):在 4 个 OOD 基准之一 SUN 上 NPT 反不如基线 LoCoOp——FPR95 0.290 vs 0.278(升 1.2pp)、AUROC 0.943 vs 0.945(降),作者在正文与消融表如实标出。收益整体偏小:overall AUROC 仅 +0.6%(0.922 vs 0.916)。方法学局限:仅 1-shot 结果,且 Paper Checklist Q7=No(因算力只跑一次、无 error bar/CI)、Q8=No(未给算力细节)。AI 自我披露关键:AI Involvement Checklist 中实验设计/数据分析/写作均为 D(AI 全自动完成),hypothesis 为 C 并明言'human involvement is limited to the selection of the baseline paper, and the entire subsequent idea generation process is carried out by the AI'——即整套方法是 AI 从人类选定的单篇基线(LoCoOp)自动增量衍生;Observed AI Limitations 自承因依赖基线论文而'难以做完全原创的研究'、只能生成训练/推理轻量的工作。self-declared provenance 清晰(extends CoOp / builds upon LoCoOp)。贡献按论文声明的 4 条抽取。",
+ "paper_id": "AS0046",
+ "extractor": "agent-a4s-full-3",
+ "date": "2026-07-06",
+ "forum": "x7qlIDcw0P",
+ "decision": "reject",
+ "submission_date": "2025-08-24"
+}

@@ -1,0 +1,50 @@
+{
+  "paper_id": "XXVRkPB1tg",
+  "title": "CodeBenchGen: Creating Scalable Execution-based Code Generation Benchmarks",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Overcome the limitation that execution-based code-generation benchmarks are hard to build (require easily-executable code or human-written tests), by enabling scalable creation of such benchmarks from arbitrary naturally-occurring code.",
+      "mechanism": "CodeBenchGen framework: an LLM sandboxes an arbitrary user-selected code fragment into an evaluation example (context, ground truth, instruction) and generates >=3 test cases per example; a 3-step pipeline (sandbox generation, test generation, iterative execution+debugging with re-generation guards to avoid drifting from the input) produces examples whose ground-truth completion passes all tests; a single shared sandbox runs all tests.",
+      "evaluation": "Human effort does not grow with dataset size (only need to write requirements/prompts); GPT-4 used as the sandboxing/debug LLM, GPT-3.5 for extra test generation to reduce model bias; successfully sandboxes complex code (local imports, external APIs, file reading).",
+      "domain": "Code generation / benchmark construction",
+      "source_quote": "We present CODEBENCHGEN, a framework to adapt code fragments into execution-based evaluation examples, which enables researchers to construct scalable and custom benchmarks tailored to naturally occurring code domains.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Provide a concrete, diverse, realistic, and solvable execution-based benchmark demonstrating the framework's capabilities.",
+      "mechanism": "Apply CodeBenchGen to CodeSearchNet GitHub code to build Exec-CSN; validate via statistics, similarity analyses, and a human study over four RQs (diversity, realism, complexity, solvability).",
+      "evaluation": "Exec-CSN: 1,931 examples, 293 libraries, 367 GitHub repos (90% repo coverage, 47% fragment conversion); avg 491.88 code tokens, 8.79 test cases, 95.76% line coverage; realism: 0.5116 avg BLEU and 83% variable Jaccard vs input (vs 0.0052 BLEU for random pairs); human study: 81.3% solvable, 85% of test cases 'reasonable and not trivial', 61% require effort.",
+      "domain": "Code generation / benchmark resource",
+      "source_quote": "We use our framework to create a new benchmark, Exec-CSN, from GitHub code and conduct analyses and human studies to demonstrate the diversity, realism, complexity, and solvability of the examples.",
+      "type": "resource"
+    },
+    {
+      "id": "C3",
+      "purpose": "Benchmark current models on Exec-CSN and characterize where they fail relative to humans.",
+      "mechanism": "Evaluate 12 open-source and proprietary models with Pass@k; performance breakdown by target length, context length, function calls, and libraries; iterative human-vs-model comparison where both can revise based on execution feedback.",
+      "evaluation": "Best model GPT-4 only reaches 37.21 Pass@1; CodeLlama-70B has highest Pass@5/@10 (surpassing GPT-4) but low Pass@1; models do worse on longer targets, more function calls, and external libraries; in iterative setting GPT-4 has better initial Pass@1 but humans significantly surpass it after several rounds.",
+      "domain": "Code generation / model evaluation",
+      "source_quote": "We benchmark 12 code generation models on Exec-CSN and compare and analyze model and human programming abilities.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Unlike previous work that only aims to generate and debug the tests (Xie et al., 2023), we allow the LLM to debug the entire generated code, including the target output, the context, and the tests.",
+      "section": "methodology"
+    },
+    {
+      "quote": "We take the source code fragment from the CodeSearchNet (Husain et al., 2020) dataset, a GitHub function completion dataset that does not support execution-based evaluation... We choose CodeSearchNet as the source because of its large scale and coverage across a diversity of examples from GitHub.",
+      "section": "methodology"
+    },
+    {
+      "quote": "These 1,931 examples cover 367 out of 408 source repositories from CodeSearchNet, giving 90% repository coverage, which is substantially higher than previous dataset construction methods (Zhang et al., 2023; Jain et al., 2024).",
+      "section": "related work"
+    }
+  ],
+  "notes": "Rejected (ICLR 2025). Benchmark/resource paper. Key negative findings (the point of the benchmark): best model GPT-4 only 37.21 Pass@1 -> real-world diverse tasks remain hard; models degrade on longer targets, more function calls, and external libraries. Interesting caveat: CodeLlama-70B 'refuses' ~8% of queries (misinterpreting them as dangerous/homework), dragging down its Pass@1 despite high-quality output - an alignment-training byproduct. Trade-off in construction: only 47% of source fragments convert successfully (I/O-operation examples filtered out); framework preserves but does not perfectly match input (62% of examples share input AST depth, 83% variable Jaccard). Human-vs-model: humans overtake GPT-4 after iterative revision despite GPT-4's higher initial Pass@1.",
+  "extractor": "human-baseline-batch16",
+  "date": "2026-07-07"
+}

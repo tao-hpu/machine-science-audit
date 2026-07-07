@@ -1,0 +1,42 @@
+{
+  "paper_id": "LyJi5ugyJx",
+  "title": "Simplifying, Stabilizing and Scaling Continuous-time Consistency Models",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "统一扩散模型与一致性模型的参数化,简化连续时间CM的公式并暴露不稳定的根因",
+     "mechanism": "提出TrigFlow,一个统一EDM与Flow Matching的新formulation,大幅简化扩散模型、PF-ODE与CM的表达",
+     "evaluation": "定性/理论:基于TrigFlow分析连续时间CM训练不稳定的根因,为后续改进提供框架",
+     "domain": "扩散/一致性生成模型(图像生成)",
+     "source_quote": "Our first contribution is TrigFlow, a new formulation that unifies EDM (Karras et al.,2022; 2024) and Flow Matching ..., significantly simplifying the formulation of diffusion models, the associated probability flow ODE and CMs.",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "稳定连续时间CM训练(此前严重不稳定、显著逊于离散时间CM)",
+     "mechanism": "一套改进recipe:改进的time-conditioning(positional time embeddings,相当于Fourier scale≈0.02)、adaptive group normalization网络架构、重构训练目标(adaptive weighting/normalization + progressive annealing),并用JVP重排在FP16+Flash Attention下精确计算tangent",
+     "evaluation": "消融(Fig.4/5):大Fourier scale导致不稳定,positional embedding使∂对x_t和t均稳定;normalization或clipping显著改善训练;分析解释了Song&Dhariwal(2023)的观察",
+     "domain": "扩散/一致性生成模型(图像生成)",
+     "source_quote": "Building on this foundation, we analyze the root causes of instability in CM training and propose a complete recipe for mitigation.",
+     "type": "method"},
+    {"id": "C3",
+     "purpose": "将连续时间CM扩展到前所未有的规模并实现有竞争力的少步生成",
+     "mechanism": "sCM(simplified CM),在CIFAR-10/ImageNet 64/512上训练至1.5B参数(史上最大CM),同时支持consistency training与distillation",
+     "evaluation": "2步采样FID:CIFAR-10 2.06、ImageNet 64 1.48、ImageNet 512 1.88;与最佳扩散模型FID差距缩到10%以内,且用<10%的有效采样compute",
+     "domain": "扩散/一致性生成模型(图像生成)",
+     "source_quote": "These changes enable us to train continuous-time CMs at an unprecedented scale, reaching 1.5B parameters on ImageNet 512x512. Our proposed training algorithm, using only two sampling steps, achieves FID scores of 2.06 on CIFAR-10,1.48 on ImageNet 64x64,and 1.88 on ImageNet 512x512",
+     "type": "method"},
+    {"id": "C4",
+     "purpose": "论证连续时间CM相对离散时间的优势,并对比sCM与VSD",
+     "mechanism": "实证:证明相邻timestep间隔缩小趋近连续时间极限时样本质量提升;比较sCM与VSD在不同guidance scale下的多样性与FID",
+     "evaluation": "sCD比sCT scale更好且FID ratio跨模型尺寸恒定offset(随采样步增多减小);sCM比VSD多样性更高、更兼容guidance,VSD在高guidance下退化",
+     "domain": "扩散/一致性生成模型(图像生成)",
+     "source_quote": "we provide a rigorous justification for the advantages of continuous-time CMs over discrete-time variants by demonstrating that sample quality improves as the gap between adjacent timesteps narrows to approach the continuous-time limit.",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "TrigFlow, a new formulation that unifies EDM (Karras et al.,2022; 2024) and Flow Matching (Peluchetti, 2022; Lipman et al., 2022; Liu et al., 2022; ...)", "section": "introduction"},
+    {"quote": "we build upon the TrigFlow framework and introduce several theoretically motivated improvements to stabilize continuous-time CMs", "section": "method"},
+    {"quote": "Consistency models (CMs) (Song et al., 2023; Song & Dhariwal, 2023) ... Previous work found that training continuous-time CMs ... suffers from severe instability", "section": "introduction/preliminaries"}
+  ],
+  "notes": "trade-off/caveat:(1) 明确只是把与最佳扩散模型的FID gap缩到10%以内,并未超越SOTA扩散;(2) sCD(distillation)scale优于sCT(consistency training),sCT相对更弱;(3) 连续时间CM此前'significantly worse'于离散时间CM,是本文要解决的痛点;(4) VSD在高guidance退化——作为对比方法的负面,sCM相对更优。大量嫁接EDM/EDM2架构、Flow Matching、CM既有工作。",
+  "extractor": "human-baseline-batch26",
+  "date": "2026-07-07"
+}

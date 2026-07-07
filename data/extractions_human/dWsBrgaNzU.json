@@ -1,0 +1,37 @@
+{
+  "paper_id": "dWsBrgaNzU",
+  "title": "GPU-Accelerated Counterfactual Regret Minimization",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Make Counterfactual Regret Minimization (CFR) for large imperfect-information games much faster by exploiting GPU parallelism, accepting higher memory usage.",
+      "mechanism": "Reformulate CFR as a series of dense and sparse matrix/vector (linear-algebra) operations over the whole game tree (analogous to GraphBLAS for graph algorithms), making it highly parallelizable on a GPU; operates on entire game tree storing values per node rather than per infoset-action.",
+      "evaluation": "On 20 games vs Google DeepMind OpenSpiel: GPU up to ~401.2x faster than OpenSpiel Python and up to ~203.6x faster than OpenSpiel C++ on large games; even CPU backend 1.5-46.8x faster than Python; speedup grows with game size.",
+      "domain": "Imperfect-information game solving / GPU-accelerated algorithms",
+      "source_quote": "We propose implementing this algorithm as a series of dense and sparse matrix and vector operations, thereby making it highly parallelizable for a graphical processing unit, at a cost of higher memory usage.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Characterize when the GPU/linear-algebra approach helps versus hurts, quantifying the speed-vs-memory and small-vs-large-game trade-off.",
+      "mechanism": "Runtime and peak-memory benchmarking of CPU and GPU backends against OpenSpiel Python and C++ across games of varying size, plus 32-bit vs 64-bit float comparison and exploitability sanity checks.",
+      "evaluation": "GPU is ~3.5x/3.3x slower than OpenSpiel Python on tiny games (Kuhn poker 58 nodes, tiny Hanabi 55 nodes) and up to ~85.5x slower than C++ on small games; higher peak memory since all node states stored; 32-bit floats cut memory noticeably.",
+      "domain": "Imperfect-information game solving / performance analysis",
+      "source_quote": "our GPU implementation performs about 3.5 times slower for small games but is up to about 401.2 times faster for large games... This suggests the overheads from GPU and Python make our implementation impractical for games of similarly small sizes.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "We propose implementing CFR as a series of linear algebra operations, as done by GraphBLAS (Kepner et al., 2016) for graph algorithms, thereby parallelizing it for a graphical processing unit (GPU) at a cost of higher memory usage.",
+      "section": "introduction"
+    },
+    {
+      "quote": "In traditional implementations of CFR, while a complete recursive game tree traversal is carried out, counterfactual values are typically not stored for each node but instead for each infoset-actions. We demonstrate that it is possible to achieve a significant parallelization (and hence speedup) at a cost of higher memory usage.",
+      "section": "discussion"
+    }
+  ],
+  "notes": "Explicit trade-off/negative results: the GPU implementation is SLOWER on small games (up to 85.5x slower than OpenSpiel C++; 3.5x slower than OpenSpiel Python) and uses more memory (stores all node states, 'impractical for extremely large games'); authors call it impractical for small games. Speedup is only realized on large games and grows with size. Authors explicitly note the memory comparison is not fully fair and that their contribution is NOT about improving convergence/exploitability (CFR convergence unchanged, computed only as a sanity check).",
+  "extractor": "human-baseline-batch13",
+  "date": "2026-07-07"
+}

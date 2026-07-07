@@ -1,0 +1,50 @@
+{
+  "paper_id": "04c5uWq9SA",
+  "title": "A False Sense of Privacy: Evaluating Textual Data Sanitization Beyond Surface-level Privacy Leakage",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "填补文本数据脱敏（PII 移除、合成数据）缺乏隐私评估的空白，量化在已知辅助背景信息下从脱敏文本中可推断出的个体信息",
+      "mechanism": "提出首个脱敏文本数据集发布的隐私评估框架，两阶段：(1) linking——用 TF-IDF 稀疏检索器把脱敏记录与目标个体候选匹配；(2) semantic matching——在 claim 粒度上用语义相似（而非词面匹配）比较匹配记录与原始私有数据，对近似推断给予部分信用",
+      "evaluation": "在 MedQA（医疗记录）和 WildChat（人机对话）两数据集上评估多种 SOTA 脱敏方法；含人类研究：3 名作者标注 580 claims，Fleiss kappa 0.87，LLaMA-3-8B 与人类众数 Spearman 0.93（GPT-4o 0.96，ROUGE 仅 0.81）",
+      "domain": "文本数据隐私 / 数据脱敏评估（医疗、对话）",
+      "source_quote": "To address this gap in evaluation, we introduce the first framework that quantifies the information inferrable about an individual from sanitized data, given auxiliary background knowledge (Ganta et al., 2008).",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "揭示当前 PII 移除类脱敏方法只做表面级文本操作，无法阻断语义级信息泄露",
+      "mechanism": "用所提框架对比 identifier removal（商用 PII 移除、LLM 匿名化、敏感 span 检测）方法，比较词面 vs 语义相似度差异",
+      "evaluation": "SOTA PII 移除方法仍有显著泄露，94% 原始 claims 仍可推断；识别符移除方法词面与语义相似度差距大（商用工具如 Azure AI 尤为严重）",
+      "domain": "文本数据隐私",
+      "source_quote": "State-of-the-art PII removal methods are surface-level and still exhibit significant information leakage, with 94% of original claims still inferable.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "刻画数据合成与差分隐私（DP）合成在隐私-效用权衡上的表现",
+      "mechanism": "对比 GPT-2 微调合成（有/无 DP，DP 时训练加梯度噪声）与识别符移除，在隐私指标、词面匹配、下游任务效用上评估",
+      "evaluation": "数据合成比识别符移除低 9% 泄露且效用相当或更好；无 DP 合成仍有 57% 泄露；DP 合成隐私最强但效用显著下降（MedQA 任务 -4%，文档质量退化）；WildChat 上合成有时不如 PII scrubbing",
+      "domain": "文本数据隐私 / 差分隐私合成",
+      "source_quote": "Data synthesis offers a better privacy-utility trade-off than identifier removal, showing 9% lower leakage for equivalent or better utility, depending on the complexity of the downstream task. (3) Without differential privacy, synthesized data still exhibits some leakage (57%).",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Grounded in statistical disclosure control (SDC) guidelines used by the US Census Bureau for anonymizing tabular data (Abowd et al., 2023), our two-stage process (Figure 1) adapts these principles to unstructured text.",
+      "section": "introduction"
+    },
+    {
+      "quote": "While there have been attempts to create text anonymization benchmarks (Pilán et al., 2022), these primarily concentrate on span detection and anonymization rather than comprehensive re-identification and focus on scrubbing methods rather than data synthesis, contrary to our work. Recent work in the security literature has begun to challenge the perceived safety of synthetic data, but these studies have primarily focused on simple, low-dimensional tabular or image data (Stadler et al., 2022; Yale et al., 2019; Annamalai et al., 2024) ... these investigations have not extended to unstructured text.",
+      "section": "related work"
+    },
+    {
+      "quote": "Drawing insights from Zeng et al. (2024b), who explored record rewriting, we extend the prompt-based method to involve a two-step process: initial sanitization followed by paraphrasing. We first apply the sanitization prompt from Staab et al. (2024) without attribute inference...",
+      "section": "related work / methods"
+    }
+  ],
+  "notes": "核心信号即一系列 trade-off/负结果：DP 合成隐私最强但 MedQA 效用 -4%、文档质量退化；WildChat 上数据合成有时与 PII scrubbing 相当甚至更差，MedQA 上不如 sanitize+paraphrase；无 DP 合成仍泄露 57%，PII 移除泄露 94%。作者强调隐私语境下 false negative 比 false positive 更严重。整体论调是当前脱敏给出 'false sense of privacy'。（该论文 decision=reject）",
+  "extractor": "human-baseline-batch25",
+  "date": "2026-07-07"
+}

@@ -1,0 +1,50 @@
+{
+  "paper_id": "qOForsjh4q",
+  "title": "Same Accuracy, Twice As Fast: Continual Learning Surpasses Retraining From Scratch",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Reframe continual learning for the practical (unconstrained-memory) setting where both old and new data are available, measuring computational savings from reusing a trained model rather than only accuracy.",
+      "mechanism": "A novel evaluation framework that assumes full access to the previously trained model plus all old and new data, and scores a method by the reduction in compute (L100/L99: relative iterations to match a fraction of the from-scratch model's final accuracy) needed to match training from scratch, with the naive continue-training baseline as reference.",
+      "evaluation": "Framework defines L100 (compute to reach 100% of scratch accuracy); naive continuous training is shown to converge slower and underperform scratch, motivating the metric (qualitative + case study on CIFAR-100 70+30).",
+      "domain": "Continual learning / computer vision (image classification)",
+      "source_quote": "We propose a novel continual learning evaluation framework, allowing models full access to previous data and measuring their computational cost rather than only their accuracy. This approach shifts the research focus towards more practical, real-world challenges.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Identify which optimization aspects can accelerate continual training when reusing an old model, and provide concrete first-step methods for each.",
+      "mechanism": "Decompose the problem into four aspects (initialization, regularization, data selection, hyper-parameters) and instantiate a literature-based first-step method for each: shrink-and-perturb to restore plasticity (initialization), L2-init regularization, easy/hard replay sampling (data selection, building on Hacohen & Tuytelaars 2024), and shortened LR schedulers (hyper-parameters).",
+      "evaluation": "Each method individually accelerates convergence on CIFAR-100 (70+30) with ResNet-18; shrink-and-perturb and L2-init can also slightly improve final accuracy over scratch; effects shown across CIFAR-10/100, ImageNet-100/200, Adaptiope.",
+      "domain": "Continual learning / optimization for computer vision",
+      "source_quote": "For each area, we introduce a first-step method based on the literature, which already significantly enhances the learning speed of continual models.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Show the four aspects are complementary and combine to large, consistent compute savings, including under repeated (multi-task) updates.",
+      "mechanism": "Empirical study combining all first-step methods and measuring speedup-to-match-scratch across datasets, class splits, and sequential multi-task settings.",
+      "evaluation": "Combined method yields up to 2.7x reduction in compute (e.g. CIFAR-100 70+30) to match from-scratch accuracy, with ~x2.24 (CIFAR-10 8+2), ~x2.16 (ImageNet-100 80+20) etc.; multi-task setting shows L100>1 growing across tasks.",
+      "domain": "Continual learning / computer vision",
+      "source_quote": "We demonstrate that improvements in these areas are complementary, meaning advancements in one area do not preclude further gains in others.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "We build on the work of Hacohen & Tuytelaars (2024), who propose a sampling strategy that reduces the importance of very easy and very difficult examples in the memory.",
+      "section": "method"
+    },
+    {
+      "quote": "Gupta et al. (2023); Parmar et al. (2024) study how to continually pre-train NLP models which is strongly related to our setting. They examine learning rate scheduling but do not consider loss of plasticity, regularization, and data selection as done in this paper.",
+      "section": "related work"
+    },
+    {
+      "quote": "In our experiments, we used α=0.4 and β=0.001 without tuning, as proposed by the original authors. ... In Figure 2, we compare ResNet-18 models trained continuously on CIFAR-100 (70+30) with and without the shrink-and-perturb method.",
+      "section": "method"
+    }
+  ],
+  "notes": "Several explicit negative/null/trade-off results: (1) the naive continuous-training baseline (warm-start on full data) converges slower and underperforms training from scratch, offering little gain; (2) balanced old/new batch sampling gives NO improvement over proportional sampling (gradient-norm analysis explains why); (3) aggressive LR scheduling speeds convergence but HURTS final accuracy and on its own fails to reach the required accuracy - only useful in combination; (4) an important caveat: the continuous models cumulatively train for MORE total iterations than any single scratch model, which partly explains why they can surpass scratch accuracy - the win is in per-task/accumulated compute, not raw iterations. Individual first-step methods are drawn from existing literature (shrink-and-perturb, L2-init, easy/hard sampling).",
+  "extractor": "human-baseline-batch13",
+  "date": "2026-07-07"
+}

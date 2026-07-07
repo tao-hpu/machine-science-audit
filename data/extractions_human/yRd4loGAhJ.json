@@ -1,0 +1,50 @@
+{
+  "paper_id": "yRd4loGAhJ",
+  "title": "SEAL: Scaling to Emphasize Attention for Long-Context Retrieval",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Identify why LLM long-context retrieval degrades and locate which model components are responsible, to enable targeted improvement.",
+      "mechanism": "Analysis: head-wise pruning experiments on LongChat-7B-32K over the LongEval line-retrieval benchmark, plus channel-wise pruning of individual heads and a direct-effect circuit analysis; reveals specific attention heads (and specific channels within heads) that positively or negatively correlate with retrieval, with per-head accuracy swings of about +/-20%.",
+      "evaluation": "LongEval line retrieval on LongChat-7B-32K; pruning single heads changes accuracy by ~+/-20%; scaling first-quadrant heads (whose pruning helps) by 0.9 raised accuracy from 32% to 56% at 31K context; scaling Q1 by 0.9 and Q3 by 1.1 jointly gave further gains.",
+      "domain": "LLM interpretability / long-context retrieval",
+      "source_quote": "we observe that specific heads are closely tied to long-context retrieval, showing positive or negative correlation with retrieval scores.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "Improve LLM long-context retrieval cheaply without altering learned knowledge, by emphasizing retrieval-relevant attention.",
+      "mechanism": "SEAL: a learning-based attention scaling method. Generate ~50 format-consistent zero-shot samples for the target task, then fine-tune learnable per-head scalars (SEAL-H) or per-channel vectors (SEAL-C) via SGD/AdamW for 1 epoch; PEFT baselines SEAL-L (LoRA) and SEAL-D (DoRA) are built on the same data/training scheme.",
+      "evaluation": "LongEval line retrieval and Needle-in-a-Haystack on LongChat/Vicuna/Mistral (7B/13B); <1 hour tuning on a single A100 80GB with ~0.002% of parameters; line retrieval LongChat-7B 0.32->0.88, Vicuna-13B 0.42->0.94, Mistral near 100%; SEAL-C generally > SEAL-H.",
+      "domain": "LLM long-context retrieval / parameter-efficient fine-tuning",
+      "source_quote": "we propose a learning-based mechanism using zero-shot generated data to emphasize these heads, improving the model's performance in long-context retrieval tasks.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Show SEAL generalizes out-of-domain and composes with training-free context extension without harming general ability.",
+      "mechanism": "Apply line-retrieval-learned scales to LongBench document-QA (out-of-domain) and measure MMLU; combine SEAL with NTK and Self-Extend context-extension techniques on Llama-2-7B-Chat.",
+      "evaluation": "MMLU nearly unchanged (baseline/SEAL-H/SEAL-C = 42.53/42.34/42.17); out-of-domain LongBench QA maintained or slightly improved; combined with NTK/Self-Extend, dramatically improves retrieval beyond original 4K window at <1% of the cost of tuning-based extension.",
+      "domain": "LLM long-context retrieval / generalization",
+      "source_quote": "when combined with existing training-free context extension techniques, SEAL extends the context limits of LLMs while maintaining highly reliable outputs, opening new avenues for research in this field.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Unlike widely known Parameter-Efficient Fine-Tuning methods (Hu et al., Houlsby et al.(2019)), SEAL focuses on emphasizing the heads relevant to retrieval, supported by our observations, which enables high accuracy with minimal data and learnable parameters.",
+      "section": "related work"
+    },
+    {
+      "quote": "Considering the most basic form of LoRA with rank 1 (r=1), the learnable vectors of LoRA adjust the retrieval-related influence in a manner similar to SEAL-C by controlling the effect across different channels. For this reason, we propose SEAL-L (LoRA), which can be viewed as a superset of SEAL-C.",
+      "section": "related work"
+    },
+    {
+      "quote": "In the main experiments, we additionally report the results of the SEAL-D (DoRA). SEAL-D replaces the LoRA module with the DoRA (Liu et al. (2024b)) module, a recent variant of LoRA.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Positive results overall. Caveats/limits explicitly noted: (1) SEAL is task-specific, using formatted data for particular downstream tasks; (2) for LongChat and Vicuna, naive SEAL does NOT extend beyond the learned context window length - only Mistral generalized to inputs longer than the 31K training length; SEAL must be combined with a context-extension method to push past the base window. Interesting counterintuitive finding: pruning certain attention heads INCREASES retrieval scores. This is a rejected paper (ICLR 2025). No head-to-head loss vs prior SOTA reported; baselines are the un-tuned models and internal PEFT variants (LoRA/DoRA).",
+  "extractor": "human-baseline-batch16",
+  "date": "2026-07-07"
+}

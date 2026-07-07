@@ -1,0 +1,27 @@
+{
+  "paper_id": "v2zcCDYMok",
+  "title": "PostCast: Generalizable Postprocessing for Precipitation Nowcasting via Unsupervised Blurriness Modeling",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "Eliminate the increasing blurriness of deep precipitation nowcasting predictions without the cumbersome, non-generalizable two-stage training on (blurry prediction, ground truth) pairs required by prior deterministic-probabilistic coupling methods.",
+     "mechanism": "Reframe blurriness as a blur kernel K_{S,T,M} convolved with the true prediction, then deblur by guiding a pre-trained unconditional DDPM (ImageNet-init, fine-tuned on 5 precipitation datasets) with the blurry prediction via a distance metric at each reverse step; solve the blur inverse instead of supervised pair training.",
+     "evaluation": "Extensive experiments on 7 precipitation radar datasets; consistently improves CSI/POD/HSS for extreme precipitation across TAU, PredRNN, SimVP, EarthFormer backbones (RNN/CNN/Transformer); outperforms supervised GAN/diffusion baselines (DiffCast, CasCast, DGMR, STRPM) and unsupervised DGP.",
+     "domain": "Precipitation nowcasting / spatiotemporal weather forecasting",
+     "source_quote": "By rethinking the blurriness in precipitation nowcasting as a blur kernel acting on predictions, we propose an alternative postprocessing method to eliminate the blurriness without the requirement of training with the pairs of blurry predictions and corresponding ground truth.",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "Make the deblurring generalize to arbitrary, unknown blur modes across datasets, deterministic models, and lead times.",
+     "mechanism": "A zero-shot blur kernel estimation mechanism (randomly initialized 9x9 kernel dynamically optimized per reverse step by gradients of the distance metric) plus an auto-scale gradient guidance strategy that adaptively derives the guidance scale from an empirical formula.",
+     "evaluation": "Zero-shot generalization to lead times 30/60/90 min: on SEVIR highest-threshold CSI reaches 0.252/0.144/0.106 and on HKO7 0.394/0.326/0.266; consistent CSI gains regardless of spatiotemporal backbone; OOD tests on SCWDS CAP30/CR and MeteoNet.",
+     "domain": "Precipitation nowcasting / diffusion guidance",
+     "source_quote": "A zero-shot blur kernel estimation mechanism and an auto-scale denoise guidance strategy are introduced to adapt the unconditional DDPM to any blurriness modes varying from datasets and lead times in precipitation nowcasting.",
+     "type": "method"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "Two-stage UA-GAN (Xu et al., 2022), DiffCast (Yu et al., 2024), and CasCast (Gong et al.) exploit how to generate small-scale weather pattern conditioning on the blurry predictions. Although these deterministic-probabilistic coupling methods achieve both global accuracy and local details, they are limited to blurry predictions in the training of probabilistic parts. From the perspective of deblur, our method is proposed to train the probabilistic part without the requirement of blurry predictions.", "section": "related work"},
+    {"quote": "these methods merely use the blurry image as a form of guidance, rather than attempting to simulate the blurriness itself ... Our model attempts to simulate and update the blur kernel and guidance scale in real-time by introducing the guidance of blurry predicted images to form an unconditional diffusion model.", "section": "related work"}
+  ],
+  "notes": "Reported as consistent gains across all datasets/models/lead times; no negative or tie results highlighted. ICLR 2025 accept. Code released.",
+  "extractor": "human-baseline-batch15",
+  "date": "2026-07-07"
+}

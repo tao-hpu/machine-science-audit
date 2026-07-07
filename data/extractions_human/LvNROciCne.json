@@ -1,0 +1,59 @@
+{
+  "paper_id": "LvNROciCne",
+  "title": "AdaRankGrad: Adaptive Gradient Rank and Moments for Memory-Efficient LLMs Training and Fine-tuning",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "为内存高效的 LLM 训练/微调奠定理论基础，超越以往对梯度秩仅有的宽松上界。",
+      "mechanism": "形式化证明一个新现象：随训练推进，估计的层梯度矩阵的（近似/stable）秩逐渐下降并渐近趋于 rank-one（Lemma 1，vanilla SGD 下）；此前工作仅给出 rank(G)<min{n,m}/2 的松上界。",
+      "evaluation": "定性/理论结果 + 经验佐证：RoBERTa-Base 上首个特征值占 50% 梯度信息、前两个占 90%（Fig.2）；RTE/MRPC 上 effective rank 随更新步下降（Fig.3/4）。",
+      "domain": "LLM 优化 / 理论",
+      "source_quote": "we present a novel theoretical finding that shows how the approximate rank of the LLM gradient matrices decreases progressively throughout the training process (even under basic SGD settings), asymptotically approaching rank one.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "在保留完整参数训练动态的同时大幅降低内存，克服 LoRA 需 full-rank warm start、GaLore 需预设固定秩的局限。",
+      "mechanism": "提出 AdaRankGrad：在 Adam 更新中对每层梯度自适应降秩，用在线更新的低秩投影规则，按'保留预定信息比例阈值'确定每层最小秩；投影随收敛判据自适应更新，并对一阶/二阶矩做内部变换（moments subspace transformation）。",
+      "evaluation": "GLUE（RoBERTa-Base，8 任务）上准确率优于 full FT/LoRA/GaLore 且平均训练内存更低；相对 GaLore/LoRA 在所应用层上平均省 25%–50% 内存，最终模型整体省约 20%。",
+      "domain": "LLM 优化 / 高效微调",
+      "source_quote": "our approach involves adaptively reducing the rank of the gradients during Adam optimization steps, using an efficient online-updating low-rank projections rule.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "让自适应秩选择在计算上可行，避免昂贵的截断 SVD。",
+      "mechanism": "提出随机化 SVD 方案（基于 Halko et al. 的 SSRF）+ 二分搜索的快速自适应低秩逼近（Algorithm 1/2），在很窄的秩范围内以 O(log(r_max−r_min)) 迭代找投影子空间。",
+      "evaluation": "将基于 SVD 的子空间计算量降低一个数量级，补偿子空间搜索的额外时间，使其相对 GaLore 有竞争力。",
+      "domain": "LLM 优化 / 数值方法",
+      "source_quote": "We further present a randomized SVD scheme for efficiently finding the projection matrix.",
+      "type": "method"
+    },
+    {
+      "id": "C4",
+      "purpose": "验证方法在语言与生物基础模型的预训练/微调上的收敛性与性能优势。",
+      "mechanism": "给出收敛性分析（Theorem 2）；跨 GLUE 微调、C4 上预训练 LLaMA（至 350M/7B）、以及 Geneformer 在单细胞组学表格数据上的细胞分类微调三类任务实证。",
+      "evaluation": "C4 预训练 LLaMA 上 validation perplexity 与内存优于 SOTA（Table 3/4）；Geneformer 心肌病细胞分类（maximal rank 16、约 93.6k 样本、17,228 测试）Macro-F1/Accuracy 收敛更快且稳定优于 LoRA。",
+      "domain": "LLM/生物基础模型 优化 / 实证",
+      "source_quote": "we provide a convergence analysis of our method and demonstrate its merits for training and fine-tuning language and biological foundation models.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "the study in (Zhao et al., 2024a) introduced a training strategy called GaLore ... We found that Galore to be suboptimal since it arbitrarily requires pre-defining a fixed low-rank size for the gradient projection ... Galore does not transform (adjust) the first and second moments at any update of projection subspace ... We suggest an inner transformation scheme of the moments at any projection updates.",
+      "section": "introduction"
+    },
+    {
+      "quote": "While existing approaches (Zhao et al., 2024b; Vyas et al., 2024; Okewu et al., 2020) focus on low-rank approximations of the first and second moments with the goal of reducing memory requirements, we propose to approximate the gradients by a low-rank factorization.",
+      "section": "related work / background"
+    },
+    {
+      "quote": "we apply in Algorithm 3 a per-layer weight update during backpropagation, as proposed by recent works, see, e.g., Lv et al. (2024) ... one can easily apply 4-bit projected gradient updates, as introduced in Q-GaLore (Zhang et al., 2024).",
+      "section": "method"
+    }
+  ],
+  "notes": "被接收（accept）。明确定位为 GaLore 的改进：把 GaLore 固定秩/固定窗口/不变换矩的三点缺陷逐一修补（自适应秩 + 收敛判据触发的投影更新 + moments 子空间变换）。作者自陈 trade-off（conclusion）：AdaRankGrad 可能因需确定最优投影秩而略增训练时间，但更新不频繁且搜索范围窄，用高效子空间更新技术补偿——'unique trade-off between memory efficiency and model performance'。理论 Lemma 1 的 rank-one 结论建立在 reversible layer + vanilla SGD 假设上（caveat）。",
+  "extractor": "human-baseline-batch1",
+  "date": "2026-07-07"
+}

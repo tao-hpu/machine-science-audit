@@ -1,0 +1,50 @@
+{
+  "paper_id": "NtSlKEJ2DS",
+  "title": "Optimal Flow Transport and its Entropic Regularization: a GPU-friendly Matrix Iterative Algorithm for Flow Balance Satisfaction",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "把只适用于二部图的 vanilla 最优传输(OT)推广到更一般的图, 使其能建模真实世界(经中转点)的运输问题",
+      "mechanism": "提出 Optimal Flow Transport (OFT), 将 vanilla OT 的边缘(marginal)约束替换为节点上的流平衡(flow balance)约束; 此时问题一般化为最小费用流(MCF)问题",
+      "evaluation": "定性/形式化贡献(问题定义), 见 Figure 1 的运输问题示意; 无独立数字",
+      "domain": "最优传输 / 运筹优化",
+      "source_quote": "We extend the vanilla OT within a bipartite graph to a more general graph case, and thus propose optimal flow transport, in which the marginal constraints are replaced by flow balance constraints.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "为 OFT 求解设计一个 GPU 友好的矩阵迭代算法并给出收敛保证",
+      "mechanism": "对 OFT 做三步重构: (1)为每个节点引入自环虚拟流, 让孤立点也能参与迭代; (2)加新的 marginal 变量把流平衡约束改写成类 marginal 约束; (3)加熵正则得到松弛, 从而得到交替更新耦合 P 与 marginal 的 OFT-Sinkhorn 算法; 用 Hilbert projection metric 证明全局收敛",
+      "evaluation": "理论证明全局收敛; Figure 3/4 显示随正则系数 ε 减小, EOFT-Sinkhorn 解逐渐逼近 Gurobi 精确解并变稀疏",
+      "domain": "最优传输 / 运筹优化",
+      "source_quote": "We propose the entropic OFT to derive the GPU-friendly OFT-Sinkhorn algorithm to get the approximate solution of the OFT problem. The global convergence is theoretically guaranteed.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "把 OFT 扩展到带容量约束的最小费用流(MCF), 并实证其求解效率",
+      "mechanism": "在 OFT-Sinkhorn 中引入节点和边的容量约束, 此时问题等价于 MCF; 提出 Capacity-Constrained EOFT-Sinkhorn 作为基于矩阵迭代的 MCF 求解器",
+      "evaluation": "在 Uniform-MCF / NETGEN-MCF / Vision-MCF 三类数据(规模 100 到 5k/10k)、NVIDIA RTX 4090 上对比 Real/ZKW/Gurobi/pns/lemon; 大规模稀疏图上时间效率显著优于传统算法且误差小; 但小到中规模上 Real/ZKW 及 SOTA 的 lemon 在解质量和速度上更优",
+      "domain": "最小费用流 / 运筹优化",
+      "source_quote": "We incorporate node and edge capacity constraints into the OFT, and in this case our OFT is equivalent to the minimum-cost flow problem... Experimental results on the minimum-cost flow problem showcase the superiority of our algorithm.",
+      "type": "method"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "following (Cuturi, 2013), we consider the entropic OFT and employ a GPU-friendly matrix-vector iterative algorithm to speed up the computations for OFT",
+      "section": "method"
+    },
+    {
+      "quote": "In this paper, we introduce optimal flow transport and its entropic regularized case, which calculate the flow in the graph via matrix iterative methods without the need for precomputing the shortest distances on the graph [contrast with Le et al. 2022/2024 Sobolev transport].",
+      "section": "related work"
+    },
+    {
+      "quote": "To the best of our knowledge, our algorithm is the first GPU-friendly matrix iterative method specifically designed for solving MCF.",
+      "section": "related work"
+    }
+  ],
+  "notes": "方法明显嫁接自 Cuturi(2013) 的 Sinkhorn/熵正则 OT, 推广到图上的 MCF。混合/负结果信号明显: 论文自述在小到中规模问题上经典算法 Real 与 ZKW 在解质量和计算时间上都最优, 且 NETGEN 上 SOTA 的 lemon 在所有情形下解和速度都最好——即所提方法只在大规模稀疏图上占优, 且仅是'某些情形'超过 SOTA。加入容量约束后目标值略升(如 10.02→10.06)。属近似解方法, 精度依赖 ε 且与精确解有 gap。",
+  "extractor": "human-baseline-batch23",
+  "date": "2026-07-07"
+}

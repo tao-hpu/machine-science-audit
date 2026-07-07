@@ -1,0 +1,50 @@
+{
+  "paper_id": "41uZB8bDFh",
+  "title": "Durable Quantization Conditioned Misalignment Attack on Large Language Models",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "揭示模型量化引入的越狱漏洞:让安全对齐在全精度模型中处于休眠、量化后才被激活可利用的隐蔽攻击",
+      "mechanism": "形式化 Quantization Conditioned Misalignment (Q-Misalign) 攻击,采用两阶段范式——先在有害数据上微调得到显式有害模型 M_xp,再以其为基线做约束式 unlearning 得到隐式有害模型 M_imp,使全精度对齐、量化后失配激活",
+      "evaluation": "在多个 LLM(含 InternLM2-Chat-1.8b、Gemma-1.1-2b-it 等,默认 int8 量化)上;量化后越狱成功率超 90%(Table 1),全精度下 M_imp 越狱成功率近零;消融中 L1+L2+L3+L4(PGD)量化后 ASR 达 0.94 vs 量化前 0.03,ACC 从 0.4484 微降至 0.4121",
+      "domain": "大语言模型安全 / 量化模型对抗攻击",
+      "source_quote": "We formalize the Q-Misalign attack, revealing the jailbreaking vulnerabilities introduced by model quantization.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "让对抗性失配在下游微调后依然持久存在,不被用户的 SFT 冲刷掉",
+      "mechanism": "引入对比任务向量(Contrastive Task Vectors, CTV),将攻击行为编码进安全对齐关键权重,缓解微调时的灾难性遗忘",
+      "evaluation": "SFT(Alpaca、Dolly-15k)前后对比 ELQ(Egashira et al. 2024):ELQ 量化下 ASR 从微调前 >90% 暴跌至 <30%(灾难性遗忘);Q-Misalign 在 InternLM2-Chat-1.8b 上 ASR 提升约 30%、Gemma-1.1-2b-it 上约 40%,全精度 ASR 引入 CTV 后升幅 <8%(Table 4)",
+      "domain": "大语言模型安全 / 量化模型对抗攻击",
+      "source_quote": "We propose a method using Contrastive Task Vectors to ensure adversarial misalignment persists through downstream fine-tuning.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "评估现有安全机制(ICL、监督微调)对 Q-Misalign 攻击的鲁棒性,暴露当前面向量化模型的安全对齐策略的局限",
+      "mechanism": "对 In-Context Learning(按 URIAL:三条风格示例+系统安全提示)与监督微调两类防御做攻击有效性评测",
+      "evaluation": "Table 5 显示 URIAL 对 Q-Misalign 攻击基本无效;SFT 也无法消除攻击;暴露现有防御在量化场景下失效",
+      "domain": "大语言模型安全 / 防御评测",
+      "source_quote": "We evaluate the robustness of existing safety mechanisms, such as In-Context Learning (ICL) (Lin et al., 2023; Dong et al., 2022) and supervised fine-tuning, against the Q-Misalign attack, exposing the limitations of current safety alignment strategies for quantized models.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Drawing on insights from Egashira et al. (2024); Ma et al. (2023), we propose a two-stage attack paradigm that embeds latent misalignments into pre-trained full-precision LLMs, which remain dormant until the model is quantized.",
+      "section": "related work"
+    },
+    {
+      "quote": "To achieve this, we integrate Contrastive Task Vectors (CTV) (Li et al., 2022; Ilharco et al., 2022), a mechanism that encodes attack behaviors into alignment-critical weights.",
+      "section": "related work"
+    },
+    {
+      "quote": "Inspired by Ma et al. (2023), which introduced quantized conditional backdoor attacks and highlighted the challenges of directly inducing attacks in quantized precision, our work adopts a two-stage paradigm to address these limitations.",
+      "section": "related work"
+    }
+  ],
+  "notes": "攻击类论文,正向结果为主(量化后 ASR >90%)。含明确对比基线的正向差异:相对 ELQ 基线,ELQ 在下游微调后出现灾难性遗忘(ASR 从 >90% 跌到 <30%),本文 CTV 方法反而更持久(+30%~40%)。trade-off:量化后模型 ACC 有轻微下降(0.4484→0.4121),且性能退化与模型规模成反比(小模型退化更大)。",
+  "extractor": "human-baseline-batch22",
+  "date": "2026-07-07"
+}

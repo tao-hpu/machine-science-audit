@@ -1,0 +1,50 @@
+{
+  "paper_id": "Nsms7NeU2x",
+  "title": "How much can we Forget about Data Contamination?",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Challenge the common assumption that small-scale benchmark contamination automatically invalidates LLM evaluations, by characterizing when contamination actually causes downstream overfitting.",
+      "mechanism": "Controlled experiments training LMs from scratch with explicitly inserted contaminated examples, quantifying benchmark overfitting while scaling three dimensions: model parameters, example repetitions, and training tokens.",
+      "evaluation": "Scaling up to 1.6B parameters, up to 144 repetitions, and up to 40B training tokens. Under Chinchilla scaling, minor contamination leads to overfitting; but even 144x contamination can be forgotten when training data is scaled beyond 5x Chinchilla. Up to 12 repetitions of an entire dataset can have no impact when tokens are scaled sufficiently.",
+      "domain": "LLM evaluation / data contamination",
+      "source_quote": "we experimentally quantify the magnitude of benchmark overfitting based on scaling along three dimensions: The number of model parameters (up to 1.6B), the number of times an example is seen (up to 144), and the number of training tokens (up to 40B). We find that if model and data follow the Chinchilla scaling laws, minor contamination indeed leads to overfitting. At the same time, even 144 times of contamination can be forgotten if the training data is scaled beyond five times Chinchilla, a regime characteristic of many modern LLMs.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "Explain the mechanism behind why increasing training tokens alleviates contamination, and provide a practical tool to gauge forgetting in real training runs without rerunning them.",
+      "mechanism": "Derive a theory of example forgetting via cumulative weight decay of AdamW (Proposition: T >= log(1/eps)/(gamma * lambda_avg)), bounding the number of gradient steps needed to forget past data given known optimizer hyperparameters; validate against empirical forgetting.",
+      "evaluation": "The bound is an upper bound; empirically forgetting occurs faster than the bound predicts. Applied to real runs, the analysis indicates many LLMs including OLMo-7B and Llama 3 405B have forgotten data seen at the beginning of training. Rapid forgetting demonstrated using OLMo-1B.",
+      "domain": "LLM training dynamics / optimization theory",
+      "source_quote": "We then derive a simple theory of example forgetting via cumulative weight decay. It allows us to bound the number of gradient steps required to forget past data for any training run where we know the hyperparameters of AdamW. This indicates that many LLMs, including Llama 3, have forgotten the data seen at the beginning of training. Experimentally, we demonstrate that forgetting occurs faster than what is predicted by our bounds.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "State the unifying takeaway: the effect of an individual contaminated example is setting-dependent, not universal.",
+      "mechanism": "Synthesis of the experimental scaling results and the weight-decay forgetting theory into a conditional claim about when individual examples matter.",
+      "evaluation": "Qualitative conclusion: contamination effects are significant under Chinchilla-optimal training but negligible in data-intensive (over-trained) regimes typical of many recent LLMs; models overfit most on examples seen repeatedly throughout training rather than only at the end.",
+      "domain": "LLM evaluation / data contamination",
+      "source_quote": "Taken together, our main contribution is to show that the impact of individual examples in the training data depends on the precise characteristics of the setting. There are settings where the effect can be significant; Chinchilla training is an important example. However, there are equally realistic settings where individual examples don't matter - including quite likely the data-intensive training runs of many recent LLMs.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "In this work, we study the impact of data contamination in a controlled setting. This means we train language models from scratch on datasets where we explicitly insert contaminated examples (Jiang et al., 2024).",
+      "section": "introduction"
+    },
+    {
+      "quote": "Our investigation reveals that the natural forgetting dynamics of gradient descent (Tirumala et al., 2022; Jagielski et al., 2023) is the reason why increasing the number of tokens alleviates the impact of contamination.",
+      "section": "introduction"
+    },
+    {
+      "quote": "In concurrent work, Pagliardini et al. (2024) propose to add a second momentum term to the AdamW optimizer, and show that this slows down the forgetting of past gradients.",
+      "section": "related work"
+    }
+  ],
+  "notes": "This is a finding/analysis paper (no new method proposed). Nuanced/two-sided result: contamination DOES cause overfitting under Chinchilla-optimal training (a negative/cautionary finding) but is forgotten under heavy over-training; the paper explicitly frames both regimes as realistic. Caveat acknowledged by authors: results may not extrapolate to privacy settings or uniquely identifiable strings, where forgetting may behave differently. Theoretical bound is an upper bound and is loose (empirical forgetting is faster).",
+  "extractor": "human-baseline-batch14",
+  "date": "2026-07-07"
+}

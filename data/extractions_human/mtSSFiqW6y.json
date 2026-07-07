@@ -1,0 +1,40 @@
+{
+  "paper_id": "mtSSFiqW6y",
+  "title": "Judge Decoding: Faster Speculative Sampling Requires Going Beyond Model Alignment",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Expose why speculative decoding (SD) achieves limited speedups: its verification rejects objectively correct but non-aligned draft tokens.",
+      "mechanism": "A series of experiments probing the SD decision/verification mechanism, testing acceptance of high-quality drafts including GPT-4o outputs and human text under standard verification.",
+      "evaluation": "Shows even powerful drafts (GPT-4o) and human text cannot achieve high acceptance rates under standard verification, so many correct continuations are rejected, capping speedups.",
+      "domain": "LLM inference acceleration (speculative decoding)",
+      "source_quote": "We demonstrate through a series of experiments how the decision mechanism in speculative decoding rejects many high quality tokens, identifying a key limitation of the technique.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "Design a verification scheme that accepts correct-but-non-aligned continuations instead of relying on draft/target alignment.",
+      "mechanism": "Judge decoding: inspired by LLM-as-a-judge, train a compact linear module on top of the target model's embeddings to produce 'judgements' of the current continuation, using a carefully designed dataset; module trains in under 1.5 hours.",
+      "evaluation": "A simple linear layer trained in under 1.5 hours elicits the target model's rating capability; qualitative demonstration on the Llama-3.1 family.",
+      "domain": "LLM inference acceleration (speculative decoding)",
+      "source_quote": "We adapt verification using ideas from LLM-as-a-judge, eliciting the same versatile rating capability in the target by adding a simple linear layer that can be trained in under 1.5 hours.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Demonstrate the speedups achievable by judge decoding while preserving quality.",
+      "mechanism": "Benchmarking 8B/70B-Judge and 8B/405B-Judge configurations on the Llama-3.1 family across a range of benchmarks and optimized inference frameworks.",
+      "evaluation": "9x speedup over standard decoding (Llama-405B), reaching 129 tokens/s for 8B/405B and up to 141 tokens/s for 8B/70B on 8 and 2 H100s respectively, while maintaining Llama-405B quality across benchmarks.",
+      "domain": "LLM inference acceleration (speculative decoding)",
+      "source_quote": "Using a Llama 8B/70B-Judge, our approach obtains speedups of 9x over standard decoding, achieving an unprecedented 129 tokens/s, while maintaining the quality of Llama-405B on a range of benchmarks.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {"quote": "we draw inspiration from the LLM-as-a-judge framework, which demonstrated that LLMs are able to rate answers in a versatile way. We carefully design a dataset to elicit the same capability in the target model", "section": "abstract"},
+    {"quote": "All these methods improve acceptance rates by either encouraging better alignment with more information or producing more guesses in parallel. This is different from our work, which seeks to change the verification scheme itself.", "section": "related work"}
+  ],
+  "notes": "Accept paper. Explicit trade-off / negative caveat: relying on the judge LOSES the mathematical guarantee of preserving target quality, and novel tasks require careful annotation of similar data or performance is lost. Authors frame it as a 'significant first step' rather than a silver bullet. Speedups strongly positive.",
+  "extractor": "human-baseline-cleanup",
+  "date": "2026-07-07"
+}

@@ -1,0 +1,41 @@
+{
+  "paper_id": "yizEOJVFFd",
+  "title": "Self-Augmented Preference Optimization: Off-Policy Paradigms for Language Model Alignment",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Remove the dependence of preference-optimization alignment (DPO/ORPO) on static, pre-collected paired preference data, so alignment can work with only prompts and chosen responses.",
+      "mechanism": "Self-Augmented Preference Optimization (SAPO): a self-play paradigm that autonomously generates rejected responses via segment-level teacher-forcing supervision (truncate a chosen response at a random point and let the model regenerate the rest as a negative), combined with an off-policy pipeline using an Exponential Moving Average (EMA) model plus a first-in-first-out replay buffer to dynamically update training data.",
+      "evaluation": "LLaMA3-8B and Mistral-7B trained on Distilabel-Capybara, 8 H100 GPUs; evaluated on Open LLM Leaderboard, IFEval, MT-Bench, AlpacaEval 2.0. ORPO-based LLaMA reaches Open LLM Leaderboard avg 67.36 and MT-Bench avg 7.45; SAPO matches or surpasses DPO/ORPO and outperforms self-play SPIN.",
+      "domain": "LLM alignment / preference optimization",
+      "source_quote": "To overcome this limitation, we introduce Self-Augmented Preference Optimization (SAPO), an effective and scalable training paradigm that does not require existing paired data. Building on the self-play concept, which autonomously generates negative responses, we further incorporate an off-policy learning pipeline to enhance data exploration and exploitation.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Show that segment-level negative generation and off-policy machinery (EMA reference + replay buffer) actually drive SAPO's gains, and identify optimal settings.",
+      "mechanism": "Ablations over training paradigm (on-policy vs off-policy), reference-model update strategy (fixed vs policy-ref vs ema-ref), number of rejected responses per prompt (1/4/8), segment token length (64/256), and training epochs.",
+      "evaluation": "ema-ref update strategy gives best performance; on-policy sampling degrades IFEval and Open LLM Leaderboard; increasing rejected responses from 1 to 4 to 8 reduces performance (overfitting); segment length 256 > 64; MT-Bench peaks at 4 epochs (chosen setting).",
+      "domain": "LLM alignment / preference optimization",
+      "source_quote": "In Table 3, our ablation study of the LLaMA-3-8B model using the ORPO algorithm showed that on-policy sampling led to notable declines in performance on benchmarks like IFEval and the Open LLM Leaderboard.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Building on the self-play concept, which autonomously generates negative responses, we further incorporate an off-policy learning pipeline to enhance data exploration and exploitation.",
+      "section": "related work"
+    },
+    {
+      "quote": "Furthermore, we integrate an EMA model and a replay buffer-techniques well-established in RL-to facilitate standard off-policy training.",
+      "section": "related work"
+    },
+    {
+      "quote": "In the training stage, we randomly select a batch of tuples from the replay buffer and employ typical preference learning methods, such as DPO (Rafailov et al.,2023) and ORPO (Hong et al., 2024), to train the current policy.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Negative/mixed results explicitly reported: SAPO underperforms LLaMA-based SPIN on single-turn AlpacaEval 2.0 tasks (authors argue AlpacaEval is single-turn while they trained on multi-turn Capybara, and recommend MT-Bench as the fairer metric). Ablation shows increasing the number of rejected responses per prompt (1->4->8) hurts performance (overfitting). Extends DPO/ORPO/SPIN by grafting off-policy RL machinery (EMA + replay buffer) onto self-play.",
+  "extractor": "human-baseline-batch5",
+  "date": "2026-07-07"
+}

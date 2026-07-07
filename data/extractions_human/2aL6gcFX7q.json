@@ -1,0 +1,34 @@
+{
+  "paper_id": "2aL6gcFX7q",
+  "title": "Understanding Data Poisoning Attacks for RAG: Insights and Algorithms",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "解释为何针对 RAG 检索系统的 targeted 数据投毒攻击有效且难防，为防御提供理论抓手",
+     "mechanism": "把 targeted 投毒攻击刻画为统一目标函数，做定量+定性分析；关键洞察=更有效的攻击倾向沿'干净数据分布方差最小（低特征值）的方向'发生",
+     "evaluation": "Figure 1 实证：对 Ap/BadChain/AutoDan 三攻击按各维标准差分组画相对距离，攻击成功率越高者在小方差方向上相对偏移越大，印证理论",
+     "domain": "RAG 检索系统安全 / 数据投毒",
+     "source_quote": "we show that more effective poisoning attacks tend to occur along directions where the clean data distribution exhibits small variances.",
+     "type": "finding"},
+    {"id": "C2",
+     "purpose": "把洞察落地为可部署的投毒检测防御",
+     "mechanism": "提出 DRS (Directional Relative Shifts) 度量与基于过滤的防御：DRS(z;X)=Σ|z·v_σ(i)|/√λ_σ(i)，沿低特征值方向测相对偏移；以干净文档 DRS 的 q 分位（如 99th）为阈值，超阈即判为投毒",
+     "evaluation": "Figure 2：ℓ2 范数/perplexity/ℓ2 距离等已有防御下干净与投毒分布严重重叠，而 DRS 呈清晰分离；在 RAG LLM-Agent、稠密检索 QA、医疗 RAG 三场景显著优于 SOTA",
+     "domain": "RAG 投毒防御",
+     "source_quote": "we propose a new metric, dubbed DRS (Directional Relative Shifts), along with a corresponding filter-based defense utilizing the proposed DRS.",
+     "type": "method"},
+    {"id": "C3",
+     "purpose": "反向检验 DRS 防御的稳健性——设计能绕过 DRS 的更隐蔽攻击",
+     "mechanism": "在既有攻击目标函数（如 Chen et al. 2024a 的 min -O1+λ1·O2）中加入惩罚大 DRS 的正则项 λ2·DRS(poisoned)；DRS 可微，梯度法仍适用",
+     "evaluation": "定性+实证：新攻击生成的投毒数据 DRS 更小、更可能绕过 DRS 防御，同时保持相近攻击成功率（RAG LLM-Agent 红队场景）",
+     "domain": "RAG 隐蔽投毒攻击",
+     "source_quote": "we develop a new attack algorithm to generate more stealthy poisoning data (i.e., less detectable) by regularizing the poisoning data's DRS.",
+     "type": "method"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "The work Chen et al. (2024a) aims to find/generate effective red-teaming (i.e., poisoned) data ... they propose to minimize the following objective ... Now we propose to add a regularization term to the above original objective function", "section": "method (extends prior attack)"},
+    {"quote": "we focus on targeted attacks ... as previous research has shown that untargeted attacks can be effectively mitigated using existing methods (Zhong et al., 2023).", "section": "related work"}
+  ],
+  "notes": "内含攻防 trade-off/自我削弱结果：作者自己提出的 DRS 防御，被作者自己后续设计的正则化隐蔽攻击'occasionally bypass'——即 C3 攻击在维持相近攻击成功率的同时'有时'能绕过 C2 防御，说明 DRS 防御并非万无一失（措辞为 'occasionally bypass'，非稳定绕过）。整体是攻防对抗式贡献，防御 C2 报告为显著优于 SOTA，但 C3 揭示其可被针对性规避。",
+  "extractor": "human-baseline-batch10",
+  "date": "2026-07-07"
+}

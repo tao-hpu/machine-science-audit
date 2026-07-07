@@ -1,0 +1,50 @@
+{
+  "paper_id": "LuytzzohTa",
+  "title": "Agent Q: Advanced Reasoning and Learning for Autonomous AI Agents",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Enable LLM web agents to improve autonomously from their own experience with limited supervision, overcoming compounding errors and limited exploration of SFT on expert demonstrations.",
+      "mechanism": "Agent Q framework: guided Monte Carlo Tree Search (MCTS) over web pages to collect trajectories, an AI self-critique/process-supervision model that ranks candidate actions to give step-level feedback, and iterative step-level fine-tuning via an off-policy variant of DPO that combines MCTS empirical Q-values with the critic's action ranking, learning from both successful and failed trajectories.",
+      "evaluation": "WebShop (xLAM-v0.1-r base): base 28.6%, RFT 31.3%, DPO 40.6%, Agent Q 41.5% (10.2% over RFT, only 0.9% over DPO); OpenTable (Llama-3-70B): Agent Q lifts zero-shot 18.6% to 81.7% success.",
+      "domain": "Autonomous LLM web agents / decision-making",
+      "source_quote": "we propose a framework that combines guided Monte Carlo Tree Search (MCTS) search with a self-critique mechanism and iterative fine-tuning on agent interactions using an off-policy variant of the Direct Preference Optimization (DPO) algorithm.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Further boost agent success by adding search at inference time on top of the trained policy.",
+      "mechanism": "Agent Q+MCTS: apply the MCTS search procedure at test time using the fine-tuned Agent Q model as the action-proposal distribution and the critic for action ordering.",
+      "evaluation": "WebShop: Agent Q+MCTS reaches 50.5%, slightly beating average human 50.0% (MCTS on base xLAM alone reaches 48.4%); OpenTable: Agent Q+MCTS reaches 95.4% (vs 81.7% without test-time search).",
+      "domain": "Autonomous LLM web agents / inference-time search",
+      "source_quote": "We also introduce AgentQ+MCTS, which additionally uses inference time MCTS algorithm to further improve performance.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Demonstrate real-world efficacy of the approach beyond simulated benchmarks.",
+      "mechanism": "Evaluation in the live OpenTable restaurant-booking environment with GPT-4-V as the outcome-reward classifier, after a single day of autonomous data collection on Llama-3 70B.",
+      "evaluation": "OpenTable: Llama-3 70B zero-shot 18.6% -> 81.7% (340% relative increase) after one day of data collection, -> 95.4% with online/test-time search.",
+      "domain": "Real-world LLM web agents (booking)",
+      "source_quote": "In real-world booking scenarios, our methodology boosts Llama-3 70B model's zero-shot performance from 18.6% to 81.7% success rate (a 340% relative increase) after a single day of data collection and further to 95.4% with online search.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Direct Preference Optimization (DPO) (Rafailov et al., 2023) is an offline RL (Levine et al., 2020) alternative to the classical RLHF optimization pipeline. It is a suitable algorithm for agent fine-tuning, as it can use fully offline data and does not require online rollouts.",
+      "section": "related work"
+    },
+    {
+      "quote": "We use the AgentOhana xLAM-v0.1-r model (Zhang et al., 2024c), which is a fine-tune of a pre-trained Mixtral-8x7B-Instruct-v0.1 model... We also incorporate the same agent configuration specified by AgentLite (Liu et al., 2024) to ensure a fair comparison... Our base approach is a ReAct agent Yao et al. (2023b) with a preliminary planning step (PlanReAct) Liu et al. (2023).",
+      "section": "method/experiments"
+    },
+    {
+      "quote": "we used process-level supervision from a separate critic model, which we prompt to rank possible agent actions. This is in contrast to works in mathematical reasoning where PRMs are usually trained to classify the correctness of individual steps (Lightman et al., 2023), while other agent works (Koh et al., 2024) have prompted models as zero-shot value functions.",
+      "section": "related work / discussion"
+    }
+  ],
+  "notes": "Trade-off/modest results explicitly acknowledged: on WebShop the step-level (dense) supervision of Agent Q gives only a 0.9% improvement over outcome-only DPO ('the improvement is modest on WebShop') because trajectories are short and outcome supervision suffices; beam search over actions gave only marginal improvement over base. The headline human-beating result on WebShop (50.5% vs 50.0%) is a slim margin and requires test-time MCTS. Uses a frozen (not fine-tuned) critic and relies on GPT-4-V (closed model) for OpenTable rewards, both noted as limitations. Builds on DPO (off-policy variant), STaR-like RFT, MCTS, and the xLAM/ReAct/PlanReAct stack.",
+  "extractor": "human-baseline-batch13",
+  "date": "2026-07-07"
+}

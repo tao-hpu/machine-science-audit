@@ -1,0 +1,36 @@
+{
+  "paper_id": "WjKea8bGFF",
+  "title": "Building Math Agents with Multi-Turn Iterative Preference Learning",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "现有 direct preference learning 算法（如 DPO）为单轮 chat 设计，无法处理工具集成数学推理所需的多轮推理与外部工具（代码解释器）交互；本文补上这一空白",
+     "mechanism": "把学习过程建模为 MDP（区别于 RLHF 常用的 contextual bandit），推导 KL 正则规划的最优性条件，得出当外部随机性低时可用多轮直接对齐算法 M-DPO 与 M-KTO（核心改动是训练时 mask 掉 user-turn/无关 token）；并扩展为在线迭代框架 M-GSHF（含非对称 exploration policy 做探索-利用权衡）",
+     "evaluation": "用 GSM8K/MATH 增广提示集训练多种模型；Gemma-1.1-it-7B 在 GSM8K 从 77.5%→83.9%、MATH 从 46.1%→51.2%；Gemma-2-it-9B 在 GSM8K 从 84.1%→86.3%、MATH 从 51.0%→54.5%；8xA100 上 24-48h 可复现",
+     "domain": "LLM 对齐 / 数学推理 agent",
+     "source_quote": "we introduce a multi-turn direct preference learning framework, tailored for this context, that leverages feedback from code interpreters and optimizes trajectory-level preferences. This framework includes multi-turn DPO and multi-turn KTO as specific implementations.",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "为多轮迭代算法提供理论正确性与效率保证",
+     "mechanism": "推导 KL 正则 MDP 的最优值函数/策略（layer-wise Gibbs 分布，推广 Xiong et al. 2024），并借用 mirror-descent 分析技术（Cai et al. 2020）为 Algorithm 1 证明 sublinear regret",
+     "evaluation": "定性理论结论：Theorem 2 给出 sublinear regret 保证（完整证明在 Appendix D，正文只给非正式版 Theorem 1）",
+     "domain": "强化学习理论 / RLHF",
+     "source_quote": "A comprehensive theoretical analysis is derived for Algorithm 1 ... emphasizing the efficiency of Algorithm 1 guaranteed by a sublinear regret.",
+     "type": "finding"},
+    {"id": "C3",
+     "purpose": "揭示在线迭代多轮偏好学习中影响性能的关键实践因素与其局限",
+     "mechanism": "消融实验：搜索 KL 系数 {0.01,0.1,0.5}、参考模型选择、探索采样策略；分析 pass@n 随 n 的变化",
+     "evaluation": "中等 KL=0.1 最佳（优于 0.01 与 0.5）；过低 KL 早期提升大但很快失去多样性致后续迭代收益递减；偏好学习仅在 n 较小时提升 pass@n",
+     "domain": "LLM 对齐 / 实证分析",
+     "source_quote": "In summary, for online iterative training, a balance between per-iteration improvement and exploration efficiency is key to optimizing overall performance, an intuition that also applies to sampling strategies and other experimental techniques.",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "We begin by formulating the learning process as a Markov decision process (MDP), distinct from the contextual bandit approach typically used in RLHF for making general chatbots without external environment interactions (Xiong et al., 2024; Rafailov et al., 2023).", "section": "introduction/contribution"},
+    {"quote": "We mention in passing that such an MDP formulation of preference learning was recently studied in Zhong et al. (2024); Rafailov et al. (2024); Xie et al. (2024a) but with a focus on the single-turn chat task and without explicitly considering the external messages.", "section": "related work"},
+    {"quote": "Following Rafailov et al. (2023), we first establish the connection between a model M and its associated optimal policy.", "section": "method"},
+    {"quote": "This framework is termed as Online Iterative Multi-turn Gibbs Sampling from Human Feedback (M-GSHF) because the optimal policy is a layer-wise Gibbs distribution that generalizes the result in Xiong et al. (2024).", "section": "method"}
+  ],
+  "notes": "方法+理论+实证论文（accept）。重要 caveat/负结果：作者明确指出 preference learning 仅在 n 较小时提升 pass@n（大 n 时不提升，Figure 2）；KL 系数存在 trade-off（过低快速失去多样性、过高正则过强）。方法是把单轮 DPO/KTO (Rafailov 2023; Ethayarajh 2024) 与在线迭代 RLHF (Xiong 2024) 扩展到多轮工具集成设置，核心新意在 MDP 建模 + token masking + trajectory-level 偏好。模型/数据/代码开源。",
+  "extractor": "human-baseline-batch2",
+  "date": "2026-07-07"
+}

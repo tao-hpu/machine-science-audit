@@ -1,0 +1,36 @@
+{
+  "paper_id": "gyHoR6uFhU",
+  "title": "PortLLM: Personalizing Evolving Large Language Models with Training-Free and Portable Model Patches",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "解决 LLM 频繁演进(参数周期性更新)后,资源有限的下游用户难以对每个新版本重复微调、且历史微调数据可能不可再访问的问题,实现跨模型版本的免训练个性化知识迁移",
+     "mechanism": "提出 PortLLM 框架:从已微调 LLM 中提取任务特定的 LoRA 模型补丁(model patch),通过简单的合并(merge)操作无缝加到演进后的新模型上,无需任何再训练",
+     "evaluation": "7 个数据集(BoolQ, SST-2, MRPC, RTE, WNLI, WinoGrande, GSM8K)+ 4 个模型(Mistral-7B/Llama2-7B/Llama3.1-8B/Gemma2-9B);相对更新模型 θ' 的 zero-shot 增益 {2.7%,13.19%,13.98%,14.08%,9.95%,25.38%,26.16%},最高 2.7x",
+     "domain": "自然语言处理 / 大语言模型个性化与参数高效微调",
+     "source_quote": "We introduce PORTLLM, a training-free framework designed to transfer knowledge between different versions of an evolving LLM. Given two LLM versions, PORTLLM leverages task-specific model patches extracted from a fine-tuned LLM and seamlessly applies them to the evolved LLM.",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "解释模型补丁为何有效,并给出免训练简化的理论与经验依据",
+     "mechanism": "理论分析 + 经验研究:证明两次个性化更新之差 R=Δθ_i'-Δθ_i 相对朴素更新项可忽略(σ_max 平均小 66x,Frobenius 范数小 136x),从而补丁可简化为免训练形式;并考察不同预训练数据集(OpenOrca/SlimOrca/OpenPlatypus/AlpacaGPT4)的影响",
+     "mechanism_note": "finding 型,分析手法为范数/奇异值量级比较 + 消融",
+     "evaluation": "Table 1: 首项相对 R 在 σ_max 上平均大 66x、Frobenius 范数上大 136x,证明 R 可忽略;简化补丁足以带来性能提升",
+     "domain": "大语言模型理论 / 参数高效微调",
+     "source_quote": "Why do our model patches work? ... Our findings reveal that certain terms in the model patch are effectively negligible, enabling us to create a simplified version of the patch that requires no training.",
+     "type": "finding"},
+    {"id": "C3",
+     "purpose": "通过大规模实验验证补丁的可移植性、鲁棒性与广泛适用性,并量化资源节省",
+     "mechanism": "在 7 个下游任务、4 种模型架构、4 个连续预训练数据集上评估,并对比全量权重连续预训练与 LoRA 连续预训练,量化 GPU 内存/GPU 小时/可训练参数量的收益",
+     "evaluation": "GPU 内存最高降低 12.2x,可训练参数降至 0;与 LoRA 微调模型 θ_i 相比多数任务近乎持平(最大差 0.77%),部分任务(SST-2/RTE/GSM8K)反超 {0.11%,1.44%,7.28%}",
+     "domain": "大语言模型 / 高效部署",
+     "source_quote": "We conduct extensive experiments across a series of seven downstream tasks ... show the effectiveness of our method by quantifying the gains on GPU memory usage (of up to 12.2x reduction), GPU hours, and de-crease in the number of trainable parameters (to zero trainable parameters).",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "A notable example is LoRA (Hu et al., 2021), which introduces trainable low-rank weight perturbations to the pretrained model ... Building upon this concept, several methods have emerged including Q-LoRA (Dettmers et al., 2023), CombLM (Ormazabal et al., 2023), and IPA (Lu et al., 2023).", "section": "related work"},
+    {"quote": "Despite these advances, fine-tuning each updated LLM with PEFT to equip personalized knowledge remains highly costly, and how PEFT can bridge the gap in personalized settings within this evolving environment in a portable manner is yet to be fully explored. To this end, we develop in this paper the theory behind portable model patches that can be plugged into an evolved LLM.", "section": "related work"},
+    {"quote": "PORTLLM leverages model patches derived from LoRA, allowing users to port fine-tuned knowledge from one model iteration to another.", "section": "introduction"}
+  ],
+  "notes": "结果整体正面且大量强调 comparable/on-par 的平局结论(定位为『comparable to LoRA fine-tuning』而非全面超越):与全量微调相比多数任务持平,最大劣势 0.77%(WinoGrande 相对 θ_i)/1.04%(相对 θ_i');少数任务反超。属于用性能持平换取巨大资源节省(12.2x 内存、零可训练参数)的 trade-off 型贡献。Caveat:GSM8K 因模型 zero-shot exact match 太差改用 flexible match;所有连续预训练用 LoRA 模拟版本演进而非真实厂商更新。",
+  "extractor": "human-baseline-batch19",
+  "date": "2026-07-07"
+}

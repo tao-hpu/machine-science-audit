@@ -1,0 +1,46 @@
+{
+  "paper_id": "sgbI8Pxwie",
+  "title": "Beyond Linear Approximations: A Novel Pruning Approach for Attention Matrix",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "为 LLM 权重剪枝提出直接逼近(非线性)注意力矩阵的目标, 而非现有方法逼近线性函数 XW",
+      "mechanism": "把剪枝形式化为 Attention Weights Pruning 问题: 直接在融合注意力权重矩阵 W 上用单一剪枝掩码 M 逼近 Softmax(XWXᵀ), 以捕捉 Softmax 对大正值的 exp 敏感性(线性剪枝的 M_Q/M_K 无法捕捉)",
+      "evaluation": "定性/问题定义贡献, 号称首个研究注意力权重剪枝直接逼近注意力矩阵的工作; Figure 1/2 说明与线性剪枝的差异",
+      "domain": "LLM 剪枝 / 模型压缩",
+      "source_quote": "This is the first work that analyzes the weights pruning problem based on Softmax attention, which is a non-linear function.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "为这个高度非线性的剪枝优化问题提供可证明收敛的求解算法",
+      "mechanism": "推导剪枝损失梯度的闭式解(Theorem 5.3)与其 Lipschitz 常数(Theorem 5.4), 证明损失满足 PL 不等式, 给出基于梯度下降的 Algorithm 1 并证明收敛到近最优掩码(Theorem 4.1)",
+      "evaluation": "理论: Algorithm 1 在 O(d·poly(n)/ε) 时间收敛到近最优掩码, 误差 O(ξ+ε), ε 可任意小, ξ 由数据/权重内在性质决定(可通过取小 λ 减小, 但运行时间随之增大——存在 U 型 trade-off)",
+      "domain": "LLM 剪枝 / 优化理论",
+      "source_quote": "We provide Gradient Descent based Algorithm 1 to obtain the near-optimal pruning mask and its convergence guarantee (Theorem 4.1).",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "实证非线性剪枝相对线性 SOTA(SparseGPT, Wanda)的优越性",
+      "mechanism": "合成实验(NumPy/JAX, d=64, 变 λ/n/ρ)测相对逼近误差; 真实 LLM(Llama 3.2-1B)实验; 端到端困惑度(PPL)实验, 剪枝率 0.5, C4 校准/评估",
+      "evaluation": "合成与真实实验中相对误差均大幅低于 Wanda/SparseGPT; PPL(Llama 3.2-1B, Dense MLP): OurAttn 13.885 vs SparseGPT 14.269 vs Wanda 14.912(Dense 基线 12.487); 组合 MLP 剪枝时仍一致占优",
+      "domain": "LLM 剪枝 / 模型压缩",
+      "source_quote": "We conduct experiments to verify the effectiveness of our method (Section 6), showing our non-linear pruning method is beyond SparseGPT and Wanda by a large margin.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "We compare our method with two linear pruning approaches, namely Wanda (Sun et al., 2024) and SparseGPT (Frantar & Alistarh, 2023)... since the settings of SparseGPT and Wanda are linear, we do not prune the fused weight matrix W directly; instead, we prune W_Q and W_K separately.",
+      "section": "experiments"
+    },
+    {
+      "quote": "As our method focuses on pruning the attention matrix, it can be seamlessly combined with approaches that perform linear pruning on the MLP, such as Wanda and SparseGPT.",
+      "section": "experiments"
+    }
+  ],
+  "notes": "定位为对 SparseGPT/Wanda 线性剪枝范式的替代(直接逼近非线性注意力矩阵)。以理论为主, 作者自述实证仅为'preliminary'(合成 + Llama 3.2-1B 小模型, 校准数据仅 8 句)。Trade-off/caveat: (1)误差项 ξ 与运行时间存在 U 型权衡(小 λ 降误差但增时间); (2)PPL 上剪枝后 OurAttn 13.885 仍明显高于 Dense 基线 12.487, 只是相对 SparseGPT/Wanda 更好, 属'降幅更小'而非无损; (3)剪枝率越大所有方法误差都上升。已被 ICLR 2025 接收。",
+  "extractor": "human-baseline-batch23",
+  "date": "2026-07-07"
+}

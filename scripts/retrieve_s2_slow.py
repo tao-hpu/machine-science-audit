@@ -10,17 +10,27 @@ S2 官方 API 无 key 可用,但走全球共享限流池,429 极常见。本脚�
 - 输出仅是"近邻候选缓存",不做任何判定(判定层等成本数字 + Tao 拍板)。
 
 用法:
-  python3 scripts/retrieve_s2_slow.py                # 全量 166 篇,慢速跑
+  python3 scripts/retrieve_s2_slow.py                # 全量 FARS,慢速跑
   python3 scripts/retrieve_s2_slow.py --pid FA0007   # 单篇(验收用)
   python3 scripts/retrieve_s2_slow.py --status       # 看进度
+  # v6 机器侧 per-facet 重选(查询缓存先从 v5 目录拷入新 out-dir):
+  python3 scripts/retrieve_s2_slow.py --facet-alloc --out-dir data/neighbors_s2_v6
+  # 人类基线(cutoff 用每篇 cdate,不是年份!):
+  python3 scripts/retrieve_s2_slow.py --extract-dir data/extractions_human \
+      --out-dir data/neighbors_human --facet-alloc --cutoff-source human
+  # A4S(cutoff 用抽取里的 submission_date / submissions.json cdate):
+  python3 scripts/retrieve_s2_slow.py --extract-dir data/extractions_a4s \
+      --out-dir data/neighbors_a4s --facet-alloc --cutoff-source a4s
 """
-import argparse, json, math, os, random, re, sys, time, urllib.parse, urllib.request
+import argparse, datetime, json, math, os, random, re, sys, time, urllib.parse, urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+FARS_DATA = os.path.join(ROOT, 'data', 'fars-a-reviews', 'data')
+# 下面四个由 main() 按参数覆盖;模块级默认保持旧行为(FARS v5)
 EXTRACT_DIR = os.path.join(ROOT, 'data', 'extractions')
 OUT_DIR = os.path.join(ROOT, 'data', 'neighbors_s2')
-FARS_DATA = os.path.join(ROOT, 'data', 'fars-a-reviews', 'data')
 QUERY_CACHE = os.path.join(OUT_DIR, '_queries.json')
+CUTOFF_SOURCE = 'fars'
 
 def load_env():
     e = {}
@@ -77,7 +87,35 @@ def cos(a, b):
     na = math.sqrt(sum(x*x for x in a)); nb = math.sqrt(sum(y*y for y in b))
     return s/(na*nb) if na and nb else 0.0
 
-def cutoff_for(pid):
+_CDATE_MAPS = {}
+def _cdate_map(path):
+    """OpenReview 导出的 cdate 是毫秒时间戳 → UTC 日期字符串。"""
+    if path not in _CDATE_MAPS:
+        rows = json.load(open(path))
+        _CDATE_MAPS[path] = {
+            r['id']: datetime.datetime.fromtimestamp(r['cdate'] / 1000, datetime.timezone.utc).strftime('%Y-%m-%d')
+            for r in rows if r.get('cdate')}
+    return _CDATE_MAPS[path]
+
+def cutoff_for(pid, ext=None):
+    """三种 cutoff 口径,与机器侧同构(每篇自己的提交日,绝不用整年):
+    fars  = fars-a-reviews paperreview.json 的 submission_date;
+    human = human_iclr2025/matched_166.json 按 paper_id 查 cdate;
+    a4s   = 抽取自带 submission_date,缺则回查 agents4science/submissions.json(forum→cdate)。
+    human/a4s 查不到直接抛错——静默回退到晚 cutoff 会把投稿后文献算进先行工作,污染 RQ1。"""
+    if CUTOFF_SOURCE == 'human':
+        m = _cdate_map(os.path.join(ROOT, 'data', 'human_iclr2025', 'matched_166.json'))
+        if pid not in m:
+            raise KeyError(f'{pid}: not in matched_166.json, no cutoff')
+        return m[pid]
+    if CUTOFF_SOURCE == 'a4s':
+        sd = (ext or {}).get('submission_date', '') or ''
+        mm = re.match(r'(\d{4}-\d{2}-\d{2})', sd)
+        if mm: return mm.group(1)
+        m = _cdate_map(os.path.join(ROOT, 'data', 'agents4science', 'submissions.json'))
+        forum = (ext or {}).get('forum')
+        if forum in m: return m[forum]
+        raise KeyError(f'{pid}: no submission_date and forum {forum!r} not in submissions.json')
     pr = os.path.join(FARS_DATA, pid, 'paperreview.json')
     if os.path.exists(pr):
         m = re.match(r'(\d{4}-\d{2}-\d{2})', json.load(open(pr)).get('submission_date', '') or '')
@@ -95,6 +133,11 @@ KW_PROMPT = """Generate search queries to find PRIOR published work that might c
 - 4 keyword queries: cover purpose, mechanism (as an abstract primitive WITHOUT the application domain, so cross-domain prior art surfaces), evaluation setup, and the specific technique name if any.
 - up to 4 historical names: the same underlying primitive likely existed in OLDER or ADJACENT literatures (spam filtering, adversarial ML, IR, databases, statistics, security...) under established term-of-art NAMES. List those names; prefer real terms-of-art over descriptive paraphrases.
 
+CROSS-DOMAIN REACH — CRITICAL GUARDRAIL: only reach into another field when that field studies the SAME core research idea. Do NOT generate a query just because both share a generic mathematical tool, component, or buzzword (e.g. "adaptive", "closed-loop", "control", "exponential moving average / EMA", "attention", "gradient", "threshold", "monitoring"). A shared generic tool is NOT a shared idea.
+Example of a GOOD cross-domain reach: "prepend benign tokens to evade a classifier" (LLM safety) -> "good word attack" (spam filtering) — same core idea (signal-dilution evasion).
+Example of a BAD cross-domain reach: "EMA-thresholded adaptive control loop during fine-tuning" (LLM alignment) -> "EWMA control chart" (statistical process control) — only a shared math tool (moving average), the research ideas are unrelated. Do NOT emit such queries.
+If unsure whether a field truly shares the idea, stay within the contribution's own research problem rather than emit a speculative cross-field term.
+
 purpose: {purpose}
 mechanism: {mechanism}
 evaluation: {evaluation}
@@ -111,7 +154,15 @@ def _parse_lines(txt, n):
 
 def get_queries(pid, c, qc):
     # max_tokens 要够大:claude 推理模型的思考 tokens 计入 max_tokens,300 会把正文挤没(FA0007/C3 教训)
-    key = f'{pid}/{c["id"]}/v4'
+    key = f'{pid}/{c["id"]}/v5'  # v5: 加跨域误联想护栏(禁「仅共享通用工具」的查询)
+    if key not in qc:
+        # 只读回退旧版本缓存:v6 per-facet 重选的消融口径是「查询不变,只换分配」。
+        # 现状:坏近邻重跑过的 159 条有 v5 查询,其余 390 条只有 v4——这正是当前
+        # v5 近邻池各自实际用过的查询,直接复用,不重新烧 LLM、不污染对照。
+        for old_ver in ('v4',):
+            old_key = f'{pid}/{c["id"]}/{old_ver}'
+            if old_key in qc:
+                return qc[old_key]
     if key not in qc:
         fmt = {k: c[k] for k in ('purpose','mechanism','evaluation','domain')}
         txt = chat(QUERY_MODEL, KW_PROMPT.format(**fmt), 2000)
@@ -220,17 +271,56 @@ def retrieve_one(pid, c, cutoff, qc, k):
         time.sleep(0.5)
     if not cand:
         return {'id': c['id'], 's2_complete': s2_ok_all, 'neighbors': []}
-    ctext = f"{c['purpose']} {c['mechanism']} {c['evaluation']}"
-    vecs = embed([ctext] + [f"{h['title']}. {h['abstract']}" for h in cand])
-    cv, hv = vecs[0], vecs[1:]
-    for h, v in zip(cand, hv): h['sim'] = round(cos(cv, v), 4)
-    cand.sort(key=lambda x: x['sim'], reverse=True)
-    pinned = [h for h in cand if h.get('pinned')]
-    rest = [h for h in cand if not h.get('pinned')]
-    nbrs = (pinned + rest)[:max(k, len(pinned))]
-    nbrs.sort(key=lambda x: x['sim'], reverse=True)
+    htexts = [f"{h['title']}. {h['abstract']}" for h in cand]
+    if FACET_ALLOC:
+        nbrs, n_pinned = select_per_facet(c, cand, htexts, k)
+    else:
+        ctext = f"{c['purpose']} {c['mechanism']} {c['evaluation']}"
+        vecs = embed([ctext] + htexts)
+        cv, hv = vecs[0], vecs[1:]
+        for h, v in zip(cand, hv): h['sim'] = round(cos(cv, v), 4)
+        cand.sort(key=lambda x: x['sim'], reverse=True)
+        pinned = [h for h in cand if h.get('pinned')]
+        rest = [h for h in cand if not h.get('pinned')]
+        nbrs = (pinned + rest)[:max(k, len(pinned))]
+        nbrs.sort(key=lambda x: x['sim'], reverse=True)
+        n_pinned = len(pinned)
     return {'id': c['id'], 's2_complete': s2_ok_all,
-            'n_candidates': len(cand), 'n_pinned': len(pinned), 'neighbors': nbrs}
+            'n_candidates': len(cand), 'n_pinned': n_pinned, 'neighbors': nbrs}
+
+
+FACET_ALLOC = os.environ.get('FACET_ALLOC') == '1'  # main() 里 --facet-alloc 可覆盖
+FACET_KEYS = ('purpose', 'mechanism', 'evaluation', 'domain')
+
+def select_per_facet(c, cand, htexts, k):
+    """按 facet 分配名额:每个 facet 用自己的文本单独算相似度,各取 top-⌈k/n⌉,并集 + pinned。
+    防止最突出的单一 facet 垄断全局 top-k、饿死其他 facet 的先行工作。
+    每个近邻打 facet_for 标签,说明它是为哪个 facet 保送进来的。"""
+    facets = [(f, c[f]) for f in FACET_KEYS if c.get(f) and c[f].strip()]
+    vecs = embed([t for _, t in facets] + htexts)
+    fvecs = vecs[:len(facets)]; hv = vecs[len(facets):]
+    per = max(1, -(-k // len(facets)))  # ceil(k/n)
+    chosen = {}
+    for (fname, _), fv in zip(facets, fvecs):
+        scored = sorted(((round(cos(fv, v), 4), h) for h, v in zip(cand, hv)),
+                        key=lambda x: x[0], reverse=True)
+        for sim, h in scored[:per]:
+            key = h['title'].lower().strip()
+            if key not in chosen:
+                h = dict(h); h['sim'] = sim; h['facet_for'] = [fname]; chosen[key] = h
+            else:
+                chosen[key]['facet_for'].append(fname)
+                chosen[key]['sim'] = max(chosen[key]['sim'], sim)
+    # pinned(seminal 保送)一律纳入
+    hv_by_key = {h['title'].lower().strip(): v for h, v in zip(cand, hv)}
+    for h in cand:
+        key = h['title'].lower().strip()
+        if h.get('pinned') and key not in chosen:
+            best = max((round(cos(fv, hv_by_key[key]), 4) for fv in fvecs), default=0)
+            h = dict(h); h['sim'] = best; h['facet_for'] = ['pinned']; chosen[key] = h
+    nbrs = sorted(chosen.values(), key=lambda x: x['sim'], reverse=True)
+    n_pinned = sum(1 for h in nbrs if 'pinned' in h.get('facet_for', []))
+    return nbrs, n_pinned
 
 def out_path(pid): return os.path.join(OUT_DIR, f'{pid}.json')
 
@@ -242,18 +332,25 @@ def done_cids(pid):
 
 def process(pid, k):
     d = json.load(open(os.path.join(EXTRACT_DIR, f'{pid}.json')))
-    cutoff = cutoff_for(pid)
+    cutoff = cutoff_for(pid, d)
     qc = load_query_cache()
     done, existing = done_cids(pid)
     todo = [c for c in d['contributions'] if c['id'] not in done]
     if not todo:
         return 0
     out = existing or {'paper_id': pid, 'cutoff': cutoff, 'k': k,
+                       'cutoff_source': CUTOFF_SOURCE, 'facet_alloc': FACET_ALLOC,
                        'retrieval': 's2-keyless+openalex+bge-m3-rerank', 'contributions': []}
     kept = [c for c in out['contributions'] if c['id'] in done]
     for c in todo:
         print(f'  {pid}/{c["id"]} ...', flush=True)
-        r = retrieve_one(pid, c, cutoff, qc, k)
+        try:
+            r = retrieve_one(pid, c, cutoff, qc, k)
+        except Exception as ex:
+            # 网络抖动等单点失败不杀全量:不落盘该贡献(留给下轮续跑重试),歇口气继续
+            print(f'    !! {type(ex).__name__}: {str(ex)[:120]} — skip, retry next resume', flush=True)
+            time.sleep(30)
+            continue
         kept.append(r)
         out['contributions'] = kept
         json.dump(out, open(out_path(pid), 'w'), ensure_ascii=False, indent=1)
@@ -275,7 +372,17 @@ if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     ap.add_argument('--pid'); ap.add_argument('--k', type=int, default=20)
     ap.add_argument('--status', action='store_true')
+    ap.add_argument('--extract-dir', default=EXTRACT_DIR, help='抽取目录(默认 FARS data/extractions)')
+    ap.add_argument('--out-dir', default=OUT_DIR, help='近邻输出目录;查询缓存 _queries.json 也在这里')
+    ap.add_argument('--facet-alloc', action='store_true', help='per-facet 名额分配(等价 FACET_ALLOC=1)')
+    ap.add_argument('--cutoff-source', choices=['fars', 'human', 'a4s'], default='fars',
+                    help='cutoff 口径:fars=paperreview.json;human=matched_166 cdate;a4s=抽取 submission_date')
     a = ap.parse_args()
+    EXTRACT_DIR = os.path.abspath(a.extract_dir)
+    OUT_DIR = os.path.abspath(a.out_dir)
+    QUERY_CACHE = os.path.join(OUT_DIR, '_queries.json')
+    CUTOFF_SOURCE = a.cutoff_source
+    if a.facet_alloc: FACET_ALLOC = True
     os.makedirs(OUT_DIR, exist_ok=True)
     if a.status:
         status(); sys.exit(0)

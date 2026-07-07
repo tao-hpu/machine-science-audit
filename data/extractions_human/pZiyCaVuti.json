@@ -1,0 +1,50 @@
+{
+  "paper_id": "pZiyCaVuti",
+  "title": "LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Provide a challenging, realistic benchmark to evaluate the long-term interactive memory of chat assistants, which prior benchmarks (too short histories, limited ability coverage) fail to test.",
+      "mechanism": "LongMemEval: 500 manually created questions testing five core memory abilities (information extraction, multi-session reasoning, temporal reasoning, knowledge updates, abstention). A needle-in-a-haystack-style pipeline embeds evidence sessions (conveyed indirectly via self-chat) into freely extensible chat histories with plausible timestamps; two standard settings LongMemEval_S (~115k tokens) and LongMemEval_M (500 sessions, ~1.5M tokens). Human-annotated answer-location labels enable Recall@k / NDCG@k retrieval metrics.",
+      "evaluation": "Long-context LLMs show a 30%-60% performance drop on LongMemEval_S; commercial systems (ChatGPT, Coze) achieve only 30%-70% accuracy in a setting ~10x simpler (97 questions, 3-6 sessions) than LongMemEval_S; ~400 human hours for construction, ~150 for the commercial study.",
+      "domain": "LLM chat assistants / long-term memory evaluation",
+      "source_quote": "We introduce LONGMEMEVAL, a comprehensive benchmark designed to evaluate five core long-term memory abilities of chat assistants: information extraction, multi-session reasoning, temporal reasoning, knowledge updates, and abstention.",
+      "type": "resource"
+    },
+    {
+      "id": "C2",
+      "purpose": "Provide a unified framework for memory-augmented chat assistants and identify effective memory design choices.",
+      "mechanism": "Analysis: decompose long-term memory design into three stages (indexing, retrieval, reading) and four control points (value, key, query, reading strategy); systematically compare existing design choices and proposed optimizations on the benchmark.",
+      "evaluation": "On LongMemEval_M, session decomposition into rounds improves QA with GPT-4o reader; structured JSON + Chain-of-Note reading improve long-context reading; but replacing sessions/rounds with extracted summaries/facts hurts QA due to information loss (except multi-session reasoning).",
+      "domain": "LLM long-term memory system design",
+      "source_quote": "we present a unified view for memory-augmented chat assistants... we comprehensively analyze memory design choices across three key execution stages-indexing, retrieval, and reading-and four control points: value, key, query, and reading strategy.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Improve memory recall and downstream QA via concrete indexing/retrieval optimizations, especially for temporal queries.",
+      "mechanism": "Fact-augmented key expansion (concatenate extracted user facts/summaries/keyphrases with the original value to form the index key) and time-aware indexing + query expansion (index values by event dates; an LLM extracts a time range to filter irrelevant values).",
+      "evaluation": "Fact-augmented key expansion: +9.4% recall@k and +5.4% final accuracy on average across models; time-aware query expansion: +11.3% recall (rounds) / +6.8% (sessions) for temporal reasoning, contingent on a strong LLM for time-range inference (Llama 8B insufficient).",
+      "domain": "LLM long-term memory / retrieval",
+      "source_quote": "further expanding the keys with extracted user facts improves both memory recall (9.4% higher recall@k) and downstream question answering (5.4% higher accuracy).",
+      "type": "method"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "MemoryBank (Zhong et al., 2024) and PerLTQA (Du et al., 2024) insufficiently evaluate the ability to synthesize information across numerous sessions or to reason with temporal metadata or time references. All long-term memory benchmarks including recent ones such as LoCoMo (Maharana et al., 2024) also fail to evaluate recall of information provided by the assistant or reasoning with updated user information.",
+      "section": "related work"
+    },
+    {
+      "quote": "using the value itself as the key, a common practice in prior works (Zhong et al., 2024; Maharana et al., 2024), may be suboptimal. We introduce a key expansion approach in Sec 5.3",
+      "section": "related work"
+    },
+    {
+      "quote": "we applied a simple document expansion technique (Tao et al., 2006; Efron et al., 2012), where the compressed information is concatenated with the original value to form the key during indexing.",
+      "section": "method"
+    }
+  ],
+  "notes": "Accepted (ICLR 2025). Benchmark + system-design study. Key negative/gap finding: commercial memory systems and long-context LLMs drop 30-60% on sustained-interaction memory, exposing 'the gap between building a seemingly personalized chat assistant by recalling isolated facts and demonstrating a genuinely strong memory ability' (ChatGPT overwrites info; Coze fails to record indirectly-provided info). Trade-offs: replacing sessions/rounds with extracted summaries/facts saves tokens but HURTS QA due to information loss (except multi-session reasoning); time-aware query expansion only works with a strong LLM (Llama 8B insufficient); optimal retrieval still returns long contexts requiring reading-side optimizations.",
+  "extractor": "human-baseline-batch16",
+  "date": "2026-07-07"
+}

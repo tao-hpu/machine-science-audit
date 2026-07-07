@@ -1,0 +1,50 @@
+{
+  "paper_id": "yUC8pU508S",
+  "title": "APE: Faster and Longer Context-Augmented Generation via Adaptive Parallel Encoding",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "解释为何直接对上下文做并行编码(独立预算 KV 并跨上下文复用位置)会显著掉点,找出可改进的对齐/失配来源",
+      "mechanism": "系统分析并行编码 vs 顺序编码注意力权重的分布性质(KV states 在方向和幅度上的对齐),定位跨样本/位置的对齐与残余失配(初始 token 分布异常、attention sink 影响、近端位置异常)",
+      "evaluation": "定性分析(Figure 3/4/5):多数位置 KV 方向幅度自然对齐(源于 attention sink),残余失配集中在各上下文初始与近端位置;并行编码相对顺序编码平均掉 4.9%(RAG,即便用 2-10x 更多上下文)和 49.0%(ICL)",
+      "domain": "大语言模型 / 上下文增强生成 (RAG/ICL) / 推理效率",
+      "source_quote": "We systematically analyze the distribution properties of attention weights in parallel encoding, focus-ing on the direction and magnitude of KV states across various samples and positions. Our analyses identify alignments and residual misalignments between parallel encoding and sequential encoding.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "在不训练模型的前提下恢复并行编码的准确率,实现快速、长、准的 CAG",
+      "mechanism": "提出 Adaptive Parallel Encoding (APE),三步 training-free 对齐:(i) 加共享前缀避免异常初始 token 分布被重复;(ii) 调低注意力温度锐化分布聚焦重要 token;(iii) 加缩放因子抵消上下文注意力分数 LogSumExp 幅度增大",
+      "evaluation": "消融(Table 4,4 模型均值):共享前缀/温度/缩放因子分别平均提升 5.19%/0.59%/2.07%;温度单独收益小,需缩放因子互补",
+      "domain": "大语言模型 / RAG/ICL / KV cache",
+      "source_quote": "We propose APE to recover the accuracy of parallel encoding with three alignment steps: (i) Prependa shared prefix to avoid the duplication of abnormal initial token distributions. (ii) Adjust a lower atten-tion temperature to sharpen the distribution, focusing on important tokens. (iii) Apply a scaling factor to offset the increase in the magnitude of the LogSumExp value of attention scores from the context.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "在 RAG、ICL、many-shot 及效率维度上验证 APE 的有效性与可扩展性",
+      "mechanism": "在 ChatRAG-Bench/LongBench/CRAG、GSM8K/TriviaQA/MMLU 等多模型(LLaMA-3-8B/Mistral-7B/Gemma-2-9B/LLaMA-3.1-8B)上评测,并做 128K 长上下文的 prefilling 效率评测",
+      "evaluation": "APE 保留顺序编码 98%(RAG)/93%(ICL)性能,分别比并行编码高 3.6%/7.9%;LongBench 比顺序 RAG 基线高 3.3%、比 base 高 5.6%;many-shot 可并行编码数百上下文接近甚至超过顺序编码;128K 上下文 prefilling 减少 28x,端到端最高 4.5x 加速",
+      "domain": "大语言模型 / RAG/ICL 推理效率",
+      "source_quote": "We empirically show that (i) APE keeps 98% and 93% of the sequential encoding performance in RAG and ICL tasks, respectively. (ii) APE outperforms parallel encoding in RAG and ICL,yielding improvements of 3.6% and 7.9%, respectively. (iii) APE effectively scales to handle hundreds of con-texts... (iv) APE acceler-ates long-context generation, achieving up to a 4.5xspeedup through $28\\times$ reductionin prefilling time.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Parallel Context Windows (PCW) (Ratner et al., 2022) directly employs pre-trained LLMs as both, resulting in significant performance drops. Block-Attention (Sun et al., 2024) further fine-tunes the model... CEPE (Yen et al., 2024) and FocusLLM (Li et al., 2024) train new Transformer-based encoders... While these trainable methods show promising results in RAG tasks, challenges remain regarding their training overheads and generalization abilities to more complex ICL scenarios.",
+      "section": "related work"
+    },
+    {
+      "quote": "Moreover,applying parallel encoding in CAG can be viewed as a kind of memory-augmented neural networks(Burtsev et al., 2020;De Jong et al., 2021; Févry et al., 2020), where external memory is directly stored into KV states.",
+      "section": "related work"
+    },
+    {
+      "quote": "Our insight from Figure 3 and Figure 4 is that KV states from indepen-dent contexts can be naturally merged into one sequence due to their similarity in direction and magni-tude, attributed to the presence of an attention sink (Xiao et al., 2023).",
+      "section": "introduction"
+    }
+  ],
+  "notes": "ICLR 2025 accept。training-free 方法,定位为对 PCW(Ratner 2022,直接用预训练 LLM 并行编码掉点严重)的免训练修复,并对比需微调/训编码器的 Block-Attention(Sun 2024)、CEPE(Yen 2024)、FocusLLM(Li 2024)。trade-off/负结果信号:(1)APE 仍是有损近似——保留 RAG 98%/ICL 93% 顺序编码性能即承认不达顺序编码;Table 1 中检索器质量越高 APE 掉点越大(0.51/0.92/1.14%)。(2)任务越复杂 gap 越大:GSM8K 上 APE 与 full-shot 顺序编码差距最大,作者明说'其有效性可能随任务复杂度上升而下降'。(3)动机分析本身含负结果:先前微调方案(CEPED)在 MultiNews 摘要上甚至不如并行编码、在 GSM8K/MMLU 推理任务上不如 1-shot 顺序基线,据此论证需 training-free 方案。多数场景 APE 因把文本放进 8K 窗口内缓解 'lost in the middle',反超 128K 长上下文变体。",
+  "extractor": "human-baseline-batch12",
+  "date": "2026-07-07"
+}

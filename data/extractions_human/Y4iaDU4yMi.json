@@ -1,0 +1,41 @@
+{
+  "paper_id": "Y4iaDU4yMi",
+  "title": "InteractiveCOT: Aligning Dynamic Chain-of-Thought Planning for Embodied Decision-Making",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Enable online alignment of a VLM embodied agent's chain-of-thought planning through interaction, instead of relying on static CoT strategies or offline fine-tuning that cannot adapt to dynamic environments.",
+      "mechanism": "InteractiveCOT framework: model the environment as an MDP and re-plan at each step from the current egocentric observation; align the CoT reasoning process (not just final action tokens) via preference-based RL, supporting both PPO and DPO alignment schemes on top of llava-v1.6-mistral-7b.",
+      "evaluation": "ALFWorld environment (6 household task types). Average success rate 26.67%, a ~6% improvement over the RL4VLM (PPO) baseline; per-task success rates reported (e.g. Pick2 36.91%).",
+      "domain": "Embodied AI / VLM decision-making",
+      "source_quote": "We propose an algorithmic framework, InteractiveCOT, for online alignment of the COT process in embodied agents through interaction with the environment, supporting both PPO and DPO alignment schemes.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Improve sample efficiency of alignment under the sparse/no-reward feedback of embodied environments, where PPO learns poorly.",
+      "mechanism": "Adapt DPO to embodied agents: design a data-sampling and preference-pair construction scheme that samples two trajectories for the same step and uses trajectory success rate (with discount-factor-like weighting and a penalty for invalid actions) as the preference signal, allowing use of low-reward transitions.",
+      "evaluation": "First known use of DPO for embodied agent tasks (per authors); preference pairs leverage reward-0 transitions to raise sample efficiency vs PPO. Qualitative and training-curve evidence that DPO learns more efficiently from interactions.",
+      "domain": "Embodied AI / preference optimization (DPO)",
+      "source_quote": "We have made adaptive adjustments to DPO, designing a data sampling and sample pair construction framework tailored to the interaction characteristics of embodied agents, thereby improving the sample utilization efficiency of the alignment algorithm.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Reduce model degradation and inconsistency between reasoning and action during fine-tuning, arguing aligning the CoT matters more than aligning the final action.",
+      "mechanism": "Add an action-token probability consistency constraint (regularization between fine-tuned and reference model policy, weight kappa) to DPO so the emitted action is derived from and consistent with the CoT thoughts.",
+      "evaluation": "Ablation over kappa in {0,0.001,0.01,0.1,1}: stronger consistency constraint improves success rate up to kappa~0.1 (near-optimal), but kappa=1 degrades performance. Qualitative sample at step 2000 shows that without the constraint the agent produces reasonable thoughts but an invalid/irrelevant final action.",
+      "domain": "Embodied AI / VLM fine-tuning stability",
+      "source_quote": "We emphasize that aligning the COT is more important than aligning the final action in alignment tasks. Based on this, we have improved the DPO algorithm to enhance output consistency, alleviating the issue of output degradation during model training.",
+      "type": "method"
+    }
+  ],
+  "self_declared_provenance": [
+    {"quote": "A notable example is RL4VLM (Zhai et al., 2024), which combines Proximal Policy Optimization (PPO) with COT reasoning to fine-tune vision-language models for decision-making tasks... RL4VLM proposes to mitigate the effect of the COT reasoning tokens by focusing the primary optimization target on the final action tokens.", "section": "related work"},
+    {"quote": "Unlike RL4VLM, we believe that the COT process holds the key to optimization... Our framework is based on Direct Preference Optimization (DPO)... To our knowledge, there is no precedent for its use in embodied agent tasks. Therefore, we consider introducing the DPO algorithm to efficiently learn strategies from sparse or no-reward interactions.", "section": "related work"},
+    {"quote": "we conduct one epoch of model SFT on the open-source dataset LEVI-Project/sft-data (Zhai et al., 2024)... an expert trajectory dataset sampled by a GPT-4-based agent, containing 45k different state samples", "section": "experiments/implementation"}
+  ],
+  "notes": "ICLR 2025 REJECT (anonymous under-review version). CAVEAT on the headline result: the absolute average success rate is very low (26.67%), and the claimed gain is only ~6 percentage points over the RL4VLM/PPO baseline (single environment, ALFWorld only) - a modest improvement on a weak absolute number. Ablation shows the consistency-regularization kappa is a trade-off: too large (kappa=1) HURTS performance, and authors concede the optimal value is task-dependent and unexplored. Method is explicitly a re-framing of RL4VLM (Zhai et al. 2024): same problem/base data (LEVI sft-data), but optimizing the CoT via DPO rather than the final action via PPO.",
+  "extractor": "human-baseline-batch0",
+  "date": "2026-07-07"
+}

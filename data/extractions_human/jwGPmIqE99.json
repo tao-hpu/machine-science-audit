@@ -1,0 +1,50 @@
+{
+  "paper_id": "jwGPmIqE99",
+  "title": "STRIDE: A Tool-Assisted LLM Agent Framework for Strategic and Interactive Decision-Making",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "克服 LLM 在战略多智能体决策中的固有缺陷(数学推理差、指令跟随难、长程规划弱、幻觉),使其能在博弈类交互环境中做出接近最优的战略决策",
+      "mechanism": "提出 STRIDE 框架:以 LLM 作为控制器,编排一系列结构化 Thought 单元;每个 Thought 单元除文本推理外还调用预定义 Python 函数(operation library)处理底层计算,并配一个外部工作记忆(working memory)保存关键参数与中间结果,分别对应破解四类挑战(效用计算、长程信息保存、策略探索、信念更新/对手预测)",
+      "evaluation": "在 MDP 最优动作成功率上 STRIDE(VI) 达 0.82-0.98,显著高于 zero-shot CoT(0.21-0.62)、zero-shot CoT w/code(0.48-0.75)与 few-shot CoT w/code(0.60-0.70);模型用 GPT-4/GPT-4o",
+      "domain": "LLM 智能体 / 博弈论与战略决策(讨价还价、MDP、动态机制设计)",
+      "source_quote": "we propose a novel LLM agent framework, named STRIDE, which is specifically designed for the multi-step reasoning in STRategic and Interactive DEcision-making problems. The LLM, which serves as the controller of the whole framework, orchestrates the reasoning process through a sequence of structured Thought units.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "当预定义 operation 不可用时,让框架仍能自主生成所需工具,提升泛化与自适应能力",
+      "mechanism": "为 STRIDE 增加按需(on-the-fly)合成 operation 的能力,通过迭代式代码生成(最多 6 次重试)自动产出可执行 Python 函数,记为 STRIDE-SynOp",
+      "evaluation": "在与 Section 4.1 相同的 MDP 环境但撤去预定义 operation 的设置下,STRIDE-SynOp 的最优动作成功率在所有测试场景中都与完整 STRIDE 接近(用 GPT-4o-2024-05-13,温度 0)",
+      "domain": "LLM 智能体 / 工具合成",
+      "source_quote": "We also explored equipping STRIDE with the ability to synthesize operations on-the-fly when predefined ones are unavailable.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "在一组经济学上重要的战略环境中量化评估该框架,验证工具+记忆能否切实提升 LLM 战略决策并暴露其固有局限",
+      "mechanism": "在双边讨价还价(完全信息 SPE 与单边不确定性 SE)、MDP、动态机制设计(VCG)等场景构造可量化的成功率指标,与多种 CoT 基线对比",
+      "evaluation": "讨价还价 SPE 中所有基线成功率均不超过 0.5,而 STRIDE 通过模拟后向归纳/二分参考算法可靠达成 SPE/SE;VCG 机制设计中基线虽能算最优动作却无法正确计算 VCG 价格,STRIDE 成功率更高",
+      "domain": "LLM 战略决策评估",
+      "source_quote": "We employ quantitative metrics to assess the framework's performance in various strategic decision-making problems. Our findings show that our enhanced framework significantly improves strategic decision-making capability of LLMs.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Each Thought unit, in addition to typical textual reasoning (Yao et al., 2022), also outlines a series of operations, which are predefined Python functions managing the low-level calculations",
+      "section": "related work"
+    },
+    {
+      "quote": "they treat LLMs as isolated models, relying solely on intrinsic reasoning capabilities without leveraging tools or memory-a gap our work aims to address.",
+      "section": "related work"
+    },
+    {
+      "quote": "Our framework differs fundamentally by addressing dynamic decision-making, requiring LLMs to adapt computations and strategies to evolving environments.",
+      "section": "related work"
+    }
+  ],
+  "notes": "负结果/局限突出:(1) 讨价还价 SPE 中所有基线成功率不超过 0.5,且代码解释器在此场景相比 MDP 未带来任何优势——LLM 虽尝试实现后向归纳算法但无法全对,作者归因于该类算法训练数据不足;(2) STRIDE(VI) 优于 STRIDE(MCTS),MCTS 版本成功率略低;(3) 论文本身强调 current LLMs 的 inherent limitations,STRIDE 是通过外部工具/记忆弥补而非模型内生能力提升。整体所有场景 STRIDE 均优于基线,无对 STRIDE 不利的平局。",
+  "extractor": "human-baseline-batch21",
+  "date": "2026-07-07"
+}

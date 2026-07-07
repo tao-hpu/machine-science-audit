@@ -1,0 +1,27 @@
+{
+  "paper_id": "aXSxSu3fvg",
+  "title": "Training Semi-Supervised Deep Learning Models with Heuristic Early Stopping Rules",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "Address the lack of objective methodology for when to stop training semi-supervised deep learning (SSDL) models, to prevent overfitting and error propagation from noisy pseudo-labels, especially for healthcare/mHealth data with many missing labels.",
+     "mechanism": "Propose three heuristic early-stopping criteria used individually or combined: (1) model convergence via layer-wise weight-change (Euclidean norm) stabilization; (2) generalizability via minimizing validation cross-entropy loss; (3) pseudo-label confidence via a sliding-window count of high-confidence pseudo-labels (probability > theta). A combined rule ranks the top-s iterations per criterion and picks the iteration with lowest average rank. Built on the pre-train/fine-tune SSDL loop of Li et al. (2019) with a frozen-first-layer pretraining step.",
+     "evaluation": "Applied to mHealth clinical-trial data (43 participants, 4,700 person-day observations, 62% unlabeled; binary homework-compliance target). Subject-dependent longitudinal 4-fold CV. See C2 for numbers.",
+     "domain": "Semi-supervised deep learning for mHealth / digital-health prediction",
+     "source_quote": "We propose three heuristic criteria, each serving as an individual early stopping rule for training an SSDL, with the objective of preventing overfitting and error propagation... This is distinct from existing methods that only rely on a single metric, such as accuracy, loss function, or mean squared error (MSE)",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "Demonstrate that the heuristic early-stopping criteria (especially combined) improve SSDL performance over training without a stopping rule.",
+     "mechanism": "Compare each criterion and the combined criterion against a benchmark (no stopping criterion) across seven metrics on the held-out test folds.",
+     "evaluation": "Combined criteria vs Benchmark: AUC 0.8338 vs 0.8228, Accuracy 0.7825 vs 0.7677, F1 0.8360 vs 0.8203, Sensitivity 0.7823 vs 0.7559. Model-convergence criterion gave the highest F1 (0.8368) and accuracy (0.7831). Each single criterion showed trade-offs; the combined approach was the most balanced.",
+     "domain": "mHealth depression / homework-compliance prediction",
+     "source_quote": "Using this objective early stopping criteria for training, we achieve improvements in accuracy and F1 scores, compared to the benchmark model where the early stopping criteria is not applied.",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "Building upon the SSDL framework proposed in Li et al. (2019), we developed an heuristic approach that is tailored to our particular dataset and research objectives.", "section": "methodology"},
+    {"quote": "This is distinct from existing methods that only rely on a single metric, such as accuracy, loss function, or mean squared error (MSE) (Yalniz et al., 2019; Ouali et al., 2020). ... Rather than relying solely on regularization or uniform criteria for model training (Sohn et al., 2020; Tarvainen & Valpola, 2017)", "section": "related work"}
+  ],
+  "notes": "Explicit trade-offs are the central finding: the model-convergence criterion boosts sensitivity/accuracy/F1 but LOWERS specificity and PPV (more false positives); the generalizability criterion boosts specificity/PPV but LOWERS sensitivity/NPV/accuracy/F1 (misses true positives); the pseudo-label-confidence criterion underperforms on sensitivity/NPV/accuracy/F1. Only the combined criterion avoids major trade-offs. Absolute gains over benchmark are small (AUC +0.011, F1 +0.016). Authors explicitly hedge: 'it is by no means a definitive solution' and note the framework adds several extra hyperparameters (S, theta, w, s). Single small proprietary dataset, no external baseline SSL methods (FixMatch etc.) compared. Paper was rejected.",
+  "extractor": "human-baseline-batch11",
+  "date": "2026-07-07"
+}

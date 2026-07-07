@@ -1,0 +1,42 @@
+{
+  "paper_id": "ePEZvQNFDW",
+  "title": "Continuous Ensemble Weather Forecasting with Diffusion Models",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "无需自回归迭代即可并行采样时间一致的集合预报轨迹,消除rollout误差累积与串行瓶颈",
+     "mechanism": "Continuous Ensemble Forecasting:条件扩散模型以lead time为输入单步预测,通过关联(如冻结)不同lead time的driving noise来保证轨迹时间一致性,并行求解lead-time-dependent probability flow ODE",
+     "evaluation": "定量:并行化6h步后单成员10天6h分辨率预报采样从AR-6h的32s降到8s(ARCI-24/6h)",
+     "domain": "机器学习全球天气预报(MLWP)",
+     "source_quote": "We propose a novel method for ensemble weather forecasting built on diffusion that: 1) can generate ensemble member trajectories without iteration",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "在任意(非等间隔)lead time上预报,实现任意精细时间分辨率",
+     "mechanism": "单一模型将lead time作为条件参数输入score网络,直接从边缘分布 p(X(t)|X(Ω),t) 采样,无需固定步长δ",
+     "evaluation": "定性:同一模型可产生1小时分辨率10天预报;t2m等强时变场在每次迭代首步(1h,25h,...)因需外推而表现较差",
+     "domain": "机器学习全球天气预报(MLWP)",
+     "source_quote": "2) can forecast arbitrary lead-times",
+     "type": "method"},
+    {"id": "C3",
+     "purpose": "结合自回归以在长rollout上提升性能并保持高分辨率精度",
+     "mechanism": "ARCI:将continuous forecasting与自回归rollout组合(如ARCI-24/6h,24h自回归步内并行6h continuous步)",
+     "evaluation": "Tab.1/Fig.4:ARCI-24+6h在6h分辨率上优于所有模型(含外部baseline Graph-EFM与GenCast式AR-6h),几乎所有分数上匹配AR-24h",
+     "domain": "机器学习全球天气预报(MLWP)",
+     "source_quote": "3) can be used together with iteration to improve performance on long rollouts",
+     "type": "method"},
+    {"id": "C4",
+     "purpose": "证明方法在全球天气预报上达到有竞争力的性能且概率性质良好",
+     "mechanism": "在ERA5上以RMSE、CRPS、Spread/Skill-Ratio(SSR)评估,并对比Deterministic、AR-6/24h(GenCast重实现)、CI-6h、DYffusion、Graph-EFM等baseline",
+     "evaluation": "z500/t850等变量5/10天预报;所有概率模型明显优于确定性模型;超越同架构重实现的GenCast与DYffusion;重训5次误差棒证明对初始化鲁棒",
+     "domain": "机器学习全球天气预报(MLWP)",
+     "source_quote": "4) achieves competitive performance in global weather forecasting.",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "Similarly to Price et al. (2025), we model p(X[k+1]|X[k-M:k]) using a conditional diffusion model ... We consider the SDE formulation of diffusion models presented by Karras et al. (2022)", "section": "background"},
+    {"quote": "the AR- models can thus be seen as a reimplementation of GenCast with a U-Net architecture", "section": "related work / experiments"},
+    {"quote": "Nguyen et al. (2023; 2025) use a similar setup, but train a single model taking the forecast lead time as an input. This approach, called continuous forecasting ... has so far only been applied to deterministic models.", "section": "related work"}
+  ],
+  "notes": "多处负结果/trade-off:(1) CI-6h(纯continuous)短期好但长horizon明显退化,因初始态与远lead time弱相关难学;(2) 所有扩散模型SSR<1,存在系统性欠离散(underdispersion);(3) ARCI-24/2h*对强时变场t2m在每次迭代首步表现更差(需外推到未训练的lead time);(4) 方法的理论shortcoming:冻结噪声使轨迹在给定时间点条件下变为conditionally deterministic(Dirac point mass),违背所建模过程的随机性假设。方法明确定位为GenCast/DYffusion同架构对比的改进。",
+  "extractor": "human-baseline-batch26",
+  "date": "2026-07-07"
+}

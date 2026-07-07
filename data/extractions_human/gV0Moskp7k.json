@@ -1,0 +1,35 @@
+{
+  "paper_id": "gV0Moskp7k",
+  "title": "Combating the Generalization-Forgetting Trade-off in Continual Learning: A Cautious Passive Low-Rank Approach",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "在 LLM 持续学习中平衡灾难性遗忘与新任务泛化,克服现有 LoRA-based PET 对所有层用同一 rank 的局限",
+     "mechanism": "CP-Rank(Cautious Passive Low-Rank):对第一个之后的每个任务从 rank=1 起,用 SVD 计算当前与历史任务低秩子空间相似度(正交性 φ),φ<ε 则谨慎增秩、否则被动维持;冻结所有历史 LoRA",
+     "evaluation": "标准 CL benchmark 三种任务序上 CP-Rank(w OP)一致显著优于前 SOTA O-LoRA,接近 MTL;数学任务 GSM8K/MATH 上遗忘更少、泛化更好;平均 rank 用量介于 r=2~4 之间更省内存",
+     "domain": "大语言模型持续学习 / 参数高效微调",
+     "source_quote": "A novel parameter-efficient continual learning method for LLMs that effectively balances forgetting and generalization through cautious passive low-rank updates",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "证明 CP-Rank 相对现有 SOTA 的性能优势",
+     "mechanism": "在标准 CL benchmark 与数学数据集上与 O-LoRA、IncLoRA、PerTaskFT、MTL 等做综合对比,并测不同固定 rank、不同模型规模(T5-base/large)",
+     "evaluation": "CP-Rank w OP 在所有任务序超 O-LoRA;wo OP 变体超其他方法但不及 O-LoRA;T5-large 上优势更明显、跨任务序更稳健",
+     "domain": "大语言模型持续学习",
+     "source_quote": "Through comprehensive evaluations, our method demonstrates superior performance over existing state-of-the-art approaches both on standard continual learning benchmarks and math datasets",
+     "type": "finding"},
+    {"id": "C3",
+     "purpose": "加深对 CL 中逐步增秩动态的理解",
+     "mechanism": "理论(线性回归 N=2 下推导遗忘误差界,揭示 rank 对遗忘的影响取决于任务相似度)+ 消融分析(超参、rank 更新规则、任务序鲁棒性)",
+     "evaluation": "定量消融:固定 rank 实验显示 O-LoRA 下 r=2 与 r=6 差异不大、IncLoRA 下 r=2 不足;遗忘误差界 Eq.5 与子空间相似度指标一致",
+     "domain": "大语言模型持续学习 / 理论分析",
+     "source_quote": "We provide an in-depth analysis that deepens our understanding of the dynamics of gradually increasing rank within continual learning for LLMs, pinpointing critical factors that drive its effectiveness.",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "O-LoRA Wang et al. (2023) incrementally learns new tasks in orthogonal subspaces, keeping LoRA parameters from previous tasks fixed to mitigate catastrophic forgetting. However, O-LoRA uses the fixed same rank for all incremental LoRAs without investigating the rank patterns in CL.", "section": "related work"},
+    {"quote": "AdaRank Dong (2024) introduces a simple model disagreement-based technique for determining layerwise ranks for low-rank adaptation induced by random module perturbations. Additionally, both AdaLoRA Zhang et al. (2023b) and SoRA Ding et al. (2023) exploit the relationship between the rank and the singular value decomposition of the weight update matrices to dynamically adjust layerwise ranks", "section": "introduction / related work"},
+    {"quote": "CP-Rank initializes the low-rank matrices with a rank of 1, minimizing the impact on previously learned tasks, as done in other incremental low-rank methods Zhao et al. (2023).", "section": "method"}
+  ],
+  "notes": "论文核心主题即 generalization-forgetting trade-off(标题明示),并显式论证 rank 大小与遗忘非线性关系。Comparable/部分负结果:消融变体 CP-Rank『wo OP』(无正交投影)超越除 O-LoRA 外的方法,即弱于完整版且仅与 O-LoRA 相当;主方法性能与 MTL『comparable』。固定 rank 消融显示某些区间(O-LoRA r=2 vs r=6)差异不显著。整体正结果为主但如实报告了这些平局信号。",
+  "extractor": "human-baseline-batch24",
+  "date": "2026-07-07"
+}

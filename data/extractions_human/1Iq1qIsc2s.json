@@ -1,0 +1,59 @@
+{
+  "paper_id": "1Iq1qIsc2s",
+  "title": "Revisiting Positional Information in Transformers in the era of Fused Attention",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "阐明为什么显式注意力权重偏置(RPB 等)在 fused attention 时代难以高效使用, 从而论证需要替代方案",
+      "mechanism": "分析 RPB(及任意显式注意力偏置)在 fused attention kernel 中的扩展性与实现挑战: 前向虽是逐元素操作, 反向是 reduction 操作, 难以融进 Flash Attention 等复杂 fused kernel; 加载物化偏置会让 compute-bound 的 fused kernel 重新变 memory-bandwidth-bound",
+      "evaluation": "定性/系统分析(见 Figure 1 与 Section 3.4), 举例 Flash Attention V2 完全不支持注意力偏置、FMHA 仅在全物化时支持",
+      "domain": "视觉 Transformer / 注意力系统实现",
+      "source_quote": "We present the scaling and implementation-related challenges in using RPB, or any explicit attention bias, in the context of fused attention. Positional biases, while very simple elementwise operations in their forward pass, are a reduction in their backward pass, making their fusion into complex fused attention kernels very challenging.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "实证 RoPE 作为 RPB 替代在视觉模型中的精度优势",
+      "mechanism": "把旋转位置编码(RoPE)引入视觉 Transformer 替换 RPB(RoPE 作用于 query/key 而非注意力权重, 与注意力算子解耦), 在多模型族/多注意力模式上对比无位置信息/RPB/Axial RoPE",
+      "evaluation": "ImageNet-1k top-1: 覆盖 ViT/Swin/NAT 三族(19M-89M 参数)、自注意力/窗口注意力/邻域注意力三种模式, 报告各模型一致精度提升(Table 2); NAT-s/DiNAT-s 也获同等提升(Table 11)",
+      "domain": "视觉 Transformer / 图像分类",
+      "source_quote": "We empirically show the improvement from using Rotary Position Embeddings over RPB. We show consistent improvements across three model families: ViT, Swin, and NAT, with varying model sizes (19 million to 89 million parameters).",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "提供比 RPB 更快的 RoPE 实现以获得推理加速",
+      "mechanism": "开发面向视觉模型的高效 CUDA fast-rope 实现(前后向均为逐元素操作, 只差一个符号)并配 Python 包装, 与最优 fused attention 实现配合",
+      "evaluation": "kernel 级: fp16 下相对 eager PyTorch 加速 10-11x, fp32 下约 6x, 相对 torch.compile() 平均 9.34x; 模型级推理吞吐(Table 3, AMP/FP16)多数模型显著提升, 但 Swin 上大致持平",
+      "domain": "视觉 Transformer / 系统效率",
+      "source_quote": "We develop an efficient CUDA implementation for RoPE with an easy-to-use Python wrapper. We carefully benchmark it and show its speedup against using RPB.",
+      "type": "resource"
+    },
+    {
+      "id": "C4",
+      "purpose": "分析 RoPE 在视觉 Transformer 中的多种实现与设计选择, 找到最省维度的用法",
+      "mechanism": "系统研究 2D RoPE vs Axial RoPE、共享/非共享旋转角、引入超参 k_rope 控制施加 RoPE 的隐藏维度比例, 消融 k_rope∈{1,2,4,8,16} 与多分辨率性能",
+      "evaluation": "ImageNet-1k: 只对 1/2、1/4 甚至 1/8 隐藏维度施加 RoPE 即可获得有竞争力精度; 非共享角 + k_rope=8 在 224px 各组合中最佳(Table 4/5); Axial RoPE 在多数分辨率优于 2D RoPE",
+      "domain": "视觉 Transformer / 位置编码",
+      "source_quote": "We carefully study multiple implementations of Rotary Position Embeddings and present an analysis of using RoPE in transformer-based vision models. We empirically show that one can use only a fraction of hidden dimensions for RoPE and still achieve competitive performance. We introduce a hyperparameter k_rope and analyze its effect on multi-resolution performance.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "In this work, inspired by the booming LLM landscape, we analyze the applicability of Rotary Position Embeddings (RoPE) as a replacement for RPBs in vision models.",
+      "section": "abstract"
+    },
+    {
+      "quote": "We find that 2D RoPE Heo et al. (2024); Jeevan & Sethi (2022) and AS2DRoPE Chu et al. (2024) are suboptimal extensions of original RoPE in the context of vision transformers.",
+      "section": "related work"
+    },
+    {
+      "quote": "Since this implementation expands on 1D RoPE for the 2D case, we henceforth refer to this as 2D RoPE... and is directly inspired from LLMs like LLaMA.",
+      "section": "method"
+    }
+  ],
+  "notes": "工作定位为把 LLM 的 RoPE(Su et al. 2021)迁移/适配到视觉模型, 替换 RPB, 并改进已有 2D RoPE / AS2DRoPE(称其 suboptimal)。混合/trade-off 信号: (1)吞吐提升在 Swin 上'roughly equal'(持平, 非全面加速); (2)作者自认 RoPE 本身是更复杂操作, 理论上 RPB 更高效, RoPE 的优势来自 fused-kernel 兼容性而非算子本身; (3)精度提升表述为'improved or similar accuracy'(部分只是相当); (4)最优设计依赖对 k_rope 和共享/非共享角做 sweep, 无单一通用配置。paper under review(reject)。",
+  "extractor": "human-baseline-batch23",
+  "date": "2026-07-07"
+}

@@ -1,0 +1,35 @@
+{
+  "paper_id": "KHTkRhq2aB",
+  "title": "PAFT: A Parallel Training Paradigm for Effective LLM Fine-Tuning",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "缓解顺序式 SFT→偏好对齐流水线导致的 alignment tax(灾难性遗忘)",
+     "mechanism": "PAFT 并行训练范式:用同一预训练模型在各自数据集上独立做 SFT 与偏好对齐(DPO/ORPO),再通过参数融合(LoRA adapter 合并)得到最终模型",
+     "evaluation": "在 Mistral-7B、Llama-3-8B 上于六项 benchmark 对比并行/顺序/单独训练,并行训练在减少 alignment tax 上更优;结论在 ORPO 上复现,证明可泛化",
+     "domain": "大语言模型微调 / 偏好对齐",
+     "source_quote": "Evidence is presented that parallel training of SFT and preference alignment outperforms sequential training, effectively reducing the alignment tax.",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "解决模型合并时的参数干扰,防止合并冲突同时保留各模型能力",
+     "mechanism": "发现 DPO 天然稀疏、SFT 天然稠密;对 SFT 损失加 L1-norm 惩罚以隐式诱导 delta 参数稀疏化(interference resolution)",
+     "evaluation": "TIES 合并下 PAFT(SFTsparse+DPO)得 0.6524 对比无稀疏化 Parallel SFT+DPO 的 0.5893;DARE TIES 下 0.6479 vs 0.5726;显式稀疏方法 DARE 被证不如 L1",
+     "domain": "大语言模型微调 / 模型合并",
+     "source_quote": "The significance of sparse model integration is highlighted as a mean to prevent model conflict while preserving the full capability of each model. We demonstrate the superiority of the L1-norm over DARE as a more effective and higher-quality method for promoting sparsity in model training across various model merging techniques.",
+     "type": "method"},
+    {"id": "C3",
+     "purpose": "在公开基准上全面验证 PAFT 有效性",
+     "mechanism": "在 Open LLM Leaderboard 与 AlpacaEval 上综合评测,含不同 base 模型与合并方法",
+     "evaluation": "PAFT-ed 7B 模型在 Open LLM Leaderboard 7B/8B 类别 Rank #1,70B 模型全球登顶;AlpacaEval 上 70B 优于多数 SOTA(除 GPT-4 Preview/Claude 3 Opus 的 LC Win-Rate)",
+     "domain": "大语言模型微调 / 评测",
+     "source_quote": "We conduct comprehensive evaluation of PAFT on well-known public benchmarks including Open LLM Leaderboard and AlpacaEval. The PAFT-ed 7B model achieved Rank #1 in the 7B/8B model category on the Open LLM Leaderboard, and the PAFT-ed 70B model topped the Leaderboard globally.",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "As discovered by prior work Yadav et al. (2023); Yu et al. (2023), direct model merging causes the parameter values to interfere across models, thereby harming the performance of the final model.", "section": "related work"},
+    {"quote": "This method of implicitly inducing sparsity has been evaluated against a technique that introduces sparsity explicitly, i.e., DARE Yu et al. (2023), demonstrating the advantages of employing the L1-norm", "section": "related work / method"},
+    {"quote": "we explore a variety of merging methods proposed in the literature, including SLERP, Task Arithmetic, TIES, DARE TIES, and Linear.", "section": "related work"}
+  ],
+  "notes": "报告了一个内部负/对比结果:单独 SFT 在 Mistral-7B 上不提升甚至损害平均分(SFT 缺人类偏好对齐),而单独 DPO 提升——支撑其并行融合动机。AlpacaEval 上 70B 未能全面超越 GPT-4 Preview/Claude 3 Opus(LC Win-Rate),属 comparable/落后信号。整体基调为全面正结果 + Rank #1 主张。",
+  "extractor": "human-baseline-batch24",
+  "date": "2026-07-07"
+}

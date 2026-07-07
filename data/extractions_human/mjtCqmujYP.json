@@ -1,0 +1,50 @@
+{
+  "paper_id": "mjtCqmujYP",
+  "title": "Reward-Augmented Data Enhances Direct Preference Alignment of LLMs",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Fix limitations of direct alignment algorithms (e.g. DPO) that ignore response quality scores: unnecessary unlearning of high-quality rejected responses and indiscriminate learning of low-quality chosen responses, plus poor generalization to sparse highest-reward responses.",
+      "mechanism": "A simple data relabeling method that constructs a reward-augmented dataset by conditioning preference pairs on judge-model quality scores. Using a goal-conditioned reward R(x,y,g) = -(g - r(x,y))^2, each preference pair is relabeled into two new pairs conditioned on the reward goals of the chosen and rejected responses; plug-and-play with any off-the-shelf direct alignment algorithm and any preference dataset.",
+      "evaluation": "DPO on reward-augmented UltraFeedback across Zephyr-7B, Mistral-7B, Qwen2-7B, Llama-3.1-8B, Gemma-2-9B, SPPO; consistently boosts AlpacaEval 2.0 / MT-Bench / Arena-Hard-Auto and improves average accuracy on GSM8K/GPQA/MUSR/TruthfulQA/BBH/ARC; on-policy variant reaches SOTA on AlpacaEval 2.0 (LC win rate ~58.9).",
+      "domain": "LLM preference alignment",
+      "source_quote": "We propose an effective yet simple data relabeling method that conditions the preference pairs on quality scores to construct a reward-augmented dataset. This dataset is easily integrated with existing direct alignment algorithms and is applicable to any preference dataset.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Provide theoretical justification for reward-augmented DPO.",
+      "mechanism": "Theoretical analysis proving global convergence to the optimal policy with suboptimality decaying at order N^{-1/2} (N = size of reward-augmented dataset).",
+      "evaluation": "Formal theorem and proof (Appendix A.4/A.5); qualitative comparison showing this is stronger than prior goal-conditioned RL-with-supervised-learning results that only give local improvement or lower-bound optimization.",
+      "domain": "LLM preference alignment / RL theory",
+      "source_quote": "The above theorem shows that our method attains global convergence to the optimal policy and the suboptimality decays at the order of $N^{-1/2}$ (N denotes the size of the reward-augmented preference dataset), which provides a theoretical justification for the strong empirical performance of the introduced reward-augmented DPO.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Show the gains come from better utilization of preference data (mitigated unlearning), not merely from a larger dataset.",
+      "mechanism": "Ablation studies: DPO on only half the data with reward augmentation (Half RA, same size as original); implicit-reward augmentation (IRA) for binarized datasets; log-probability analysis of high-quality rejected responses; varying AI-feedback quality (PairRM 0.4B vs ArmoRM 8B).",
+      "evaluation": "DPO (Half RA) outperforms DPO on the full original data; a second DPO round with implicit-reward-augmented data beats judge-reward augmentation; method restores log-prob of rejected responses (reward>=5) that plain DPO suppresses; with strong reward model (ArmoRM) conditioning on chosen rewards alone (RA+) suffices, whereas weak PairRM needs both.",
+      "domain": "LLM preference alignment",
+      "source_quote": "Additional ablation studies also suggest that our method addresses the problem of unlearning and is superior not just due to the increased dataset size.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Reward-aware Preference Optimization (RPO), introduced in Nemotron-4 (Adler et al., 2024), attempts to approximate the reward gap using the implicit reward and is motivated to resolve the unlearning issues of DPO, which our work also addresses. However, we show that more limitations beyond unlearning can be simply fixed with reward-conditioned LLMs and propose an easy-to-implement data relabeling method that integrates seamlessly with any direct alignment algorithm.",
+      "section": "related work"
+    },
+    {
+      "quote": "On the contrary, our method targets the limitations of direct alignment algorithms by introducing reward-augmented relabeling. This also differs from Conditioned-RLFT (Wang et al., 2023a), which leverages the data source information by learning a class-conditioned policy with RL-free supervised learning.",
+      "section": "related work"
+    },
+    {
+      "quote": "Unlike prior works on goal-conditioned RL with supervised learning (Yang et al., 2022; Ghosh et al., 2019), which typically establish weaker results such as local performance improvements or the optimization of a lower bound on J(π), our analysis guarantees global convergence to the optimal policy.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Negative/caveat results explicitly noted: plain DPO on original UltraFeedback can DEGRADE base-model performance on Arena-Hard-Auto (complex reasoning); an extra DPO round on the same data significantly degrades SPPO. Unlearning-mitigation is partial: their method's rejected-response log-prob is still slightly lower than the base model. With a weak reward model (PairRM), conditioning on both chosen+rejected rewards is required; only strong ArmoRM allows chosen-only. Builds on / extends DPO, RPO (Nemotron-4), SteerLM, DPA, goal-conditioned RL via supervised learning.",
+  "extractor": "human-baseline-batch5",
+  "date": "2026-07-07"
+}

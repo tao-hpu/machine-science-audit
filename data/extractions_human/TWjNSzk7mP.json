@@ -1,0 +1,35 @@
+{
+  "paper_id": "TWjNSzk7mP",
+  "title": "Boosting In-Context Learning in LLMs with Retrieval-based Codebook",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "解决 ICL 对 prompt 设计敏感、单次前向理解不足的问题,提升 LLM 对上下文的理解",
+     "mechanism": "把原始 demonstrations 通过 LLM 多次前向转成 task vectors(每层的 keys/values),类残差地把重复处理得到的 KV 与测试 task vector 拼接融合",
+     "evaluation": "在 SST2/SST5/MR/AGNews 上用 opt-125m/350m、Qwen2-1.5B/7B、Llama3.1-8B 评测,主结果 Table 2 显示相比 conventional ICL 准确率显著提升,小参数模型增益最明显",
+     "domain": "大语言模型 / 上下文学习 (文本分类)",
+     "source_quote": "(1) We investigate and address limitations in ICL by introducing techniques that optimize prompt design and improve the utilization of Transformer key-value pairs, enhancing contextual understanding in LLMs for a range of downstream tasks.",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "克服输入长度限制并过滤长上下文 demonstrations 中的无关内容/噪声",
+     "mechanism": "提出 retrieval-based codebook:一个可编辑的记忆结构,动态存储/更新多次处理生成的 KV task vectors,测试时检索最相关的历史 task vectors 作为增强 prompt",
+     "evaluation": "在 AE(蚂蚁集团 28 类商户分类私有数据集)上用 Qwen2-7B、Llama3.1-8B 等对比 conventional ICL 与 Deep-thinking 基线,Figure 4 显示优于两者;Table 3/4 显示时间开销可控",
+     "domain": "大语言模型 / 上下文学习 (检索增强)",
+     "source_quote": "(2) We propose a retrieval-inspired mechanism that uses a dynamic codebook to manage key-value pairs generated over multiple passes, effectively overcoming input length constraints and filtering irrelevant information to improve inference relevance.",
+     "type": "method"},
+    {"id": "C3",
+     "purpose": "验证方法在准确率与效率上均优于现有 ICL 方法",
+     "mechanism": "在多数据集/多模型上做主实验、baseline 对比、demonstrations 数量与 codebook 大小的超参分析、时间复杂度分析",
+     "evaluation": "四个公开数据集 + AE 私有集,证明优于 state-of-the-art ICL;观察到性能随模型参数量增大总体提升(量化策略差异导致个别不严格正相关)",
+     "domain": "大语言模型 / 上下文学习",
+     "source_quote": "(3) Through extensive experiments, we demonstrate that our enhancements outperform state-of-the-art ICL methodologies in both accuracy and efficiency.",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "For general customization, building on previous work, we propose using the keys and values of the Transformer as the output of the mapping of X_demo through the learning algorithm A.", "section": "related work"},
+    {"quote": "Previous studies have suggested that ICL can be viewed as compressing a training set into a single task vector Hendel et al. (2023) ... methodologies like Deep-thinking Yang et al. (2024b) enhance keys and values by iteratively processing demonstrations, refining their understanding through multiple passes.", "section": "related work"},
+    {"quote": "we propose a retrieval-inspired mechanism Lewis et al. (2020) for key-value pairs. We introduce a codebook Hartvigsen et al. (2023)-a modifiable memory structure", "section": "introduction"}
+  ],
+  "notes": "方法建立在 Hendel et al. (2023) task-vector 框架与 Deep-thinking (Yang et al. 2024b) 多次迭代处理之上,codebook 借鉴 Hartvigsen et al. (2023) 知识编辑记忆与 Lewis et al. (2020) RAG。作者主动指出一个 caveat/近似负面观察:参数量与性能并非严格正相关,归因于量化策略差异(Opt/Llama 用 8-bit、Qwen2 未量化)。时间开销方面承认多次处理可能增加计算,但实测认为开销可控。未见明确的对照失败/平局结果,主实验均报告优于基线(部分依赖私有 AE 数据集)。",
+  "extractor": "human-baseline-batch20",
+  "date": "2026-07-07"
+}

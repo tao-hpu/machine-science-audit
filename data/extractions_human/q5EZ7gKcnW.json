@@ -1,0 +1,35 @@
+{
+  "paper_id": "q5EZ7gKcnW",
+  "title": "Iterative Label Refinement Matters More than Preference Optimization under Weak Supervision",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "Determine whether the standard SFT+RLHF post-training pipeline remains effective when human supervision is unreliable (as it becomes for hard-to-supervise tasks), and diagnose why DPO fails.",
+     "mechanism": "Analysis via a controlled simulation of unreliable supervision using small LMs (a weak generator p-tilde for demonstrations, a weak classifier q-tilde for comparisons) and, separately, time-constrained human annotators; measure SFT vs SFT+DPO and vary the DPO KL-regularization coefficient beta across feedback-quality levels to isolate the overoptimization mechanism.",
+     "evaluation": "On GSM8K, BIRD, SaferPaca with weak-to-strong setups (2B->7B, 7B->70B, 2B->70B): SFT beats the weak supervisor (W2SG) but DPO gives little/no gain over SFT under unreliable feedback; with oracle feedback DPO does improve. Overoptimization shown: small beta helps with oracle feedback but hurts with unreliable feedback, while large beta (needed to curb overoptimization) blocks the large updates required to fix SFT errors.",
+     "domain": "LLM post-training / alignment (RLHF) under unreliable supervision",
+     "source_quote": "We find that in the presence of unreliable supervision, SFT still retains some effectiveness, but DPO (a common RLHF algorithm) fails to improve the model beyond SFT.",
+     "type": "finding"},
+    {"id": "C2",
+     "purpose": "Provide an alternative to RLHF that better uses comparison feedback under unreliable supervision, avoiding DPO's regularization dilemma while still allowing large model updates.",
+     "mechanism": "Iterative Label Refinement (ILR): each round splits the SFT data in half, trains two SFT models that cross-label the held-out half to propose alternative demonstrations, uses comparison feedback (weak LM or humans) to decide whether each model proposal replaces the original label (updating at most alpha|X| labels by confidence, alpha=0.15), then retrains a fresh SFT model from the base PLM on the refined dataset; repeated for K rounds.",
+     "evaluation": "Qualitative mechanism plus quantitative gains (see C3); ILR yields much larger KL divergence from the initial SFT model than DPO after one round and improves SFT-label accuracy round over round (Fig 5), approaching/surpassing ground-truth-trained model accuracy when feedback is reliable.",
+     "domain": "LLM post-training / alignment",
+     "source_quote": "ILR improves the SFT data by using comparison feedback to decide whether human demonstrations should be replaced by model-generated alternatives, then retrains the model via SFT on the updated data.",
+     "type": "method"},
+    {"id": "C3",
+     "purpose": "Show SFT+ILR outperforms SFT+DPO under unreliable supervision across diverse tasks and under real (time-constrained) human feedback.",
+     "mechanism": "Head-to-head comparison of SFT+ILR vs SFT+DPO over multiple rounds in four LM-simulated settings and a CloudResearch human study on Alpaca (1000 demonstrations at 1-2 min each, 1000 comparisons/round at 30-60s each, 2 rounds).",
+     "evaluation": "SFT+ILR consistently beats SFT+DPO on GSM8K (2B->7B and 7B->70B), BIRD (2B->70B), and SaferPaca (2B->7B win rate); in the human study ILR improves fast and consistently while DPO with small beta plateaus and large beta improves slowly; ILR benefits from scale (larger gains at 70B).",
+     "domain": "LLM post-training / alignment",
+     "source_quote": "SFT+ILR outperforms SFT+DPO on several tasks with unreliable supervision (math, coding, and safe instruction-following).",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "The SFT stage in our LM-based simulation employs a similar setting as the setup used for studying W2SG in Burns et al. (2023) but extended to text generation tasks; Burns et al. (2023) only consider classification tasks.", "section": "related work"},
+    {"quote": "Our cross-labeling framework shares conceptual similarities with co-training (Blum & Mitchell, 1998; Zhou et al., 2005) and co-teaching (Han et al., 2018), although these methods primarily focus on classification settings and rely on model confidence scores.", "section": "related work"},
+    {"quote": "Recent work has also investigated the impact of noisy preference data on RLHF (Chowdhury et al., 2024; Fisch et al., 2024; Gao et al., 2024), while our work addresses a more challenging case where both SFT data and preference data are unreliable.", "section": "related work"}
+  ],
+  "notes": "Central result is a NEGATIVE result about the standard pipeline: DPO/RLHF fails to improve over SFT under unreliable supervision (overoptimization + regularization dilemma), challenging RLHF as the best use of human feedback. Additional negative finding: naively replacing labels with model proposals WITHOUT comparison feedback degrades performance (model collapse from uncurated synthetic data), so supervision in refinement is necessary. Caveat/trade-off: ILR's benefit decreases over rounds in the human study (annotators pick fewer AI outputs later; W2SG may be insufficient). Limitations acknowledged: only DPO studied (not PPO/reward modeling); time-constrained humans may not capture real capability limits; tasks are not truly beyond human ability.",
+  "extractor": "human-baseline-batch27",
+  "date": "2026-07-07"
+}

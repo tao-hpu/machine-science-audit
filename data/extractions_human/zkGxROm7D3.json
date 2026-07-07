@@ -1,0 +1,42 @@
+{
+  "paper_id": "zkGxROm7D3",
+  "title": "State & Image Guidance: Teaching Old Text-to-Video Diffusion Models New Tricks",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "现有 T2V 扩散模型的文本条件机制只能生成单帧描述适用于全片的低动态视频，难以生成随时间显著变化的动态场景；本文在不重训的前提下扩展其能力",
+     "mechanism": "提出 State Guidance——一种 training-free 采样方法，把动态视频场景定义为 <初始态, 过渡态, 终止态> 的状态三元组（三段 prompt，可手写或用 LLM 自动生成），在每个扩散步中对不同帧以不同强度同时朝各状态方向前进，并沿帧维度调度 guidance 强度",
+     "evaluation": "在自建 Dynamic Scenes Benchmark 上对比 VideoCrafter2/LaVie/CogVideoX(标准 vs State Guidance)；定量(Table 3)+用户研究(Table 4)显示 prompt 对齐与动态性提升，temporal consistency 仅可忽略下降",
+     "domain": "计算机视觉 / 文本到视频生成",
+     "source_quote": "We introduce State Guidance, a novel, training-free framework for T2V diffusion model inference that enables dynamic video scene generation.",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "让标准预训练 T2V 模型（本不支持图像条件）能在零样本下以图像为条件生成视频（Zero-Shot I2V）",
+     "mechanism": "提出 Image Guidance——用 score-based 扩散公式把采样模型从 p(z|p_c) 改造为 p(z|p_c,i_c)，在反向扩散轨迹中混入去噪方向以注入图像条件，无需重训",
+     "evaluation": "Custom I2V Benchmark 上与零样本 TI2V-Zero 及训练型 I2V(I2VGen-XL/SVD/DynamiCrafter)对比(Table 5)：在 Text/Image Similarity 与 TC 上超过 TI2V-Zero；对训练型方法文本相似度更优、TC 相当，但 image similarity 与 Optical Flow Score 更低",
+     "domain": "计算机视觉 / 图像到视频生成",
+     "source_quote": "We propose Image Guidance, a sampling technique that allows T2V models to condition on images without the need for retraining, facilitating Zero-Shot I2V generation.",
+     "type": "method"},
+    {"id": "C3",
+     "purpose": "在给定首帧与末帧两张参考图 + 文本时零样本生成过渡视频（Zero-Shot II2V）",
+     "mechanism": "组合 State Guidance 与 Image Guidance（ξ=0.5、partial quadratic guidance schedule）搭建构建于预训练 T2V 之上的 II2V 流水线",
+     "evaluation": "MorphBench 上与训练型 II2V(DynamiCrafter/DiffMorpher/TVG)对比(Table 6)，无需训练型图像条件即取得超过既有方法的稳健定量结果",
+     "domain": "计算机视觉 / 图像到视频生成",
+     "source_quote": "We present a zero-shot image-to-video (Zero-Shot II2V) pipeline built upon a pre-trained T2V model, leveraging the combined strengths of State Guidance and Image Guidance methods.",
+     "type": "method"},
+    {"id": "C4",
+     "purpose": "填补现有 T2V 基准偏重低动态场景、缺乏动态场景生成评测的空白",
+     "mechanism": "手工收集 106 条描述明显场景变化的 prompt（分 object property change 与 object position change 两类），每条附初始/过渡/终止三态文本描述",
+     "evaluation": "定性资源：Dynamic Scenes Benchmark，106 prompts，文献中首个专为评测 T2V 动态场景生成设计的基准",
+     "domain": "计算机视觉 / 评测基准",
+     "source_quote": "We present the Dynamic Scene Benchmark, the first benchmark in the literature specifically designed to evaluate the ability of T2V models to generate dynamic video scenes.",
+     "type": "resource"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "Both methods are built upon a modified diffusion sampling process via the guidance mechanism.", "section": "introduction"},
+    {"quote": "Classifier-Free Guidance Ho & Salimans (2021) allows for a balance between sample quality and diversity ... MUSE Chang et al. (2023) and MDTv2 Gao et al. (2023) introduce a dynamic guidance scale that changes over the course of the sampling process ... In this work, we propose a guidance schedule across the frame dimension of the generated video.", "section": "related work"},
+    {"quote": "The results are generated using VideoCrafter2 Chen et al. (2024a).", "section": "experiments"}
+  ],
+  "notes": "方法+资源型论文（reject）。多处明确 trade-off/comparable/负结果：State Guidance 使 temporal consistency 有可忽略下降（作者称 TC 指标偏好静态视频）；Zero-Shot I2V 对训练型方法 TC 相当但 image similarity 与 OF Score 更低（'expected for a zero-shot approach'）；TI2V-Zero 的 OF Score 更高但 TC<93；II2V 与 PixelDance 只能定性对比（对方代码权重不公开）。此外作者坦言 State Guidance 能力受限于底层预训练 T2V 模型(Fig.6)。方法本质是把 CFG/dynamic guidance(MUSE,MDTv2)思路扩展到帧维度调度 + 图像条件注入，全部 training-free 建于 VideoCrafter2 上。",
+  "extractor": "human-baseline-batch2",
+  "date": "2026-07-07"
+}

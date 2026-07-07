@@ -1,0 +1,29 @@
+{
+  "paper_id": "eiqrnVaeIw",
+  "title": "Persistent Pre-training Poisoning of LLMs",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "首次评估语言模型能否在预训练阶段被投毒,并考察此类攻击在对齐后训练(SFT+DPO)后的持久性——填补此前投毒研究仅限于后训练阶段的空白",
+     "mechanism": "从零预训练一系列 LLM(600M-7B),在预训练数据中注入四种攻击目标的投毒样本:拒绝服务(生成乱码)、信念操纵、越狱、提示窃取(context extraction);对比投毒模型在 post-training 前后的行为",
+     "evaluation": "主结果:仅投毒 0.1% 预训练数据即足以让 4 种攻击中的 3 种在 post-training 后仍可测量地持续;拒绝服务在低至 0.001% 投毒率下仍持久",
+     "domain": "AI 安全 / 大语言模型数据投毒",
+     "source_quote": "Our work evaluates for the first time whether language models can also be com-promised during pre-training ... Our main result is that poisoning only 0.1% of a model's pre-training dataset is sufficient for three out of four attacks to measurably persist through post-training. Moreover, simple attacks like denial-of-service persist through post-training with a poisoning rate of only 0.001%.",
+     "type": "finding"},
+    {"id": "C2",
+     "purpose": "揭示越狱攻击通过预训练投毒难以奏效,并给出样本复杂度假设",
+     "mechanism": "分析手法:对比投毒模型与干净模型的安全性(Figure 6),观察越狱攻击是否降低模型安全性,并与 Hubinger et al.(sleeper agents)的相反结论对照",
+     "evaluation": "越狱攻击无法通过预训练投毒破坏模型安全:投毒模型不比干净模型更不安全;假设越狱的样本复杂度高于其余攻击,模型在少量投毒数据下学不会连贯对话",
+     "domain": "AI 安全 / 大语言模型越狱",
+     "source_quote": "the effect of this poisoning persists through post-training alignment for all attacks except for jailbreaking ... However, jailbreaking through pre-training poisoning seems to be practically difficult: the model does not learn to chat coherently with the small amount of data observed through poisoning, and we hypothesize that jailbreaking has a higher sample complexity than the remaining attacks.",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "Our pre-training poisoning threat model is in contrast with existing attacks that require tampering with data in post-training (Wan et al.,2023; Rando & Tramèr, 2024): direct post-training access enables more potent attacks, but is arguably less practical.", "section": "introduction"},
+    {"quote": "Hubinger et al. shows that if a model is successfully poisoned during supervised fine-tuning, subsequent safety training on clean data may not overwrite the backdoor. A key limitation of this sleeper agents work is that the poisoning attack happens entirely after pre-training, via a fine-tuning stage.", "section": "related work"},
+    {"quote": "Recent work by Carlini et al. demonstrated that poisoning web-scale datasets is very much practical, and estimated conservatively that 6.5% of Wikipedia can be modified by an attacker.", "section": "related work"},
+    {"quote": "Our 1B and 7B model configurations directly follow Groeneveld et al. (2024). We create custom OLMo-based architectures of 604M, 2B and 4B parameters.", "section": "experimental setup"}
+  ],
+  "notes": "关键负结果(项目重点):4 种攻击中越狱攻击失败——预训练投毒无法使模型更不安全,与 Hubinger et al.(2024)sleeper agents 的结论相反,作者据此提出越狱样本复杂度更高的假设。其余 3 种攻击(DoS/信念操纵/提示窃取)在 0.1% 投毒率下持久,DoS 甚至在 0.001% 下持久。方法定位为对 Wan et al./Rando & Tramèr(后训练投毒)与 Hubinger sleeper agents(微调阶段投毒)威胁模型的对照与推进,首次做真实预训练阶段投毒。基座架构沿用 OLMo(Groeneveld et al. 2024)。",
+  "extractor": "human-baseline-batch19",
+  "date": "2026-07-07"
+}

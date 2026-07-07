@@ -1,0 +1,50 @@
+{
+  "paper_id": "DwqoBkj2Mw",
+  "title": "The Last Iterate Advantage: Empirical Auditing and Principled Heuristic Analysis of Differentially Private SGD",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "在仅发布 DP-SGD 最后一次迭代(last iterate)、隐藏中间迭代的现实场景下,给出比标准 composition 分析更紧的隐私泄露估计",
+      "mechanism": "提出一个启发式(heuristic)隐私分析:假设损失/正则项为线性(此时可精确分析),对最后一次迭代推导可数值计算的 (ε,δ)-DP 保证(Theorem 1,基于 hockey-stick 散度,可用现有开源 DP 会计库计算),再把该保证外推到非线性深度学习损失",
+      "evaluation": "Theorem 1 给出精确闭式;该启发式恒低于标准 composition 分析(Fig.1 对比);线性损失被论证为 full-batch 非采样情形的最坏情况(Appendix B)",
+      "domain": "差分隐私 / DP-SGD 隐私分析",
+      "source_quote": "We propose a heuristic privacy analysis of DP-SGD in the setting where only the final iterate is released. The heuristic ... is always lower than the standard theoretical analysis. Our experiments demonstrate that this heuristic analysis consistently provides an upper bound on the privacy leakage measured by privacy auditing tools in realistic deep learning settings.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "实证验证该启发式能否预测隐私审计(privacy auditing)测得的真实隐私泄露,从而在训练前作为估计工具",
+      "mechanism": "在视觉与语言任务上做成员推断/审计攻击(gradient-space 与 input-space),对比经验 ε 下界与启发式/标准上界",
+      "evaluation": "图像:CIFAR-10 + WideResNet(79% 测试精度,标准分析 ε=8,δ=1e-5),每设置训练 512 个带/不带 canary 模型(共 1024);对抗梯度实验 N=100,000 次试验,经验 ε 接近启发式 ε。语言:Gemma 2 在 PersonaChat 上 DP 微调(Table 1,变化 batch size)。跨模态结果相近,启发式可较好预测经验隐私界",
+      "domain": "隐私审计(视觉 CIFAR-10 / 语言模型 Gemma 2)",
+      "source_quote": "We also empirically support our heuristic and show existing privacy auditing attacks are bounded by our heuristic analysis in both vision and language tasks.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "探究该启发式的失效边界,诚实标出其可能低估隐私泄露的情形",
+      "mechanism": "人工构造反例(counterexamples)并分析:一类利用正则项部分抵消隐私噪声(同时也抵消 canary 信号,故极其微妙);另一类精心设计数据使最后迭代实际编码整条轨迹;并指出启发式 ε 关于步数 T 非单调",
+      "evaluation": "定性/构造性反例(Fig.1c 展示 ε 关于 T 非单调);这些反例中真实隐私损失超过启发式给出的界",
+      "domain": "差分隐私分析的局限性",
+      "source_quote": "We also probe the limitations of our heuristic and give some artificial counterexamples where it underestimates empirical privacy leakage. One class of counterexamples exploits the presence of a regularizer.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "The question above has been studied from two angles: Theoretical upper bounds, and privacy auditing lower bounds. Our goal is to shed light on this question from a third angle via principled heuristics.",
+      "section": "related work"
+    },
+    {
+      "quote": "We follow the construction of Nasr et al. (2021) where we have 3 entities, adversarial crafter, model trainer, and distinguisher ... we follow the training setup of De et al. (2022), where we train and audit a model with 79% test accuracy",
+      "section": "experiments"
+    },
+    {
+      "quote": "Both $δ_{T,q,σ}(\\varepsilon )$ and $\\varepsilon _{T,q,σ}(δ)$ can be computed using existing open-source DP accounting libraries (Google, 2020).",
+      "section": "methodology"
+    }
+  ],
+  "notes": "已发表(accept)。作者主动、显著地标出局限与负面/反直觉结果:(1) 启发式非严格保证,存在反例会低估隐私泄露;(2) 在自然数据(非对抗)设置下,没有中间迭代访问权的 black-box gradient-space 攻击无法做到紧审计,经验 ε 甚至远低于启发式,即现有攻击在此场景偏弱;(3) input-space 攻击反而比 gradient-space 更紧,与先前工作结论相反;(4) 启发式 ε 关于步数 T 非单调。定位为介于理论上界与审计下界之间的 '第三视角',不替代严格分析。",
+  "extractor": "human-baseline-batch18",
+  "date": "2026-07-07"
+}

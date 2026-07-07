@@ -1,0 +1,50 @@
+{
+  "paper_id": "nR0n4R1Ck2",
+  "title": "SubTrack your Grad: Gradient Subspace Tracking for Memory-Efficient LLM Training and Fine-Tuning",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Reduce the wall-time and computational cost of memory-efficient LLM training/fine-tuning, avoiding the expensive periodic SVD that GaLore uses to track the gradient's low-rank subspace.",
+      "mechanism": "SubTrack-Grad projects gradients onto a compact core subspace and dynamically updates that subspace via rank-1 updates along Grassmannian-manifold geodesics, using the estimation error and previously computed subspace (leveraging the orthogonal complement) instead of periodic SVD.",
+      "evaluation": "Reduces wall-time by up to 20.57% on GLUE (15% avg) and up to 65% on SuperGLUE (22% avg); for a 3B-parameter model GaLore added 157% wall-time over full-rank training vs SubTrack-Grad's 31% (a 49% reduction vs GaLore); optimizer-state memory equal to GaLore with only minimal peak-memory increase.",
+      "domain": "Memory-efficient LLM training and fine-tuning (optimization)",
+      "source_quote": "We introduce SubTrack-Grad, a computationally and memory-efficient method that projects gradients onto a core subspace and dynamically adjusts this subspace using Grassmannian manifold geometry, leveraging estimation errors as a signal for adjustment.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Show the practical accuracy/efficiency trade-off is favorable, i.e. that the speedup does not sacrifice task performance.",
+      "mechanism": "Empirical comparison of SubTrack-Grad against GaLore on GLUE/SuperGLUE fine-tuning and pre-training, measuring downstream performance alongside runtime and memory.",
+      "evaluation": "Achieves performance comparable to or better than GaLore with significant runtime reduction and minimal memory overhead (qualitative parity plus the wall-time numbers above).",
+      "domain": "Memory-efficient LLM training and fine-tuning",
+      "source_quote": "We demonstrate that SubTrack-Grad achieves performance comparable to or better than GaLore, with a significant reduction in runtime and minimal memory overhead.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Explain why subspace tracking helps optimization and give theoretical grounding.",
+      "mechanism": "Analysis showing that tracking the gradient subspace reduces abrupt changes in updates (accelerating convergence), plus a proof that the method matches GaLore's convergence guarantees while permitting more frequent subspace updates via prior knowledge and orthogonal-space errors.",
+      "evaluation": "Qualitative/theoretical: convergence-guarantee alignment with GaLore proven analytically; reduced abrupt subspace shifts argued as the mechanism for faster convergence.",
+      "domain": "Optimization theory for LLM training",
+      "source_quote": "We prove that our method aligns with GaLore's convergence guarantees while enabling more frequent subspace updates by exercising greater control over subspace adjustments through the use of prior knowledge and errors from the orthogonal space.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "GaLore (Zhao et al., 2024) reduces the memory usage of optimizers by projecting gradient matrices into a low-rank subspace and tracking changes via periodic Singular Value Decomposition (SVD) to obtain a rank-r approximation. However, this approach faces several challenges. First, SVD is computationally expensive...",
+      "section": "related work"
+    },
+    {
+      "quote": "SubTrack-Grad leverages information from the orthogonal complement to improve subspace estimation through simple linear algebra operations, which are computationally more efficient than GaLore as they avoid periodic SVD on the main gradient matrices.",
+      "section": "related work"
+    },
+    {
+      "quote": "Balzano et al. (2011) introduces an incremental method for updating subspaces on the Grassmannian manifold when data is partially observed... Blocker et al. (2023) presents a method for time-varying data based on geodesics in Grassmannian space to track changes and update the subspace effectively.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Explicitly a GaLore-derivative: replaces GaLore's periodic SVD subspace tracking with Grassmannian geodesic rank-1 updates. Central claimed win is wall-time, not accuracy. Accuracy is framed as 'comparable to or better than GaLore' (a parity/comparable result, not a clear accuracy gain), and the method incurs a minimal peak-memory increase over GaLore (small trade-off). No outright negative results reported.",
+  "extractor": "human-baseline-batch13",
+  "date": "2026-07-07"
+}

@@ -1,0 +1,50 @@
+{
+  "paper_id": "I1VCj1l1Zn",
+  "title": "DLP-LoRA: Efficient Task-Specific LoRA Fusion with a Dynamic, Lightweight Plugin for Large Language Models",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Enable dynamic, context-driven fusion of multiple task-specific LoRAs without manual pre-selection or retraining when tasks change, while remaining lightweight and easily adaptable to new domains.",
+      "mechanism": "DLP-LoRA, a dynamic lightweight plugin: a 4-layer mini-MLP module (~5M parameters) trained once for sentence-level task classification, which selects and fuses multiple LoRAs using top-p sampling strategies.",
+      "evaluation": "Plugin is ~5M parameters vs ~26M for a typical token-level gating method on LLaMA-3 8B with 100 LoRAs; trained once at sentence level.",
+      "domain": "Parameter-efficient fine-tuning / multi-task LLM adaptation",
+      "source_quote": "We introduce DLP-LoRA, a dynamic and lightweight plugin for multi-LoRA selection and fusion that is fast to train and easily adaptable to new domains.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Reduce the inference-time overhead of multi-LoRA fusion, which token-level MoE gating (e.g. MeteoRA) inflates by routing at every attention/MLP layer.",
+      "mechanism": "Sentence-level (rather than token-level) LoRA selection and fusion, leveraging parallel CUDA acceleration and GEMM optimisation by removing per-token independence constraints; LoRAs stored as contiguous tensors in HBM.",
+      "evaluation": "Achieves less than twice the inference time of single-LoRA inference, outperforming token-level MoE gating routers in efficiency.",
+      "domain": "Efficient LLM inference",
+      "source_quote": "By employing sentence-level multi-LoRA selection and fusion, DLP-LoRA leverages parallel CUDA acceleration, achieving less than twice the inference time compared to single LoRA inference and outperforming token-level MoE gating routers in efficiency.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Empirically validate DLP-LoRA across a broad set of tasks and composite (multi-task) settings.",
+      "mechanism": "Extensive evaluation across 26 tasks spanning multiple-choice questions (MCQ) and question answering (QA), across different LLM backbones, comparing to single-task LoRA and composite settings.",
+      "evaluation": "Average accuracy 92.34% on multiple-choice datasets; significant BLEU/ROUGE improvements on QA; performance comparable to single-task LoRA models and improved accuracy/ROUGE under composite task settings.",
+      "domain": "Multi-task LLM evaluation (MCQ + QA)",
+      "source_quote": "Through extensive evaluations on 26 tasks including MCQ and QA, DLP-LoRA achieves performance comparable to single-task LoRA models and significantly improves accuracy and ROUGE metrics under composite task settings.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "MeteoRA (Xu et al., 2024) introduces a token-level gating network to all attention and MLP layers for dynamic LoRA fusion ... existing LoRA mixture strategies like MeteoRA focus on token-level Mixture-of-Experts (MoE) gating across all attention heads and MLP layers, which significantly increases inference time ... This suggests that token-level LoRA MoE might be unnecessary and computationally inefficient.",
+      "section": "related work"
+    },
+    {
+      "quote": "some existing works also proposed sentence-level routing, for instance Polytropon (Ponti et al., 2023) and FLix (Lin et al., 2024a). However, Flix mainly focuses on multilingual task settings and Polytropon mainly explores the encoder-decoder architecture. It is unclear whether those works can maintain superior inference efficiency when loading high volumes of LoRAs.",
+      "section": "related work"
+    },
+    {
+      "quote": "Huang et al. (2023) introduced LoRAHub, a framework that combines existing fine-tuned LoRAs using a learnable weighted sum ... S-LoRA (Sheng et al., 2023) emphasises unified memory pool design to manage dynamic LoRA weights.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Author-declared result for C3 is a comparable/tie signal: DLP-LoRA 'achieves performance comparable to single-task LoRA models' (i.e. does not clearly beat individually specialized LoRAs), with gains mainly under composite/multi-task settings. Efficiency framed relative to single-LoRA (<2x) rather than absolute speedup. Paper was rejected. No explicit negative result but the 'comparable to single-task' framing is a notable non-improvement caveat.",
+  "extractor": "human-baseline-batch17",
+  "date": "2026-07-07"
+}

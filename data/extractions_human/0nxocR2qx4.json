@@ -1,0 +1,46 @@
+{
+  "paper_id": "0nxocR2qx4",
+  "title": "ROPO: Robust Preference Optimization for Large Language Models",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Make preference alignment robust to the 20-40% label noise prevalent in preference data, without the weaknesses of prior fixes (label smoothing only marginally mitigates noise; teacher-LLM filtering is costly and prone to reward misgeneralization).",
+      "mechanism": "ROPO framework: formulate noisy-preference learning as a constrained optimization with per-sample quality-aware weights, solved by a provably convergent iterative paradigm alternating noise-tolerant model training and noisy-sample filtering. Derive a robust loss with a noise-aware term (l_na) that suppresses gradients of high-uncertainty samples (weight decreases as reward margin grows, opposite to DPO), enabling both noise tolerance and noise identification without any external model.",
+      "evaluation": "Three datasets (UltraFeedback Binarized, Alpaca Comparison, Reddit TL;DR) with Mistral-7B, Llama-2-7B/13B, Llama-3-8B/70B; GPT-4-judged win rate vs SFT targets under 0/20/40% artificial symmetric noise. ROPO consistently outperforms baselines with advantage growing with noise; even with no artificial noise beats DPO by 16.0% (TL;DR) and 2.5% (Alpaca).",
+      "domain": "LLM alignment / preference optimization (DPO)",
+      "source_quote": "We propose a robust preference alignment framework that unifies noise-tolerance and filtering of noisy samples. Without the need for any external LLM, the model's robustness and discrimination ability against noisy samples gradually improve as the alternating iterative training proceeds.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Recover useful information lost when noisy samples are filtered out (e.g. a valuable query discarded due to an incorrect ranking label).",
+      "mechanism": "A robustness-guided rejection sampling technique that samples K new responses per filtered query and selects replacements based on ROPO loss values (reflecting sample quality) rather than external-reward scores.",
+      "evaluation": "Ablation (Table 3) shows the rejection-sampling stage, the noise-aware term, and the filtering stage each improve performance; second-epoch training gives 8-24% win-rate increase, third epoch 5-9% more under 40% noise.",
+      "domain": "LLM alignment",
+      "source_quote": "We propose a robustness-guided rejection sampling technique to compensate for the potential important information in discarded queries (see Section 3.3), which improves the data quality and thus leads to further improvement in alignment performance.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Theoretically and empirically justify why the noise-aware loss achieves noise tolerance and sample discrimination.",
+      "mechanism": "Theoretical analysis (Theorems 3.2/3.4) of the optimal preference probability under label flipping, plus loss-distribution analysis separating clean vs noisy samples.",
+      "evaluation": "Theorem 3.4: for l_na the optimal preference probability is unaffected by noise when flip probability eta<1/2, unlike DPO; Figure 2 shows l_ropo yields larger losses for noisy than clean samples, enabling filtering.",
+      "domain": "LLM alignment / theory",
+      "source_quote": "We demonstrate both empirically and theoretically that the derived loss is key to the noise-tolerance and effective filtering of noisy samples.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "various ranking-based methods represented by Direct Preference Optimization (DPO) [42] bypass the explicit reward modeling stage ... some recent studies have explored the label smoothing [10; 35] and regularization [16] techniques to alleviate the impact of preference noise. However, these methods can only marginally mitigate the side effects of noise ... [16] also attempts to filter out noisy samples but requires another teacher LLM ... which introduces additional computational costs.",
+      "section": "introduction (positioning against DPO, rDPO/cDPO label smoothing, and teacher-LLM filtering)"
+    },
+    {
+      "quote": "Compared to the aforementioned methods, which all rely on rewards provided by external models, our robustness-guided rejection sampling technique selects new samples based on loss values that reflect the quality of the samples. Moreover, our technique benefits from being independent of external LLMs.",
+      "section": "method / related work (rejection sampling)"
+    }
+  ],
+  "notes": "Results are consistently favorable to ROPO; advantage increases with noise rate. Design trade-off discussed (not a negative result): hyperparameter alpha trades off aggressive DPO loss vs conservative noise-aware loss; a minor DPO component is kept to avoid over-discriminating against minorities and to help on (rare) clean datasets, with alpha>=6 so l_na dominates. Baselines rDPO/cDPO only noise-tolerant when their hyperparameter exactly matches the (unknown) noise proportion. Paper decision: reject.",
+  "extractor": "human-baseline-batch3",
+  "date": "2026-07-07"
+}

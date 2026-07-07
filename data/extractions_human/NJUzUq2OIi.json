@@ -1,0 +1,50 @@
+{
+  "paper_id": "NJUzUq2OIi",
+  "title": "Efficient Full-Context Retrieval for Long Documents",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Enable efficient sentence-level retrieval for long-document QA without the chunking of RAG (which loses global context) or the quadratic cost of transformer full-context processing.",
+      "mechanism": "Mamba retriever 130M and 1.3B: adapt the Mamba-2 state-space model into a fine-grained sentence-level retriever by removing the LM head, adding a classification head, and labeling the last token of each sentence for relevance to a prepended query; processes the entire document in linear time using all preceding context.",
+      "evaluation": "Outperforms state-of-the-art embedding models (e.g. NV-Embed-v2-7B) across 41 long-document Q&A benchmarks (Table 1) with fewer FLOPS and faster processing (Table 2); on documents >256k tokens reaches performance close to GPT-4o full-context while using ~160x fewer tokens (avg 1,600 tokens selected).",
+      "domain": "Long-document question answering / RAG retrieval",
+      "source_quote": "The Mamba retriever is the first successful transformation of a state-space model (Dao & Gu,2024) into a fine-grained, sentence-level retriever for RAG pipelines. It outperforms state-of-the-art em-bedding models across 41 long-document Q&A benchmarks (see Table 1).",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Produce training data with sentence-level relevance labels that teach retrievers to leverage long-range document connections, since long documents lack such labels.",
+      "mechanism": "Novel link-based synthetic data generation: an LLM discovers real connections between chunks in a document (from an initial chunk plus surrounding context) and transforms them into coherent questions requiring information from distinct parts of the document, labeling relevant sentences.",
+      "evaluation": "Training 130M Mamba retrievers on 500k synthetic questions under identical conditions, the link-based strategy achieves the strongest results vs chunk-based and pair-based baselines (Table 4); pair-based strongly underperforms due to flawed questions.",
+      "domain": "Synthetic data generation for retrieval",
+      "source_quote": "A key contribution of this paper is our novel link-based synthetic data generation method, which discovers real connections within a document and transforms these connections into coherent and realistic questions that require using different parts of the document to answer.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Validate that the link-based synthetic data method is responsible for the retriever's ability to capture long-range dependencies.",
+      "mechanism": "Controlled comparison training identical 130M retrievers on synthetic data from the three strategies (chunk-based, pair-based, link-based) generated from the same documents.",
+      "evaluation": "Link-based generation yields the best downstream retrieval (Table 4); qualitative case studies show Mamba retriever captures cross-sentence contextual relationships that NV-Embed-v2-7B misses despite high semantic similarity.",
+      "domain": "Long-document question answering / RAG retrieval",
+      "source_quote": "We further demonstrate the effectiveness of our link-based method over baseline synthetic data methods.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Some recent works turn SSMs into embedding models (Hwang et al., 2024; Zhang et al., 2024a). In particular, Saad-Falcon et al. (2024) built a retrieval embedding model from the Monarch Mixer architecture (Fu et al., 2024). This line of work is tangential to our paper because we formulate Mamba retriever as a sentence-level retriever and not an embedding model.",
+      "section": "related work"
+    },
+    {
+      "quote": "Embedding Models NV-Embed-v2-7B(Lee et al., 2024), GTE-Qwen2 ... excel at identifying semantically simi-lar sentences within localized contexts ... However, sentence-level retrieval in long-context tasks requires a more comprehensive approach that needs a global understanding of the entire document. Our proposed Mamba retriever can naturally process the full document and perform sentence-level retrieval based on the global understanding of the document.",
+      "section": "related work"
+    },
+    {
+      "quote": "The Mamba retriever is built using the Mamba-2 architecture (Dao & Gu, 2024) ... Starting with a pretrained Mamba-2 checkpoint, we remove the language modeling head and replace it with a classification head.",
+      "section": "method (model architecture)"
+    }
+  ],
+  "notes": "Explicit limitation stated by authors: synthetic data generation is expensive - more than $1000 for one million examples - and finding cheaper high-quality data methods is left to future work. Sparse-attention baselines (Longformer/LongT5) are noted to achieve linear scaling 'at the expense of some performance degradation.' Code, datasets, and checkpoints are released (resource contribution alongside method). Paper was rejected.",
+  "extractor": "human-baseline-batch4",
+  "date": "2026-07-07"
+}

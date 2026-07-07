@@ -1,0 +1,35 @@
+{
+  "paper_id": "j1tSLYKwg8",
+  "title": "Scaling Diffusion Language Models via Adaptation from Autoregressive Models",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "克服从零训练大规模文本扩散语言模型(DLM)资源消耗巨大、且规模远小于自回归(AR)模型的问题,利用现成开源 AR LLM 构建 DLM",
+     "mechanism": "提出简单的持续预训练适配方案:统一 AR 与扩散的建模目标(§3.2),用注意力掩码退火(attention mask annealing)打破 AR 的因果掩码使其双向化,继承 AR 的 shift operation,并采用无时间嵌入架构",
+     "evaluation": "在 FineWeb/SlimPajama 上以 <200B tokens 将 GPT2(127M-355M)和 LLaMA2(7B)转换为 DiffuGPT/DiffuLLaMA;DiffuGPT 在多数任务上优于 GPT2",
+     "domain": "自然语言处理 / 文本生成 / 扩散语言模型",
+     "source_quote": "We demonstrate that by narrowing the gap between AR models and DLMs, it is possible to con-vert 127M-7B AR models (GPT2 and LLaMA2) into DiffuGPT and DiffuLLaMA with training on less than 200B tokens. Notably, DiffuGPT outperforms GPT2 in most tasks.",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "证明将适配扩展到 7B 规模能显著提升 DLM 能力,得到当前最强 DLM",
+     "mechanism": "将 7B AR 模型(LLaMA2)适配为 DiffuLLaMA,评估其上下文学习、代码生成、infilling 能力及生成速度",
+     "evaluation": "DiffuLLaMA 成为 SOTA DLM,展现 ICL、代码生成、强 infilling;无条件生成 1024 tokens(256 扩散步)速度与 AR 相当。数学 few-shot: MAWPS 31.3, SATMath 23.6, TriviaQA 20.9",
+     "domain": "自然语言处理 / 大语言模型",
+     "source_quote": "We adapt 7B AR models to DLMs, greatly expanding the expertise compared to smaller-sized diffusion models. DiffuLLaMA emerges as the state-of-the-art DLM, exhibiting in-context learn-ing, code generation, and strong infilling capabilities.",
+     "type": "finding"},
+    {"id": "C3",
+     "purpose": "为 DLM 研究提供公平比较的基准与可复用资源",
+     "mechanism": "构建综合基准并开源适配后的扩散模型(127M/355M/7B)及适配代码、高效微调脚本、评估工具包",
+     "evaluation": "定性:发布 DiffuGPT/DiffuLLaMA 模型套件与配套代码工具(https://github.com/HKUNLP/DiffuLLaMA)",
+     "domain": "自然语言处理 / 开源工具与基准",
+     "source_quote": "We provide a comprehensive benchmark for DLMs and release our adapted diffusion models (127M,355M and 7B) along with open-source adaptation code, efficient fine-tuning scripts,and evaluation toolkits.",
+     "type": "resource"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "By connecting text diffusion models with pre-trained masked language models (MLMs; Devlin et al. 2019), Ye et al. (2023); He et al. (2023) initialize discrete diffusion models using MLMs. ... However, the adaptation of diffusion models from AR LLMs remains unexplored.", "section": "related work"},
+    {"quote": "We build on the formulation of absorbing discrete diffusion (Austin et al.,2021), which specifies Q_t=(1-beta_t)I+beta_t*1m^T.", "section": "preliminary"},
+    {"quote": "This strategy aligns with recent trends where new models are scaled up or adapted to new architectures using existing LLMs (Wang et al.,2024;Zhang et al., 2024c).", "section": "introduction"}
+  ],
+  "notes": "存在明显 trade-off/负结果:DiffuLLaMA 在 zero-shot 上远逊于 LLaMA2(MAWPS 9.7 vs 63.5, SATMath <1 vs 24.5, TriviaQA 18.5 vs 45.4),需 few-shot/self-consistency 才缩小差距;论文明确承认从 MLM 适配的前人方法(Ye et al. 2023)会丢失基座能力。定位为『competitive with AR counterparts』而非超越。连续扩散 Plaid 1B 在条件生成任务表现不佳但无条件生成有优势——作者据此论证 perplexity 评估不足。",
+  "extractor": "human-baseline-batch19",
+  "date": "2026-07-07"
+}

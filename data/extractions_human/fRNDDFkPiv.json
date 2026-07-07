@@ -1,0 +1,35 @@
+{
+  "paper_id": "fRNDDFkPiv",
+  "title": "Controlling Forgetting with Test-Time Data in Continual Learning",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "Introduce a new continual-learning (CL) setting in which unlabeled test-time (deployment) data is leveraged self-supervised to refresh a model's memory of prior tasks and reduce catastrophic forgetting at no extra labeling cost, especially in the challenging class-incremental CL (CIL-CL) scenario without a replay buffer.",
+     "mechanism": "Formalize a setting where supervised training sessions are interleaved with online unsupervised adaptation on test-time data (processed once, discarded for privacy), drawn from the mixture of all previously seen task distributions; evaluate on held-out data distinct from the adaptation data.",
+     "evaluation": "Setting instantiated on CLIP ViT-B/16 across 5 vision datasets (Aircraft, CUB, Stanford Cars, Oxford Pets, CIFAR100, plus OOD GTSRB), each split into 10 disjoint-class tasks; metrics Average Accuracy and Average Forgetting.",
+     "domain": "Continual learning with vision-language foundation models",
+     "source_quote": "We propose a new setting for continual learning where test-time data can be leveraged, especially in the challenging scenario of CIL-CL.",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "Provide a concrete, replay-buffer-free method that exploits test-time data to control forgetting while adapting to new tasks.",
+     "mechanism": "DoSAPP (Double Smoothing via Affine Projected Parameters): a student-teacher framework with (a) gradient-scored sparse updates restricted to the first MLP layer of each transformer block (top-K, c=0.1), and (b) dual EMA smoothing (distinct momentum for masked/frozen vs selected teacher params) via affine projection of the binary mask; in the unsupervised phase the student is updated on the more-confident (max-logit, OOD-inspired) of teacher/student pseudo-labels, reusing a union of prior-task masks.",
+     "evaluation": "Without experience replay (ER), DoSAPP achieves state-of-the-art average accuracy on all 5 datasets in CIL; DoSAPP (no ER) is comparable to methods with ER; DoSAPP+ER (buffer 200) outperforms all baselines except on GTSRB. Ablation (Table 3) shows single-momentum teacher is insufficient. CLIP ViT-B/16, mean of 5 runs, ~1h/run on A100.",
+     "domain": "Continual learning / test-time adaptation of CLIP",
+     "source_quote": "We propose a novel approach that illustrates the utility of test-time data in supervised continual learning and the significant reduction in forgetting without any external replay buffer.",
+     "type": "method"},
+    {"id": "C3",
+     "purpose": "Show the approach retains old-task knowledge and generalizes across a long task sequence with domain shift, unlike recency-biased baselines.",
+     "mechanism": "Investigate baselines (including self-labeling without student-teacher, SPU, Finetune) and run a long 20-task sequence concatenating Aircraft (10 tasks) + Cars (10 tasks) with a domain shift after task 10.",
+     "evaluation": "On the long sequence DoSAPP outperforms SPU (no ER) and Finetune; with only a 3.8% drop in current-task accuracy (CTA) it raises overall average accuracy and first-task accuracy. Positive backward transfer observed on Cars (forgetting is negative).",
+     "domain": "Long-sequence class-incremental continual learning",
+     "source_quote": "with a marginal decrease of 3.8% on current task accuracy (CTA), there is an overall increase in the average accuracy and the first task accuracy. This shows that our approach retains the knowledge on the first task as well as adapts to the current task",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "Zhang et al. (2023b) utilizes this property and preserves generic knowledge by modifying only a small set of parameters based on gradient scoring mechanism. However, this method also suffers from recency bias... Thus we limit candidate parameters to the first MLP layer parameters of each transformer block in the CLIP model Zhang et al. (2023b).", "section": "related work"},
+    {"quote": "To ensure stability later during online updates and reduce forgetting, we utilize a Student-Teacher framework Tarvainen & Valpola (2017); Koh et al. (2022); Boschini et al. (2022) where the student model is denoted by M_S and the teacher model is denoted by M_T", "section": "method"},
+    {"quote": "It is important to note that our method is not merely a modification, a novel variation, or a combination of existing TTA approaches. Unlike typical TTA methods, which primarily address data corruption... our approach leverages unsupervised data from previous tasks without requiring it to be corrupted", "section": "related work"}
+  ],
+  "notes": "Explicit trade-off (C3): DoSAPP sacrifices 3.8% current-task accuracy to gain average + first-task accuracy (stability-plasticity trade-off, framed positively). Notable positive result: positive backward transfer (negative forgetting) on Cars. Honest caveats: DoSAPP without ER is only 'comparable' (not always better) to ER methods; SPU+ER with a large 1000-sample buffer beats DoSAPP on CIFAR100 and GTSRB, and DoSAPP+ER loses on GTSRB (the OOD dataset). Method builds heavily on SPU (Zhang et al. 2023b) sparse gradient-scored first-MLP-layer updates + mean-teacher EMA; the novel piece is dual/affine-projected smoothing + confidence-gated pseudo-labels + the test-time-CL setting. Paper was rejected.",
+  "extractor": "human-baseline-batch11",
+  "date": "2026-07-07"
+}

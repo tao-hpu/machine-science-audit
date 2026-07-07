@@ -1,0 +1,41 @@
+{
+  "paper_id": "r8J3DSD5kF",
+  "title": "Scaling Stick-Breaking Attention: An Efficient Implementation and In-depth Study",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Understand what changes when the softmax attention operator is replaced by a stick-breaking process, and why stick-breaking removes the need for position embeddings.",
+      "mechanism": "Analytical comparison of the two formulations plus connections drawn to selective state-space models and additive relative position encodings (ALiBi); argues stick-breaking's product form imposes a built-in recency bias so a nearer token with equal logit gets >= weight and distant high-logit tokens cannot 'distract'.",
+      "evaluation": "Qualitative/analytical: shows stick-breaking attention output equals the end state of a single-gate selective SSM and that its implicit bias b = -sum log(1+exp(z)) is a score-dependent relative position bias generalizing ALiBi; no position embeddings needed.",
+      "domain": "Transformer attention architectures / language modeling",
+      "source_quote": "We compare the different properties of stick-breaking attention against softmax attention,",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "Make stick-breaking attention numerically stable and fast enough for large-scale training, which had blocked it from scaling.",
+      "mechanism": "Reformulate the attention in log-space (cumulative softplus) to avoid underflow, stabilize softplus with a piecewise cutoff at x=15 and a PTX implementation, and adapt FlashAttention-2 into a custom Triton kernel with a modified backward pass that accumulates gradient contributions from before position i.",
+      "evaluation": "Provides an open-source Triton kernel (github.com/shawntan/stickbreaking-attention) that sidesteps the O(L^2) attention matrix; enables training 1B/3B dense and 6.5B/28.6B MoE models. Early-halting yields a 9.3% inference speedup.",
+      "domain": "Efficient attention / GPU kernels",
+      "source_quote": "We discuss numerically stable implementations of the stick-breaking attention, and make stick-breaking amenable for large-scale training by implementing a kernel for stick-breaking in Triton,",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Empirically test whether stick-breaking is a viable drop-in replacement for softmax+RoPE at scale on length generalization and downstream NLP tasks.",
+      "mechanism": "Controlled pretraining of 350M/1B/3B models on identical data/regime against softmax baselines; evaluate length extrapolation, LM-harness multiple-choice tasks (ARC, HellaSwag, OpenBookQA, PIQA, RACE, Winogrande), RULER retrieval, MMLU and GSM8K few-shot.",
+      "evaluation": "A model trained at 2^11 context generalizes to 2^14 with perplexity improvements; stick-breaking's NLL keeps decreasing as context grows, outperforming other position methods in 350M models; outperforms own softmax-pretrained models on average and on Wikitext perplexity; beats softmax on RULER retrieval; CoT 8-shot GSM8K improves 5.5%.",
+      "domain": "Long-context language modeling / length generalization",
+      "source_quote": "We show the performance of stick-breaking attention on length-generalisation in language modelling, and evaluate 1B and 3B parameter models on various NLP tasks.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {"quote": "In this paper, we expand upon prior work on this attention mechanism (Csordas et al., 2021; Shen et al., 2023). We focus on the implications of replacing the softmax-based attention mechanism with the stick-breaking process", "section": "related work"},
+    {"quote": "Csordas et al. (2021) used stick-breaking attention, which they refer to as Geometric attention, in a bidirectional encoder set up. Shen et al. (2023) used stick-breaking attention in a decoding-only setup, but does not explicitly study the properties of stick-breaking.", "section": "related work"},
+    {"quote": "We take a similar approach to speeding up stick-breaking attention... We modify the Triton implementation of Flash Attention for accelerating the stick-breaking attention. We used a similar approach as in Flash Attention 2 (Dao 2023; FA2)", "section": "implementation"}
+  ],
+  "notes": "Mixed/negative results explicitly present: on GSM8K the 5-shot setting UNDERPERFORMS standard softmax attention (only CoT 8-shot improves +5.5%). Overall downstream performance is framed as 'competitive'/'comparable' with softmax+RoPE rather than a clear win - the paper's own abstract says stick-breaking 'performs competitively', a parity-level claim. Authors also concede efficiency drawbacks vs FlashAttention that are left to future work. Method is explicitly an extension of Csordas et al. 2021 (Geometric attention) and Shen et al. 2023, and the kernel adapts FlashAttention-2.",
+  "extractor": "human-baseline-batch0",
+  "date": "2026-07-07"
+}

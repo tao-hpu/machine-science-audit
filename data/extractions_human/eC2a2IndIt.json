@@ -1,0 +1,59 @@
+{
+  "paper_id": "eC2a2IndIt",
+  "title": "BadJudge: Backdoor Vulnerabilities of LLM-As-A-Judge",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "揭示 LLM-as-a-Judge 评估范式面临的一类全新后门威胁：对手同时控制候选模型与评估模型，通过触发器让评估器给对手不公平地抬高分数。",
+      "mechanism": "形式化定义候选模型与评估模型的联合后门学习：对手在候选模型训练数据插入触发器 t 使其总是输出 t，并在评估器训练数据中把带 t 的样本关联到最高分，激活时形成后门'链式反应'。",
+      "evaluation": "单 token 后门污染评估器 1% 训练数据即把对手分数提高三倍（相对其合法分数）；1% 污染下评估器 76.4% 时间把对手模型排第一。",
+      "domain": "LLM 评估安全 / 后门攻击",
+      "source_quote": "We propose the first study formally defining and exposing backdoor attacks on LLM evaluators.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "系统刻画对手对评估器训练数据的不同访问级别，并把访问强度与威胁严重度联系起来。",
+      "mechanism": "提出把数据访问分为三类现实设定——(1) web poisoning、(2) malicious annotator、(3) weight poisoning，按输入访问、标签访问、可选污染子集三个维度划分，从弱到强逐级升级。",
+      "evaluation": "越强假设威胁越严重：最弱的 web poisoning 仍造成约 20% 分数膨胀；weight poisoning 下把对手分数从 1.5/5 抬到 4.9/5。",
+      "domain": "LLM 评估安全 / 威胁建模",
+      "source_quote": "We provide a framework categorizing dataset access to evaluators, and show that this strongly correlates to severity of threats quantified by ASR.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "验证该后门威胁在真实 LLM-as-a-Judge 系统上的可行性与泛化性。",
+      "mechanism": "在不同评估器架构、触发器设计、污染率、评估任务上做实证；覆盖 AlpacaEval 排行榜类质量评审、toxicity 判别（guardrails）、RAG 文档重排三种真实评估形态。",
+      "evaluation": "10% 污染下 toxicity judge 把有毒 prompt 误判为无毒 89%（正文另处 82.9%）；RAG reranker 把被污染文档排第一 96.9%（正文另处 97%）。",
+      "domain": "LLM 评估安全 / 实证",
+      "source_quote": "We empirically verify the realisticness of this threat on real-world LLM-as-a-Judge systems.",
+      "type": "finding"
+    },
+    {
+      "id": "C4",
+      "purpose": "论证防御该后门的困难，并提出一个原则化且有效的防御手段。",
+      "mechanism": "指出因 LLM-as-a-Judge 牵涉伦理/公平，不能自由操纵输入输出，且生成式评估器输出空间大导致触发器识别困难；提出用 model merging（权重平均）抵消后门。",
+      "evaluation": "model merging 在 full-assumption 设定下把 ASR 降到近 0%，同时保持 clean 精度并达到 SOTA 性能，计算开销低。",
+      "domain": "LLM 评估安全 / 防御",
+      "source_quote": "We demonstrate the difficulty of defense, and propose a principled yet effective defense strategy.",
+      "type": "method"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Unlike traditional n-gram metrics like BLEU (Papineni et al., 2002) or embedding-based similarity metrics like BERTScore (Zhang et al., 2019), LLM-as-a-Judge offers scalability and customization beyond simple benchmarks",
+      "section": "related work"
+    },
+    {
+      "quote": "There is one line of work that studies adversarial threats like jailbreaking and prompt injection attacks on evaluators (Shi et al., 2024; Raina et al., 2024). However, unlike our paper, these works omit defense strategies.",
+      "section": "related work"
+    },
+    {
+      "quote": "we identify model merging (Wortsman et al., 2022b) as a principled defense strategy",
+      "section": "related work / introduction"
+    }
+  ],
+  "notes": "威胁类论文，主结果是攻击有效性（正向的攻击成功，对被攻击系统是负面安全结论）。防御侧 model merging 把 ASR 降到近 0% 同时维持 SOTA，无明显 trade-off 报告。注意文中同一数字在 abstract 与正文略有出入（toxicity 89% vs 82.9%，reranker 97% vs 96.9%），取 abstract 与正文并列记录。",
+  "extractor": "human-baseline-batch1",
+  "date": "2026-07-07"
+}

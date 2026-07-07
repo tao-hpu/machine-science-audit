@@ -1,0 +1,50 @@
+{
+  "paper_id": "ISqx8giekS",
+  "title": "LeanQuant: Accurate and Scalable Large Language Model Quantization with Loss-error-aware Grid",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "指出现有迭代 loss-error-based 后训练量化(如 GPTQ/OBQ)为何掉精度,定位其根本限制",
+      "mechanism": "分析发现:min-max affine 量化网格因 inverse Hessian 对角线上的离群值(outliers)而无法保精度,这些离群值对应的权重被网格牺牲,造成任务 loss 大误差",
+      "evaluation": "定性/机理(Figure 1 对 Llama-3-8B 某层可视化 min-max affine 网格 vs loss-error-aware 网格);作为提出方法的动机",
+      "domain": "大语言模型 / 后训练量化 / 模型压缩",
+      "source_quote": "In the existing pop-ular iterative loss-error-based quantization framework, we identify a critical lim-itation in prior methods: the min-max affine quantization grid fails to preserve model quality due to outliers in inverse Hessian diagonals.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "在保留离群值对应权重精度的前提下提升量化模型质量,并兼容更多量化格式/推理框架",
+      "mechanism": "提出学习 loss-error-aware 量化网格(替代非自适应 min-max affine 网格),含 uniformly spaced grid initialization;可无缝集成进任意迭代 loss-error-based 方法——与 GPTQ 组合为 LeanQuant,与 OBQ 组合为 LeanQuant-Exact;支持 affine 与 non-uniform 两类网格",
+      "evaluation": "WikiText2/C4 perplexity + 11 项 zero-shot;3-bit Llama-3-8B 平均 zero-shot 较 OmniQuant 高 17.18%、较 GPTQ 高 18.38%;3-bit Mistral-7B 较 OmniQuant 高 13.38%、较 GPTQ 高 8.40%;BERT 上 LeanQuant_nu-Exact 在 SQuAD F1 优于 OBQ",
+      "domain": "大语言模型 / 量化",
+      "source_quote": "To overcome this fundamental issue, we propose learning loss-error-aware grids, instead of using non-adaptive min-max affine grids. Our approach not only produces quantized models that are more accurate but also generalizes to a wider range of quanti-zation types, including affine and non-uniform quantization, enhancing compati-bility with more frameworks.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "让准确量化可扩展到数百亿到数千亿参数模型,降低量化的显存/时间开销",
+      "mechanism": "设计并实现 grid learning 的 fused GPU kernel,并行化对 S/Z 候选对的枚举搜索(T=2048)",
+      "evaluation": "fused kernel 使端到端量化加速 >50x(Table 5);单张 L40s-48GB 4.2h 量化 123B Mistral-Large,2×Quadro RTX 8000-48GB 20.7h 量化 Llama-3.1 405B;而 OmniQuant/SqueezeLLM 在这些规模因 OOM 失败",
+      "domain": "大语言模型 / 量化 / 系统效率",
+      "source_quote": "By designing and implementing a fused GPU kernel for LeanQuant grid learning, we achieve the accurate quantization of LLMs up to 123B in size using a single L40s-48GB GPU in 4 hours, and Llama-3.1 405B using 2 Quadro RTX 8000-48GB GPUs in 21 hours.",
+      "type": "method"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "We build upon the iterative loss-error-based quantization framework (Frantar & Alistarh, 2022; Frantar et al., 2022) and identify one of the biggest limitations of such methods: the min-max affine quantization grid introduces high loss errors due to the existence of outliers in the inverse Hessian diagonals.",
+      "section": "introduction (Our Proposal)"
+    },
+    {
+      "quote": "We introduce LeanQuant, which combines loss-error-aware grids with GPTQ (Frantar et al., 2022)... Additionally, for quantizing million-parameter models more accurately, we propose LeanQuant-Exact, which integrates loss-error-aware grids with OBQ (Frantar & Alistarh,2022)",
+      "section": "method"
+    },
+    {
+      "quote": "allowing our quantized models to be directly compatible with existing highly optimized inference kernels (Frantar et al., 2024; Park et al., 2022) for maximum accessibility.",
+      "section": "introduction (Our Proposal)"
+    }
+  ],
+  "notes": "ICLR 2025 accept。方法明确嫁接在 GPTQ/OBQ(Frantar & Alistarh)迭代 loss-error 框架上,核心新增是可学习的 loss-error-aware 网格。comparable/混合信号(项目重点):在 perplexity 指标上 LeanQuant 只是与 OmniQuant、SqueezeLLM '打平'(on par)、并非更好,作者据此主动淡化 perplexity('perplexity may not be a representative metric'),转而强调 zero-shot 精度;zero-shot 上也只是 'mostly outperforms' GPTQ/OmniQuant、LeanQuant_nu 'in most cases' 胜 SqueezeLLM,非全胜。可扩展性优势部分来自 baseline 直接 OOM 失败(OmniQuant 无法量化 Llama-3-70B、SqueezeLLM 无法在单 48GB 量化 Llama-3-8B),而非同条件下更优。消融正向:uniformly spaced 初始化在 3/2-bit 一致优于 k-means++;对超参 p(3 或 4)不敏感;fused kernel >50x 加速。",
+  "extractor": "human-baseline-batch12",
+  "date": "2026-07-07"
+}

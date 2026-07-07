@@ -1,0 +1,50 @@
+{
+  "paper_id": "dlUjNdybnq",
+  "title": "Mitigating the Influence of Distractor Tasks in LMs with Prior-Aware Decoding",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "解释语言模型为何会被 distractor task(从提示中推断出的非预期次要任务,如 prompt injection、默认输出常见模式)干扰,以及为何在某些任务上出现反常的 inverse scaling(越大越差)",
+      "mechanism": "提出理论框架:把 LM 解释为多个数据生成过程的几何混合(product of experts / 专家乘积),据此说明 distractor task 的产生机制,并指出'专家'间的平衡不必然由模型规模决定,从而解释缺乏直接 scaling 效应甚至 inverse scaling",
+      "evaluation": "定性理论分析:首次为 Wei et al. (2023) 仅非正式假设的机制提供形式化解释(无独立量化)",
+      "domain": "LLM 可靠性 / 解码理论(inverse scaling)",
+      "source_quote": "Interpreting language models as geometric mixtures (i.e. a product of experts) to develop a model of how distractor tasks cause poor performance on certain inputs.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "基于上述框架,给出可操作的推理时方法以削弱 distractor task 的影响、提升目标任务完成度",
+      "mechanism": "提出 Prior-Aware Decoding(PAD):一种简单的对比式(contrastive)推理方法,通过在 logits 空间中析出几何混合的其他分量(如用'截断/更短提示'弱化版本)并向更理想的混合外推,以参数 α 控制对比强度",
+      "evaluation": "见 C3 的实证;方法在 α=1.0 与 α=2.0 等设置下应用于 11 个模型 × 4 任务集",
+      "domain": "LLM 可靠性 / 对比解码",
+      "source_quote": "Based on that model, proposing a general framework for eliciting other component of the geometric mixtures and extrapolating to more desirable mixtures in logits space.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "验证 PAD 在多模型多任务上是否稳健提升表现,尤其在 inverse scaling 任务上",
+      "mechanism": "在 Inverse Scaling 数据集的多个任务(prompt injection、pattern match suppression、redefine、strong local priors 等)上,对 GPT-2/GPT-3(API)/Llama-2/Mistral 等模型比较原始模型与 PAD 的任务完成度",
+      "evaluation": "应用于 11 个模型、4 个数据集,共 44 个 task-model 组合中 41 个获改善,任务完成比例中位数提升 40%",
+      "domain": "LLM 可靠性 / 实证评估",
+      "source_quote": "We apply PAD to eleven models, across four datasets, and find improvements in 41 out of 44 task-model combinations, with a median increase in task completion proportion of 40%.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Our approach is most similar to the subsequent techniques introduced in Shi et al. (2024) and Malkin et al. (2022), which apply contrastive decoding to pairs of shorter and longer prompts, using the same formula we apply.",
+      "section": "related work"
+    },
+    {
+      "quote": "Our work applies a similar kind of technique - reweighing based on likelihood - but we do so to address a different set of tasks, including those which exhibit inverse scaling.",
+      "section": "related work"
+    },
+    {
+      "quote": "Our work is the first to offer a formal account of the mechanisms that have so far only been informally hypothesised in Wei et al. (2023), and we use this to develop a novel technique that improves performance.",
+      "section": "related work"
+    }
+  ],
+  "notes": "负结果/平局:44 个 task-model 组合中有 3 个未获改善(41/44),提升非普适;报告的是中位数 +40% 任务完成度而非均值,分布可能偏斜。方法本质是既有对比解码(Li et al. 2023 / Shi et al. 2024 / Malkin et al. 2022)与 DC-PMI(Holtzman et al. 2021)的沿承,并类比图像扩散的 classifier-free guidance;论文的差异化在于把 LM 本身框定为需在竞争任务(含 distractor)间选择的 product-of-experts,并强调对极简语义模式(如数字序列)与 inverse scaling 的处理。核心贡献是把干扰任务问题理论化并给出简单推理时缓解手段。",
+  "extractor": "human-baseline-batch21",
+  "date": "2026-07-07"
+}

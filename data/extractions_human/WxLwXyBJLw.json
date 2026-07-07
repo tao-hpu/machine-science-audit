@@ -1,0 +1,50 @@
+{
+  "paper_id": "WxLwXyBJLw",
+  "title": "Flow Matching for One-Step Sampling",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "消除 Flow Matching 采样时求解 ODE 的高计算开销,实现一步(one-step)从初始分布到目标分布的生成",
+      "mechanism": "利用 Ryzhakov et al. (2024) 给出的向量场显式公式,对目标分布样本反向求解 Cauchy 问题得到其 prototype(原像),再在 {prototype, 目标样本} 配对上训练神经网络直接映射;配对方式使轨迹近乎单调(连线几乎不相交),积分用 importance sampling 估计",
+      "evaluation": "toy 2D(8 gaussians,100/500/1000 步)与 MNIST(DiT 模型,n=128,N=6n,σ=1e-2,tol=1e-4,15000 训练步)上定性展示可一步采样;无 FID 等量化指标",
+      "domain": "生成模型 / Flow Matching 快速采样",
+      "source_quote": "Our main contribution is the model training algorithm based on the exact expressions for the vector field in Flow Matching approach, in which training is performed on pairs of samples from the original and target distributions at once.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "在带标签数据集上支持条件生成",
+      "mechanism": "使用条件模型 v_theta(x_0, i),对每个标签维护独立的 buffer 估计积分,损失中纳入标签(Algorithm 2)",
+      "evaluation": "带标签 MNIST(m=1 处理,DiT)上生成 0-9 数字,定性结果(Fig.3);无量化指标",
+      "domain": "条件图像生成",
+      "source_quote": "In case we have a dataset with labels, we can perform conditional generation. We use a conditional model $v_{\\theta }\\left(x_{0}i\\right)$ which receives as input, in addition to a point $x_{0}$ from the initial distribution, the label $i$",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "论证为何反向求解 ODE 时必须使用非零正则化参数 σ(使条件映射可逆)",
+      "mechanism": "在合成 2D 数据(半圆均匀分布,N=200)上扫描不同 σ(1e-5~1e-2)与 ODE 求解器 tol(1e-4,1e-6)观察 prototype 分布是否退化到低维流形",
+      "evaluation": "Fig.1 显示 σ 小且 tol 不足时 prototype 落在一维流形上;σ 增大或 tol 减小时恢复到正态分布特征;仅提出假设,无严格证明",
+      "domain": "生成模型 / 正则化分析",
+      "source_quote": "Our hypothesis is that for any value of $σ>0$ it is possible to pick such tol value that the prototypes are distributed ... with the target distribution with a moderate accuracy; in contrast, for zero $σ$ at any tol this cannot be achieved. However, the authors do not have a rigorous proof of this statement yet.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "The operation of our algorithm is based on exact formulas for the velocity $v$, which we use in the form derived in (Ryzhakov et al., 2024).",
+      "section": "related work"
+    },
+    {
+      "quote": "To the best of our knowledge, the explicit formula for the velocity did not use for coupling points pairs before. In one form or another, the explicit form for the vector field has been mentioned, for example, in the following papers: (Liu et al., 2023; Neklyudov et al., 2023; Pooladian et al., 2023; Scarvelis et al., 2023; Xie et al., 2024).",
+      "section": "related work"
+    },
+    {
+      "quote": "Another approach of trajectory straightening was published in (Tong et al., 2024a). In this paper, a coupling based on minibatch Optimal Transport (OT-CFM) was proposed. However, this approach performs worse on large dimensions and, as shown in (Ryzhakov et al., 2024), is inferior in some examples to the simple use of an explicit formula",
+      "section": "related work"
+    }
+  ],
+  "notes": "全文仅提供 proof-of-concept 定性结果(2D 8 gaussians、MNIST、Winter2Summer 色彩迁移),无 FID/量化指标,也无与基线的量化对比。作者明确承认多项 trade-off/caveat:训练阶段寻找 prototype 配对过程较慢(disadvantage is a rather long process of finding these pairs);因用 importance sampling 估计积分且 ODE 求解器有限精度,得到的 prototype 并非精确原像;σ 必要性仅有假设、无严格证明。决定为 reject。",
+  "extractor": "human-baseline-batch18",
+  "date": "2026-07-07"
+}

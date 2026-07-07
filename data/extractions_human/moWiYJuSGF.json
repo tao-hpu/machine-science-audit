@@ -1,0 +1,35 @@
+{
+  "paper_id": "moWiYJuSGF",
+  "title": "Web Agents with World Models: Learning and Leveraging Environment Dynamics in Web Navigation",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "Establish whether current SOTA LLMs understand web environment dynamics (the action-to-next-state association), motivating the need for a world model, since LLM web agents make irreversible mistakes (e.g., buying non-refundable tickets) in long-horizon tasks.",
+     "mechanism": "Two preliminary analyses on 100 WebArena instances with human-annotated golden trajectories: (I) binary next-state prediction (pick golden vs a lexically similar wrong next state, difflib similarity); (II) test whether access to each action candidate's outcome improves optimal action selection.",
+     "evaluation": "Analysis I: LLMs average 54.75% next-state-prediction accuracy vs 83% human; Claude-3.5-Sonnet performs near random (~52%). Confirms world models are absent in GPT-4o/Claude-3.5-Sonnet. Analysis II: awareness of outcomes helps LLMs select goal-aligned actions.",
+     "domain": "LLM web-navigation agents / world models",
+     "source_quote": "our study first starts with preliminary analyses, confirming the absence of world models in current LLMs (e.g., GPT-4o, Claude-3.5-Sonnet, etc.).",
+     "type": "finding"},
+    {"id": "C2",
+     "purpose": "Build the first LLM-based web agent augmented with a world model that simulates action outcomes for better (policy-training-free) decision-making.",
+     "mechanism": "World-Model-Augmented (WMA) web agent: at inference, for each action candidate from the policy model, the world model simulates the next observation; a fine-tuned value function (Llama-3.1-8B) scores each simulated observation's reward (progress toward goal), and the highest-reward action is chosen. Key novelty: transition-focused observation abstraction, training the world model to output free-form natural-language descriptions of only the important state differences between time steps (rather than the full next webpage), avoiding repeated elements and long HTML inputs.",
+     "evaluation": "WebArena (GPT-4o policy): WMA 16.6% SR vs vanilla CoT 13.1%; GPT-4o-mini gains 181% (Gitlab) and 92% (Map) over CoT. Mind2Web: WMA outperforms AWM and MindAct, achieving new SOTA with strong cross-environment generalization. Multimodal extension (Qwen2-VL-2B) improves all Mind2Web metrics despite smaller size.",
+     "domain": "LLM web-navigation agents",
+     "source_quote": "We present a novel transition-focused observation abstraction for training LLMs as world models. We show that using world models trained with this method can improve action selection by simulating the action candidates without training the policy models.",
+     "type": "method"},
+    {"id": "C3",
+     "purpose": "Show the world-model agent is far more cost- and time-efficient than trial-and-error tree-search agents that actually execute actions in the environment.",
+     "mechanism": "Head-to-head comparison against Tree search agent (Koh et al., 2024) on WebArena, measuring SR, API cost, and inference time per instruction.",
+     "evaluation": "WMA takes 140.3 sec/instance and $0.4 API cost vs Tree search agent's 748.3 sec and $2.7 (5.3x faster, 6.8x cheaper). WMA gives a larger gain over CoT than tree search (+29.7% vs +28.0% relative).",
+     "domain": "Efficient LLM agent inference",
+     "source_quote": "we demonstrate our agents' cost- and time-efficiency compared to recent tree-search-based agents (Koh et al., 2024), by 6.8x and 5.3x, respectively.",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "studies in robotics and reinforcement learning (RL) have proposed to incorporate world models for agents in navigation tasks... The Dreamer series use world models to predict latent state of images and use them to optimize policies, reducing the need for actual interactions in game environments (Hafner et al., 2019a; 2020; 2024).", "section": "introduction"},
+    {"quote": "Within the field of LLMs, Zhang et al. (2024) convert visual observations into natural language and employs an LLM-based world model for text-based games, and Wang et al. (2024a) further transform observations into a structural format (e.g., JSON)... In web navigation, environments are built upon not only natural language but on more complex text modalities such as HTML and DOM trees. We address this by transforming them to a novel free-form description, highlighting the state difference between each time step.", "section": "related work"},
+    {"quote": "Our WMA web agent reduces such risks via a world model, which predicts future observations and the rewards of their corresponding action candidates before actually making an action. Furthermore, our approach can be orthogonally applied to many of the existing methods.", "section": "related work"}
+  ],
+  "notes": "Honest negative/mixed results explicitly reported: (1) On WebArena absolute SR, WMA (16.6%) is BELOW the Tree search agent (19.2%) with GPT-4o -- the paper argues its advantage is larger relative gain over CoT plus efficiency, not raw SR. In the per-domain Table 4, Tree search beats WMA on Shopping (28.1 vs 20.8) and CMS (16.5 vs 14.3), ties on Reddit/Gitlab, WMA wins only Map. (2) Small improvement in the Shopping domain attributed to large state space making dynamics hard to learn. (3) Interesting methodological finding: element filtering (EF) of MindAct, used by default in AWM, actually HURTS performance, so they report AWM without EF. Combined (AWM+WMA) gives the best numbers. Paper accepted; strong efficiency story despite not topping absolute SR vs oracle-observation tree search.",
+  "extractor": "human-baseline-batch11",
+  "date": "2026-07-07"
+}

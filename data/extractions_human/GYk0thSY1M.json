@@ -1,0 +1,50 @@
+{
+  "paper_id": "GYk0thSY1M",
+  "title": "Recurrent Context Compression: Efficiently Expanding the Context Window of LLM",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Extend the LLM context window under limited compute/memory by compressing context with less information loss than prior compressors (SOTA ICAE degrades beyond 8x).",
+      "mechanism": "Recurrent Context Compression (RCC): an encoder-decoder where, unlike ICAE/AutoCompressors that use only the encoder's final-layer vectors, RCC uses per-layer encoder output vectors passed through MLP layers into the corresponding decoder layers, yielding richer compression vectors; encoder can be Transformer- or Mamba-based.",
+      "evaluation": "On text reconstruction (random prompt reconstruction task, Pythia-1.4b/Mamba-1.4b encoders, Pile data), BLEU-4 ~0.95 at 32x compression; ~0.8-0.85 at 64x while ICAE scores ~0.1 at 64x; at 128x the loss fails to converge. Saves up to ~3x storage vs non-compression (Figure 1).",
+      "domain": "LLM long-context / context compression",
+      "source_quote": "we propose a context compression model, called Recurrent Context Compression (RCC) architecture. RCC significantly reduces information loss during the compression process, greatly enhancing compression efficiency. In experiments, we achieved nearly 0.95 BLEU-4 scores with a 32x compression rate on text reconstruction tasks.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Enable compression of texts far beyond the encoder's window length and beyond what training compute allows directly.",
+      "mechanism": "Recurrent compression mechanism plus a two-stage training strategy: full-parameter training on shorter sequences first, then freeze the encoder and continue training on longer sequences; long sequences are divided into fixed-length short segments each iteratively compressed into state/compression vectors that are concatenated.",
+      "evaluation": "On passkey retrieval up to 1M tokens: ~90% accuracy even with an 8k-window encoder; nearly 100% after second-stage fine-tuning on sequences up to 32k with encoder frozen (Table 1); matches Infini-attention without requiring re-pretraining on hundreds of billions of tokens.",
+      "domain": "LLM long-context / context compression",
+      "source_quote": "we propose a recurrent compression mechanism to extend the model's ability to compress texts beyond the encoder's window length ... initially, conducting full-parameter training on shorter sequences. Subsequently, we freeze the encoder and continue training on longer sequences ... Our model exhibits excellent extrapolation ability during the inference stage, with the capability to further extend lengths up to 1M.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Fix degraded instruction-following when both instructions and context are compressed together (the model treats them equally and fails to follow instructions).",
+      "mechanism": "Novel instruction reconstruction method: during training the instruction is input as part of the encoder context (randomly placed at the beginning or end), and the decoder reconstructs the instruction from the compressed vectors before generating a response.",
+      "evaluation": "On long-document QA (LongBench), RCC-Ins-Reconstruction scores 28.12 at length 2k, comparable to Pythia-sft and surpassing RCC-Ins-Compress (which compresses both instruction and context), verifying effectiveness; obtains F1/Rouge comparable to the non-compressed LLM.",
+      "domain": "LLM long-context / context compression",
+      "source_quote": "we propose a novel instruction reconstruction methodology aimed at mitigating the detrimental effects of this compression process.",
+      "type": "method"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "ICAE (Ge et al., 2023) is similar to our work but suffers from lower compression efficiency and lacks exten-sive research on longer sequences. Additionally, AutoCompressors (Chevalier et al., 2023), which recursively compress long texts into summary vectors to extend context length, are also relevant to our approach.",
+      "section": "related work"
+    },
+    {
+      "quote": "the RCC model architecture is similar to ICAE (Ge et al., 2023) ... In connecting the encoder and decoder, RCC differs from ICAE and AutoCompressors (Chevalier et al., 2023). While ICAE and AutoCompressors uses the final layer's vectors from the encoder as input for the decoder, we utilize the output information from each layer of the encoder.",
+      "section": "related work / method"
+    },
+    {
+      "quote": "The design of RCC's encoder is inspired by the Mamba-based LLM (Gu & Dao, 2023). ... None of the studies have thoroughly investigated the problem of instructional confusion that arises when both instructions and contextual information are subjected to compression. Our work introduces a new solution to mitigate this issue.",
+      "section": "related work / method"
+    }
+  ],
+  "notes": "Several explicit negative/limitation results: at 128x compression the training loss fails to converge (no BLEU-4 computable), so higher compression is not free; instruction reconstruction 'performs poorly ... when handling longer samples' because fine-tuning data was limited to 2k tokens; Mamba encoder training time is ~1.5x the Transformer's; long-text QA framed as 'comparable'/'competitive' (not superior) to the non-compressed LLM. Paper was rejected.",
+  "extractor": "human-baseline-batch4",
+  "date": "2026-07-07"
+}

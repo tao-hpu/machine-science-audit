@@ -1,0 +1,35 @@
+{
+  "paper_id": "yzloNYH3QN",
+  "title": "Attention in Large Language Models Yields Efficient Zero-Shot Re-Rankers",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "Enable accurate, efficient zero-shot document re-ranking with any open-weight LLM without relying on autoregressive generation (which restricts use to strong/proprietary models, costs O(N) forward passes, and can produce ill-formed outputs).",
+     "mechanism": "In-Context Re-ranking (ICR): prompt the LLM with documents + query, aggregate attention weights each document token receives from all query tokens (across all layers/heads) into a token-level ranking score, then sum per document. Only two O(1) forward passes to rank N documents; guarantees well-formed rankings and gives token-level interpretability.",
+     "evaluation": "TREC + 9 BEIR datasets (single-hop, re-rank top-100 BM25, nDCG@10) and three multi-hop tasks (re-rank ColBERTv2, Recall@k) with Mistral 7B and Llama-3.1 8B; >60% latency reduction vs RankGPT, >2x faster in practice.",
+     "domain": "Information retrieval / LLM re-ranking",
+     "source_quote": "we propose in-context re-ranking (ICR), a novel method that leverages the change in attention pattern caused by the search query for accurate and efficient re-ranking.",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "Mitigate LLMs' intrinsic biases (position bias, attention toward titles/entities/punctuation) that would corrupt attention-based ranking scores.",
+     "mechanism": "A calibration method using a content-free query ('N/A'): compute attention-aggregation scores with the content-free query and subtract them from the actual-query scores, isolating the query-semantics-driven change in attention. KV cache of document tokens is shared between the two passes.",
+     "evaluation": "Ablation on SciFact/FiQA/MuSiQue/2WikiMultiHopQA: calibration adds 9.3 points (single-hop) and 6.1% (multi-hop) on average; attention aggregation adds 13.7 points / 17.1% over last-token-only (attention sorting) baseline. Calibration overhead ~30%.",
+     "domain": "LLM bias mitigation / re-ranking",
+     "source_quote": "To mitigate the intrinsic biases in LLMs, we propose a calibration method using a content-free query.",
+     "type": "method"},
+    {"id": "C3",
+     "purpose": "Show empirically that generation is not the optimal way to extract re-ranking signals from LLMs, and characterize which signals attention captures.",
+     "mechanism": "Comparative evaluation vs RankGPT and analysis of token-level ranking scores across claim types (support vs contradiction), contextualization cases, and multi-hop information integration.",
+     "evaluation": "ICR outperforms RankGPT by 8.4 pts (Llama-3.1 8B) / 13.3 pts (Mistral 7B) micro-avg single-hop and 2.2-4.2% Recall@5 multi-hop; Llama-3.1 8B ICR matches GPT-4o-mini RankGPT (60.4 vs 60.5 micro-avg). On FEVER, ICR beats RankGPT on Contradiction claims by 26 pts vs only 9 pts on Support claims. Gains largest on tasks needing complex contextualization/reasoning/integration.",
+     "domain": "IR analysis / LLM interpretability",
+     "source_quote": "Our findings indicate that generation is not always the optimal way of unleashing the full potential of LLMs, and highlights the value of exploring creative ways to better leverage open-weight models across diverse applications.",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "More recently, Peysakhovich & Lerer (2023) propose attention sorting to improve gener-ation quality, where input documents are sorted by the amount of attention they receive ... In-context re-ranking shares a similar assumption that attention weights correlates with the relevance of documents to the query. However, we aggregate the atten-tion weights over all query tokens, rather than only considering the last token as in previous work.", "section": "related work"},
+    {"quote": "Following Zhao et al. (2021), we use \"N/A\" as the calibration query Qcal and calculate calibration scores ... Then we subtract it from ranking scores from the actual query", "section": "related work"},
+    {"quote": "the ablation... When both com-ponents are removed, ICR ranks the documents only based on the attention weights of the last query token, i.e., equivalent to attention sorting (Peysakhovich & Lerer, 2023).", "section": "related work"}
+  ],
+  "notes": "Strong positive results overall, but authors honestly report negative/mixed cases (project signal): ICR consistently LOSES to RankGPT on DBPedia-Entity (attributed to base-LLM lexical bias when distractors have high lexical overlap); ICR (Llama-3.1 8B) surprisingly underperforms ICR (Mistral 7B) and falls behind RankGPT on TREC DL19/DL20 (suspected Llama-3.1 fine-tuned on MSMARCO skewing attention). On several benchmarks ICR only matches (comparable to) proprietary GPT-3.5-turbo / GPT-4o-mini rather than surpassing them (e.g. 60.4 vs 60.5 micro-avg; slightly behind by 2.1 macro-avg; multi-hop 62.9 vs 66.0 R@2). ICR relies on access to attention weights so it is currently limited to open-weight models and not compatible with vLLM as of writing. Documents truncated to 100 words due to GPU memory in scaling test.",
+  "extractor": "human-baseline-batch8",
+  "date": "2026-07-07"
+}

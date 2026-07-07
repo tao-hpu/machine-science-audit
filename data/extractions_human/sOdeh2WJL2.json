@@ -1,0 +1,59 @@
+{
+  "paper_id": "sOdeh2WJL2",
+  "title": "Unified Multi-Task Learning & Model Fusion for Efficient Language Model Guardrailing",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Provide LLM guardrailing that avoids the latency, memory, and hosting cost of LLM-based guardrails while beating state-of-the-art detection accuracy.",
+      "mechanism": "Fine-tune sub-1GB classifiers on high-quality task-specific synthetic data produced by a custom guardrail-policy synthetic data pipeline (TaskGuard), instead of using large LLM guardrails.",
+      "evaluation": "On 7 public datasets and 4 self-created guardrail benchmarks, classifiers are 14x faster than gpt-4 while outperforming it by 21.62 F1 on public datasets and 5.48 F1 on the newly proposed CustomGuardBenchmark; average F1 improvement of 29.92 over Aegis-LlamaGuard and 21.62 over gpt-4o.",
+      "domain": "LLM safety / content guardrailing",
+      "source_quote": "Guardrail classifiers that are 14 times faster than the best performing LLM (gpt-4) while outperforming it on public datasets by 21.62 F1 and 5.48 F1 on our newly proposed CustomGuardBenchmark.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Improve guardrail generalization across policies with a single model rather than one model per policy.",
+      "mechanism": "MultiTaskGuard: a multi-task learning approach performing guardrail-specific pretraining (Guardrail Instruction Pretraining) on a large synthetically generated dataset with unique task instructions, enabling cross-task shared representations.",
+      "evaluation": "MultiTaskGuard consistently outperforms the single-task TaskGuard; with RoBERTaLarge base it stays within 0.56 average F1 of gpt-4's 69.41 while beating all other baselines, and it needs only classification-layer fine-tuning (CFT) rather than full fine-tuning.",
+      "domain": "LLM safety / content guardrailing",
+      "source_quote": "MultiTaskGuard: A multi-task learning approach to guardrailing that outperforms a single-task guardrailing model, referred to as TaskGuard by performing guardrail specific pretraining on synthetic data.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Squeeze further guardrail performance by optimally merging single-policy and multi-policy models without manual/grid hyperparameter tuning.",
+      "mechanism": "UniGuard: a search-based model merging (MMS) that frames the search over merge weightings as a multi-armed bandit (Thompson Sampling) maximizing held-out F1, integrated with TIES/SLERP/MSA/DARE merging strategies.",
+      "evaluation": "UniGuard combines the best MultiTaskGuard and TaskGuard models to achieve SoTA guardrailing performance; MMS with existing SoTA merging methods increases model performance (Algorithm 1, Thompson Sampling with TIES).",
+      "domain": "LLM safety / model merging",
+      "source_quote": "UniGuard: A MAB approach to MMS that combines the best performing MultiTaskGuard and TaskGuard that results in SoTA guardrailing performance.",
+      "type": "method"
+    },
+    {
+      "id": "C4",
+      "purpose": "Characterize the drivers of guardrail performance, notably synthetic vs real training data.",
+      "mechanism": "Comprehensive analysis varying (1) number of training samples, (2) synthetic vs real training data, (3) which parameters are selected during merge search, and (4) number of active fine-tuning parameters with/without pretraining.",
+      "evaluation": "Synthetic task-specific guardrail data yields models that outperform training on the real data available from each public dataset; significant improvements found using synthetic data across tasks (qualitative analysis, Figures/Tables in Sec. results).",
+      "domain": "LLM safety / content guardrailing",
+      "source_quote": "A comprehensive analysis of how guardrail performance varies as a function of 1) the number of training samples used for training,2) training on synthetic or real data, 3) which model parameters are selected during model merge search and 4) the number of active fine-tuning parameters required with and without pretraining.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "One drawback of current model merging (MM) approaches is that efficient search strategies are not yet explored in the literature and currently rely on manual tweaking or grid searching for hyperparameters. Our proposed model merging search (MMS) addresses this by viewing searching for parameters to merge as a multi-armed bandit (MAB) Slivkins et al. (2019) problem that maximizes the F1 score (i.e reward) on a held-out validation set.",
+      "section": "related work"
+    },
+    {
+      "quote": "TIES Yadav et al. (2024) reduce merging interference ... In contrast, DARE (Yu et al., 2024) prunes weights ... Model Bread-crumbs (Davari & Belilovsky, 2023) also use sparse masks ... Unlike our work, none of the above consider efficient Bayesian search techniques to explore weightings to combine model parameters.",
+      "section": "related work"
+    },
+    {
+      "quote": "We extend this to SLERP, MSA and DARE and these merging methods are integrated into our MMS framework and evaluated using random and Thompson Sampling.",
+      "section": "method (Algorithm 1)"
+    }
+  ],
+  "notes": "Base-model dependence is an explicit caveat: with RoBERTaLarge (not pretrained for sentence embeddings) performance drops and it falls ~0.56 F1 short of gpt-4 on that setting, though still beats other baselines. Trade-off noted: MultiTaskGuard works best with classification-layer fine-tuning while TaskGuard needs full fine-tuning to generalize. Several benchmarks (CustomGuardBenchmark) are self-created by the authors. Paper was rejected.",
+  "extractor": "human-baseline-batch4",
+  "date": "2026-07-07"
+}

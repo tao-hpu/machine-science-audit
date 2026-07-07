@@ -1,0 +1,40 @@
+{
+  "paper_id": "konDsSUSqg",
+  "title": "MoA: Mixture of Sparse Attention for Automatic Large Language Model Compression",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Overcome the limitation that uniform sparse-attention masks ignore the diverse attention patterns and accuracy-latency trade-offs across heads and input lengths.",
+      "mechanism": "Heterogeneous elastic rules: a compression search space where each attention head gets its own local attention span that scales elastically with input length, instead of a single uniform span/scaling for all heads.",
+      "evaluation": "Improves fact retrieval accuracy from 25% to 98% compared with masks using a uniform span and scaling function for each head.",
+      "domain": "LLM inference efficiency / long-context sparse attention",
+      "source_quote": "Heterogeneous Elastic Rules. We propose heterogeneous elastic rules for masks of each attention head. ... The heterogeneous elastic rules improve the fact retrieval accuracy of MoA from 25% to 98% compared with masks with uniform span and scaling function for each head.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Show that data engineering (the calibration dataset and reference used for profiling) is critical to accurately profile compression effects.",
+      "mechanism": "Analysis / data-engineering finding: profiling with datasets containing long-range dependencies and using the original dense model's responses (rather than general LM data and human-written responses) as the reference for the loss.",
+      "evaluation": "Qualitative finding that long-range-dependency data + original-LLM responses are essential for accurate profiling; ablated within the MoA pipeline.",
+      "domain": "LLM inference efficiency / long-context sparse attention",
+      "source_quote": "Calibration Dataset Construction We emphasize the importance of data engineering in LLM compression. Our findings demonstrate that, instead of relying on general language modeling datasets and human responses, using datasets with long-range dependencies and referencing the original LLM's responses is essential for accurately profiling the effects of compression.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Automatically find the optimal per-head sparse-attention compression plan under a density budget.",
+      "mechanism": "An automatic optimization pipeline using gradient-based profiling of each attention position's influence on prediction loss, cast as a Mixed-Integer Programming problem to select elastic rules per head.",
+      "evaluation": "Finds the optimal plan within hours (e.g., ~2 hours for Vicuna-13B). Overall MoA: 3.9x effective context length at equal average span; retrieval accuracy 1.5-7.1x over uniform baseline across Vicuna-{7B,13B} and Llama3-{8B,70B}; 6.6-8.2x throughput over FlashAttention2 and 1.7-1.9x over vLLM; max relative performance drop reduced from 9%-36% to under 5%.",
+      "domain": "LLM inference efficiency / long-context sparse attention",
+      "source_quote": "Automatic Optimization. We propose an automatic pipeline to find the optimal compression plan encompassing heterogeneous elastic rules for various attention heads. This pipeline can efficiently find the optimal plan within several hours, for example, two hours for compressing Vicuna-13B.",
+      "type": "method"
+    }
+  ],
+  "self_declared_provenance": [
+    {"quote": "Existing methods typically employ a uniform sparse attention mask, applying the same sparse pattern across different attention heads and input lengths. ... To address this challenge, we propose the Mixture of Attention (MoA)", "section": "abstract"},
+    {"quote": "These methods typically employ a uniform, fixed-span sliding window mask across all heads and input lengths, limiting attention to local contexts only (Xiao et al., 2024c; Han et al., 2023).", "section": "introduction"}
+  ],
+  "notes": "Reject paper. Training-free method. Trade-off explicitly targeted (accuracy-latency); reports a minor negative: only ~1% average relative degradation in retrieval accuracy at 50% density, and <5% max drop on long-context understanding vs dense models. Net results strongly positive.",
+  "extractor": "human-baseline-cleanup",
+  "date": "2026-07-07"
+}

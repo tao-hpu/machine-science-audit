@@ -1,0 +1,118 @@
+{
+ "paper_id": "FA0006",
+ "title": "View-Disagreement Escalation for Robust Web-Agent Trajectory Judges",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "consensus_state": "split",
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to detect unreliable LLM-judge predictions on web-agent trajectories that arise from manipulated chain-of-thought (CoT) reasoning.  \n- **Paper [6]** discusses the phenomenon of LLMs generating deceptive CoTs that appear plausible but are incorrect, which aligns with the goal of identifying unreliable CoT-based predictions. Quote: \"we study an underexplored phenomenon: whether LLMs could generate incorrect yet coherent CoTs that look plausible, while leaving no obvious manipulated traces.\"  \n- **Paper [5]** also identifies the issue of unfaithful CoT reasoning, which compromises the reliability of LLM predictions. Quote: \"we find that CoT explanations can systematically misrepresent the true reason for a model's prediction.\"  \nThus, the purpose is **COVERED** by both [6] and [5].\n\n---\n\n### Mechanism\nThe contribution introduces a training-free two-stage framework that compares judgments from two counterfactual input views (with CoT vs. without CoT) and escalates disagreement cases to strict evidence-anchored evaluation.  \n- **Paper [13]** uses counterfactual task variants to evaluate LLM reasoning capabilities. Quote: \"we propose an evaluation framework based on 'counterfactual' task variants that deviate from the default assumptions underlying standard tasks.\" This aligns with the use of counterfactual inputs to assess LLM behavior.  \n- **Paper [16]** discusses selective regression with a reject option, where the model abstains from making predictions in uncertain cases. Quote: \"Selective regression allows abstention from prediction if the confidence to make an accurate prediction is not sufficient.\" This is conceptually similar to the escalation mechanism in the contribution, where disagreement triggers a stricter evaluation.  \nThus, the mechanism is **COVERED** by [13] and [16].\n\n---\n\n### Evaluation\nThe contribution evaluates its method on AgentRewardBench, where escalation on view disagreement reduces attack sensitivity while maintaining competitive F1.  \n- **Paper [3]** introduces FaithCoT-Bench, a benchmark for evaluating the faithfulness of CoT reasoning. Quote: \"we introduce FaithCoT-Bench, a benchmark for instance-level faithfulness of Chain-of-Thought reasoning.\" This matches the evaluation design of using a benchmark to assess CoT reliability.  \n- **Paper [9]** evaluates the robustness of LLM-as-a-Judge architectures against adversarial manipulations, which involves a similar evaluation design of testing LLM reliability under adversarial conditions. Quote: \"This paper investigates the vulnerability of LLM-as-a-Judge architectures to prompt-injection attacks.\"  \nThus, the evaluation design is **COVERED** by [3] and [9].\n\n---\n\n### Domain\nThe contribution operates in the domain of LLM-as-a-judge for web-agent evaluation.  \n- **Paper [7]** provides a survey on LLM-as-a-judge, explicitly discussing its application in evaluating complex tasks. Quote: \"LLM-as-a-Judge... where LLMs serve as evaluators for complex tasks.\"  \n- **Paper [1]** extends the LLM-as-a-judge framework to agentic systems, which includes web-agent evaluation. Quote: \"we introduce the Agent-as-a-Judge framework, wherein agentic systems are used to evaluate agentic systems.\"  \nThus, the domain is **COVERED** by [7] and [1].\n\n---\n\n### Verdicts\nVERDICT purpose = 6  \nVERDICT mechanism = 13  \nVERDICT evaluation = 3  \nVERDICT domain = 7  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose: Detects unreliable LLM-judge predictions on web-agent trajectories that arise from manipulated chain-of-thought (CoT) reasoning.\n\nPaper [9] investigates \"vulnerability of LLM-as-a-Judge architectures to prompt-injection attacks\" and concerns reliability/security of LLM judges under adversarial manipulation. Paper [11] proposes attacks on LLM-as-a-Judge and implicitly motivates detection of unreliable judgments. Paper [6] studies \"whether LLMs could generate incorrect yet coherent CoTs that look plausible\" — this is about deceptive CoT reasoning, closely related to the manipulation concern. However, none of these papers specifically frame their purpose as *detecting* unreliable LLM-judge predictions caused by manipulated CoT on agent trajectories. Papers [9] and [11] focus on attacking, not detecting/defending against CoT manipulation in judges. Paper [3] (FaithCoT-Bench) addresses \"deciding whether a specific CoT is faithful\" which is substantively equivalent to detecting unreliable predictions arising from manipulated CoT. This is the closest match to the purpose.\n\n## Mechanism: Training-free two-stage framework comparing judgments from two counterfactual input views (with CoT vs without CoT) and selectively escalating disagreement cases to strict evidence-anchored evaluation.\n\nThe core primitive is: compare outputs under two input variants (with/without CoT) and use disagreement as a signal to trigger a different evaluation path. Paper [5] shows that CoT explanations can misrepresent true reasoning by comparing model behavior with/without CoT, but this is an analysis tool, not a detection mechanism. Paper [23] uses differential testing (QDiff) — comparing outputs of two variants of a system to detect inconsistencies — which is structurally similar. However, QDiff applies to quantum software stacks, not LLM judges. The primitive of \"compare two views of the same input and flag disagreement\" is a form of differential/consistency testing. Paper [10] explicitly compares LLM outputs with vs. without CoT (\"zero-shot CoT\" vs standard) to measure behavioral differences. But none combine this with selective escalation to a stricter evaluation stage. The selective escalation component resembles selective prediction (papers [16], [20], [21]) but those are about abstaining from prediction under uncertainty, not escalating to a different evaluator. No single prior paper combines the counterfactual-view comparison with selective escalation in this specific way for LLM judge reliability detection.\n\n## Evaluation: Evaluated on AgentRewardBench, with 63% relative reduction in attack sensitivity and competitive F1.\n\nAgentRewardBench appears to be a specific benchmark for evaluating LLM judges on agent trajectories. Paper [1] (Agent-as-a-Judge) evaluates agentic systems using agents, using F1-style metrics. Paper [9] evaluates LLM-as-a-Judge robustness against prompt injection attacks, measuring attack success rates — semantically similar to \"attack sensitivity.\" The evaluation design (measuring robustness of LLM judges under attack + F1 performance) is used in papers [9] and [11]. The specific benchmark (AgentRewardBench) may be new, but the evaluation design — measuring attack sensitivity reduction + F1 on an agent evaluation benchmark — follows the same design as [9] and [11]. Per the special rule, swapping the benchmark instance doesn't make the evaluation novel.\n\n## Domain: LLM-as-a-judge / web agent evaluation\n\nPaper [1] explicitly works in LLM-as-a-judge for agentic systems. Papers [7] and [8] are surveys on LLM-as-a-Judge. Paper [9] works on LLM-as-a-Judge security. Paper [15] (AgentDojo) evaluates prompt injection in LLM agents. The domain of LLM-as-a-judge for agent evaluation is clearly covered by multiple prior papers.\n\nVERDICT purpose = 3\nVERDICT mechanism = NONE\nVERDICT evaluation = 9\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes a training-free two-stage framework that compares judgments from counterfactual input views (with CoT vs. without CoT) and selectively escalates disagreement cases to strict evidence-anchored evaluation. Paper [10] compares CoT vs. non-CoT outputs but for bias detection in model responses, not as a judge-evaluation mechanism. Paper [7] and [8] survey LLM-as-a-Judge broadly but describe no such counterfactual-view comparison with selective escalation. No other paper combines these specific elements under any alternative terminology."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "consensus_state": "split",
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 20
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to validate the mechanistic hypothesis that Chain-of-Thought (CoT) manipulation induces asymmetric shifts between CoT-dependent and CoT-agnostic judgments. Paper [1] discusses how LLM judges are susceptible to manipulation of agent reasoning traces, which aligns with the general idea of CoT manipulation. However, it does not specifically address the asymmetric shifts between CoT-dependent and CoT-agnostic judgments. Paper [6] explores the effects of reinforcement learning on CoT reasoning, including unintended behaviors and misaligned tendencies, but it does not explicitly validate the specific hypothesis about asymmetric shifts. No prior paper explicitly validates this specific hypothesis.\n\n### Mechanism\nThe mechanism involves the empirical measurement of view-disagreement rates on attacked versus unmodified failure trajectories. Paper [1] discusses the manipulation of agent reasoning traces and evaluates the impact on LLM judgments, which is conceptually similar to measuring the effects of manipulation on judgment outcomes. Paper [6] also investigates the effects of CoT manipulation, including unintended behaviors, which could involve measuring outcomes of manipulated reasoning. However, neither paper explicitly describes the specific mechanism of measuring view-disagreement rates on attacked versus unmodified failure trajectories. Thus, the mechanism is not substantively equivalent to prior work.\n\n### Evaluation\nThe evaluation design involves comparing view-disagreement rates between attacked and unmodified failure trajectories, with a specific finding that disagreement is 2.15x more frequent on attacked failures. Paper [1] evaluates the susceptibility of LLM judges to manipulation but does not use the specific evaluation design of comparing view-disagreement rates. Paper [6] also evaluates the effects of CoT manipulation but does not employ the same evaluation design. No prior paper uses the specific evaluation design described in the contribution.\n\n### Domain\nThe domain is LLM-as-a-judge/web agent evaluation. Papers [1], [2], [3], [4], [5], and [17] all address the LLM-as-a-judge paradigm, which is the same general application area as the contribution. While the specific sub-problem of CoT manipulation and view disagreement may differ, the domain is covered under the general application area of LLM-as-a-judge.\n\n---\n\n**VERDICT purpose = NONE**  \n**VERDICT mechanism = NONE**  \n**VERDICT evaluation = NONE**  \n**VERDICT domain = 1**  ",
+      "stage2": "- **FACET: purpose** | **FINAL: COVERED-BY 6** | reason: Paper [6] discusses CoT manipulation and its impact on reasoning alignment, which aligns with the purpose of validating the mechanistic hypothesis about CoT-induced shifts, albeit framed differently.  \n- **FACET: mechanism** | **FINAL: COVERED-BY 20** | reason: Paper [20] empirically measures CoT faithfulness and includes analyses of discrepancies in reasoning, which parallels the measurement of view-disagreement rates under CoT manipulation.  \n- **FACET: evaluation** | **FINAL: NONE** | reason: No prior paper explicitly or implicitly reports quantitative findings on view disagreement as a signal of CoT manipulation."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": 1
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Validates the mechanistic hypothesis that CoT manipulation induces asymmetric shifts between CoT-dependent and CoT-agnostic judgments.**\n\nPaper [1] is directly relevant: \"Gaming the Judge: Unfaithful Chain-of-Thought Can Undermine Agent Evaluation\" explicitly studies how LLM judges are susceptible to manipulation of agent reasoning traces, and investigates the relationship between CoT faithfulness and judgment outcomes. The purpose of validating that CoT manipulation causes differential effects on judgments is substantively equivalent to what [1] investigates. No other paper addresses this specific mechanistic hypothesis about asymmetric CoT-dependent vs. CoT-agnostic judgment shifts.\n\n**MECHANISM: Empirical measurement of view-disagreement rates on attacked versus unmodified failure trajectories.**\n\nPaper [1] systematically rewrites agent CoT traces and measures judge behavior differences, which is the same primitive: comparing judge outputs on manipulated vs. unmanipulated trajectories. The specific operationalization as \"view-disagreement rates\" (comparing CoT-dependent vs. CoT-agnostic views) is a particular measurement design. However, [1] does perform empirical comparison of attacked vs. unmodified trajectories to measure judge susceptibility. This is substantively equivalent at the level of the underlying analytical primitive — measuring differential judge responses on attacked vs. clean inputs.\n\n**EVALUATION: View disagreement is 2.15x more frequent on attacked than unmodified failures.**\n\nPaper [1] uses a similar evaluation design: comparing judge outputs on manipulated vs. unmanipulated trajectories to quantify susceptibility. The design of measuring disagreement rates as a ratio between attacked and unattacked conditions follows the same evaluation framework as [1]'s comparative measurement of judge behavior under attack. This is the same evaluation design (comparative rate measurement on attacked vs. clean inputs), even if the specific metric (view-disagreement ratio) is a particular instantiation.\n\n**DOMAIN: LLM-as-a-judge / web agent evaluation.**\n\nPaper [1] operates explicitly in LLM-as-a-judge for agent evaluation, including web agent trajectories. Papers [2], [3], [4], [5] all operate in the LLM-as-a-judge domain. This domain is clearly covered.\n\nVERDICT purpose = 1\nVERDICT mechanism = 1\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,32 @@
+{
+  "paper_id": "960Ny6IjEr",
+  "title": "Low-Rank Compression of Language Models Via Gradient-Based Rank Selection",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Solve per-layer rank selection for low-rank (SVD) LLM compression without any post-compression fine-tuning, jointly optimizing compression rate and downstream accuracy across layers.",
+      "mechanism": "Learning to Low-Rank Compress (LLRC): apply SVD to each target weight matrix, insert a learnable masking layer in the reconstruction, and train (only the mask parameters) on a small calibration set to progressively increase compression while minimizing divergence of intermediate activations from the original model. Uses a total-variation (TV) loss to encourage contiguous singular-value selection.",
+      "evaluation": "Calibration set of just 3,000 documents. Outperforms fine-tuning-free rank-selection baselines (STRS, ARS, LLM-Pruner) on Llama-2-7B/13B, Llama-3-8B, Gemma-7B for common-sense reasoning and open-domain QA. At 20% compression on Llama-2-13B, beats STRS on MMLU/BoolQ/OpenbookQA by 12%/3.5%/4.4%. Llama-3-8B: >6% over second-best on NQ-Open, PIQA, OpenBookQA at param ratio 0.80.",
+      "domain": "LLM compression / low-rank decomposition",
+      "source_quote": "A fine-tuning free technique for LLMs called Learning to Low-Rank Compress (LLRC) to learn optimal singular values for each layer through training on a small calibration dataset.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Escape the restriction of prior methods that keep only the top-k singular values (magnitude-ordered), enabling more flexible compression.",
+      "mechanism": "A learnable singular-value masking linear parameter vector that, in a fine-tuning-free setting, selects the best 'any-k' singular values (not restricted to the top-k by magnitude); lighter than ARS which uses RNNs/GRUs and linear up-projections.",
+      "evaluation": "Ablations analyze the TV loss contribution (Section 7.2). Any-k selection shown to give strong practical performance despite limited theoretical backing; selectively reducing individual-layer ranks can even improve 0-shot performance (consistent with Sharma et al. 2024). Learned per-layer compression differs by architecture (Llama-3-8B compresses K/Q more than Llama-2-7B).",
+      "domain": "LLM compression / low-rank decomposition",
+      "source_quote": "A learnable singular value masking linear parameter which learns, in a fine-tuning free setting, to select the most optimal any-k singular values for compression of LLMs.",
+      "type": "method"
+    }
+  ],
+  "self_declared_provenance": [
+    {"quote": "In Adaptive Rank Selection (ARS), a binary masking mechanism is used for optimizing the number of ranks through training Gao et al. (2024)... However, a key shortcoming is that rank selection using ARS leads to heavy performance degradation and requires an expensive post-compression training stage... To address these problems in rank selection in low-rank decomposed models, we propose a method called Learning to Low-Rank Compress (LLRC).", "section": "related work"},
+    {"quote": "The rank selection layer is a learnable parameter vector, making the training computationally more efficient than the related gradient-based rank selection approach called ARS that uses RNNs and linear up-projection layers (Gao et al., 2024). Unique from other rank selection approaches such as Yuan et al. (2024); Gao et al. (2024), which select optimal ranks (top-k singular values), our method selects any-k singular values to achieve compression.", "section": "related work"},
+    {"quote": "Yuan et al. (2024) propose a heuristic named Sensitivity-based Truncation Rank Searching (STRS), which iteratively searches for optimal ranks per layer... this approach has two core problems... First, the search space of ranks is a discrete set of only 10 elements... Second, the optimal decomposition of each layer is identified independently.", "section": "related work"}
+  ],
+  "notes": "NOTE: batch metadata title says 'Differentiable Rank Selection' but the PDF title is 'Gradient-Based Rank Selection' (used the PDF's). This is an ICLR 2025 REJECT (under-review anonymous version). Negative/limitation result explicitly stated: at higher compression rates (15% and 20%) on Llama-3-8B, LLM-Pruner WITH fine-tuning outperforms LLRC, 'indicating the necessity of exploring efficient fine-tuning on low-rank compressed models'. The any-k selection is acknowledged to have 'limited theoretical backing' despite strong empirical results. Method is positioned as a direct improvement over ARS (Gao et al. 2024) and STRS (Yuan et al. 2024), addressing their specific shortcomings.",
+  "extractor": "human-baseline-batch0",
+  "date": "2026-07-07"
+}

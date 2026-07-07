@@ -1,0 +1,35 @@
+{
+  "paper_id": "KVLnLKjymq",
+  "title": "Star Attention: Efficient LLM Inference over Long Sequences",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "Reduce the quadratic cost and memory of self-attention for long-context LLM inference while preserving accuracy, without any model fine-tuning.",
+     "mechanism": "Star Attention, a two-phase block-sparse attention: Phase 1 shards the context into blocks processed with blockwise-local attention in parallel across hosts (context length scales linearly with number of hosts); Phase 2 has query and response tokens attend to all cached tokens via sequence-global attention. Drops in seamlessly to Transformer LLMs trained with global attention.",
+     "evaluation": "Llama-3.1-8B (base/instruct), Gradient.ai 1M-context Llama-3-8B, and Llama-3.1-70B-Instruct on RULER and BABILong, 16K-1M tokens, vs Ring (global) attention baseline; up to 11x faster inference retaining 95-100% accuracy (0-3% degradation up to 128K). Larger models get even greater speedups. Composable with Flash Attention / KV-cache compression.",
+     "domain": "Efficient long-context LLM inference",
+     "source_quote": "We introduce Star Attention, a two-phase block-sparse ap-proximation that improves computational efficiency by sharding attention across multiple hosts while minimizing communication overhead.",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "Make blockwise-local context encoding actually work by preventing the accuracy collapse that occurs when blocks are processed independently.",
+     "mechanism": "An anchor block mechanism: every context block except the first is prefixed with the first block (the 'anchor'), keeping the anchor's original position indices [0..b-1]; anchor KVs are computed to condition attention but then discarded, only the current block's KVs are cached.",
+     "evaluation": "Ablations (Table 3, Fig 7): anchor block content is critical while its position is not (random/previous-block positions have minimal impact); using the previous block as anchor lowers accuracy; larger anchor block size improves accuracy, best when anchor size equals context block size.",
+     "domain": "Attention approximation / long-context inference",
+     "source_quote": "We introduce an anchor block mechanism, in which, each block-except the first-is prefixed with the first block c1 of the sequence, referred to as the anchor block.",
+     "type": "method"},
+    {"id": "C3",
+     "purpose": "Characterize where the block-sparse approximation succeeds and where it fails, and the accuracy-speed trade-off it exposes.",
+     "mechanism": "Per-category analysis on RULER task types (Single-NIAH, Multi-NIAH, Multi-Hop Tracing, Aggregation, QA) and block-size / anchor-size sweeps.",
+     "evaluation": "Near-identical to global attention on Single-NIAH; slight declines on Multi-NIAH (1.6-4.9%) and QA (0.9-6.8%); Aggregation even improves; Multi-Hop Tracing degrades considerably (e.g. 54.32 vs 70.47 at 32K) due to lack of inter-block communication. Larger block sizes raise accuracy (block ~1/4 of seq length is optimal trade-off); smaller blocks on longer sequences degrade accuracy.",
+     "domain": "Long-context LLM analysis",
+     "source_quote": "in more complex tasks such as Multi-NIAH and QA, it shows slight decline in1 performance, with reductions ranging from 1.6% to 4.9% in Multi-NIAH and 0.9% to 6.8% in QA tasks. Despite these challenges, Star Attention consistently retains overall 95-100% accuracy of global attention.",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "Star Attention is compatible with most Transformer-based LLMs trained with global attention, operating seamlessly out-of-the-box without additional model fine-tuning.", "section": "related work"},
+    {"quote": "we adopt Ring Attention as a practical and relevant baseline for evaluating Star Attention's performance on sequences up to 1 million tokens in length.", "section": "related work"},
+    {"quote": "Furthermore, Star Attention can be combined with other LLM optimization methods like Flash Attention or KV cache compression, allowing for addi-tional speedup enhancements during inference.", "section": "related work"}
+  ],
+  "notes": "Method paper with explicit trade-offs and negative cases (project signals). Clear trade-off: Star Attention gives exponential speedup only at the cost of increasing accuracy degradation as block size shrinks; user chooses the balance. Notable NEGATIVE result: Multi-Hop Tracing degrades considerably vs global attention because the method has no inter-block communication (54.32 vs 70.47 at 32K). Anomaly/reliability caveat: Llama-3.1-8B base on BABILong shows a large improvement at 16K but a severe drop at 128K, attributed to base models' weak instruction-following; base-model long-sequence scores 'may be less reliable'. Interesting near-null / unexplained finding: anchor block must be as large as the context block despite attention sinks being concentrated in the first few tokens, so the anchor's benefit is 'not solely due to' attention-sink management; left for future work. Below 32K tokens, vanilla inference is faster than the distributed method (speedup only materializes on long sequences). Implementation limited by HF Transformers lacking multi-node support (OOM for vanilla beyond 64K).",
+  "extractor": "human-baseline-batch8",
+  "date": "2026-07-07"
+}

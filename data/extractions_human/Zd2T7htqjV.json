@@ -1,0 +1,46 @@
+{
+  "paper_id": "Zd2T7htqjV",
+  "title": "Training Overparametrized Neural Networks in Sublinear Time",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "把二阶(Gauss-Newton)训练法的每轮代价从网络规模线性降到亚线性,同时保持其超快收敛率,以缓解超参数化 DNN 训练的可扩展性瓶颈",
+      "mechanism": "提出把 DNN 看作一组慢变的二叉搜索树(binary search trees)的新视角:每个叶子编码神经元与数据点的内积、非叶结点取左右孩子较大者;利用激活稀疏性证明每轮仅需(摊还最坏情形)更新树中一小子集路径 K,故只更新 nK log m 个树结点;配合 sketch 维护、亚线性迭代回归求解器与隐式权重维护",
+      "evaluation": "定量(理论):对 m=poly(n) 的 2 层 ReLU 网络,CPI 为 Õ(n^2 m^0.76 d + n^3) 即 Õ(m^{1-α}nd+n^3)(α∈[0.1,0.24]),优于 Brand et al.(2021) 的 O(mnd+n^3) 线性 CPI;总时间从 Õ(T_ε·mnd) 降到 O(T_ε + mnd);收敛率 O(log(1/ε)) 不变,损失线性收敛(Theorem 5.1)",
+      "domain": "深度学习优化理论 / 神经网络训练算法复杂度",
+      "source_quote": "In this paper, we present a novel training method that requires only m^{1-α}d+n^3 amortized time in the same overparametrized regime, where α∈(0.01,1) is some fixed constant. This method relies on a new and alternative view of neural networks, as a set of binary search trees, where each iteration corresponds to modifying a small subset of the nodes in the tree.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "为算法核心步骤——按阈值动态检索满足内积≥τ 的权重——提供支撑数据结构,使查询亚线性于 m",
+      "mechanism": "提出求解 Dynamic Sensitive Weight Searching (DSWS) 的数据结构,更新时间 Õ(nd)、查询时间 Õ(K_q),其中 K_q 为满足 ⟨w_j,x_i⟩≥τ 的神经元数;由稀疏性保证 |K_q|≤m^0.76",
+      "evaluation": "定量(理论):查询时间 Õ(m^0.76),对全部 i∈[n] 总时间 Õ(n·m^0.76)(Theorem B.1);空间 O(mn+nd+md)",
+      "domain": "算法与数据结构 / 神经网络训练",
+      "source_quote": "We propose a data structure to solve DSWS with Õ(nd) time update and Õ(K_q) ... By the sparsity guarantee, we have |K_q|≤m^{0.76}, which leads to a query time of Õ(m^{0.76}) and total time of Õ(n m^{0.76}) to query for all i∈[n].",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "证明所提算法在细粒度复杂度意义下接近最优,给出难以进一步显著改进的条件下界",
+      "mechanism": "在 SETH 或 OVC(计算复杂度假设)下,通过将 DSWS 归约到 Z-Max-IP 证明该动态数据结构的更新/查询时间下界",
+      "evaluation": "定量(理论):Theorem 7.3/1.4——在 SETH 与 OVC 下,DSWZ 不能同时有 update 时间 O(n^{1-ε}) 与 query 时间 O(m^{1-c}n^{c-ε})(任意 ε∈(0,c)),说明本算法无法被大幅改进",
+      "domain": "细粒度复杂度理论 / 神经网络训练下界",
+      "source_quote": "We conclude a discussion of lower bound for the dynamic sensitive weight searching data structure we make use of, showing that under SETH or OVC from computational complexity, one cannot substantially improve our algorithm.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "This runtime was further improved in the work of Brand et al. (2021), who showed how to implement the Gauss-Newton algorithm in O(mnd+n^3) time per iteration, which is linear time in the network size... in this paper we present a novel training method with sublinear cost per iteration in the network size, while retaining the same convergence rate (number of iterations) as the prior state-of-art methods Brand et al. (2021); Zhang et al. (2019); Cai et al. (2019).",
+      "section": "related work"
+    },
+    {
+      "quote": "To speed-up the solution of the online regression problem (4), we show how to implement the iterative Conjugate-Gradient solver (a-la Brand et al. (2021)) in sub-linear time to find an approximate solution.",
+      "section": "technical overview"
+    }
+  ],
+  "notes": "被拒的纯理论论文,无实验(全部为渐近复杂度结果)。核心是相对 Brand et al.(2021) 线性 CPI 基线的正向改进(降到亚线性 m^{1-α})。含配套下界(C3)自证接近最优,属自我限定性质而非负结果。主要 caveat 是强假设:仅 2 层 ReLU、m=poly(n) 且 m 需极大(m≥n^c, c≥8;Theorem 5.1 要求 m=Ω(max{λ^{-4}n^4,...})),即亚线性优势仅在极度超参数化时成立;结论均为高概率成立。",
+  "extractor": "human-baseline-batch22",
+  "date": "2026-07-07"
+}

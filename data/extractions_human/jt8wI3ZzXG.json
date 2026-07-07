@@ -1,0 +1,50 @@
+{
+  "paper_id": "jt8wI3ZzXG",
+  "title": "Speculative Streaming: Fast LLM Inference without Auxiliary Models",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Accelerate LLM inference without the deployment complexity of a separate auxiliary draft model, while avoiding the weak speedups of single-model methods (e.g. Medusa) that lack dependency between speculated tokens.",
+      "mechanism": "Speculative Streaming: a single-model speculative decoding method that integrates drafting into the target model via multi-stream attention (top N_s MHA layers replaced by MSA layers with speculative streams sharing the KV cache) and reformulates the supervised fine-tuning objective from next-token to n-gram/future-token-planning prediction, with parallel tree draft speculation, verification, and pruning.",
+      "evaluation": "1.9-3X decoding speedup on Summarization (Dialogsum), Structured Queries (sql-create-context/WikiSQL/SPIDER), and Meaning Representation (e2e-nlg) tasks; metrics: Exact Match for queries, Rouge1/RougeLSum for summarization/meaning; outperforms 2-model SD, Medusa, Hydra, Lookahead, Eagle on Vicuna-7b/13b, OPT-1.3b, Phi-1.3b.",
+      "domain": "LLM inference acceleration / speculative decoding",
+      "source_quote": "We introduce a novel speculative decoding method that integrates drafting within the target model by using Multi-stream attention and incorporates future token planning into supervised fine-tuning objective.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Make speculative decoding scale to many downstream tasks and run on resource-constrained devices where hosting draft models or large extra heads is prohibitive.",
+      "mechanism": "Parameter-efficient design where speculative streams share the base model's key/value cache and are initialized via low-rank transformation + stream identifier embeddings, adding negligible parameters instead of full extra heads/layers.",
+      "evaluation": "Uses ~10000X fewer extra parameters than alternative architectures (Medusa, Hydra, Eagle) while surpassing them in speedup; claimed first parameter-efficient approach scaling with increasing downstream tasks.",
+      "domain": "On-device / resource-constrained LLM inference",
+      "source_quote": "Demonstrates resource efficiency with significantly fewer additional parameters compared to Medusa (Cai et al., 2023), Hydra (Ankner et al., 2024) and Eagle (Li et al., 2024), while still surpassing them in speedup gains.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Support generic chatbot deployment where the base model must remain unchanged (lossless), not only application-specific fine-tuned settings.",
+      "mechanism": "Speculative instruction tuning: train speculative stream adapters while keeping the base model frozen, so verification preserves base-model output distribution (lossless mode).",
+      "evaluation": "2.9-3.2X speedup on generic chatbot setup (evaluated on MT-bench) while maintaining integrity of the base model's output.",
+      "domain": "LLM inference acceleration / chatbot serving",
+      "source_quote": "Our approach can also be effectively deployed in lossless mode for generic chatbot applications where speculative instruction tuning is performed while keeping base model frozen. In such setups, we achieve 2.9-3.2X speedup while maintaining the integrity of the base model's output.",
+      "type": "method"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Recently, single-model speculation has also been considered. In particular, inspired by (Qi et al., 2020; Stern et al., 2018), Medusa (Cai et al., 2023) extends the main model to predict future tokens in parallel by training multiple output heads. ... Furthermore dependency between speculated tokens is not guaranteed (Ankner et al., 2024) limiting speedups. (contrast: our method incorporates dependency)",
+      "section": "related work"
+    },
+    {
+      "quote": "To inherently embed a notion of future token planning, we modify the training objective of the target model from next token prediction to n-gram prediction using multi-stream attention. This objective ... mitigates over-fitting to local correlations (Yang et al., 2019; Qi et al., 2020). Furthermore, we extend this framework by sharing the key/value cache across all streams",
+      "section": "related work"
+    },
+    {
+      "quote": "Parameter efficient supervised fine-tuning (Hu et al., 2022) of decoder-only pre-trained language models involves training low-rank adapters ... (building the speculative adapter approach on LoRA)",
+      "section": "related work"
+    }
+  ],
+  "notes": "Accept-style claims but paper was rejected. Reports a genuine trade-off in ablations: number of MSA layers trades off downstream generation metric vs. training time and FLOPs increase (top 2-8 MSA layers is the sweet spot). Value-rotation stream design incurs no parameter overhead but yields lower downstream metric than dedicated stream embeddings across settings. Speedup ranges (1.9-3X, 2.9-3.2X) are task-dependent. No draft/target decoupling means gains are conditioned on task-specific fine-tuning except in the lossless chatbot mode.",
+  "extractor": "human-baseline-batch9",
+  "date": "2026-07-07"
+}

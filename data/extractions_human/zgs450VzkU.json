@@ -1,0 +1,28 @@
+{
+  "paper_id": "zgs450VzkU",
+  "title": "Test-Time RAG: Enhancing Long Context Understanding in LLMs with Retrieval-Augmented Mechanisms",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "解决经典 RAG 需预先索引、无法处理仅在测试时才出现的大规模动态/隐私敏感上下文，且长上下文模型存在质量退化与高延迟的问题",
+     "mechanism": "提出三种 test-time compute 技术：(1) conditional embeddings——以用户 query 为条件、用双向编码器(DistilBERT)按 query 前缀+掩码 pooling 动态生成 per-query 文档表示；(2) iterative query rewriting——用 LLM 判断答案是否在上下文中，否则改写 query 迭代检索；(3) conditional compute——按 query 类型分配处理深度",
+     "evaluation": "定性+机制描述：三技术均在推理时应用、对现有模型零额外集成开销；无需预索引，适合医疗/金融等隐私场景",
+     "domain": "长上下文 LLM / 检索增强生成",
+     "source_quote": "Propose three test-time compute techniques for RAG: conditional embeddings, iterative query rewriting, and conditional compute",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "把三种技术整合为端到端系统并证明其可扩展到百万级 token 的长上下文处理",
+     "mechanism": "TTRAG 集成系统：conditional compute 先分类 query，多数走 conditional embedding 过滤→迭代改写→重检索直到找到 golden context 再生成",
+     "evaluation": "HotpotQA +17.29%、QASPER +4.39%、Natural Questions +8.73%（exact match）；上下文长度 1M–9.6M tokens；KV 检索 20M token 上下文达 85.2% EM；conditional compute 平均少处理 10x tokens",
+     "domain": "知识密集型 QA / 长上下文任务",
+     "source_quote": "Introduce an end-to-end system which ensembles these test-time compute techniques and scales performant long-context processing to millions of tokens",
+     "type": "resource"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "this paper presents a systems that extends classic RAG techniques of embedding and filtering to a test-time setting, which we refer to as Test-time RAG (TTRAG).", "section": "related work"},
+    {"quote": "inspired by classical distributed systems literature (Dean & Ghemawat, 2008), our TTRAG system employs conditional compute to adapt the computation", "section": "related work"},
+    {"quote": "Drawing inspiration from query reformulation techniques in recommendation systems (Bhandari et al., 2023), we introduce a framework for automatic query rewriting", "section": "related work"}
+  ],
+  "notes": "整体为正面结果、少见明显负结果。轻微 trade-off/caveat：(1) 摘要报告的增益在不同数据集差异大（HotpotQA +17.29% 强，QASPER 仅 +4.39%）；(2) 摘要 conditional compute 只是'comparable results'（F1 32.21/ROUGE-L 8.65）而非超越，其卖点是 token 效率（25k vs 171k tokens）而非精度；(3) query rewriting 依赖 LLM 推理能力，迭代次数受 top-k 上界约束。作者未列专门 limitation 段落。",
+  "extractor": "human-baseline-batch10",
+  "date": "2026-07-07"
+}

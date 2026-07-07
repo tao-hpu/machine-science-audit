@@ -1,0 +1,59 @@
+{
+  "paper_id": "hzVpZDrW73",
+  "title": "Dynamic-LLaVA: Efficient Multimodal Large Language Models via Dynamic Vision-language Context Sparsification",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "解决 MLLM 推理中现有方法只压缩视觉 token、其加速收益在 decoding 阶段随输出 token 生成而逐渐消失的问题。",
+      "mechanism": "提出 Dynamic-LLaVA 框架，用两个可学习 predictor 同时稀疏化 prefill 阶段的视觉上下文和 decoding 阶段生成的语言上下文；号称是首个同时稀疏化视觉与语言上下文的高效 MLLM 框架。",
+      "evaluation": "prefill 阶段计算量减少约 75%；decoding without KV cache 计算量减少约 50%；decoding with KV cache 节省约 50% GPU 显存；性能几乎无退化甚至有增益。",
+      "domain": "多模态大模型 / 高效推理",
+      "source_quote": "To the best of our knowledge for efficient MLLMs, Dynamic-LLaVA is the first framework which attempts simultaneous sparsification of both vision and language contexts.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "为 MLLM 的不同推理模式定制一致高效的稀疏化方案。",
+      "mechanism": "为 prefill、decoding without KV cache、decoding with KV cache 三种模式分别设计稀疏化推理；其中 with KV cache 模式实现'online KV cache compression'——用当前输出 token 特征决定是否保留激活，不依赖历史 KV cache。",
+      "evaluation": "predictor 仅在第 l=2 层后应用一次、决策共享至后续层，附加计算 <1% 总量；GPU 实测延迟/显存见 Tab.4/Tab.14。",
+      "domain": "多模态大模型 / 推理调度",
+      "source_quote": "Dynamic-LLaVA designs a tailored sparsification inference scheme for different inference modes, i.e., prefill, decoding with and without KV cache, to achieve efficient inference of MLLMs.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "使稀疏化决策可端到端训练，并适配 GPU 批并行硬件。",
+      "mechanism": "训练时用 masked softmax 隔离非必要 token 对重要 token 的影响，用 Gumbel-Softmax + Straight-Through 梯度估计避免梯度流问题实现端到端优化；另开发 batch-parallel 策略。",
+      "evaluation": "Gumbel-Softmax 温度 T 从 1 指数衰减到 0.1；消融见 Tab.6（l 值）等；框架可即插集成到 LLaVA 及 TokenPacker 等高效编码器/投影器。",
+      "domain": "多模态大模型 / 训练优化",
+      "source_quote": "the proposed Dynamic-LLaVA employees masked softmax to isolate the influence of non-essential tokens on the important tokens and the Gumbel-Softmax (Jang et al., 2016) with Straight-Through Gradient Estimator (Bengio et al., 2013) to avoid the gradient flow problem, which enables end-to-end optimization",
+      "type": "method"
+    },
+    {
+      "id": "C4",
+      "purpose": "实证验证 Dynamic-LLaVA 在理解与生成能力上几乎无损甚至有增益。",
+      "mechanism": "在视觉理解基准上对比 SoTA 视觉稀疏化方法；构造 LVIS-VQA（单/多轮）与 ShareGPT4V-VQA 长文本生成基准，用 PPL 与 METEOR 评测生成能力；与 Random/Structure 静态丢弃、H2O KV 压缩对比。",
+      "evaluation": "减少约 80% 图像 token、FLOPs 降 70%+；LLaVA-1.5-7B/13B 在 SciQA 上分别 +2.3%/+0.8%；Dynamic-LLaVA-TokenPacker 相对官方仅损 0.3%/0.1% 且用更少 token（57 vs 144）；双上下文稀疏时 PPL 增幅 <0.3 且 METEOR 略升。",
+      "domain": "多模态大模型 / 实证",
+      "source_quote": "Extensive experiments also demonstrate that Dynamic-LLaVA achieves efficient inference for MLLMs with negligible understanding and generation ability degradation or even performance gains compared to the full-context inference baselines.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "FastV (Chen et al., 2024a) uses the full-context attention matrix to determine which image tokens feed to LLMs. We refer to this approach as vision context sparsification. ... we follow the work (Chen et al., 2024a) and set l to 2.",
+      "section": "related work / method"
+    },
+    {
+      "quote": "Some previous works ... compress KV cache in order to reduce the GPU memory overhead ... these methods typically necessitate using the subset of past generated KV cache ... Dynamic-LLaVA, when decoding with KV cache, can be regarded as 'online KV cache compression', i.e., it utilizes the features of the current output text token to determine whether to retain the generated activations without relying on past KV cache.",
+      "section": "related work"
+    },
+    {
+      "quote": "Following the work (Lin et al., 2023), Dynamic-LLaVA employ the exponential decay for T from 1 to 0.1 during training.",
+      "section": "method"
+    }
+  ],
+  "notes": "被接收（accept）。明确基于 FastV（沿用其 l=2 层策略）并把自身与传统 KV cache 压缩方法（H2O 等）区分为'online' 变体。少量负面/trade-off 信号：双上下文稀疏时 PPL 有轻微上升（<0.3）；对比基线 H2O 直接丢历史 KV 在混合模态下性能明显退化（作者用 FastV+H2O 补救后 Dynamic-LLaVA 仍略优）；Dynamic-LLaVA-TokenPacker 有极小性能损失（0.1–0.3%）。整体以效率增益换取近乎持平或略优的性能。",
+  "extractor": "human-baseline-batch1",
+  "date": "2026-07-07"
+}

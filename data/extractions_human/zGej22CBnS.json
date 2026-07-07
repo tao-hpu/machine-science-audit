@@ -1,0 +1,54 @@
+{
+  "paper_id": "zGej22CBnS",
+  "title": "Exact Byte-Level Probabilities from Tokenized Language Models for FIM-Tasks and Model Ensembles",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Characterize and formalize why tokenized LMs and their byte-level equivalents behave differently at prediction time despite being statistically equivalent (the 'tokenization bias' phenomenon).",
+      "mechanism": "Prove statistical equivalence between a byte-level generating process and its induced tokenized model, then introduce the Byte-Token Representation Lemma, a mapping between learned token distributions and equivalent byte-level distributions; illustrate the bias closed-form on a 1st-order Markov chain.",
+      "evaluation": "Qualitative/theoretical: definitions and lemmas plus a closed-form Markov-chain example showing that conditioning on token 'A' the next token 'A' is never sampled (probability 1-alpha in byte space is unreachable in token space).",
+      "domain": "Language model tokenization / theory of LLMs",
+      "source_quote": "We convert tokenized LMs into statistically equivalent token-free models, and demonstrate that their predictive distributions differ. We define this discrepancy as tokenization bias.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "Enable bias-free next-byte prediction from any trained tokenized LM without retraining, so that a tokenized model can be converted zero-shot into a statistically equivalent token-free one.",
+      "mechanism": "A next-byte sampling algorithm derived from the Byte-Token Representation Lemma, applied at inference time with O(1) cost in terms of model runs, requiring no additional training or optimization.",
+      "evaluation": "Method has O(1) computational cost in model runs; applied at inference time; validated downstream via FIM and ensemble experiments (see C3).",
+      "domain": "Language model inference / decoding",
+      "source_quote": "We introduce a method that enables next-byte prediction for any tokenized language model to fully mitigate tokenization bias. This algorithm is applied at inference time and carries an O(1) computational cost in terms of model runs.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Demonstrate practical utility of the next-byte method on fill-in-the-middle (FIM) coding tasks and on ensembling LMs with distinct vocabularies.",
+      "mechanism": "Apply the next-byte conversion to FIM prompts that terminate mid-token (avoiding OOD tokenization) and to combine predictions of models with different vocabularies in a shared byte space, enabling averaging / mixture-of-experts ensembling.",
+      "evaluation": "18% improvement on FIM coding benchmarks over tokenized models with the same cross-entropy, consistently outperforming token healing; up to 3.7% improvement over individual models on ensembles across reasoning, knowledge, and coding baselines.",
+      "domain": "Code completion (FIM) and LLM ensembling",
+      "source_quote": "We present strong empirical evaluations on FIM benchmarks (18% improvement) and model ensemble tasks (up to 3.7% improvement), further demonstrating the effectiveness of our approach.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Recent work by Rajaraman et al. (2024) provides an additional explanation: Even for unlimited data and compute, tokenized models can achieve better cross-entropy loss than untokenized ones ... The statistical equivalency between two chains is described in Rajaraman et al. (2024).",
+      "section": "related work"
+    },
+    {
+      "quote": "Token healing (Dagan et al., 2024; guidance ai, 2023) mitigates this issue by searching for tokens prefixed with the incomplete word. This method, however, fails to consider all matching possibilities ... In contrast, we tackle the underlying issue by identifying the probabilistic root cause, i.e. the token-byte domain gap, and introduce a conversion technique to recover the unbiased byte-level distribution without requiring retraining.",
+      "section": "related work"
+    },
+    {
+      "quote": "Finally, Pimentel & Meister (2024) address a different but related problem of computing next word probability, sharing some similar analysis but their approach is limited to whitespace-separated tokenizers and does not support autoregressive byte sampling.",
+      "section": "related work"
+    },
+    {
+      "quote": "Gu et al. (2024) also investigate character-level ensembling, but does not provide expressions for P(x) or P(x_{n+1}|x) and overlooks the issue of invalid encodings.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Positive results throughout (18% FIM improvement, up to 3.7% ensemble improvement, 'outperform individual models in many cases'). Caveat/limitation flagged by authors: analysis is limited to single-token predictions while real applications generate hundreds of tokens, and the theory does not cover the greedy evaluation process or cumulative bias effects; ensemble gains stated as 'in many cases' rather than uniform. No explicit negative/tie result reported.",
+  "extractor": "human-baseline-batch17",
+  "date": "2026-07-07"
+}

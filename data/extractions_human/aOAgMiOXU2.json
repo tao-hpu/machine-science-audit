@@ -1,0 +1,50 @@
+{
+  "paper_id": "aOAgMiOXU2",
+  "title": "Code Diffusion Models Are Continuous Human Noise Operators",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Test whether the intermediate discrete representations produced during reverse code-diffusion resemble the mistakes humans actually make, i.e. whether code diffusion acts as a 'continuous human noise operator'.",
+      "mechanism": "Analysis of pre-trained CodeFusion diffusion trajectories: measure, over diffusion time-steps, the number of tokens changed and the maximum distance between edited tokens (localization); compare diffusion-generated errors against human-error operators (BIFI, FLAME) and GPT-4o along localization, diversity, and complexity.",
+      "evaluation": "Figure 2 shows fewer and more localized edits near the end of diffusion (global repairs first, then local); diffusion-generated data has higher diversity, higher complexity and more global errors than existing generators and GPT-4o.",
+      "domain": "Code generation / automated program repair",
+      "source_quote": "In this paper, we address those challenging by asking if code diffusion can serve as a continuous human noise operator? In other words, we evaluate the extent to which the discrete representations obtained during reverse diffusion steps ... are representative of mistakes that humans actually make.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "Directly use a pre-trained code diffusion model for last-mile repair of broken code without training a specialized repair system.",
+      "mechanism": "Inject a broken code snippet by adding noise to it and resuming the reverse diffusion process, letting the model denoise it back to compilable code; choose noise level via any%/best%/vote% strategies.",
+      "evaluation": "Repairs 56.4-68.2% of Python and Excel snippets across noise levels; a small 60M-param diffusion model outperforms Codex on Python (+8%) and PowerShell (+11%); still underperforms dedicated systems (BIFI, LaMirage) and GPT-4o/RING with compiler feedback.",
+      "domain": "Automated program repair (last-mile repair)",
+      "source_quote": "First, we can leverage the diffusion model for last-mile repair by adding noise to a broken code snippet and resuming the diffusion process.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Overcome the long-tail training-data and out-of-distribution problems in training efficient last-mile repair systems by generating synthetic (broken, fixed) code pairs.",
+      "mechanism": "Sample an intermediate program (input) and the final program (output) from the diffusion process to produce synthetic training pairs, then fine-tune cheaper repair models on them.",
+      "evaluation": "Fine-tuning codet5-small, phi-3.5-mini and mistral-7b on diffusion-generated data gives +2.5-3.5% higher performance than existing generators and GPT-4o; authors state synthetic-data generation shows the most promise of the two applications.",
+      "domain": "Automated program repair / synthetic data generation",
+      "source_quote": "Second, we can leverage the diffusion model to generate an arbitrary amount of training data for other last-mile repair approaches (that are computationally more efficient) by sampling an intermediate program (input) and the final program (output) from the diffusion process.",
+      "type": "method"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "In previous work, mistakes are introduced in the discrete token space, by implementing specialized functions that imitate human errors (Yasunaga & Liang, 2020; Joshi et al., 2024) and optionally training a neural network to imitate those (Yasunaga & Liang, 2021). Our aim is to show that the space of discrete representations encountered during the reverse diffusion process shares enough similarities to the discrete errors that humans make",
+      "section": "related work"
+    },
+    {
+      "quote": "In the following three sections, we respectively reiterate the components and training process of CODEFUSION (Singh et al., 2023a), describe how to apply it to problem of last-mile repair (building directly on the pre-trained CodeFusion model)",
+      "section": "related work"
+    },
+    {
+      "quote": "For Python, we use the popular BIFI (Yasunaga & Liang, 2021) model ... For Excel, we use the 17 operators used to fine-tune FLAME (Joshi et al., 2024) on last-mile formula repair. (baselines the synthetic data generator against these)",
+      "section": "related work"
+    }
+  ],
+  "notes": "Rejected. Contains honest trade-off/negative findings: the direct-repair application underperforms strong dedicated systems (BIFI, LaMirage) and GPT-4o/RING with compiler feedback - authors concede 'these very powerful models ... still perform better.' Repair success is noise-level dependent with a decline at high noise (too many changes); optimal injection point differs by language (Excel later, Python/PowerShell earlier). Authors position the synthetic-data-generation use case as the more promising of the two, implying the direct-repair use case is weaker.",
+  "extractor": "human-baseline-batch9",
+  "date": "2026-07-07"
+}

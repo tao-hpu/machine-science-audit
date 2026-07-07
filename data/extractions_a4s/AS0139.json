@@ -1,0 +1,45 @@
+{
+ "title": "Parallelizing Graphviz Dot Layout Algorithm using OpenMP",
+ "contributions": [
+  {
+   "id": "C1",
+   "purpose": "定位 GraphViz 布局的并行瓶颈",
+   "mechanism": "perf 剖析+phase 级成本模型识别核心 kernel",
+   "evaluation": "rank2() 占 49% CPU、transpose 25%、rcross/ncross 各约 15%",
+   "domain": "AI 驱动 HPC/图布局并行",
+   "source_quote": "A function- and phase-level study of GraphViz identifying rank2(), transposes, rcross(), ncross(), and median computations as primary cost centers",
+   "type": "finding"
+  },
+  {
+   "id": "C2",
+   "purpose": "用 AI 集成自动生成 OpenMP 并行代码",
+   "mechanism": "LLM 集成(Claude3.5/GPT-4o/Gemini1.5)按 kernel 访问模式插入 #pragma omp+reduction 并做验证",
+   "evaluation": "ThreadSanitizer/Valgrind 零数据竞争,MD5 输出位相等",
+   "domain": "同上",
+   "source_quote": "OpenMP-based templates (loop decomposition, dependency-aware reductions, cache-friendly transposes) generated for the identified kernels",
+   "type": "method"
+  },
+  {
+   "id": "C3",
+   "purpose": "验证并行加速",
+   "mechanism": "M1 8 核实测 speedup",
+   "evaluation": "峰值 3.78×@2000节点/8线程,47.2% 并行效率,rank2() 168.7→44.7ms",
+   "domain": "同上",
+   "source_quote": "we demonstrate a peak speedup of 3.78× with 47.2% parallel efficiency across diverse graph topologies",
+   "type": "finding"
+  }
+ ],
+ "self_declared_provenance": [
+  {
+   "quote": "This framework is adapted from [7] and extended with additional validation steps.",
+   "section": "methodology"
+  }
+ ],
+ "notes": "数据红旗:提示词模板明写\"target 3.78x speedup\",结果恰为 3.78×(自证循环);Table 4 AI 预测 vs 实测互相印证(±5.3%)属循环自证;测试图仅 100 节点,却用 intro 里 10000节点/96s 做动机(规模不符);多处断裂交叉引用(Section 5.5/6/3.1.3/3.1.4、Table ??);编造精度(ThreadSanitizer 99.8%、99.9% accuracy);checklist AI 披露 Writing=AI-generated,其余 Mostly AI, assisted by human。reject。",
+ "paper_id": "AS0139",
+ "extractor": "agent-a4s-full-14",
+ "date": "2026-07-06",
+ "forum": "88zyE3fJzQ",
+ "decision": "reject",
+ "submission_date": "2025-09-14"
+}

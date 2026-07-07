@@ -1,0 +1,46 @@
+{
+  "paper_id": "9KxnxWOBA5",
+  "title": "Towards Optimal Multi-draft Speculative Decoding",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "使实际词表规模(上千)下的 MDSD 最优接受率首次可高效计算,以便量化现有验证算法与理论上界的差距",
+      "mechanism": "取最优传输问题的对偶,利用系数矩阵的全单模性(TUM)将求最优接受率转化为一个子集选择问题(subset selection),再对特殊 draft 分布(有放回/无放回)利用集合函数的凸性结构设计高效求解方法",
+      "evaluation": "定性:首次给出对给定 draft 分布计算 MDSD 理论接受率上界的实用方法;LP 求解器只能处理小玩具模型,本法可处理上千词表",
+      "domain": "大语言模型推理加速 / 投机解码(speculative decoding)",
+      "source_quote": "We transform the problem of solving the optimal acceptance rate corresponding to the optimal transport into a subset selection problem by considering the dual of the problem and then applying total unimodularity. This provides a novel perspective for understanding the efficiency of MDSD.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "在真实文本分布上首次测出 MDSD 效率的理论上界,并量化现有验证算法(RRS、K-SEQ)与该上界的差距,同时比较不同 draft 采样方法",
+      "mechanism": "用 C1 的高效计算方法在四个真实 LLM(LLaMA、Vicuna、OPT、Qwen2)上测最优接受率,对比 with/without replacement 采样及 RRS、K-SEQ 验证算法",
+      "evaluation": "LLaMA-7B/68M、OPT-6.7B/125M、Vicuna、Qwen2 上;发现无放回采样接受率高于有放回;RRS 与 K-SEQ 均与理论上界存在显著差距(Table 1,Δα 带方向箭头标显著性)",
+      "domain": "大语言模型推理加速 / 投机解码",
+      "source_quote": "For the first time, we measure the theoretical upper bound of MDSD efficiency on real text, and the gap of existing verification algorithms. We compare different draft sampling methods through their optimal acceptance rates and observe that sampling without replacement outperforms sampling with replacement. We evaluate existing verification algorithms, including K-SEQ for with replacement and RRS for without replacement and with replacement sampling, and find that they still have significant gaps from the theoretical upper bound.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "提出能达到甚至超过无放回采样接受率、且验证算法可精确触及理论上界的新 draft 采样方法",
+      "mechanism": "贪心地选取高概率 draft、只让最后一个 draft 随机(greedy draft distribution),并设计对应验证算法使其严格达到该分布的最优接受率",
+      "evaluation": "部分情形下贪心法接受率高于无放回,并取得最高接受率;但温度为 1 时贪心法表现更差(消融实验),说明并非总是最优",
+      "domain": "大语言模型推理加速 / 投机解码",
+      "source_quote": "We propose a novel draft sampling method that greedily selects high-probability drafts, with only the last draft being random. In some cases, it achieves an even higher optimal acceptance rate than without replacement. We also propose a corresponding verification algorithm that perfectly reaches the theoretical acceptance rate upper bound.",
+      "type": "method"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "For a fixed draft sampling method, the optimal verification algorithm is a solution to an optimal transport problem (Sun et al., 2024e), corresponding to an optimal acceptance rate.",
+      "section": "related work"
+    },
+    {
+      "quote": "Several approximation have been proposed for the multi-draft speculative decoding problem, including Recursive Rejection Sampling (RRS) (Yang et al., 2024b; Jeon et al., 2024) and K-SEQ (Sun et al., 2024e). RRS recursively verifies the draft tokens, while K-SEQ improves the acceptance rate for sampling with replacement.",
+      "section": "related work"
+    }
+  ],
+  "notes": "偏理论 + 方法的论文。含 trade-off/负向信号:贪心 draft 法虽常取最高接受率,但作者自陈'not always the case',温度=1 时贪心法反而更差(见消融)。核心实证发现是负向定位既有工作:RRS 与 K-SEQ 两个现有验证算法均与理论上界有显著差距(未达最优)。",
+  "extractor": "human-baseline-batch22",
+  "date": "2026-07-07"
+}

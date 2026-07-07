@@ -1,0 +1,321 @@
+{
+ "paper_id": "FA0002",
+ "title": "Adaptive SRE-Mass Cache Sizing for Hybrid Linear Attention",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "consensus_state": "recombination",
+   "prompt_version": "v7",
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": 17
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to eliminate wasted memory from fixed sparse-cache sizes in hybrid linear attention by dynamically sizing the cache to actual per-step recall requirements. Paper [9] discusses hybrid sparse attention and token eviction to mitigate memory limitations in linear attention models, which aligns with the same problem-class objective of addressing memory inefficiency in hybrid sparse attention setups. While the specific implementation differs, the purpose of optimizing memory usage in hybrid sparse attention is substantively equivalent.\n\n### Mechanism\nThe mechanism, SRE-adaptive-mass caching, dynamically adjusts cache size based on capturing a target fraction of Self-Recall Error (SRE) mass. Paper [17] introduces Adaptive Retention, a probabilistic token selection mechanism that dynamically adjusts memory retention under a strict global budget, which is conceptually equivalent to dynamically adjusting memory allocation based on token importance. Both mechanisms involve adaptive token retention strategies to optimize memory usage, making them substantively equivalent.\n\n### Evaluation\nThe contribution evaluates its method on RULER long-context benchmarks against LoLA's fixed cache size baseline. Paper [16] introduces SCBench, a KV cache-centric benchmark for evaluating long-context methods, which includes similar evaluation designs focused on KV cache efficiency. Although the specific benchmark instance differs, the evaluation design of benchmarking KV cache methods for long-context LLMs is substantively equivalent.\n\n### Domain\nThe domain of the contribution is efficient LLM inference and KV cache compression. Papers [1], [3], [6], [7], and others address efficient LLM inference and KV cache compression, which is the same general application area. While the specific sub-problems or datasets may differ, the domain of efficient LLM inference and memory optimization is covered.\n\n---\n\nVERDICT purpose = 9  \nVERDICT mechanism = 17  \nVERDICT evaluation = 16  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\n\nThe purpose is to eliminate wasted memory from fixed sparse-cache sizes in hybrid linear attention by sizing the cache to actual per-step recall requirements.\n\nPaper [1] (ZigZagkv) addresses non-uniform budget allocation across layers to reduce information loss — \"allocate a uniform budget size for each layer to retain\" is the problem they solve, which is closely related. Paper [9] (LoLA/hybrid sparse attention) directly addresses hybrid linear attention with sparse attention and token eviction, and discusses fixed-size recurrent states causing forgetfulness. Paper [24] (XKV) addresses \"personalized KV cache memory reduction\" with non-uniform allocation. Paper [1] specifically targets eliminating waste from fixed uniform budgets by adapting to actual layer needs — this is substantively equivalent to the purpose of eliminating waste from fixed cache sizes by adapting to actual recall requirements. The host architecture differs (standard transformer layers vs. hybrid linear attention), but the objective — replace fixed cache budget with adaptive sizing to avoid waste — is the same problem class.\n\n## Mechanism\n\nThe mechanism is SRE-adaptive-mass caching: a training-free method that retains tokens until a target fraction p of total Self-Recall Error (SRE) mass is captured, dynamically adjusting cache size at each update step.\n\nThe SRE metric itself (measuring how well the linear attention recurrent state can recall past tokens) appears to be specific to paper [9]'s framework. However, the broader primitive of \"retain tokens until a target fraction of some importance/attention mass is captured\" appears in several papers. Paper [13] (FlexPrefill) uses \"cumulative attention score threshold\" to dynamically determine how many tokens to attend to — retaining tokens until a target fraction of attention mass is captured. Paper [30] (RCStat) uses RC-based thresholding for KV compression. Paper [14] (STR) uses probabilistic selection that dynamically adjusts token retention. The specific primitive of \"accumulate a mass metric until a threshold fraction p is reached\" as the cache-sizing rule is most directly matched by [13]'s cumulative attention threshold approach — same underlying primitive of threshold-on-cumulative-mass, different metric name.\n\n## Evaluation\n\nThe evaluation uses RULER long-context benchmarks against LoLA's fixed cache size baseline.\n\nRULER is a named benchmark family used for long-context LLM evaluation. Paper [9] (LoLA) itself uses RULER. Paper [16] (SCBench) evaluates long-context methods. Multiple papers in this set evaluate on long-context benchmarks. The evaluation design — running on RULER benchmark with comparison to a baseline — is a standard evaluation design used in prior work (paper [9] explicitly).\n\n## Domain\n\nThe domain is efficient LLM inference / KV cache compression. This is clearly covered by numerous papers: [1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [23], [24], etc.\n\nVERDICT purpose = 1\nVERDICT mechanism = 13\nVERDICT evaluation = 9\nVERDICT domain = 9",
+      "stage2": ""
+     }
+    }
+   },
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     9
+    ],
+    "mechanism": [
+     13,
+     17
+    ],
+    "evaluation": [
+     9,
+     16
+    ],
+    "domain": [
+     1,
+     9
+    ]
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "consensus_state": "recombination",
+   "prompt_version": "v7",
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 18
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to show that adaptive cache sizing substantially reduces memory overhead with a small accuracy cost. This is a specific empirical relationship between adaptive cache sizing and its effects on memory and accuracy. None of the prior papers explicitly establish this same relationship. While many papers (e.g., [1], [2], [3], [5], [13], [18]) discuss KV cache compression or adaptive strategies, they focus on methods or mechanisms rather than empirically demonstrating the specific tradeoff between memory reduction and accuracy retention. Papers like [7], [11], and [25] discuss adaptive cache management in other contexts (e.g., general-purpose caching or ARC), but they do not establish the same relationship in the LLM KV cache setting.\n\n**Verdict:** No prior paper reports or establishes the same empirical relationship.  \n**Conclusion:** **NONE**.\n\n---\n\n### Mechanism\nThe mechanism involves measuring cache size and accuracy of SRE-adaptive-mass caching on RULER Variable Tracking tasks versus a fixed-cache baseline. This is a specific implementation of adaptive cache sizing. Papers like [1], [2], [3], [5], [13], and [18] describe various adaptive or compression-based mechanisms for KV cache management in LLMs. For example, [13] introduces adaptive budget allocation for KV cache eviction, and [18] uses entropy-guided recovery for adaptive KV cache freezing. These mechanisms are substantively equivalent to the adaptive cache sizing described in the contribution, as they all involve dynamically adjusting cache usage to optimize memory efficiency while maintaining performance.\n\n**Verdict:** The mechanism is covered by prior work, particularly [13] and [18].  \n**Conclusion:** **[13]**.\n\n---\n\n### Evaluation\nThe evaluation reports a 46% cache reduction on Variable Tracking while retaining 93% of baseline accuracy. This involves comparing memory usage and accuracy between adaptive and fixed-cache baselines. Many prior papers use similar evaluation designs for KV cache compression in LLMs. For example, [1], [2], [3], [5], [13], and [18] evaluate memory reduction and accuracy retention under different compression or adaptive strategies. While the specific benchmark (Variable Tracking) and exact numbers differ, the evaluation design — measuring memory reduction and accuracy retention — is standard in this area.\n\n**Verdict:** The evaluation design is covered by prior work, particularly [1], [2], and [13].  \n**Conclusion:** **[1]**.\n\n---\n\n### Domain\nThe domain is efficient LLM inference and KV cache compression. Many prior papers, including [1], [2], [3], [5], [13], and [18], explicitly address this domain. These papers focus on optimizing KV cache usage to improve memory efficiency during LLM inference, which is the same general application area as the contribution.\n\n**Verdict:** The domain is covered by prior work, particularly [1], [2], and [13].  \n**Conclusion:** **[1]**.\n\n---\n\n### Final Verdicts\nVERDICT purpose = NONE  \nVERDICT mechanism = [13]  \nVERDICT evaluation = [1]  \nVERDICT domain = [1]  ",
+      "stage2": "1. **FACET: purpose** | **FINAL: COVERED-BY 18** | **reason:** Paper [18] states: \"Our method introduces a reversible soft-freeze mechanism that temporarily suspends key-value (KV) updates for low-importance tokens... Unlike eviction-based approaches that permanently discard context, ASR-KF-EGR preserves all tokens in off-GPU storage and restores them on demand.\" This aligns with the objective of reducing memory overhead (adaptive cache sizing) with minimal accuracy cost."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Shows that adaptive cache sizing substantially reduces memory overhead with small accuracy cost.**\n\nPaper [13] (Ada-KV) explicitly addresses adaptive budget allocation for KV cache to reduce memory while preserving quality: \"reduce KV cache size by evicting vast non-critical cache elements during runtime while preserving generation quality\" with adaptive budgets per attention head. Paper [3] (KV-Compress) also addresses variable compression rates to reduce memory with accuracy preservation. The purpose of demonstrating that adaptive sizing reduces memory overhead with small accuracy cost is substantively covered — this is the core claim of adaptive KV cache compression papers like [13].\n\n**MECHANISM: Measures cache size and accuracy of SRE-adaptive-mass caching on RULER Variable Tracking tasks versus a fixed-cache baseline.**\n\nThe specific mechanism here is \"SRE-adaptive-mass caching\" — a particular adaptive cache sizing method compared against a fixed-cache baseline. Paper [13] uses adaptive budget allocation per head vs. uniform budget baseline. Paper [7] uses working set size estimation for adaptive cache capacity optimization vs. fixed capacity. The underlying primitive — adaptive cache sizing compared to a fixed-budget baseline — appears in [13] and [7]. However, \"SRE-adaptive-mass\" is a specific method not described in prior papers. The comparison primitive (adaptive vs. fixed baseline measurement) is covered by [13].\n\n**EVALUATION: 46% cache reduction on Variable Tracking while retaining 93% of baseline accuracy.**\n\nThe evaluation design uses a named benchmark (RULER) with accuracy metrics compared against a fixed-cache baseline — this is a standard KV cache compression evaluation design. Paper [12] (SCBench) explicitly evaluates KV cache methods on long-context benchmarks including variable tracking tasks. Paper [26] evaluates eviction policies under constrained budgets measuring accuracy retention. Paper [3] uses RULER as an evaluation benchmark. The design (accuracy on RULER-family tasks vs. fixed budget baseline) is covered by [3] and [12].\n\n**DOMAIN: Efficient LLM inference / KV cache compression.**\n\nThis is clearly covered by numerous prior papers: [1], [2], [3], [4], [5], [8], [9], [10], [13], [14], [15], [18], [22], [26], [27] all operate in efficient LLM inference / KV cache compression.\n\nVERDICT purpose = 13\nVERDICT mechanism = 13\nVERDICT evaluation = 3\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   },
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     13,
+     18
+    ],
+    "mechanism": [
+     13
+    ],
+    "evaluation": [
+     1,
+     3
+    ],
+    "domain": [
+     1
+    ]
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "consensus_state": "facet-novel",
+   "prompt_version": "v7",
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 17
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution validates that the SRE signal specifically, not just any importance score, is what makes adaptive cache sizing work. None of the prior papers explicitly establish or validate this specific empirical relationship between SRE and adaptive cache sizing. While several papers discuss token importance metrics (e.g., [19], [9], [7]), they do not isolate or validate the unique role of SRE in adaptive cache sizing. For example, [19] critiques attention scores as token importance indicators but does not validate SRE's specific role. Similarly, [9] explores attention-output-error-based token eviction but does not address SRE's connection to recall capability.\n\n### Mechanism\nThe mechanism involves ablation replacing SRE with attention-based importance scores (H2O-style) in the adaptive sizing procedure. Paper [17] (H2O) introduces attention-based importance scores for KV cache compression, which matches the mechanism primitive of using attention scores as a proxy for token importance. This equivalence holds cross-domain, as the mechanism of replacing SRE with attention-based scores aligns with H2O's approach to importance scoring.\n\n### Evaluation\nThe evaluation design involves demonstrating complete task failure (0% accuracy) when SRE is replaced with H2O-style attention scores, supporting the theoretical connection between SRE and recall capability. Paper [8] uses a similar evaluation design to compare learned importance scoring methods against baselines, including random selection, across multiple seeds, retention levels, and tasks. The evaluation design of controlled replacement and task performance measurement matches the contribution's evaluation setup, even though the specific object (SRE vs. H2O) differs.\n\n### Domain\nThe domain is efficient LLM inference / KV cache compression. Multiple prior papers ([1], [2], [3], [4], [6], [7], [9], [16], [17], [19]) work in the same general application area of KV cache compression for efficient LLM inference. For example, [1] addresses KV cache compression for long-context inference, and [16] introduces adaptive KV cache compression for generative inference. These papers collectively cover the domain facet.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 17  \nVERDICT evaluation = 8  \nVERDICT domain = 1  ",
+      "stage2": "1. **FACET: purpose** | **FINAL: NONE** | reason: No prior paper explicitly validates that the *SRE signal specifically* (not just any importance score) is what makes adaptive cache sizing work. No equivalent objective found under different terminology, framing, or domain vocabulary."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 17
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Validates that the SRE signal specifically, not just any importance score, is what makes adaptive cache sizing work.**\n\nThis purpose is about demonstrating that a *specific* signal (SRE) is uniquely responsible for a capability (adaptive cache sizing / recall), as opposed to generic importance scores. I need to find a prior paper that establishes the same empirical relationship: that a particular signal type is uniquely necessary (not interchangeable with attention-based scores) for a specific cache mechanism to function. Paper [17] (H2O) introduces attention-based importance scoring but doesn't compare it against an alternative signal to show one is uniquely necessary. Paper [8] investigates limits of learned importance scoring and compares methods, but its finding is that learned scores don't outperform baselines — not that a specific non-attention signal is uniquely necessary for adaptive sizing. No prior paper establishes the same relationship (SRE-specifically enables adaptive sizing; attention scores cause failure). This is a novel empirical relationship.\n\n**MECHANISM: Ablation replacing SRE with attention-based importance scores (H2O-style) in the adaptive sizing procedure.**\n\nThis is a substitution/swap ablation — replacing one scoring component with another (H2O-style attention scores) and measuring the effect. Paper [17] (H2O) introduces attention-based importance scoring. Papers [8], [9], [19] compare different importance metrics. Paper [8] explicitly compares learned importance scores against baselines including attention-based ones. The generic mechanism of \"swap importance score X for importance score Y and measure performance\" is a standard ablation design that appears across [8], [9], [19], and others. This is a standard component-swap ablation design.\n\n**EVALUATION: Replacing SRE with H2O-style attention scores causes complete task failure (0% accuracy).**\n\nThe evaluation design here is a component-swap experiment measuring task accuracy — a standard ablation. Papers [8], [9], [19] all perform comparisons between different importance scoring methods on task accuracy benchmarks. Paper [8] explicitly compares multiple importance scoring approaches across tasks and retention levels. This is a standard substitution experiment measuring accuracy, which is covered by the generic evaluation design in [8] and [9].\n\n**DOMAIN: Efficient LLM inference / KV cache compression.**\n\nThis is clearly covered by numerous prior papers: [1], [2], [3], [4], [5], [6], [7], [8], [9], [11], [14], [16], [17], [19], etc. all operate in efficient LLM inference and KV cache compression.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 8\nVERDICT evaluation = 8\nVERDICT domain = 17",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper validates that a specific named signal (analogous to SRE) is the causal driver of adaptive cache sizing performance, as opposed to simply proposing or evaluating an importance scoring method. The closest candidates (e.g., [16] adaptive KV cache compression, [11] CAKE, [2] ZigZagkv) propose layer-adaptive allocation but none ablate their specific signal against alternative importance scores to isolate it as the operative mechanism. No quoted phrase from any paper establishes this same empirical validation objective."
+     }
+    }
+   },
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     8,
+     17
+    ],
+    "evaluation": [
+     8
+    ],
+    "domain": [
+     1,
+     17
+    ]
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "consensus_state": "split",
+   "prompt_version": "v7",
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": 7
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to characterize which task types benefit from adaptive caching versus needing larger budgets. Paper [7] (\"DynamicKV\") discusses task-specific characteristics and activation patterns across layers, highlighting the need for adaptive strategies tailored to each task's demands. This aligns with the purpose of identifying task-specific benefits of adaptive caching. Paper [8] (\"KVCache Cache in the Wild\") systematically characterizes KV cache workload patterns, which includes understanding task-specific cache requirements. Both papers address the same problem-class level objective of task-specific KV cache optimization.\n\n### Mechanism\nThe contribution analyzes per-task behavior of adaptive caching across RULER task categories. Paper [7] (\"DynamicKV\") employs a method to dynamically optimize KV cache compression based on task-specific activation patterns, which is substantively equivalent to analyzing per-task behavior for adaptive caching. Paper [10] (\"EvolKV\") also uses a task-driven framework for layer-wise adaptive KV cache compression, which involves analyzing task-specific cache behavior. Both papers use mechanisms that match the underlying primitive of task-specific adaptive caching analysis.\n\n### Evaluation\nThe contribution finds that tasks with diffuse token dependencies (Variable Tracking) benefit most from adaptive caching, while information retrieval tasks (MQ) require higher cache budgets. Paper [7] (\"DynamicKV\") evaluates task-specific activation patterns and their impact on adaptive caching, which matches the evaluation design of analyzing task-specific cache benefits. Paper [8] (\"KVCache Cache in the Wild\") characterizes KV cache workload patterns across tasks, which involves evaluating task-specific cache requirements. Both papers use evaluation designs that align with the contribution's approach.\n\n### Domain\nThe contribution operates in the domain of efficient LLM inference and KV cache compression. Papers [1]-[17] all address KV cache compression or management for efficient LLM inference, which is the same general application area. Specifically, papers like [7] (\"DynamicKV\") and [8] (\"KVCache Cache in the Wild\") focus on task-specific KV cache optimization, which is directly within the same domain.\n\n---\n\nVERDICT purpose = 7  \nVERDICT mechanism = 7  \nVERDICT evaluation = 7  \nVERDICT domain = 7  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Characterizes which task types benefit from adaptive caching versus needing larger budgets.**\n\nThis is a finding about the relationship between task type and adaptive caching behavior — specifically which tasks benefit from adaptive caching vs. require larger budgets. Paper [7] (DynamicKV) observes \"distinct activation patterns across layers in various tasks, highlighting the need for adaptive strategies tailored to each task's unique demands\" and explicitly studies task-specific KV cache compression behavior. Paper [10] (EvolKV) mentions \"critical interplays among layer-specific feature patterns and task performance.\" However, neither paper specifically characterizes the relationship between token dependency structure (diffuse vs. concentrated) and adaptive caching benefit — the specific variables (dependency diffuseness → adaptive caching benefit) are not established in prior work. Paper [7] is the closest, but it focuses on layer-wise activation patterns per task, not on characterizing which task types benefit from adaptive vs. larger budgets as a finding. This is a specific empirical relationship not previously reported.\n\n**MECHANISM: Analysis of per-task behavior of adaptive caching across RULER task categories.**\n\nThe mechanism is a per-task breakdown analysis across benchmark categories. Paper [7] performs per-task analysis of KV cache compression behavior. Paper [10] also analyzes task-driven KV cache compression. These are standard per-task breakdown analyses (controlled analysis across task categories), which is a standard analysis protocol appearing in prior work. The design — breaking down performance by task category to understand differential behavior — is a standard analytical approach used in [7] and [10].\n\n**EVALUATION: Finds tasks with diffuse token dependencies (Variable Tracking) benefit most from adaptive caching, while information retrieval tasks (MQ) require higher cache budgets.**\n\nThe evaluation design uses RULER benchmark task categories (Variable Tracking, Multi-Query) to measure differential performance. Paper [18] is titled \"RULER\" but it's about controlling generated length, not the RULER long-context benchmark. No prior paper uses the RULER long-context benchmark's specific task categories (VT, MQ) as an evaluation design for KV cache compression analysis. However, the evaluation design itself — measuring per-task performance on a named benchmark family — is a standard design. The RULER long-context benchmark is a known benchmark family used in LLM evaluation. The design of \"evaluate KV cache method across RULER task categories\" follows the standard benchmark evaluation design used broadly. Per the special rule, using a named benchmark family counts as COVERED even if the specific object differs.\n\n**DOMAIN: Efficient LLM inference / KV cache compression.**\n\nThis is clearly covered by numerous prior papers [1], [2], [3], [4], [5], [7], [9], [10], [11], [14], [15], etc., all operating in efficient LLM inference and KV cache compression.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 7\nVERDICT evaluation = 7\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper characterizes which task types benefit from adaptive caching versus needing larger budgets as an explicit empirical finding. DynamicKV [7] observes task-specific activation patterns and adapts accordingly, but does not produce a characterization of which task types benefit from adaptive caching versus requiring larger budgets — it proposes a method, not a diagnostic finding about task-type-specific budget needs. No other paper contains this objective even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe purpose is to establish a specific empirical relationship: which task types are best suited for adaptive caching versus which require larger static budgets. While prior work acknowledges that caching strategies should be task-dependent, none appear to report this specific characterization. For instance, [7] uses the observation of \"distinct activation patterns across layers in various tasks\" as motivation for a new method, but does not establish the contribution's specific finding about which task families (e.g., variable tracking vs. IR) map to which caching needs. Therefore, the purpose of establishing this particular relationship is not covered.\n\n**MECHANISM**\nThe mechanism is an \"Analysis of per-task behavior of adaptive caching\". This is a standard analysis protocol. Paper [7] uses this mechanism to motivate its work, stating \"we observe distinct activation patterns across layers in various tasks,\" which requires a per-task analysis. Similarly, paper [8] performs a \"systematic characterization of the KV$ workload patterns,\" which is an analysis of behavior across different workloads/tasks.\n\n**EVALUATION**\nThe evaluation design involves benchmarking a caching method on a suite of diverse tasks (here, RULER categories) and analyzing the performance on a per-task basis. This is a standard evaluation design, not a new protocol. For example, paper [14] evaluates its adaptive compression method on summarization, question answering, and code generation tasks, which is the same design of analyzing performance across a basket of different task types.\n\n**DOMAIN**\nThe domain is \"efficient LLM inference / KV cache compression\". This is the explicit application area of numerous prior papers. For example, paper [1] is titled \"Efficient Structured KV Cache Compression\" and operates squarely within this domain, as do papers [2], [3], [5], [7], and many others.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 7\nVERDICT evaluation = 14\nVERDICT domain = 1",
+      "stage2": "FACET: purpose: Characterizes which task types benefit from adaptive caching versus needing larger budgets. | FINAL: NONE | reason: Prior work, such as [7] and [10], uses task-specific differences as a *motivation* to propose new adaptive methods. However, no paper performs the specific analysis required by the facet: a characterization of which task types are suited for adaptive methods versus which are better served by simply using a larger, non-adaptive cache budget. This comparative analysis that defines the boundaries of the adaptive approach's utility is not present."
+     }
+    }
+   },
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     7
+    ],
+    "evaluation": [
+     7,
+     14
+    ],
+    "domain": [
+     1,
+     7
+    ]
+   }
+  }
+ ]
+}

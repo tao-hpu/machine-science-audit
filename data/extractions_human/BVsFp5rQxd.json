@@ -1,0 +1,59 @@
+{
+  "paper_id": "BVsFp5rQxd",
+  "title": "VoiceNoNG: High-Quality Speech Editing Model without Hallucinations",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "解释为什么基于神经编解码语言模型(NCLM, 如 VoiceCraft)的语音编辑模型有更高的词错误率(WER), 从而定位质量瓶颈",
+      "mechanism": "对 VoiceCraft 输出做错误分析, 将高 WER 归因于注意力错误(幻觉)导致模型难以准确跟随目标转写文本",
+      "evaluation": "在 RealEdit 数据集上用 Whisper-large-v3 计算 WER, VoiceCraft(330M) 总 WER 5.23% / VoiceCraft(830M) 5.52%, 均高于所有 flow-matching 方法; 附录 Table 4/5 给出重复词、漏词等幻觉实例",
+      "domain": "语音编辑 / 语音合成",
+      "source_quote": "We identify the **hallucination-like** problem in the autoregressive-based VoiceCraft model, which makes it difficult to follow the target transcription accurately. This leads to a higher word error rate (WER), calculated by comparing the transcribed text to the target transcription.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "构建一个既保持高语音质量又避免幻觉问题的语音编辑模型",
+      "mechanism": "VoiceNoNG 结合 Voicebox 与 VoiceCraft: 用 latent flow-matching 框架建模神经编解码器的量化前特征, 由向量量化器隐式将回归问题转成类似 NCLM 的 token 分类; 在 Voicebox 的 flow-matching loss 之外额外加交叉熵(CE)损失提升 codec 预测精度",
+      "evaluation": "RealEdit 数据集上总 WER 4.54%, 低于 VoiceCraft(5.23/5.52)、两个 Voicebox 复现(5.13/4.97), 甚至低于 Original(4.65); 主观 5 分自然度听测(15 名听者, 120 条/人)中 VoiceNoNG 与原始语音相当",
+      "domain": "语音编辑 / 语音合成",
+      "source_quote": "We propose VoiceNoNG, a speech editing model that combines the strengths of both Voicebox and VoiceCraft, achieving **SOTA** performance in both objective and subjective evaluations.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "指出实现鲁棒语音编辑模型的关键组件",
+      "mechanism": "消融研究: 对比建模量化前特征 vs 量化后特征、加/不加 CE loss, 论证神经编解码器中的向量量化器(VQ)模块对预测误差提供额外鲁棒性",
+      "evaluation": "消融显示量化后(post-quantization)特征平均 WER 最高(总 4.73%), 且其主观自然度显著下降; 量化前特征 + CE loss 得到最低 WER(4.54%)",
+      "domain": "语音编辑 / 神经编解码器",
+      "source_quote": "We find that the vector **quantizer** module in the neural codec is crucial for developing a robust speech editing model.",
+      "type": "finding"
+    },
+    {
+      "id": "C4",
+      "purpose": "把部分伪造(partial spoof)检测推广到更实际的场景, 并支持防御研究",
+      "mechanism": "构建区分'重合成(resynthesized)语音'与'编辑语音'的新检测设定, 用 VoiceNoNG 编辑 LibriLight 语音生成数据集(训练/验证/测试 106,186/34,744/33,974 条), 用 w2v2-detector 做检测与定位",
+      "evaluation": "Table 3: 句级检测准确率接近 100%(即便 VoiceNoNG(resyn) 条件下); 但 resyn 条件的帧级 F1 低于普通 VoiceNoNG, 说明帧级区分更难; 承诺发布新数据集",
+      "domain": "语音深度伪造检测",
+      "source_quote": "We extend the partial spoof detection setting to a more practical scenario. A new speech dataset edited by VoiceNoNG will be released to support defensive research.",
+      "type": "resource"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "our proposed editing method, VoiceNoNG, is based on the combination of these two methods [Voicebox and VoiceCraft]",
+      "section": "related work"
+    },
+    {
+      "quote": "In addition to the original flow-matching loss used in Voicebox, we apply a cross-entropy (CE) loss to further enhance our model's codec prediction accuracy after VQ.",
+      "section": "method"
+    },
+    {
+      "quote": "Similar to VoiceCraft, we use GigaSpeech as the training corpus, as its diverse audio conditions enable our model to perform background-preserving speech editing.",
+      "section": "method"
+    }
+  ],
+  "notes": "方法明确是 Voicebox(flow-matching) 与 VoiceCraft(NCLM/VQ) 的融合。混合结果信号: (1) 量化后特征(post-quantization)消融是负结果——平均 WER 最高且主观自然度显著下降; (2) 深伪检测 trade-off——VoiceNoNG(resyn) 条件下帧级 F1 低于普通 VoiceNoNG, 帧级区分更难; (3) WER 提升幅度有限(总 WER 4.54 vs Voicebox(Giga) 4.97), 且作者自述整句 WER 差异被未编辑区域稀释, 编辑区域差异应更明显但未单独量化。资源(编辑数据集)为承诺发布。",
+  "extractor": "human-baseline-batch23",
+  "date": "2026-07-07"
+}

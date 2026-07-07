@@ -1,0 +1,46 @@
+{
+  "paper_id": "LB5cKhgOTu",
+  "title": "QERA: an Analytical Framework for Quantization Error Reconstruction",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Establish the correct optimization objective for quantization error reconstruction (the low-rank high-precision term added to quantized weights), since prior QPEFT/PTQ methods minimize weight approximation error without theoretical justification.",
+      "mechanism": "Formal analysis contrasting minimizing weight approximation error (||W - W_tilde||_p) against minimizing layer output error (||y - y_tilde||_p), tracing effect to the final model output error.",
+      "evaluation": "Show analytically that minimizing weight approximation error does NOT guarantee reduced model output error (answer is negative, Section 4.2), whereas minimizing layer output error is closely related to minimizing model output error.",
+      "domain": "LLM quantization / efficient fine-tuning and inference",
+      "source_quote": "We show that the commonly used objective for solving the quantization error reconstruction problem in prior work, i.e., minimizing the weight approximation error, does not guarantee a reduced model output error. Instead, we show that minimizing the layer output error is closely related to minimizing the model output error.",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "Provide a theoretically grounded, closed-form way to compute the low-rank reconstruction terms A_k, B_k, replacing hand-crafted heuristics (LQ-LoRA, LQER).",
+      "mechanism": "Derive QERA, an analytical framework with a closed-form solution to layer-output-error minimization: QERA-exact (uses the input autocorrelation matrix, via Eckart-Young-Mirsky truncated SVD) and QERA-approx (efficient closed form under an uncorrelated-embedding-dimension statistical assumption, which also explains LQER's empirical success).",
+      "evaluation": "Theorems 1-2 give the exact and approximate solutions; QERA-approx is more computationally efficient and its assumption is testable on real data.",
+      "domain": "LLM quantization",
+      "source_quote": "We derive the analytical solution to the low-rank terms A_k and B_k by minimizing the layer output error. We demonstrate that under a statistical assumption, this solution can be found in a particularly computationally efficient manner, also explaining the success of LQER.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "Show the analytical framework improves state-of-the-art QPEFT and PTQ methods under the same compute budget.",
+      "mechanism": "Apply QERA solutions to initialize/compute reconstruction terms in existing methods (LoftQ for QPEFT, ZeroQuant-V2 and LQER for PTQ) and benchmark on GLUE, six LLM tasks, and WikiText2.",
+      "evaluation": "Delta_acc = 6.05% (reported as 605% relative in intro) higher accuracy for 2-bit RoBERTa-base on GLUE vs LoftQ; Delta_acc = 2.97% higher than ZeroQuant-V2 for 4-bit LLaMA-3-70B averaged over six tasks; Delta_ppl = -0.8 lower WikiText2 perplexity vs LQER.",
+      "domain": "LLM quantization",
+      "source_quote": "Our analytical framework, QERA, significantly improves the performance of these methods. For example, QERA achieves Delta_acc=605% higher accuracy of 2-bit RoBERTa-base on GLUE compared to LoftQ ... QERA obtains Delta_acc=2.97% higher accuracy than ZeroQuant-V2, when quantizing LLaMA-3-70B to 4 bits, averaged across six tasks.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Recent methods like LQ-LoRA (Guo et al., 2023) and LQER (Zhang et al., 2024a) introduced hand-crafted heuristics to minimize errors in layer outputs (activations) rather than weights, resulting improved quantization results. However, these heuristic-based methods lack an analytical solution to guide the design of quantization error reconstruction terms. In this paper, we revisit this problem and formulate an analytical framework.",
+      "section": "abstract / introduction"
+    },
+    {
+      "quote": "Several recent works such as LQ-LoRA, QLLM, and LQER introduce activation-induced heuristics to the calculation of adapters/low-rank terms, but a justification for the optimization objective and the corresponding analytical framework are still missing.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Design trade-off (not a negative result): QERA-exact is computationally expensive (requires the input autocorrelation matrix) though it recovers strong performance in extreme low precision; QERA-approx trades some exactness for efficiency under an uncorrelated-dimension assumption. Results are consistently positive across GLUE/PTQ/perplexity. Code and models open-sourced. Paper decision: accept.",
+  "extractor": "human-baseline-batch3",
+  "date": "2026-07-07"
+}

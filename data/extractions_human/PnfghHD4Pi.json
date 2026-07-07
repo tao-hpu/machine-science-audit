@@ -1,0 +1,63 @@
+{
+  "paper_id": "PnfghHD4Pi",
+  "title": "Gap Preserving Distillation by Building Bidirectional Mappings with A Dynamic Teacher",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "缓解知识蒸馏中师生性能差距过大反而阻碍训练的问题,在整个训练过程中维持一个合理的师生性能差距",
+      "mechanism": "提出 Gap Preserving Distillation (GPD):引入一个从头训练的动态教师(DT)与学生一起训练作为代理,把'确定最优差距'转化为'构建合适的模型尺寸差距',每次迭代动态维持师生性能差距",
+      "evaluation": "ImageNet 上叠加已有 KD 方法一致提升:ResNet34→ResNet18 将 DKD 提升 1.01% 达 72.71%;ResNet50→MobileNet 将 DKD 提升 1.58%;最高 1.58% 准确率提升",
+      "domain": "计算机视觉 / 知识蒸馏 / 模型压缩",
+      "source_quote": "We propose a **Gap Preserving Distil-lation** **(GPD)** method that enhances distillation performance by introducing an additional dynamic teacher (DT). We simultaneously train DT and the student to maintain a reasonable accuracy gap between them during the whole training process.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "更显式地强化师生间的知识迁移,让学生直接继承更强模型的良好参数",
+      "mechanism": "hard strategy:强制动态教师与学生共享同一套参数,鼓励参数继承;前向时 DT 直接前向,学生做在线重参数化",
+      "evaluation": "消融(Table 4)显示参数共享单独带来额外 0.35% 准确率提升;与 gap 保持机制结合达到比 baseline 高 1.01%",
+      "domain": "计算机视觉 / 知识蒸馏",
+      "source_quote": "We develop **a hard** **strategy** for distillation where the student and the teacher share the same set of parameters. The key idea is that, since the teacher is ofteneasier to obtain high accuracy, it may also be easier for the student to get promising improvement if it directly inher-its well-learned parameters from the teacher, as empirically shown in Table 4.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "在动态教师和学生之间建立双向映射以显式增强知识迁移,并保证 DT 初始与学生同精度以避免早期差距过大",
+      "mechanism": "Inverse Reparameterization (IR) 沿通道和分支维度以任意扩展比无损扩展学生构建 DT(可作为构建任意尺寸预训练模型的通用初始化方法);Channel-Branch Reparameterization (CBR) 无需后训练直接从 DT 抽取有效学生",
+      "evaluation": "消融(Table 5)channel-level 与 branch-level 单独在 DKD 上分别提升 0.86% 和 0.61%,组合达 1.01% 提升",
+      "domain": "计算机视觉 / 知识蒸馏 / 重参数化",
+      "source_quote": "We explicitly enhance knowledge transfer by building bidirectional mappings between DT and the student via **In-verse Reparameterization (IR)** **and Channel-Branch Reparameterization (CBR).** IR constructs the dynamic teacher model by expanding the student model with an arbitrary expansion ratio along both the channel and branch dimensions, while preserving the same accuracy as the student model.",
+      "type": "method"
+    },
+    {
+      "id": "C4",
+      "purpose": "验证 GPD 不仅提升已有 KD,还能作为独立训练策略推广到无预训练教师的从头训练和微调场景",
+      "mechanism": "在无静态教师时用 GPD*(仅用动态教师蒸馏);微调时 DT 基于学生自身经 IR 构建以起始同精度",
+      "evaluation": "从头训练 ResNet18 由 70.07% 提升到 71.87%(+1.80%),MobileNet 71.68%→73.07%;微调 ResNet18 比更长训练最高高 0.89%",
+      "domain": "计算机视觉 / 知识蒸馏",
+      "source_quote": "In experiments,GPD consis-tently outperforms existing distillation methods on top of both CNN and transformer architectures. We emphasize that GPD is very flexible in that it also generalizes well to other training settings, including both training from scratch and fine-tuning, which is rarely reported by other methods.",
+      "type": "method"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "In con-trast,our GPD constructs a trainable dynamic teacher based on the student model, maintaining an appropriate accuracy gap throughout distillation for effective knowledge transfer.",
+      "section": "related work"
+    },
+    {
+      "quote": "OREPA (Hu et al., 2022) reduces training costs by online reparameterization. In contrast, our CBR enables the extrac-tion of an effective student model from the dynamic teacher, enhancing knowledge transfer to the compact student model.",
+      "section": "related work"
+    },
+    {
+      "quote": "The ex-panded multi-branch architecture can be merged into the student's single-branch architecture using a similar way proposed by OREPA (Hu et al., 2022).",
+      "section": "method (Figure 1 caption)"
+    },
+    {
+      "quote": "ControlNet (Zhang et al., 2023b) duplicates the model, adds zero convolution layers, and freezes original parameters for fine-tuning. In contrast, our GPD expands the model and enables adaptive switching between compact and ex-panded models during training, maintaining an appropriate performance gap.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Trade-off:GPD 引入约 33% 额外训练开销换取 1.58% 提升(作者论证为可接受权衡,并称重参数化本身耗时可忽略,如 128→256 通道层仅 0.021ms)。超参存在收益递减/负拐点:分支数从 1 增到 6 递增提升但增到 12 收益下降;通道扩展比 r=2、r=3 显著优于 DKD baseline 但 r=4 提升骤降(因大 DT 又造成差距过大)。核心动机本身即一条负向发现:师生差距过大反而损害蒸馏(Table 6/9 用越来越大的教师蒸馏 ResNet18/RVT-Ti,性能先升后降)。GPD 对大差距鲁棒:教师从 ResNet34 换 ViT-L 时 DKD 掉 0.27%,GPD 保持 72.71%。",
+  "extractor": "human-baseline-batch12",
+  "date": "2026-07-07"
+}

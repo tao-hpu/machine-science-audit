@@ -1,0 +1,34 @@
+{
+  "paper_id": "Tb5PY5vwp6",
+  "title": "HShare: Fast LLM Decoding by Hierarchical Key-Value Sharing",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "揭示 query-aware 动态 KV token 稀疏方法为何有大量冗余计算,为降本提供依据",
+     "mechanism": "系统分析 KV cache token 的 criticality 在不同层、同层不同 head、相邻 query 三个层级上的相似性",
+     "evaluation": "在 LLaMA2-7b-chat 上的实证发现:三个层级都表现出显著相似性(substantial similarity)",
+     "domain": "大语言模型推理 / KV cache 稀疏",
+     "source_quote": "We systematically analyze the criticality of KV cache tokens across all the levels: different layers, different heads within the same layer, and adjacent queries. Our empirical findings on LLaMA2-7b-chat show that all three levels exhibit substantial similarity.",
+     "type": "finding"},
+    {"id": "C2",
+     "purpose": "在保持精度的前提下削减 query-aware 动态 token 选择带来的计算开销",
+     "mechanism": "提出 HShare 分层 KV 共享框架,在层/头/query 三级共享关键 KV token 索引;用贪心算法在 prefill 后为每 batch 在线确定层级/头级最优共享配置,decode 阶段无额外开销;相邻 query 直接共享索引",
+     "evaluation": "保留完整 KV cache 只选择性加载关键部分;作者称这是首个引入\"共享关键 KV cache token 索引\"概念的工作",
+     "domain": "大语言模型推理 / KV cache 稀疏",
+     "source_quote": "We propose a hierarchical critical KV token indices sharing framework with a greedy algorithm to dynamically determine the sharing configuration. To the best of our knowledge, this is the first work to introduce the concept of sharing critical KV cache token indices.",
+     "type": "method"},
+    {"id": "C3",
+     "purpose": "验证 HShare 在精度与效率上的表现",
+     "mechanism": "在多模型多任务上评测精度(不同 sharing ratio)与效率(self-attention 延迟、端到端吞吐)",
+     "evaluation": "LLaMA2-7b / LLaMA3-70b / Mistral-7b 在 GSM8K、COQA、LongBench 上:同 token 稀疏度下精度与 SOTA 相当;self-attention 相比 FlashAttention-2 最高 8.6x 提速,端到端吞吐相比 GPT-fast 提升 2.7x",
+     "domain": "大语言模型推理 / 系统效率",
+     "source_quote": "We evaluate HShare in terms of accuracy and efficiency, with results showing that it maintains model performance with different sharing ratios while achieving up to 8.6× reduction in self-attention latency and 2.7x improvement in inference throughput.",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "StreamingLLM (Xiao et al., 2023) treats the initial tokens (also referred to sink tokens) and the recent tokens as critical tokens and performs sparsity in a fixed pattern. H2O (Zhang et al., 2024b) introduces a greedy policy that dynamically retains a balance of recent and heavy tokens ... they tend to lose a significant amount of historical information", "section": "introduction"},
+    {"quote": "Quest (Tang et al., 2024) points out the criticality of tokens can change with different query tokens ... DoubleSparse (DS) (Yang et al., 2024b) proposes to select critical tokens dynamically ... However, for Quest and DS, the requirement evaluation for each dynamic selection introduces computational overhead", "section": "introduction"}
+  ],
+  "notes": "定位为对 query-aware 动态稀疏方法(Quest、DoubleSparse)的效率改进:承认它们保精度但每次动态选择开销大(举例 DS 在 seq 2k/batch 8 时选 token 占近 50% 运行时),HShare 通过跨层/头/query 共享索引削减该开销;与 KV eviction 方法(StreamingLLM、H2O)对比则指出后者丢历史信息、高稀疏下掉点。精度定位为\"与 SOTA competitive/comparable\"(平局式,非超越),主要卖点是速度(8.6x self-attn、2.7x 吞吐)。这是 trade-off/comparable 信号明显的系统论文。有开源代码。",
+  "extractor": "human-baseline-batch20",
+  "date": "2026-07-07"
+}

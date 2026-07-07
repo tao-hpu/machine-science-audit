@@ -1,0 +1,35 @@
+{
+  "paper_id": "qb2QRoE4W3",
+  "title": "LLM-Cite: Cheap Fact Verification with Attribution via URL Generation",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "Provide a cheap fact-verification method that gives attribution and can verify fresh claims, without relying on an expensive external search index (unlike KB-retrieval methods) and without the attribution/knowledge-cutoff limits of parametric fact-checking",
+     "mechanism": "LLM-CITE: (1) few-shot prompt an LLM to directly generate multiple candidate citation URLs for a claim (variants DIVERSE and CONTROLLED; optional rejection sampling RS); (2) fetch the URLs' latest contents on-the-fly (e.g. Wiki-API, curl); (3) use an off-the-shelf NLI model to check whether any fetched document entails the claim, returning the entailing URL as attribution",
+     "evaluation": "URL generators: Gemma 1.1 7B, Gemini 1.5 Flash, Llama2-7B-chat, GPT-4o; m=4 URLs; Check Grounding NLI API. Overall reported as >45x cheaper than a Google-Search-based approach",
+     "domain": "LLM factuality / fact verification",
+     "source_quote": "We propose a very simple and cheap method, LLM-CITE, that can verify claims without requiring search through an external corpus.",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "Show LLM-CITE matches or beats existing verification methods across human-written and model-generated claims",
+     "mechanism": "Benchmark verification accuracy against FACTSCORE, P(TRUE), and a Google Search baseline on Biographies (443 human atomic claims) and ASQA (212 model-generated claims)",
+     "evaluation": "Biographies: competitive and marginally better than FACTSCORE; P(TRUE) performs poorly. ASQA: better than P(TRUE) and FACTSCORE; with rejection sampling (GPT-4o) LLM-CITE matches the Google Search baseline",
+     "domain": "LLM factuality / fact verification",
+     "source_quote": "Across diverse model generated and human written claims, we empirically demonstrate that LLM-CITE can perform comparable or better than existing fact verification methods.",
+     "type": "finding"},
+    {"id": "C3",
+     "purpose": "Demonstrate the ability to verify fresh claims, which static-corpus methods cannot, at far lower cost than search",
+     "mechanism": "Evaluate on 30 manually written fresh claims from FreshQA (fast/slow-changing), comparing against FACTSCORE (static corpus) and Google Search",
+     "evaluation": "FACTSCORE only reaches 20% on fresh claims; LLM-CITE verifies fresh claims much better and is >45x cheaper than Google Search, though it remains behind the Google Search baseline on FreshQA",
+     "domain": "LLM factuality / fact verification",
+     "source_quote": "We demonstrate that LLM-CITE can also verify fresh claims, which is lacking in static methods and is more than 45x cheaper then methods relying on Google Search.",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "Methods relying on an external index include FACTSCORE (Min et al., 2023) where each atomic claim in an LLM's response is verified by doing an embedding-based retrieval against a static index ... and then using an LLM to verify if the claim is supported by the retrieved documents.", "section": "related work"},
+    {"quote": "Approaches relying on an LLM's parametric knowledge work by directly prompting the LLM to verify facts (Kadavath et al., 2022). They are straightforward and cheap but do not provide any attribution", "section": "related work"},
+    {"quote": "In our experiments, we use the Check Grounding NLI API offered by Google Cloud, and also study the impact of using stronger LLM-based NLI models", "section": "method"}
+  ],
+  "notes": "Reported reject. Negative/trade-off results explicitly reported: on FreshQA, LLM-CITE remains BEHIND the Google Search baseline (Google retrieves only valid URLs and excels on popular entities, while 23% of LLM-generated URLs are invalid); accuracy gains from generating more URLs plateau after 4; rejection sampling (RS) trades extra cost for URL validity. Conversely, Google Search underperforms LLM-CITE on rare-entity biographies. Positioned as a cheaper alternative to FACTSCORE (retrieval) and P(TRUE) (parametric). Uses existing datasets Biographies (Min 2023), ASQA (Stelmakh 2022), FreshQA (Vu 2024) rather than releasing a new one.",
+  "extractor": "human-baseline-batch7",
+  "date": "2026-07-07"
+}

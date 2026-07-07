@@ -1,0 +1,34 @@
+{
+  "paper_id": "6ESRicalFE",
+  "title": "LLM Unlearning via Loss Adjustment with Only Forget Data",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "去掉现有 LLM unlearning 对 retain data 或 reference LLM 的依赖，避免它们模糊 forget/retain 边界、增加训练成本",
+     "mechanism": "提出 FLAT (Forget data only Loss AdjustmenT)：只用 forget data 做损失调整，为每个 forget 样本配一个 template/example 响应（如 'I don't know'），无需 retain data 或参考模型",
+     "evaluation": "定性：Table 1 对比表显示 FLAT 是唯一既不需 retain data 也不需 reference model 的 loss-adjustment 方法",
+     "domain": "大语言模型 machine unlearning",
+     "source_quote": "We identify the potential drawback of relying on retain data or a reference LLM to guide LLM unlearning. To address this, we propose FLAT, which facilitates LLM unlearning without requiring retain data or a reference LLM for response calibration.",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "在无 retain data/参考模型的条件下，理论上给出如何最优平衡遗忘质量与模型效用",
+     "mechanism": "最大化 template 响应与 forget 响应之间的 f-divergence；其变分形式为 template 学习项和 forget 遗忘项分配不同重要性权重，并提供理论保证",
+     "evaluation": "定性：变分形式给出重加权机制并有理论保证；与 DPO 的差异在重加权激活函数、token loss 求和 vs 平均、是否取对数三点",
+     "domain": "大语言模型 machine unlearning",
+     "source_quote": "FLAT optimizes the f-divergence between template and forget responses to guide the LLM through the unlearning process. The variational form of f-divergence optimization provides a clear illustration of how to optimally balance forget quality and model utility, with theoretical guarantees.",
+     "type": "method"},
+    {"id": "C3",
+     "purpose": "验证 FLAT 在多种遗忘任务上兼顾遗忘效率与模型效用",
+     "mechanism": "在三类任务上对比 GA/KL/GD/NPO/Mismatch/PO/LLMU/DPO 等强基线，用四种 f-divergence（TV/JS/Pearson/KL）",
+     "evaluation": "Harry Potter (OPT-2.7B)、MUSE-News、TOFU (Llama2-7B/Phi-1.5B/OPT-2.7B)；FLAT 在三项主指标中稳定排前二，在 TOFU 上 Model Utility 最佳，重加权消融在 12 项指标中拿到最多最优",
+     "domain": "版权内容遗忘 / 实体遗忘",
+     "source_quote": "Extensive experiments on three unlearning tasks, including copyrighted content unlearning on the Harry Potter dataset and MUSE benchmark, as well as entity unlearning on the TOFU dataset, demnonstrate the superior performance of our method, achieving both high unlearning efficiency and strong overall model utility.",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "Our solution differs from DPO in three critical aspects: the re-weighting activation function, whether to sum or average the token losses, and whether to apply the logarithm to the output probability.", "section": "related work"},
+    {"quote": "current loss adjustment-based methods either rely on retain data (Maini et al., 2024a; Liu et al., 2022; Yao et al., 2023) ... or utilize a reference model (Rafailov et al., 2024; Zhang et al., 2024; Yao et al., 2023; Maini et al., 2024a) to maintain performance on the retain dataset", "section": "related work"}
+  ],
+  "notes": "明确 trade-off/负结果：(1) NPO 在 Harry Potter 上遗忘质量(forget quality)优于 FLAT，FLAT 只是靠 utility 取胜；(2) 在 MUSE 上所有方法（含 FLAT）都无法达到满意的 privacy leakage 结果，作者列为主要 limitation；(3) FLAT 多为'top-two'而非全面第一，PO/GA 等在个别指标上更强但 utility 崩。作者强调按 TOFU 官方'最终模型'而非 NPO 的'每 epoch 最优'评测，避免夸大。",
+  "extractor": "human-baseline-batch10",
+  "date": "2026-07-07"
+}

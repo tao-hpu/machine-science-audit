@@ -1,0 +1,49 @@
+{
+ "title": "Entropy-Weighted Local Concept Matching for Robust Zero-Shot OOD Detection",
+ "contributions": [
+  {
+   "id": "C1",
+   "purpose": "用信息论方法评估 patch 可靠性以修复 GL-MCM 的 max-pooling 缺陷",
+   "mechanism": "对每个空间 patch 算 ID 类概率分布并求 Shannon 熵 H_i,用指数衰减权重 w_i=exp(-alpha*H_i) 加权局部得分替代最大池化(增强版加 class-conditional scaling、top-16 选择、25 分位稳定)",
+   "evaluation": "推理开销 O(NK),<5% 时延增加,零训练零样本",
+   "domain": "视觉-语言零样本 OOD 检测",
+   "source_quote": "We introduce Entropy-Weighted Local Concept Matching (ELCM), replacing heuristic max-pooling with information-theoretic aggregation.",
+   "type": "method"
+  },
+  {
+   "id": "C2",
+   "purpose": "验证 ELCM 相对 GL-MCM 基线的检测提升",
+   "mechanism": "在 ImageNet-OOD(iNaturalist/SUN/places365/Texture)上对比 AUROC 与 FPR95",
+   "evaluation": "总 AUROC 0.913→0.919,FPR95 0.350→0.298(降14.9%);iNaturalist FPR95 降19%,SUN 降23%",
+   "domain": "同上",
+   "source_quote": "overall AUROC improves from 0.9129 to 0.9188, while FPR95 decreases 15% (0.3495 to 0.2975).",
+   "type": "finding"
+  },
+  {
+   "id": "C3",
+   "purpose": "揭示方法对熵权强度 alpha 的严重敏感性",
+   "mechanism": "在 iNaturalist 上扫 alpha=0.5/1.0/2.0 做消融",
+   "evaluation": "alpha=0.5 时灾难性失败(AUROC 0.905<基线0.913,FPR95 0.429),需 alpha>=1.0 才可靠",
+   "domain": "同上",
+   "source_quote": "The catastrophic failure at alpha = 0.5 demonstrates that misconfiguration can worsen performance. The narrow range of effective alpha values limits plug-and-play applicability.",
+   "type": "finding"
+  }
+ ],
+ "self_declared_provenance": [
+  {
+   "quote": "We present ELCM, which builds upon GL-MCM to address its vulnerability to spurious patch activations through entropy-based weighting.",
+   "section": "method"
+  },
+  {
+   "quote": "We replace max-pooling with information-theoretic aggregation using Shannon entropy ... ELCM provides principled spatial aggregation that could benefit multiple zero-shot frameworks.",
+   "section": "related work"
+  }
+ ],
+ "notes": "trade-off/负结果:SUN 上 ELCM AUROC 0.915 反而低于 GL-MCM 0.931(表1 该格 GL-MCM 加粗),只是 FPR95 更好;alpha<1.0 灾难性失败(AUROC 0.905 vs 0.913)。作者自认基线覆盖不足(只比 GL-MCM,未比 CLIPN/ZOC/MCM),坦言'may overstate practical significance'。数据红旗:图1/图2 分数分布横轴仅 0.0016~0.0018 区间,标题却称'Confidence scores are negative due to the scoring formulation'(与图示正值矛盾);仅评 100 张图(消融 500)。摘要 0.9188 与表 1 的 0.919 属四舍五入一致。贡献由论文自声明的 Theoretical/Technical/Performance 三条归纳。",
+ "paper_id": "AS0091",
+ "extractor": "agent-a4s-full-9",
+ "date": "2026-07-06",
+ "forum": "AzOkqwsTXo",
+ "decision": "reject",
+ "submission_date": "2025-09-07"
+}

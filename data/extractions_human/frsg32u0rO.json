@@ -1,0 +1,28 @@
+{
+  "paper_id": "frsg32u0rO",
+  "title": "Block Verification Accelerates Speculative Decoding",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "Accelerate lossless speculative decoding of LLMs beyond the standard token-by-token draft verification, which the authors show is suboptimal.",
+     "mechanism": "Block Verification: a draft-verification algorithm that verifies the entire drafted block jointly (couples acceptance decisions across draft tokens via sub-blocks and carefully chosen residual distributions) instead of verifying each token independently, while preserving the exact output-distribution guarantee. Serves as a plug-and-play replacement in the outer speculative-decoding loop.",
+     "evaluation": "PALM-2-S target with PALM-2-XXS/XXXS drafters over LM1B, GPT Prompt, WebQA, PIQA, ShareGPT, XSum, GSM8K, WMT DeEn (first 1000 prompts each); also Spec-Bench with Vicuna-7B/Vicuna-68M. At gamma=8 with PALM-2-XXS drafter: block efficiency improves 7.00-10.06% (avg 8.30%), wall-clock 5.36-8.14% (avg 6.49%).",
+     "domain": "Efficient LLM inference / speculative decoding",
+     "source_quote": "We propose Block Verifica-tion, a simple draft verification algorithm that verifies the entire block jointly and provides additional wall-clock speedup.",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "Establish that block verification is not just better but theoretically optimal, giving a principled justification for adopting it as the default.",
+     "mechanism": "Formal proofs: Theorem 1 shows block verification is a valid verification algorithm (preserves output distribution); Theorem 2 shows it achieves the optimal expected number of accepted tokens among all valid draft-verification algorithms, hence never worse than token verification.",
+     "evaluation": "Theoretical (Theorems 1-2, proofs in Appendix B); toy example gives 11/9 expected accepted tokens for block vs 10/9 for token verification (ideal full-information: 12/9).",
+     "domain": "Speculative decoding theory",
+     "source_quote": "We prove that the proposed mechanism is optimal in the expected number of tokens produced each iteration and specifi-cally is never worse than the standard token-level verification.",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "In this section, we extend the above intuition to develop a general block verification algorithm, which works for standard speculative decoding with partial information.", "section": "related work"},
+    {"quote": "The only other work that we are aware of that improves the verification step in speculative decoding is the independent work of Hu and Huang (2024), which uses tree Monte Carlo to improve specu-lative decoding in the single draft case ... On the contrary, we prove that our algorithm achieves the optimal speedup among all valid verification algorithms, including theirs.", "section": "related work"},
+    {"quote": "Our proposed block verification algorithm can be used in tandem with the drafting techniques in Table 3, yielding combined gains.", "section": "related work"}
+  ],
+  "notes": "Authors are candid that gains are 'modest but consistent' (5-8% wall-clock, 7-10% block efficiency), not large. Important caveats/limitations: at temperature 0 (greedy decoding) block verification degenerates to token verification and gives NO additional speedup; wall-clock speedup peaks at gamma=4/6 and does not monotonically grow because verification cost rises. Gains are larger at higher temperatures and with better drafters. The improvement is orthogonal to drafting-phase methods (composable). Compared favorably (positioned as strictly better/optimal) vs concurrent Hu & Huang (2024) tree Monte Carlo verification. Extension to multi-draft left as future work.",
+  "extractor": "human-baseline-batch8",
+  "date": "2026-07-07"
+}

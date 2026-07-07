@@ -1,0 +1,46 @@
+{
+  "paper_id": "OVxmpus9NA",
+  "title": "Progressive Mixed-Precision Decoding for Efficient LLM Inference",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "解决现有量化方法在 prefill 与 decoding 两阶段一律采用统一精度、忽视各阶段不同容错性与算术强度、导致极低比特下精度骤降的问题",
+      "mechanism": "提出 phase-aware precision allocation(相位感知精度分配):利用 prefill 与 decoding 阶段不同的误差韧性,对 prefill 用高精度编码保证生成质量,对 decoding 用低精度提升吞吐,为移动级 LLM 达到极低平均比特",
+      "evaluation": "定性动机实验:同一 Vicuna-7B,3-bit prefill + 2-bit decoding 相比全 2-bit 在 Fibonacci 数值推理、法译英指令跟随、写诗创造性任务上均明显改善;整体方法在 NPU 上对 fp16 达 3.8-8.0x 吞吐、对统一量化最高 1.54x",
+      "domain": "LLM 推理加速 / 权重量化(边缘/移动部署)",
+      "source_quote": "A novel phase-aware precision allocation strategy that optimizes precisions differently for the prefill and decoding phases, leveraging the distinct error resilience of each stage to achieve an extremely low average bitwidth for mobile-grade LLMs.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "进一步缓解 decoding 阶段的内存受限瓶颈,提升访存受限阶段的硬件性能",
+      "mechanism": "提出 Progressive Mixed-Precision Decoding(PMPD):基于'序列中越靠后生成的 token 越能容忍近似、越靠前越敏感'的观察,随生成推进逐步降低权重量化精度;将精度调度形式化为在保持输出质量前提下最小化平均比特宽度的约束优化问题",
+      "evaluation": "在 Vicuna-7B/MobileLLaMA-1.4B/StableLM Zephyr-3B/Phi-1.5 多任务上,GPU 线性层达 1.40-12.20x(对 fp16)、对统一量化最高 1.41x;NPU 吞吐 3.8-8.0x(对 fp16),同时保持输出质量",
+      "domain": "LLM 推理加速 / 渐进式量化解码",
+      "source_quote": "A progressive mixed-precision decoding scheme that progressively reduces the precision as decoding progresses to longer token sequences, effectively improving the hardware performance in the memory-bound LLM decoding stage.",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "让渐进降精度决策能在数据可得性与生成质量约束不同的多样场景中灵活部署",
+      "mechanism": "设计两种互补的精度切换调度器:一个高性能任务特定的静态(prompt-agnostic)调度器,一个灵活的任务无关(task-agnostic)学习型调度器,分别以 task-adaptive 或 prompt-adaptive 方式动态驱动降精度时机",
+      "evaluation": "定性:两种调度器覆盖不同数据可得性与质量需求的部署场景;并入上述端到端加速评测(4 个模型、多语言任务)",
+      "domain": "LLM 推理加速 / 精度切换调度",
+      "source_quote": "A prompt-agnostic static scheduler and a task-agnostic learned scheduler for precision switching, enabling the flexible deployment of our approach across diverse scenarios, accommodating varying data availability constraints and generation quality requirements.",
+      "type": "method"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Our approach takes advantage of the low memory footprint solution provided by Any-Precision LLM to accelerate LLM inference, but adopts a dynamic precision lowering methodology, which considers the LLM inference phase and input prompt at hand, to push the limits of the adopted precision.",
+      "section": "related work"
+    },
+    {
+      "quote": "Recent work has shown that allocating larger model capacity to the prefill phase for natural language understanding allows for reduced capacity in the decoding phase for natural language generation ... Inspired by this, we aim to investigate the distinct redundancy and resilience exhibited by the prefill and decoding phases",
+      "section": "related work"
+    }
+  ],
+  "notes": "核心 trade-off 是生成质量 vs 解码吞吐,作者显式把它建成约束优化(在保质前提下最小化平均比特)。全篇报告的都是相对 fp16 与统一量化的正向加速,并反复声称 preserving output quality,未报告对本方法不利的负结果/平局。加速区间较宽(GPU 线性层 1.4-12.2x)取决于模型与任务。方法建立在 Any-Precision LLM 之上(复用其单套权重多精度的低存储方案)。",
+  "extractor": "human-baseline-batch21",
+  "date": "2026-07-07"
+}

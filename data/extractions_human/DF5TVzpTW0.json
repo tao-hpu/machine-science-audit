@@ -1,0 +1,46 @@
+{
+  "paper_id": "DF5TVzpTW0",
+  "title": "Detecting and Perturbing Privacy-Sensitive Neurons to Defend Embedding Inversion Attacks",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Protect text embeddings against inversion attacks while minimizing damage to non-sensitive information, unlike prior methods that add noise to all embedding dimensions and degrade downstream utility.",
+      "mechanism": "DPPN (Defense through Perturbing Privacy Neurons): a differentiable neuron mask learning framework that identifies the top-k privacy-sensitive neurons (dimensions) associated with a target sensitive token, plus a neuron-suppressing perturbation function that injects one-sided directional (negative) Laplace noise only on those neurons, replacing isotropic DP-style noise.",
+      "evaluation": "Method-level: learns a binary neuron mask via a differentiable relaxation; perturbation pushes each dimension toward its negative direction (Eq. 6). Validated by downstream experiments (see C2).",
+      "domain": "Privacy-preserving NLP / text embedding security",
+      "source_quote": "This paper introduces Defense through Perturbing Privacy Neurons (DPPN), a novel approach to protect text embeddings against inversion attacks. Unlike existing methods that add noise to all embedding dimensions for general protection, DPPN identifies and perturbs only a small portion of privacy-sensitive neurons. We present a differentiable neuron mask learning framework to detect these neurons and a neuron-suppressing perturbation function for targeted noise injection.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "Demonstrate that selective privacy-neuron perturbation yields a superior privacy-utility trade-off than baseline all-dimension noise methods across diverse datasets and attack models.",
+      "mechanism": "Empirical evaluation across six datasets and multiple perturbation levels, comparing DPPN against LapMech (Laplace) and PurMech (Purkayastha) baselines, against three attack models (MLC, GEIA, Vec2text), and on real-world sensitive datasets.",
+      "evaluation": "Reduces relative privacy leakage by 5%-78% while improving downstream utility by 14%-40% vs baselines; on real-world data lowers sex-info leakage from 88% to 17% vs 43% for LapMech/PurMech; consistent across GTR-base/SBERT embedding models.",
+      "domain": "Privacy-preserving NLP evaluation",
+      "source_quote": "Better privacy-utility tradeoffs. We evaluated DPPN on six datasets across various perturbation levels. Compared to baseline methods, DPPN reduced relative privacy leakage by 5% to 78% while improving downstream utility by 14% to 40%.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Show that the black-box privacy-neuron detection approximates an idealized white-box (oracle) detector and works against real-world privacy threats.",
+      "mechanism": "Ablation/comparison of DPPN (black-box) vs DPPN-Oracle (white-box) vs DPPN-Rand (random) neuron detection; overlap-ratio analysis; tests on PII-Masking 300K and MIMIC-III clinical notes.",
+      "evaluation": "Black-box vs white-box: only 3-6% absolute leakage difference and <5% relative downstream difference at eps=2; black-box detection matches top-r white-box neurons with 32% (top-10%) and 51% (top-20%) accuracy; random selection much worse.",
+      "domain": "Privacy-preserving NLP (medical/PII data)",
+      "source_quote": "DPPN achieves comparable performance to white-box defense. Our black-box neuron detection method performs comparably to a white-box method. On the STS12 dataset, DPPN shows only a 3-6% absolute difference in privacy leakage metrics and less than a 5% relative difference in downstream task performance.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Instead of employing the typical DP approach, we propose a novel neuron-suppressing perturbation function that adds random noise that pushes each embedding dimension toward its negative direction.",
+      "section": "methodology"
+    },
+    {
+      "quote": "Laplace noise has been widely used to defend against inversion attacks ... Advanced techniques like the Purkayastha mechanism Du et al. (2023) further enhances the Laplace method for superior defense performance against inference attacks.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Reports a trade-off explicitly (privacy-utility tradeoff is the central framing) but results are net-positive vs baselines. C3 is framed as 'comparable to white-box' (black-box slightly worse than oracle, a modest gap of 3-6%). Notable partial negative: the shallow MLC attack model shows less vulnerability to the defense than deeper attacks (Vec2text/GEIA), i.e. the defense is less effective against simple attackers. Paper was rejected. Black-box neuron-detection accuracy (32%/51% overlap with oracle) is modest.",
+  "extractor": "human-baseline-batch17",
+  "date": "2026-07-07"
+}

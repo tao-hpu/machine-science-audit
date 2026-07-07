@@ -1,0 +1,50 @@
+{
+  "paper_id": "e2F0mJJeN0",
+  "title": "Geometric Median (GM) Matching for Robust Data Pruning",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "在训练数据可能被严重污染(gross corruption,最多 1/2 样本任意损坏)时,鲁棒地做数据剪枝(选取小而有代表性的子集)",
+      "mechanism": "提出 GM MATCHING:一种 herding 式贪心算法,设计鲁棒矩匹配(robust moment matching)目标,使所选 k-子集的均值逼近(可能带噪的)数据集的几何中位数(Geometric Median, GM),用 Weiszfeld solver 近似计算 GM(Algorithm 1)",
+      "evaluation": "理论(Theorem 1):GM Matching 以 O(1/k) 速率收敛到真实均值的有界邻域(优于均匀采样的 O(1/√k)),并在多达 1/2 样本任意损坏下仍鲁棒,达到最优 breakdown point 1/2",
+      "domain": "数据剪枝 / 鲁棒机器学习",
+      "source_quote": "Motivated by this key observation, we exploit the robustness property of GM (Definition 3), to design a novel robust moment matching objective (6). It aims at finding a subset such that the mean of the subset approximates the GM of the noisy dataset. We minimize over this objective using greedy herding (Welling, 2009) style update rule. We call the resulting data pruning algorithm GM MATCHING",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "揭示现有数据剪枝启发式(包括为鲁棒场景设计的)在严重污染下的失效机制,为方法设计提供动机",
+      "mechanism": "在 gross corruption 框架下(Definition 1)分析并实证:现有剪枝方法依赖经验均值(empirical mean),而经验均值对污染脆弱",
+      "evaluation": "Section 4 / Figure 1 展示现有启发式在强污染下 break down(经验均值 breakdown point 趋于 0)",
+      "domain": "数据剪枝鲁棒性分析",
+      "source_quote": "We note that, existing pruning heuristics (including the ones proposed for robust scenarios) break down under this strong corruption, due to empirical mean's vulnerability to corruption (Section 4, Figure 1).",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "实证验证 GM Matching 相对现有 SOTA 剪枝方法的优越性,尤其在污染与激进剪枝率下",
+      "mechanism": "复用 Xia et al.(2022)实验设置,与 Random/Herding/Forgetting/GraNd/EL2N/Moderate 等 8 个基线对比,覆盖图像污染、标签噪声、对抗攻击(PGD/GS)三类污染;每实验 5 个随机种子",
+      "evaluation": "CIFAR10/100、Tiny-ImageNet,选择率 20%-80%:干净设置平均 +2%;图像污染平均 +3%;标签噪声(20%/35% 对称)约 +12%;对抗攻击约 +3%;污染与高剪枝率下增益常 >10%",
+      "domain": "图像分类数据剪枝(CIFAR/Tiny-ImageNet)",
+      "source_quote": "Extensive experiments over CIFAR 10/100, Tiny ImageNet, across feature corruption, label noise and adversarial attacks indicate the superiority of GM Matching over existing methods. We improve over prior work almost in all settings, the gains are especially more profound (often by more than 10%) in presence of corruption and at aggressive pruning rates",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "we propose GM MATCHING - a herding (Welling, 2009) style greedy algorithm",
+      "section": "abstract"
+    },
+    {
+      "quote": "A second set of works reformulate this problem as minimizing a moment matching objective (Chen et al., 2010; Campbell & Broderick, 2018; Dwivedi & Mackey, 2021) that aims to select a subset whose mean closely matches that of the entire dataset.",
+      "section": "related work"
+    },
+    {
+      "quote": "To ensure reproducibility, our experimental setup is identical to (Xia et al., 2022).",
+      "section": "experiments"
+    }
+  ],
+  "notes": "结果以正向增益为主(几乎所有设置均优于基线,污染下更明显)。caveat/trade-off:(1) 干净、低剪枝率(保留数据多)时增益较小,仅 '保持竞争力',优势主要在低数据/高污染区间;(2) 方法依赖可将特征映射到可分嵌入的 proxy encoder 假设(用预训练基础模型);(3) GM 仅用 Weiszfeld solver 近似计算,理论邻域半径含 GM 计算精度项。决定为 reject。",
+  "extractor": "human-baseline-batch18",
+  "date": "2026-07-07"
+}

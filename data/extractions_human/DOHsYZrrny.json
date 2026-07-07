@@ -1,0 +1,46 @@
+{
+  "paper_id": "DOHsYZrrny",
+  "title": "HiLoRA: High-frequency-augmented Low-Rank Adaptation",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "缓解 LoRA 参数高效微调中的灾难性遗忘(catastrophic forgetting),在学习新任务与保留预训练知识之间取得平衡",
+      "mechanism": "提出 HiLoRA:向预训练模型注入可学习的高频(high-frequency)分量。用参数化 SVD 表示更新,并将增广分量的奇异值约束在合适(较小)水平(上界超参 σ̄ 取奇异值分布的分位数),使可学习模块聚焦高频域、对预训练权重改动最小;含正交正则项(系数 γ)",
+      "evaluation": "至多引入 12 个高频分量(相对原模型规模可忽略);SQuADv2.0 上 σ̄=σ^(3) 分位时性能最佳(EM/F1 消融)",
+      "domain": "大语言模型参数高效微调(PEFT/LoRA)",
+      "source_quote": "we designed HiLoRA, a method that injects learnable high-frequency components into the pre-trained model. By leveraging the parameterized SVD and constraining singular values to appropriate levels, HiLoRA adapts to new tasks by focusing on the high-frequency domain with minimal change from the pre-trained weights.",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "解释 LoRA 灾难性遗忘的成因,为高频增广方法提供依据",
+      "mechanism": "理论(Proposition 3.1)+ 谱分析:隐式正则化(implicit regularization)使权重最大奇异值(对应低频分量)随训练显著增大、小奇异值变小,直接对应预训练任务性能下降",
+      "evaluation": "Figure 1(a):STS-B 上微调 RoBERTa-base 时最大奇异值上升、BookCorpus 预训练任务精度反向下降;Figure 4:LoRA 及变体使预训练任务精度从 ~0.6 骤降到 <0.1、loss 增大约 5 倍,HiLoRA 维持稳定",
+      "domain": "LoRA 微调机理分析",
+      "source_quote": "As a result, the larger singular values of the learnable weights tend to increase more significantly as training progresses (see Proposition 3.1). In Figure 1 (a), while the largest singular value increases during training, the test accuracy on pre-trained tasks decreases inversely.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "实证验证 HiLoRA 在下游任务性能与预训练知识保留上均优于 LoRA 及其变体",
+      "mechanism": "在 NLU(GLUE)与 QA(SQuAD)上与 LoRA/AdaLoRA/PiSSA/MiLoRA 等基线对比,并做遗忘分析与增广分量消融",
+      "evaluation": "GLUE(RoBERTa-base,4 seeds):HiLoRA 平均最佳 86.97;SQuAD v1.1/v2.0(DeBERTaV3-base,r∈{2,4,6,12}):较 full-finetuning 与 LoRA 显著提升;消融(Table 4)MRPC 上 LoRA 预训练任务精度 61.64→3.77,HiLoRA 在微调与预训练任务上均最佳",
+      "domain": "NLU / 抽取式问答",
+      "source_quote": "We perform comprehensive experiments across various tasks, including both natural language understanding and question answering, demonstrating that HiLoRA outperforms baseline models and effectively mitigates catastrophic forgetting.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Low-Rank Adaptation (LoRA) (Hu et al., 2021), which updates parameters using low-rank matrices ... LoRA keeps the pre-trained weights frozen and updates only small number of parameters",
+      "section": "related work"
+    },
+    {
+      "quote": "Following (Zhang et al., 2023), we fine-tune a pre-trained DeBERTaV3base (He et al., 2021) with HiLoRA and set the rank r of LoRA as {2,4,6,12}.",
+      "section": "experiments"
+    }
+  ],
+  "notes": "结果以正向为主,但有若干 comparable/平局:(1) SQuADv2.0 上 AdaLoRA 与 HiLoRA 表现相近(similar average outcomes),作者称二者以不同方式各有优势,而非明确胜出;(2) 基线 MiLoRA 在 GLUE 上是次优最强基线,因直接改动高频分量导致信息损失。规模较小(RoBERTa-base / DeBERTaV3-base,单张 RTX A6000/3090)。决定为 reject。",
+  "extractor": "human-baseline-batch18",
+  "date": "2026-07-07"
+}

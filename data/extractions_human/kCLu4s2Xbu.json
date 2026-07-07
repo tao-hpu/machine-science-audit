@@ -1,0 +1,50 @@
+{
+  "paper_id": "kCLu4s2Xbu",
+  "title": "Trajectory-level Data Generation with Better Alignment for Offline Imitation Learning",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "解决离线模仿学习中因需学习重要性权重(加权 BC)或奖励函数(接 offline RL)而导致的训练不稳定、权重/奖励不准、超参敏感等问题",
+      "mechanism": "提出 TDGBA 框架:用最优传输/Wasserstein 距离度量无标签轨迹与专家演示的对齐度,借 FTB 的轨迹扩散器把低对齐轨迹逐步优化为近专家轨迹,再对生成的高对齐轨迹直接做 BC 提取最优策略,无需学奖励函数或行为权重",
+      "evaluation": "D4RL:Table 2 在 9 个 medium-level MuJoCo locomotion 任务上全部 9 个取得最佳,平均分领先第二名 18.74%(单条专家演示,5 seed);Table 4 优于 OTR/PWIL",
+      "domain": "离线强化学习 / 模仿学习 / 机器人控制",
+      "source_quote": "We present a novel framework for offline IL that can learn optimal policies directly from generated trajectories without the need of learning reward functions or behavior weights;",
+      "type": "method"
+    },
+    {
+      "id": "C2",
+      "purpose": "在无额外人工偏好数据集、专家演示极少(甚至单条)的情况下,识别无标签轨迹的偏好以指导轨迹生成",
+      "mechanism": "定义 implicit expert preference:以对齐度量(Wasserstein 距离小=高对齐)作为隐式专家偏好,用来标注无标签轨迹并驱动 preference-based 轨迹扩散器生成高保真、多样的近专家轨迹",
+      "evaluation": "定性+相关性:Figure 2 显示该度量与真值轨迹回报强相关,仅用 1 条专家轨迹即达到或超过 FTB 用 15 对人工偏好训练的效果;Figure 4b/c 生成轨迹比高斯增广更具多样性且 dynamic error 更低",
+      "domain": "离线模仿学习 / 偏好学习 / 扩散模型",
+      "source_quote": "By introducing the implicit expert preference, high-fidelity and diverse trajectories can be generated with a trajectory diffuser, even with only a single expert trajectory;",
+      "type": "method"
+    },
+    {
+      "id": "C3",
+      "purpose": "验证 TDGBA 相对已有离线 IL 方法的性能,并证明偏好学习优势可迁移到离线 IL",
+      "mechanism": "在 D4RL locomotion 与更难的 antmaze 上对比 BC-based 与 reward-based(offline RL+学习奖励)SOTA 方法,并做对齐度量/多样性/dynamic accuracy 消融",
+      "evaluation": "Table 3 对比 reward learning 方法在 11 任务中 7 个领先或接近最优,总平均分最高;作者称首次为偏好学习优势迁移到离线 IL 提供证据",
+      "domain": "离线模仿学习",
+      "source_quote": "Experimental results show that TDGBA outperforms previous offline IL methods across multiple tasks. Additionally, the effectiveness of our method provides the first evidence of the potential and feasibility of applying the advantages of preference learning to the offline IL domain.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Then,we adopt the trajectory optimization approach proposed in FTB, which trains a trajectory diffuser to refine low-alignment trajectories, gradually aligning them with expert trajectories.",
+      "section": "introduction"
+    },
+    {
+      "quote": "To address this issue, we propose the key concept of implicit expert preferences and a method for measuring them. By integrating these with the trajectory optimization approach in FTB(Zhang et al., 2023), we achieve significant breakthroughs in performance of offline IL.",
+      "section": "related work"
+    },
+    {
+      "quote": "In this section, we especially compare two offline IL methods, OTR (Luo et al., 2023) and PWIL (Dadashi et al., 2020), that learn intermediate reward functions using Wasserstein Distance. Unlike them, we maintain this metric only at the trajectory level, avoiding the learning of transition-wise rewards.",
+      "section": "experiments"
+    }
+  ],
+  "notes": "ICLR 2025 reject。方法重度嫁接 FTB(Zhang et al. 2023)的轨迹扩散器/轨迹优化方案,核心新增是把 Wasserstein 对齐度作为'隐式专家偏好'替代 FTB 所需的人工偏好数据集。混合/comparable 结果:Table 3 对 reward-based 方法仅在 11 任务中 7 个'领先或接近'最优(非全胜);作者明说 BC-based IL 总体性能明显低于 reward-based,只是宣称即使无奖励仍'competitive'。一处反直觉发现:Table 1 显示偏好模型精度随人工偏好对数增加反而波动甚至下降(假设为偏好类型多样性引入噪声)——支撑其'单条专家即可'的卖点。超参 β 在 {5,20,30} 上鲁棒(Table 5)。Table 2 平均分领先第二名 18.74%。",
+  "extractor": "human-baseline-batch12",
+  "date": "2026-07-07"
+}

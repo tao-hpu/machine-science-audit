@@ -18,10 +18,18 @@ def load_env():
     return e
 ENV=load_env()
 
+# 这些模型在本代理上弃用 temperature(推理模型,发 temperature 会 400);其余一律 temperature=0 保复现
+NO_TEMP={'claude-sonnet-5','claude-opus-4-8','claude-opus-4-7'}
+# 推理模型的思考 token 计入 max_tokens,预算太小会把正文挤成空串(gemini-2.5-pro 实测
+# 2500 全空、8000 正常;sonnet-5 同病,见 2026-07-07 研究日志)
+BIG_BUDGET={'gemini-2.5-pro','claude-sonnet-5'}
+def mt(model, base):
+    return max(base, 8000) if model in BIG_BUDGET else base
+
 def chat(model, prompt, max_tokens=1500):
     body={'model':model,'max_tokens':max_tokens,
           'messages':[{'role':'user','content':prompt}]}
-    if not model.startswith('claude'):  # claude-sonnet-5 rejects temperature on this proxy
+    if model not in NO_TEMP:
         body['temperature']=0
     for i in range(4):
         try:
@@ -32,6 +40,8 @@ def chat(model, prompt, max_tokens=1500):
         except urllib.error.HTTPError as e:
             if e.code in (429,503): time.sleep(6*(i+1)); continue
             raise
+        except (TimeoutError, urllib.error.URLError, OSError):
+            time.sleep(4*(i+1)); continue
     raise RuntimeError('chat failed')
 
 def parse_json(text):
@@ -61,9 +71,32 @@ Contribution mechanism = "prepend/append benign text to harmful content to dilut
 Prior paper = "Good Word Attacks on Statistical Spam Filters" (adds innocuous words to spam so a statistical filter scores it as ham).
 Correct call: mechanism COVERED — both are "dilute a classifier's decision signal by padding with benign tokens," the same primitive despite spam≠LLM-safety. Do NOT mark it novel just because the application (LLM safety judge) is newer.
 
+EVALUATION FACET — SPECIAL RULE (judge the DESIGN, not the object):
+Reusing an existing evaluation DESIGN counts as COVERED even when applied to a different object. Concretely, the evaluation facet is COVERED if any prior paper uses the same evaluation design — same benchmark family, same metric semantics, or same validation/statistical framework (e.g. conformal risk control, LLM-as-judge, gradient-signal-then-standard-benchmark) — EVEN IF this contribution swaps in a different benchmark instance, dataset, model, or application object. A mere change of WHAT is measured does not make the evaluation novel; that difference belongs to the DOMAIN facet, not evaluation (do not double-count it here).
+Mark evaluation NONE (uncovered) ONLY when the evaluation DESIGN itself is genuinely new: a newly constructed benchmark, a newly defined metric, or a new evaluation/attack protocol that no prior paper used.
+Generic experimental moves (ablation, substitution/swap experiments, sensitivity analysis, iso-compute comparison) do NOT by themselves establish evaluation coverage — a prior paper's ablation/substitution counts as matching ONLY if it validated the SAME claim, not merely used the same technique. "Same design" means a NAMED benchmark family, metric, or protocol family — not the generic shape of the experiment ("swap a component, measure accuracy" is a generic shape, not a design).
+(Analogy: changing an input parameter is not novelty; changing the internal logic is. Swapping the benchmark/object = new parameter = COVERED. A genuinely new evaluation design = new logic = uncovered.)
+
+DOMAIN FACET — SPECIAL RULE (same anti-mirage logic as evaluation):
+The domain facet is COVERED if any prior paper works in the same general application AREA, EVEN IF this contribution targets a different specific sub-problem, dataset, or instance within that area. Applying a known idea to a narrower or specific problem inside an existing area does NOT make the domain novel — that is a change of instance, not of area.
+Mark domain NONE (uncovered) ONLY when the contribution operates in a GENUINELY new application area that no prior paper addresses — not merely a new specific instance of an existing area.
+(Same parameter-vs-logic test: a new specific problem within a known area = new parameter = COVERED; a genuinely new area = new logic = uncovered.)
+Consequence to keep in mind: with evaluation and domain judged this generously, a "novel" verdict should be driven by a genuinely new PURPOSE or MECHANISM, not by the packaging facets. Do not let "applied to my specific setting" alone produce novelty.
+
+PURPOSE FACET — SPECIAL RULE (same parameter-vs-logic test):
+The purpose facet is COVERED if any prior paper pursues the SAME OBJECTIVE at the problem-class level — the same gap being closed, the same target quantity being improved — even when the host architecture, model, or application instance differs (that difference belongs to the domain facet).
+Positive example: purpose "eliminate wasted memory from fixed cache budgets by sizing the cache to actual need" IS covered by a prior paper on adaptive cache-budget allocation, even if this contribution targets hybrid linear attention and the prior paper targets standard transformers — same objective, different host = COVERED.
+Negative example: sharing a TOPIC or problem SPACE is not sharing a purpose. A paper that INTRODUCES an attack does NOT cover the purpose "defend against that attack". A paper about adaptive scheduling in an unrelated field does not cover "show adaptive timing matters for safe-data interleaving" merely because both involve adaptive scheduling.
+
+FINDING-TYPE CONTRIBUTIONS (type "finding") — PER-FACET STANDARDS DIFFER:
+A finding's substance is the demonstrated relationship/effect, so apply these standards:
+- purpose: covered ONLY if a prior paper reports or establishes the SAME empirical relationship — same variables and direction of effect, any vocabulary. Thematic/conceptual similarity in an unrelated setting does NOT cover.
+- mechanism (= the analysis method used to obtain the finding) and evaluation: judge at DESIGN level, exactly like the evaluation rule above — a standard analysis protocol (controlled ablation, multi-seed comparison, per-task breakdown, backtest comparison) that appears in prior work counts as COVERED even if applied to a different benchmark, dataset, or object. Do NOT mark these NONE merely because no prior paper ran the same experiment on this specific object.
+- Net effect: for a finding, the high-stakes call is PURPOSE (is the relationship itself new?); mechanism/evaluation should rarely drive novelty.
+
 Now reason step by step. For each facet write 1-2 sentences: which paper number(s), if any, contain an equivalent element, and quote the phrase.
 
-CONTRIBUTION:
+CONTRIBUTION (type: {ctype}):
 - purpose: {purpose}
 - mechanism: {mechanism}
 - evaluation: {evaluation}
@@ -84,6 +117,8 @@ Re-examine ONLY these facets you marked NONE: {none_facets}
 
 For each, scan the prior papers ONE more time. Ask: is there truly no paper containing this element even under a DIFFERENT name, an earlier framing, or another domain's vocabulary? If you now find one, correct it. If still none, confirm.
 
+HARD REQUIREMENT for corrections: a correction to COVERED-BY must QUOTE the phrase from that paper containing the equivalent element, and must satisfy the SAME facet-specific standard as the first pass (for a finding's purpose: the same empirical relationship; for evaluation: a named design or the same claim; for purpose: the same objective, not the same topic). "Conceptually similar", "aligns with the concept of", or "could encompass indirectly" are NOT sufficient grounds — if that is all you have, keep NONE.
+
 CONTRIBUTION FACETS IN QUESTION:
 {facet_texts}
 
@@ -92,54 +127,83 @@ PRIOR PAPERS:
 
 For each questioned facet output one line exactly: FACET: <name> | FINAL: COVERED-BY <n> | or FINAL: NONE | reason: <short>"""
 
-FINALIZE = """Convert the analysis into strict JSON. Use the FINAL decisions from the re-examination where present, otherwise the first-pass COVERED-BY.
+FACETS=('purpose','mechanism','evaluation','domain')
+PROMPT_VERSION='v7'  # v7: purpose 锚 + finding 分工 + evaluation 去歧义 + stage2 翻案门槛(2026-07-07)
 
-First pass:
-{stage1}
-
-Re-examination:
-{stage2}
-
-Output JSON only:
-{{"purpose":{{"covered_by":<int|null>}},"mechanism":{{"covered_by":<int|null>}},"evaluation":{{"covered_by":<int|null>}},"domain":{{"covered_by":<int|null>}},"single_paper_covers_all":<int|null>}}"""
+def parse_verdicts(stage1):
+    """Parse the structured 'VERDICT <facet> = <n|NONE>' lines into {facet: int|[int]|None}.
+    确定性解析取代原 FINALIZE LLM 调用:旧版把 stage1 截到 3000 字符喂第三轮 LLM,
+    冗长模型(sonnet)的 VERDICT 行在末尾被切掉 → 覆盖判定静默变 null → 假 facet-novel。"""
+    out={}
+    for fac in FACETS:
+        m=re.search(rf'VERDICT\s+{fac}\s*=\s*([^\n]*)', stage1, re.I)
+        if not m:
+            out[fac]='MISSING'; continue
+        val=m.group(1)
+        nums=[int(x) for x in re.findall(r'\d+', val)]
+        if not nums or re.search(r'\bNONE\b', val, re.I):
+            out[fac]=None
+        else:
+            out[fac]=nums[0] if len(nums)==1 else nums
+    return out
 
 def parse_none_facets(stage1):
-    """Parse the structured 'VERDICT <facet> = <n|NONE>' lines. Only these decide the self-check trigger."""
-    none=[]
-    for fac in ('purpose','mechanism','evaluation','domain'):
-        m=re.search(rf'VERDICT\s+{fac}\s*=\s*(NONE|\d+)', stage1, re.I)
-        if m and m.group(1).upper()=='NONE': none.append(fac)
-    return none
+    return [f for f,v in parse_verdicts(stage1).items() if v is None]
 
-def judge_one(model, contrib, neighbors):
+def parse_stage2(stage2):
+    """Parse 'FACET: <name> | FINAL: COVERED-BY <n>' / 'FINAL: NONE' lines.
+    容错:facet 名后跟原文('FACET: domain: LLM safety ... |')、markdown 星号、方括号编号。"""
+    out={}
+    for m in re.finditer(r'FACET:\s*\**(\w+)[^|\n]*\|\s*\**FINAL\**\s*:?\**\s*(COVERED[- ]BY\s*\[?(\d+)|NONE)', stage2, re.I):
+        fac=m.group(1).lower()
+        if fac in FACETS:
+            out[fac]=int(m.group(3)) if m.group(3) else None
+    return out
+
+def judge_one(model, contrib, neighbors, keep_raw=False):
     papers='\n'.join(f"[{i+1}] ({n.get('date')}) {n['title']} — {(n.get('abstract') or '')[:500]}"
                      for i,n in enumerate(neighbors))
-    s1=chat(model, STAGE1.format(papers=papers, **{k:contrib[k] for k in ('purpose','mechanism','evaluation','domain')}))
-    none=parse_none_facets(s1)
+    s1=chat(model, STAGE1.format(papers=papers, ctype=contrib.get('type','method'),
+                                 **{k:contrib[k] for k in ('purpose','mechanism','evaluation','domain')}), max_tokens=mt(model,2500))
+    verdicts=parse_verdicts(s1)
+    none=[f for f,v in verdicts.items() if v is None]
     s2=''
     if none:
         facet_texts='\n'.join(f"- {f}: {contrib[f]}" for f in none)
-        s2=chat(model, STAGE2.format(none_facets=', '.join(none), facet_texts=facet_texts, papers=papers))
-    fin=chat(model, FINALIZE.format(stage1=s1[:3000], stage2=s2[:1500]), 400)
-    fac=parse_json(fin)
-    state=None
-    if fac:
-        if covered(fac.get('single_paper_covers_all')): state='covered'
-        else:
-            cov=[covered(fac[x].get('covered_by')) for x in ('purpose','mechanism','evaluation','domain')]
-            state='recombination' if all(cov) else 'facet-novel'
-    return {'model':model,'state':state,'facets':fac,'self_check_triggered':none}
+        s2=chat(model, STAGE2.format(none_facets=', '.join(none), facet_texts=facet_texts, papers=papers), max_tokens=mt(model,1500))
+        for fac,v in parse_stage2(s2).items():
+            if fac in none:  # stage2 只对 NONE facet 有翻案权
+                verdicts[fac]=v
+    # 三态归类:确定性规则(不再让 LLM 出 single_paper_covers_all)
+    fac={f:{'covered_by':(None if verdicts[f]=='MISSING' else verdicts[f])} for f in FACETS}
+    if any(v=='MISSING' for v in verdicts.values()):
+        state=None  # VERDICT 行缺失 = 解析失败,记 null 不猜
+        spa=None
+    else:
+        sets=[set(v if isinstance(v,list) else [v]) if v is not None else set() for v in verdicts.values()]
+        common=set.intersection(*sets) if all(sets) else set()
+        spa=min(common) if common else None
+        if spa: state='covered'
+        else: state='recombination' if all(sets) else 'facet-novel'
+    fac['single_paper_covers_all']=spa
+    r={'model':model,'state':state,'facets':fac,'self_check_triggered':none}
+    if keep_raw:
+        r['raw']={'stage1':s1,'stage2':s2}
+    return r
 
 if __name__=='__main__':
     import argparse
     ap=argparse.ArgumentParser()
     ap.add_argument('--pid',required=True); ap.add_argument('--cid',default='C1')
-    ap.add_argument('--models',default='gpt-4o,claude-sonnet-5,gemini-2.5-pro')
-    ap.add_argument('--neighbors',default='gold')  # gold|judgment
+    ap.add_argument('--models',default='gpt-4o,claude-sonnet-4-6,gemini-2.5-pro')
+    ap.add_argument('--neighbors',default='s2')  # s2|gold|judgment
     a=ap.parse_args()
     contrib=next(c for c in json.load(open(f'data/extractions/{a.pid}.json'))['contributions'] if c['id']==a.cid)
     if a.neighbors=='gold':
         nbrs=json.load(open(f'data/gold_neighbors/{a.pid}.json'))
+    elif a.neighbors=='s2':  # retrieve_s2_slow.py 的近邻缓存(正式检索通道)
+        j=json.load(open(f'data/neighbors_s2/{a.pid}.json'))
+        nbrs=next(c for c in j['contributions'] if c['id']==a.cid)['neighbors']
     else:
         j=json.load(open(f'data/judgments/{a.pid}.json'))
         nbrs=next(c for c in j['contributions'] if c['id']==a.cid)['neighbors']

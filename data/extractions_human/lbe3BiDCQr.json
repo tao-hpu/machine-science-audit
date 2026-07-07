@@ -1,0 +1,34 @@
+{
+  "paper_id": "lbe3BiDCQr",
+  "title": "CheckEmbed: Effective Verification of LLM Solutions to Open-Ended Tasks",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "解决对复杂开放式任务（consolidation/summarization/知识抽取）中 LLM 答案难以验证的问题——token/句/事实级方法随任务规模膨胀而不可行且语义不准",
+     "mechanism": "提出 CheckEmbed：把整段答案压成一个 answer-level embedding（如 GPT Text Embedding Large），再对多份 LLM 答案或与 ground-truth 的 embedding 做成对比较（cosine similarity / Pearson）",
+     "evaluation": "定性：将复杂文本答案归约为单个 embedding；Figure 1 案例中 CheckEmbed 能正确区分语义相关/无关回复，而 BERTScore、SelfCheckGPT(BERTScore) 判断相反",
+     "domain": "LLM 答案验证 / 幻觉检测",
+     "source_quote": "we propose CHECKEMBED: an accurate, scalable, and simple LLM verification approach ... compare their corresponding answer-level embeddings obtained with a model such as GPT Text Embedding Large. This reduces a complex textual answer to a single embedding",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "把方法落地成可部署的验证系统，并给出可用于决策的真实性度量",
+     "mechanism": "构建完整验证 pipeline：批量提问→同问采样 k 次→逐条 embedding（含 GT）→成对相似度→heatmap 矩阵，用 Frobenius 范数/Spearman 汇总成单个阈值数",
+     "evaluation": "定性：pipeline 含 embedding heatmap 及汇总指标，可驱动'答案是否满意'的实际引擎；采样消融显示约 8 个样本（SFR/E5 约 6 个）后精度趋稳",
+     "domain": "LLM 答案验证系统/工具",
+     "source_quote": "We develop a comprehensive verification pipeline implementing the CHECKEMBED methodology. The CHECKEMBED pipeline also comes with metrics for assessing the truthfulness of the LLM answers, such as embedding heatmaps and their summaries.",
+     "type": "resource"},
+    {"id": "C3",
+     "purpose": "在真实文档分析任务上验证 CheckEmbed 相对既有方法在准确性、成本、运行时上的优势",
+     "mechanism": "在术语抽取、文档摘要任务及 WikiBio-gpt3 幻觉基准上对比 BERTScore、SelfCheckGPT(BERTScore/NLI)；用可扩展性分析论证复杂度更低",
+     "evaluation": "WikiBio 上 Spearman 相关显著高于基线；Pearson 上被 SelfCheckGPT(NLI) 略微超过但计算快 30 倍以上；显示准确性/成本/运行时全面改进",
+     "domain": "文档分析（术语抽取、摘要）",
+     "source_quote": "showcasing significant improvements in accuracy, cost-effectiveness, and runtime performance compared to existing token-, sentence-,and fact-level schemes such as BERTScore or SelfCheckGPT.",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "We do not compare CHECKEMBED to schemes like MIND (Su et al., 2024), BARTScore (Yuan et al.,2021), UniEval (Zhong et al., 2022), or G-Eval (Liu et al., 2023) because their focuses differ from hallucination detection.", "section": "related work"},
+    {"quote": "We compare CHECK-EMBED to two variants of SelfCheckGPT: one that uses BERTScore as a subroutine, and one that harnesses the Natural Language Inference (NLI) ... We also compare to BERTScore as a standalone baseline.", "section": "related work"}
+  ],
+  "notes": "负结果/trade-off：(1) 在 WikiBio 的 Pearson 相关上 CheckEmbed 被 SelfCheckGPT 的 NLI 变体略微超过（marginally outperformed），仅靠 30x+ 速度优势和 Spearman 更高来找补；(2) 采样数 k 是显式 trade-off：k 越大越准但成本/时间越高，约 8 样本后收益递减。方法整体属工程化简单方案（answer-level embedding），新颖点偏系统与经验性。",
+  "extractor": "human-baseline-batch10",
+  "date": "2026-07-07"
+}

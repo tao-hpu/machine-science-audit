@@ -1,0 +1,34 @@
+{
+  "paper_id": "YGoFl5KKFc",
+  "title": "Locking Down the Finetuned LLMs Safety",
+  "contributions": [
+    {"id": "C1",
+     "purpose": "解决现有安全对齐无法抵御微调阶段安全风险的问题——仅 10 条 toxic 句子即可让模型服从有害指令",
+     "mechanism": "提出 SafetyLock：用 safety probes 定位与有害性最相关的注意力头并为每个头确定一个 safety direction，推理时对这些头注入干预向量把内部激活推向 harmlessness；跨多 token 维度搜索激活方向以增强鲁棒/可迁移性",
+     "evaluation": "把有害指令响应率从 60% 降到 <1%；ASR 从 54.24% 降到 0.03%；DeepInception 攻击 ASR 从 98% 降到 2%；再对齐 <0.01 秒、无额外 GPU 内存",
+     "domain": "大语言模型微调安全 / 对齐",
+     "source_quote": "We introduce SafetyLock, a novel alignment intervention method that maintains robust safety post-fine-tuning through efficient and transferable mechanisms.",
+     "type": "method"},
+    {"id": "C2",
+     "purpose": "让安全干预可从基座模型一次性提取、批量分发到多个微调变体，避免重复搜索安全模式",
+     "mechanism": "基于'微调模型与原模型保留相似 safety-related 激活表示'的发现，从原模型（如 Llama-3-Instruct）提取一组 safety bias directions（Meta-SafetyLock），普适地应用到各微调模型",
+     "evaluation": "在 Llama-3-8B/70B Instruct、Mistral-Large-2 123B 上高效迁移；无需 GPU、<0.01 秒部署；八项通用任务上响应率仅从 99.4% 轻降到 98.1%",
+     "domain": "可迁移安全对齐",
+     "source_quote": "our approach uniquely operates at the attention-head level, supported by our discovery that safety-relevant attention heads maintain consistency even after fine-tuning. This insight enables us to extract a single Meta-SafetyLock from the base model that can be rapidly deployed across multiple fine-tuned variants",
+     "type": "method"},
+    {"id": "C3",
+     "purpose": "验证 SafetyLock 在不同风险等级、攻击类型、模型规模与数据量下的鲁棒性和效率优势",
+     "mechanism": "对比 DPO/SFT-mixing/Self-Reminder/ICD/PPL 等训练时与推理时防御，评测 AutoDAN/DeepInception/GCG/PAIR/XSTest 及组合攻击，并做训练集规模与干预强度 α 的消融",
+     "evaluation": "AdvBench ASR 0.19% 超过所有基线；训练 0.01s、0 GB GPU（DPO 需 7622s/45.12GB）；1 万有害样本下仍仅 3.46% ASR（未保护 62.31%）",
+     "domain": "越狱/对抗攻击防御",
+     "source_quote": "It surpasses traditional methods in both performance and efficiency, offering a scalable, non-invasive solution for ensuring the safety of customized LLMs.",
+     "type": "finding"}
+  ],
+  "self_declared_provenance": [
+    {"quote": "By employing safety probes (Li et al., 2024a), we identified the attention heads most closely associated with harmfulness, and determining a safety direction for each.", "section": "related work"},
+    {"quote": "While previous works established important foundations through safety vectors (Bhardwaj et al., 2024) and various safety intervention methods (Zhao et al., 2024; Hazra et al., 2024; Yi et al., 2024), our approach uniquely operates at the attention-head level", "section": "related work"}
+  ],
+  "notes": "trade-off/caveat（多为正面结果）：(1) 干预强度 α 呈 U 形——α 从 0 升到 4 有害性骤降，但超过 α=4 后指标回升，过度干预会破坏模型学到的安全边界，最优 α≈4-6，需谨慎标定；(2) 通用能力有轻微退化（响应率 99.4%→98.1%，AddSub 86.33%→85.57%）；(3) 依赖'安全激活方向在微调前后相似'的假设，且需访问/修改注意力头激活。总体为强正面结果、少量效用代价。",
+  "extractor": "human-baseline-batch10",
+  "date": "2026-07-07"
+}

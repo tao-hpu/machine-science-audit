@@ -1,0 +1,50 @@
+{
+  "paper_id": "78Nn4QJTEN",
+  "title": "When Attention Sink Emerges in Language Models: An Empirical View",
+  "contributions": [
+    {
+      "id": "C1",
+      "purpose": "Establish that attention sink (large attention to the first token) is a universal, pre-training-emergent phenomenon in auto-regressive LMs, since prior understanding was lacking.",
+      "mechanism": "Empirical measurement using an attention-sink metric (Sink_k^epsilon, ratio of heads with sink) across open-source LM families (LLaMA2/3, OPT, Pythia, GPT2, Mistral) with varied inputs including random token sequences; tracking sink emergence over pre-training checkpoints.",
+      "evaluation": "Attention sink exists universally across inputs even in small models and with random token sequences; emerges during pre-training before instruction tuning; first token's key lies in a different manifold with small angles to other queries.",
+      "domain": "LLM interpretability / transformer attention",
+      "source_quote": "we first demonstrate that attention sinks exist universally in auto-regressive LMs with various inputs, even in small models. Furthermore, attention sink is observed to emerge during the LM pre-training",
+      "type": "finding"
+    },
+    {
+      "id": "C2",
+      "purpose": "Determine which pre-training factors (optimization, data distribution, loss function) control whether and where attention sink emerges.",
+      "mechanism": "Controlled pre-training ablations varying learning rate, weight decay, batch size, training-data amount, loss function (shifted window attention), and fixing tokens at specific positions; monitoring train/valid loss and sink metric.",
+      "evaluation": "Sink emerges after effective optimization on sufficient data; less obvious with small learning rates (holds even with compensating extra steps); weight decay encourages it; batch size has no effect; sink position is highly correlated with loss function and data distribution and can be shifted off the first token (e.g. to a fixed-position token); with <=100M tokens LMs overfit but sink stays <1%, isolating data amount (not overfitting) as the driver.",
+      "domain": "LLM pre-training dynamics",
+      "source_quote": "We highlight that attention sink emerges after effective optimization on sufficient training data. The sink position is highly correlated with the loss function and data distribution.",
+      "type": "finding"
+    },
+    {
+      "id": "C3",
+      "purpose": "Explain the mechanistic role of attention sink and identify what removes it.",
+      "mechanism": "Analysis showing the sink acts as key biases; controlled architecture variants (learnable sink token, KV biases, K-only biases, V-only biases) and a generalized attention formulation with different kernels (elu+1, identity, MLP) and normalization schemes, including sigmoid attention without normalization; trained up to 1B params.",
+      "evaluation": "Attention sink acts like key biases storing extra, non-informative attention that does not contribute to value computation; K biases shift the sink off the first token at comparable performance; V biases cannot affect it; MLP kernel and sigmoid-attention-without-normalization prevent attention sink from emerging in LMs up to 1B params, tracing it to softmax normalization's inter-token dependence.",
+      "domain": "Transformer attention design / interpretability",
+      "source_quote": "Most importantly, we find that attention sink acts more like key biases, storing extra attention scores, which could be non-informative and not contribute to the value computation. ... After relaxing such dependence by replacing softmax attention with other attention operations, such as sigmoid attention without normalization, attention sinks do not emerge in LMs up to 1B parameters.",
+      "type": "finding"
+    }
+  ],
+  "self_declared_provenance": [
+    {
+      "quote": "Xiao et al. (2023b) showed that Large Language models (LLMs) allocate significant attention to the initial tokens ... This interesting phenomenon is termed as attention sink (this work extends the study of that phenomenon).",
+      "section": "related work"
+    },
+    {
+      "quote": "Sun et al. (2024) directly introducing k*lh and v*lh as learnable parameters in attention (KV biases). ... Considering the important role of k* and small l2-norm of v*, we propose introducing only the key biases k* and fix value biases v*=0 (K biases). (modifies Sun et al.'s KV biases to K-only)",
+      "section": "related work"
+    },
+    {
+      "quote": "Motivated by linear attention (Katharopoulos et al., 2020), we consider different kernel functions, including elu plus one, identity, and MLP.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Accept. Purely empirical/analysis paper (all contributions are findings). Contains nuanced non-monotonic / comparable results: across different LM families stronger attention sink does NOT correlate with better downstream performance (OPT has stronger sink than Pythia at comparable scale but comparable HellaSwag performance) - only within a family does sink amplitude track performance/scale. Trade-off caveat: removing learned sink token/KV/V biases eliminates first-position sink but causes significant model performance drop. Negative training detail: p-normalized softmax attention with p=2,3,4 diverges (loss to infinity); only p<1 converges. Instruction tuning does not significantly change sink distributions.",
+  "extractor": "human-baseline-batch9",
+  "date": "2026-07-07"
+}
