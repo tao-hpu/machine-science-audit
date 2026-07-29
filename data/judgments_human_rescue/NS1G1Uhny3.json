@@ -1,0 +1,344 @@
+{
+ "paper_id": "NS1G1Uhny3",
+ "title": "Efficiently Learning at Test-Time: Active Fine-Tuning of LLMs",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     5
+    ],
+    "mechanism": [
+     9
+    ],
+    "evaluation": [
+     2,
+     5,
+     6
+    ],
+    "domain": [
+     6
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to demonstrate that the prevailing Nearest Neighbor (NN) retrieval approach for fine-tuning data selection is fundamentally insufficient due to its tendency to select redundant/duplicated data, which limits or harms fine-tuning performance. Paper [5] (\"Applications of Top-k Representative Queries\") and paper [16] (\"Diversifying Top-K Results\") both address the issue of redundancy in top-k selection, albeit in different contexts. Paper [5] explicitly discusses informational redundancy in top-k queries and proposes diversity-aware methods to mitigate it. Paper [16] similarly focuses on diversified top-k search to reduce redundancy in query results. Both papers share the same problem-class objective of addressing redundancy in selection processes, making the purpose covered.\n\n### Mechanism\nThe contribution's mechanism involves a theoretical analysis proving that selecting the top-N highest-scoring points under a fixed scoring function leads to redundant data selection, and deriving a high-probability bound on the total-variation distance governed by response uncertainty. Paper [9] (\"Guaranteed Deterministic Bounds on the Total Variation Distance Between Univariate Mixtures\") and paper [25] (\"On Deterministically Approximating Total Variation Distance\") both address bounding total variation distance, providing deterministic or approximate bounds. While these papers focus on bounding TV distance in statistical mixtures or product distributions, the underlying primitive of bounding TV distance under uncertainty is substantively equivalent. Thus, the mechanism is covered.\n\n### Evaluation\nThe contribution's evaluation includes a formal proof and empirical validation showing NN's failure mode (repeatedly selecting the same/closest point) performs worse than the base model on the Pile dataset. Paper [5] (\"Applications of Top-k Representative Queries\") and paper [16] (\"Diversifying Top-K Results\") both use empirical setups to validate the impact of redundancy in top-k selection, though in different domains. Paper [9] (\"Guaranteed Deterministic Bounds on the Total Variation Distance Between Univariate Mixtures\") and paper [25] (\"On Deterministically Approximating Total Variation Distance\") also use formal proofs to validate bounds on TV distance. The evaluation design — combining formal proof and empirical validation of redundancy effects — is covered.\n\n### Domain\nThe contribution operates in the domain of data selection for LLM fine-tuning or test-time fine-tuning. Paper [6] (\"From Quantity to Quality: Boosting LLM Performance with Self-Guided Data Selection for Instruction Tuning\") and paper [20] (\"Refined Coreset Selection: Towards Minimal Coreset Size under Model Performance Constraints\") both address data selection for LLM fine-tuning, albeit with different specific approaches. Paper [14] (\"Contributing Dimension Structure of Deep Feature for Coreset Selection\") and paper [24] (\"DeepCore: A Comprehensive Library for Coreset Selection in Deep Learning\") also focus on coreset selection for efficient learning, which overlaps with the general area of data selection for fine-tuning. The domain is covered.\n\n---\n\nVERDICT purpose = 5  \nVERDICT mechanism = 9  \nVERDICT evaluation = 5  \nVERDICT domain = 6  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Show that NN retrieval for fine-tuning data selection is fundamentally insufficient because it selects redundant/duplicated data, limiting or hurting fine-tuning performance.**\n\nPaper [5] (\"Applications of Top-k Representative Queries\") explicitly addresses that \"objects in the top-k list are often similar to each other and are thus informationally redundant\" and studies diversity-aware top-k queries. Paper [16] (\"Diversifying Top-K Results\") similarly states \"some of the top-k results returned can be very similar to each other. As a result some of the top-k results returned are redundant.\" However, neither paper's purpose is to show that NN retrieval *for fine-tuning data selection* is insufficient — they address query result diversification in database/IR contexts, not the specific claim that NN-based data selection hurts fine-tuning performance. The specific relationship being demonstrated (NN retrieval → redundant data → degraded fine-tuning) is not established by any prior paper. Papers [2], [3], [6] discuss fine-tuning data quality/quantity but don't specifically target NN retrieval's redundancy failure mode. This purpose appears uncovered.\n\n**MECHANISM: Theoretical analysis proving top-N highest-scoring selection leads to redundancy; anytime high-probability bound on total-variation distance between model response distribution and ground truth governed by response uncertainty.**\n\nPapers [9], [19], [25] deal with total variation distance bounds, but as mathematical tools in unrelated contexts (mixture models, product distributions), not as a mechanism for analyzing data selection redundancy in fine-tuning. Papers [5] and [16] analyze top-k redundancy but use diversity metrics, not TV-distance bounds tied to response uncertainty. The specific theoretical primitive — proving top-N scoring leads to redundancy AND deriving an anytime high-probability TV-distance bound between model response distribution and ground truth — does not appear in any prior paper. This mechanism appears uncovered.\n\n**EVALUATION: Formal proof + empirical demonstration that NN selection consistently performs worse than base model on the Pile.**\n\nThe evaluation design combines a formal proof with empirical benchmarking on a standard language modeling dataset (the Pile). Papers [2], [3], [6] use empirical fine-tuning evaluations on standard benchmarks, which is a similar evaluation design (benchmark-based comparison of fine-tuning data selection methods). However, the specific claim being validated (NN fails vs. base model) and the use of formal proof as part of the evaluation is not matched. The empirical component (comparing data selection methods on a standard LM benchmark) is a standard design seen in [6] and [2]. I'll mark this as covered by the generic benchmark comparison design in [6].\n\n**DOMAIN: Data selection for LLM fine-tuning / test-time fine-tuning.**\n\nPapers [2], [3], [6] explicitly work in data selection for LLM fine-tuning. Paper [6] (\"From Quantity to Quality: Boosting LLM Performance with Self-Guided Data Selection for Instruction Tuning\") directly addresses this domain. This is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 6\nVERDICT domain = 6",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 5 | reason: Paper [5] states \"objects in the top-k list are often similar to each other and are thus informationally redundant\" and paper [16] states \"some of the top-k results returned can be very similar to each other. As a result some of the top-k results returned are redundant\" — however, neither paper addresses this in the context of fine-tuning data selection or shows that NN retrieval for fine-tuning *hurts* performance. The required facet standard is \"the same objective, not the same topic\": the objective here is specifically demonstrating that NN retrieval for fine-tuning data selection is *fundamentally insufficient* and *limits or hurts fine-tuning performance*. No paper makes this claim. FINAL: NONE | reason: No prior paper demonstrates that NN retrieval for fine-tuning data selection is fundamentally insufficient because it selects redundant data that limits or hurts fine-tuning performance; [5] and [16] note top-k redundancy in retrieval/search contexts but never connect this to fine-tuning performance degradation.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper provides a theoretical proof that selecting top-N highest-scoring points under a fixed scoring function leads to redundant data selection combined with an anytime high-probability bound on total-variation distance between model response distribution and ground truth governed by response uncertainty. Papers [9], [19], [25] address TV distance computation/bounding in abstract probabilistic settings with no connection to fine-tuning data selection or response uncertainty."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to show that Nearest Neighbor (NN) selection for fine-tuning data is insufficient because it leads to redundancy that hurts performance. This is covered by prior work in information retrieval which identified the exact same problem with top-k selection methods. For example, [5] states that \"objects in the top-k list are often similar to each other and are thus informationally redundant,\" and [16] notes that \"some of the top-k results returned can be very similar to each other. As a result some of the top-k results returned are redundant.\"\n\n**mechanism**: The mechanism involves a theoretical analysis that derives a bound on the total-variation (TV) distance. The technical primitive of deriving bounds on TV distance to analyze probability distributions is not new. For instance, [9] is a work focused on providing \"GUARANTEED DETERMINISTIC BOUNDS ON THE TOTAL VARIATION DISTANCE BETWEEN UNIVARIATE MIXTURES,\" establishing the use of this mathematical tool for analysis.\n\n**evaluation**: The evaluation design consists of selecting data via a method (NN), fine-tuning a base model on it, and comparing its performance on a standard benchmark against the base model. This is a standard validation protocol for data selection methods. Papers like [2] and [6] use the same design to evaluate their data selection strategies for fine-tuning LLMs by measuring performance changes after fine-tuning on the selected subset.\n\n**domain**: The domain is data selection for LLM fine-tuning. This is a well-established area of research covered by multiple prior papers. For example, [6] focuses on \"Self-Guided Data Selection for Instruction Tuning\" of LLMs, and [2] investigates data selection strategies to \"Fine-Tune LLMs for Question-Answering.\"\n\nVERDICT purpose = 5\nVERDICT mechanism = 9\nVERDICT evaluation = 2\nVERDICT domain = 6",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     15,
+     17
+    ],
+    "mechanism": [
+     17
+    ],
+    "evaluation": [
+     15,
+     23
+    ],
+    "domain": [
+     15,
+     23
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 15
+      },
+      "mechanism": {
+       "covered_by": 17
+      },
+      "evaluation": {
+       "covered_by": 15
+      },
+      "domain": {
+       "covered_by": 15
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to provide a data selection algorithm that avoids redundancy and provably reduces uncertainty about the model's response to a prompt, unifying retrieval and active learning. Paper [17] (\"Transductive Active Learning: Theory and Applications\") covers a substantively equivalent purpose. It explicitly addresses minimizing uncertainty about prediction targets through adaptive sampling, which aligns with the goal of reducing uncertainty in the model's response. Additionally, paper [15] (\"Selecting Informative Contexts Improves Language Model Fine-tuning\") also aligns with the purpose, as it focuses on improving fine-tuning efficiency by selecting data based on information gain, which inherently reduces redundancy and improves model performance. Both papers address the same problem-class objective of reducing uncertainty and redundancy in data selection.\n\n### Mechanism\nThe mechanism, SIFT, is built on transductive active learning and uses a greedy selection strategy to maximize information gain while accounting for redundancy. Paper [17] (\"Transductive Active Learning: Theory and Applications\") directly covers this mechanism, as it introduces a family of decision rules for transductive active learning that minimize uncertainty about prediction targets, with theoretical guarantees. Additionally, paper [10] (\"Uncertainty-Based Active Learning via Sparse Modeling for Image Classification\") addresses a similar mechanism by selecting data points with high uncertainty while accounting for redundancy, which aligns with the core primitive of SIFT. Paper [28] (\"Interactive Submodular Set Cover\") also covers the mechanism, as it introduces a greedy algorithm for submodular set cover, which is mathematically equivalent to maximizing information gain under redundancy constraints.\n\n### Evaluation\nThe evaluation involves prompt-specific test-time fine-tuning on the Pile dataset, using bits-per-byte as the metric and comparing SIFT to baselines across multiple LLMs. Paper [15] (\"Selecting Informative Contexts Improves Language Model Fine-tuning\") uses a similar evaluation design, as it evaluates information gain-based data selection methods on language model fine-tuning using performance metrics. Paper [17] (\"Transductive Active Learning: Theory and Applications\") also matches the evaluation design, as it validates transductive active learning methods using uncertainty reduction metrics and performance comparisons. Both papers employ comparable evaluation frameworks, even though the specific datasets and models differ.\n\n### Domain\nThe domain is test-time/active fine-tuning of LLMs for language modeling. Paper [15] (\"Selecting Informative Contexts Improves Language Model Fine-tuning\") operates in the same domain, as it focuses on improving language model fine-tuning through data selection. Paper [23] (\"Test-Time Training on Nearest Neighbors for Large Language Models\") also covers the domain, as it explores test-time fine-tuning of LLMs using retrieval-augmented methods. Both papers address the same general application area of fine-tuning LLMs for language modeling.\n\n---\n\nVERDICT purpose = 15  \nVERDICT mechanism = 17  \nVERDICT evaluation = 15  \nVERDICT domain = 15  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 17
+      },
+      "mechanism": {
+       "covered_by": 17
+      },
+      "evaluation": {
+       "covered_by": 23
+      },
+      "domain": {
+       "covered_by": 23
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: \"Provide a data selection algorithm that avoids redundancy and provably reduces uncertainty about the model's response to a prompt, unifying retrieval and active learning.\"**\n\nPaper [17] (Transductive Active Learning) is the closest: it studies \"decision rules that sample adaptively to minimize uncertainty about prediction targets\" and proves convergence rates — this is essentially the same objective of reducing uncertainty about specific prediction targets while avoiding redundancy. Paper [23] (Test-Time Training on Nearest Neighbors) also aims to select retrieved data for fine-tuning at test time to improve LM performance, but doesn't frame it as uncertainty reduction with provable guarantees. Paper [10] addresses redundancy-aware batch active learning. Paper [8] proposes a unified active learning framework via conditional mutual information minimization. However, [17] most directly covers the purpose of \"provably reducing uncertainty about model response to a prompt\" via transductive active learning — the contribution explicitly builds on [17] (Hubotter et al., 2024). The purpose of unifying retrieval and active learning for data selection with provable uncertainty reduction is substantively covered by [17].\n\n---\n\n**MECHANISM: \"SIFT — transductive active learning, greedy selection maximizing information gain / minimizing uncertainty about prompt response, accounting for information duplication; O(1/sqrt(n)) rate; Faiss NN pre-filtering.\"**\n\nPaper [17] directly describes \"a family of decision rules that sample adaptively to minimize uncertainty about prediction targets\" with proven convergence — this is the core transductive active learning primitive. Paper [8] uses conditional mutual information minimization for active learning, covering the information-gain/redundancy-accounting aspect. Paper [10] uses sparse modeling to handle redundancy in batch active learning. Paper [23] uses nearest-neighbor retrieval followed by test-time fine-tuning, covering the Faiss NN pre-filtering + fine-tuning pipeline. The greedy information-gain maximization accounting for duplication is covered by [17] and [8]. The Faiss NN pre-selection step is covered by [23]. Together, [17] covers the core mechanism (transductive AL with proven rates), and [8] covers the information-theoretic redundancy-aware selection. Paper [17] is the primary match.\n\n---\n\n**EVALUATION: \"Prompt-specific test-time fine-tuning on the Pile (17 sub-datasets), single gradient step, bits-per-byte metric, GPT-2/GPT-2-large/Phi-3 with LoRA.\"**\n\nPaper [23] evaluates test-time training/fine-tuning of LLMs on language modeling benchmarks including the Pile, using bits-per-byte (or equivalent perplexity-like metrics), with nearest-neighbor retrieval — this is the same evaluation design (test-time fine-tuning on Pile sub-datasets, language modeling metric). The evaluation design (test-time fine-tuning on Pile, bits-per-byte, multiple LLM sizes) is substantively covered by [23]. Paper [30] also evaluates kNN-LM on language modeling with perplexity metrics, though not test-time fine-tuning specifically.\n\n---\n\n**DOMAIN: \"Test-time / active fine-tuning of LLMs, language modeling.\"**\n\nPaper [23] explicitly operates in test-time fine-tuning of LLMs for language modeling. Paper [15] covers language model fine-tuning with data selection. Papers [2], [3], [5], [7] cover LLM fine-tuning broadly. The domain of test-time fine-tuning of LLMs for language modeling is clearly covered by [23] and [15].\n\n---\n\nVERDICT purpose = 17\nVERDICT mechanism = 17\nVERDICT evaluation = 23\nVERDICT domain = 23",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": [
+     1,
+     11
+    ],
+    "domain": [
+     5
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose:\nThe contribution aims to show that response-uncertainty estimates predict the performance gain of test-time fine-tuning, enabling adaptive stopping proportional to realized gains. Paper [5] discusses scaling test-time compute optimally for LLMs, which overlaps conceptually with adaptive test-time compute allocation but does not establish the specific empirical relationship between uncertainty estimates and fine-tuning gains. Paper [6] quantifies uncertainty in fine-tuned LLMs but does not connect uncertainty to adaptive stopping or compute allocation. Paper [15] introduces adaptive stopping algorithms but focuses on probabilistic guarantees and sampling efficiency, not the specific relationship between uncertainty and fine-tuning gains. No prior paper establishes the same empirical relationship.\n\n### Mechanism:\nThe mechanism correlates test-time-computable uncertainty estimates (embedding-derived) with post-fine-tuning bits-per-byte and builds an adaptive algorithm that stops fine-tuning per-prompt based on the uncertainty estimate. Paper [6] uses uncertainty quantification for fine-tuned LLMs but does not employ embedding-derived uncertainty estimates or adaptive stopping algorithms. Paper [15] introduces adaptive stopping algorithms but does not use embedding-derived uncertainty estimates or apply them to fine-tuning. Paper [9] and [12] discuss adaptive stopping criteria but focus on integrated circuits and do not use embedding-derived uncertainty estimates. No prior paper uses the same mechanism.\n\n### Evaluation:\nThe evaluation correlates normalized uncertainty sigma_n with bits-per-byte error and demonstrates adaptive compute allocation using SIFT, achieving state-of-the-art results on benchmarks. Paper [11] proposes an evaluation protocol for test-time adaptation under computational constraints, which penalizes slower methods and evaluates adaptation performance. This protocol overlaps with the design of adaptive compute allocation but does not use the same benchmarks or metrics. Paper [5] evaluates scaling test-time compute optimally but does not use the same correlation or adaptive stopping metrics. Paper [31] evaluates supervised instruction fine-tuning (SIFT) but does not use uncertainty estimates or adaptive stopping. The evaluation design is not covered.\n\n### Domain:\nThe domain is adaptive test-time compute allocation for LLMs. Paper [5] explicitly addresses scaling test-time compute for LLMs, which falls within the same application area. Paper [11] discusses test-time adaptation methods under computational constraints, which also overlaps with adaptive compute allocation for LLMs. Paper [6] quantifies uncertainty in fine-tuned LLMs, which is relevant to adaptive test-time compute allocation. The domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [5]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly shows response-uncertainty estimates predicting test-time fine-tuning performance gains for adaptive stopping.  \nFACET: mechanism | FINAL: NONE | reason: No prior paper correlates embedding-derived uncertainty estimates with post-fine-tuning bits-per-byte or builds an adaptive stopping algorithm based on this correlation.  \nFACET: evaluation | FINAL: COVERED-BY 11 | reason: \"Evaluation protocol penalizes slower methods by providing fewer samples for adaptation,\" aligns with spending compute proportional to realized performance gain."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## PURPOSE\n\nThe purpose is: \"Show that response-uncertainty estimates predict the performance gain of test-time fine-tuning, enabling compute spent proportional to realized gains (adaptive stopping).\"\n\nThis is a very specific relationship: uncertainty → predicts → fine-tuning gain → enables adaptive stopping of test-time fine-tuning. Let me check:\n\n- [5] studies scaling test-time compute optimally, asking how much a model can improve with fixed inference-time compute. It focuses on search/revision strategies, not uncertainty-predicting fine-tuning gain.\n- [11] evaluates TTA under computational time constraints, penalizing slower methods. It's about evaluation protocol, not uncertainty predicting fine-tuning gain.\n- [17] and [21] are about adaptive computation time for RNNs — learning how many steps to take, not uncertainty predicting fine-tuning gain.\n- [1] is about adaptive neural networks for fast test-time prediction — early exit, not uncertainty predicting fine-tuning gain.\n- [6] is about uncertainty quantification in fine-tuned LLMs using LoRA ensembles — it measures uncertainty after fine-tuning, not using uncertainty to predict fine-tuning gain.\n- [31] studies prompt loss weight in supervised instruction fine-tuning — not about uncertainty predicting gain.\n\nNo prior paper establishes the same empirical relationship: that uncertainty estimates predict the performance gain of test-time fine-tuning specifically. This is a novel finding.\n\n## MECHANISM\n\nThe mechanism is: correlate test-time-computable, embedding-derived uncertainty with post-fine-tuning bits-per-byte; build adaptive algorithm stopping fine-tuning per-prompt based on uncertainty.\n\n- [5] uses a process reward model to guide search at test time — different primitive.\n- [17] uses a halting probability learned by the network itself — different primitive (learned halting vs. embedding-derived uncertainty correlation).\n- [6] uses LoRA ensembles for uncertainty in fine-tuned LLMs — measures uncertainty after fine-tuning, not using it to stop fine-tuning.\n- [11] uses wall-clock time as the stopping criterion, not uncertainty.\n- [31] studies prompt loss weight effects in SIFT — no uncertainty-based stopping.\n- [22] uses confidence-based estimators for predictive performance monitoring — correlates confidence with performance, but in a deployment monitoring context, not test-time fine-tuning stopping.\n\n[22] is the closest: \"confidence-based estimators for predictive performance\" — it correlates model confidence with downstream performance. However, the mechanism here is specifically about embedding-derived uncertainty predicting fine-tuning gain and stopping per-prompt fine-tuning, which is a different primitive (monitoring deployed model vs. stopping test-time fine-tuning). No paper covers this specific primitive combination.\n\n## EVALUATION\n\nThe evaluation uses: bits-per-byte metric on the Pile benchmark, correlation analysis (Pearson ~0.4-0.5), comparison to prior SOTA on the Pile benchmark leaderboard, and adaptive compute allocation measurement.\n\n- [5] uses standard LLM benchmarks (MATH, etc.) with accuracy metrics — different benchmark family.\n- [31] uses perplexity/loss metrics for fine-tuning evaluation — similar metric family (bits-per-byte is related to perplexity/cross-entropy), but on different benchmarks.\n- [11] uses TTA evaluation protocols with accuracy under compute constraints — similar adaptive compute evaluation design.\n\nThe Pile benchmark leaderboard comparison and bits-per-byte metric are specific evaluation designs. The correlation analysis between uncertainty and performance is a standard statistical design. [11] uses a similar \"compute-constrained evaluation\" design. However, the specific combination of Pile benchmark + bits-per-byte + correlation analysis doesn't appear in prior papers. The correlation analysis design (correlating uncertainty with performance) appears generically in [22] and [30]. The bits-per-byte on Pile as a benchmark family is specific enough that no prior paper uses this exact design.\n\nActually, [30] correlates data efficiency with error for uncertainty sampling — a correlation between an uncertainty-related quantity and performance, which is the same evaluation design shape. This partially covers the correlation analysis aspect.\n\n## DOMAIN\n\nThe domain is: adaptive test-time compute allocation for LLMs.\n\n- [5] explicitly studies \"scaling LLM test-time compute optimally\" — directly in this domain.\n- [11] studies test-time adaptation under computational constraints — same general area.\n- [17] studies adaptive computation time — same general area of adaptive compute.\n\n[5] clearly covers this domain.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 5",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper proposes using uncertainty estimates to predict the performance gain of test-time fine-tuning specifically to enable compute allocation proportional to realized gains (adaptive stopping per prompt). Paper [5] addresses scaling test-time compute but via search/sampling, not uncertainty-predicted fine-tuning gain. Paper [11] evaluates TTA under compute constraints but does not use uncertainty to predict gain. No equivalent objective found under any terminology.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper correlates a test-time-computable, embedding-derived uncertainty estimate with post-fine-tuning bits-per-byte, nor builds an adaptive stopping algorithm for per-prompt fine-tuning based on such an estimate. Paper [17] (ACT) learns adaptive computation steps but for RNNs via a halting mechanism, not uncertainty-predicted fine-tuning gain. No equivalent mechanism found under any framing.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports the specific empirical findings: ~0.4–0.5 linear correlation between normalized uncertainty and bits-per-byte on GPT-2, adaptive SIFT compute proportional to realized gain, or Phi-3/Llama-3.2 reaching 0.595/0.557 bits/byte as new SOTA on the Pile benchmark beating a 30x larger model. These are concrete numerical results unique to this work."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: COVERED by [1], which uses model confidence (the inverse of uncertainty) to predict the utility of further test-time computation (more layers) and adaptively stop early, establishing the same relationship between an uncertainty-like metric and the value of additional compute. The goal is to \"achieve a favorable trade-off between accuracy and computational cost,\" which is the same objective as the contribution.\n\n**mechanism**: COVERED by [1], which proposes an adaptive algorithm that stops computation based on a threshold: \"If this score is above a threshold, we stop and use the current prediction.\" This is the same algorithmic primitive as the contribution's adaptive stopping rule based on an uncertainty estimate.\n\n**evaluation**: COVERED by [1] and [30]. The evaluation design of plotting performance versus computational cost to show the benefit of an adaptive method is used in [1] (\"Adaptive Neural Networks for Fast Test-Time Prediction\"). The design of using correlation analysis to validate the relationship between a proposed metric and a performance outcome is used in [30] (\"strong inverse correlation between data efficiency and the error rate\").\n\n**domain**: COVERED by [5], which explicitly studies \"test-time computation in LLMs,\" the same application area. The broader but equivalent domain of adaptive test-time compute for neural networks is also covered by [1] (\"Adaptive Neural Networks for Fast Test-Time Prediction\") and [17] (\"Adaptive Computation Time for Recurrent Neural Networks\").\n\nVERDICT purpose = 1\nVERDICT mechanism = 1\nVERDICT evaluation = 1\nVERDICT domain = 5",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "resource",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     9,
+     17
+    ],
+    "mechanism": [
+     14,
+     17
+    ],
+    "evaluation": [
+     9,
+     17
+    ],
+    "domain": [
+     6
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to provide a usable tool for the community. This is a generic goal shared by many prior papers that release open-source libraries or toolkits. For example, [9] (\"The ActiveCrowdToolkit: An Open-Source Tool for Benchmarking Active Learning Algorithms for Crowdsourcing Research\") explicitly states its purpose as providing a toolkit for researchers, which aligns with the goal of releasing a usable tool. Similarly, [17] (\"modAL: A modular active learning framework for Python\") aims to simplify active learning research and practice by providing a modular framework, which is also a community-oriented tool release. Both papers share the same purpose at the problem-class level.\n\n#### Mechanism:\nThe mechanism involves releasing the \"activeft\" Python library as a drop-in replacement for Nearest Neighbor retrieval. This mechanism is a specific implementation of active learning and approximate nearest neighbor search, which is covered by prior papers. For example, [15] (\"Active Few-Shot Fine-Tuning\") introduces active fine-tuning as a generalization of active learning, which overlaps conceptually with the mechanism of activeft. Additionally, [14] (\"Subspace Approximation for Approximate Nearest Neighbor Search in NLP\") and [16] (\"Approximate Nearest Neighbor Search with Window Filters\") both address approximate nearest neighbor search mechanisms, which are substantively equivalent primitives to the mechanism described here.\n\n#### Evaluation:\nThe evaluation is qualitative, with the library released alongside the paper. This type of evaluation design — releasing a library/tool without quantitative benchmarks — is covered by prior papers that similarly release open-source tools. For example, [9] (\"The ActiveCrowdToolkit\") and [17] (\"modAL\") both describe qualitative evaluations of their toolkits, focusing on usability and modularity rather than quantitative metrics. The evaluation design is therefore not novel.\n\n#### Domain:\nThe domain is software/tooling for LLM fine-tuning. This application area is covered by prior papers such as [6] (\"JORA: JAX Tensor-Parallel LoRA Library for Retrieval Augmented Fine-Tuning\"), which explicitly addresses tooling for LLM fine-tuning, and [15] (\"Active Few-Shot Fine-Tuning\"), which focuses on active fine-tuning for LLMs. Both papers operate in the same general application area, even if the specific tool or implementation differs.\n\n---\n\n### Verdicts:\nVERDICT purpose = 9  \nVERDICT mechanism = 14  \nVERDICT evaluation = 9  \nVERDICT domain = 6  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 17
+      },
+      "mechanism": {
+       "covered_by": 17
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Provide a usable tool for the community.**\n\nPaper [9] presents \"an open-source toolkit that allows the easy comparison of the performance of active learning methods over a series of datasets\" — explicitly providing a usable tool for the community. Paper [17] (modAL) is \"a modular active learning framework for Python, aimed to make active learning research and practice simpler\" — also providing a usable tool for the community. Both share the same objective of community tooling for active learning.\n\n**MECHANISM: Release the activeft Python library as a drop-in replacement for Nearest Neighbor retrieval.**\n\nPaper [17] (modAL) releases a Python active learning framework with \"full compatibility with scikit-learn models and workflows\" designed as a modular, drop-in compatible library. Paper [9] (ActiveCrowdToolkit) releases an open-source toolkit for benchmarking active learning algorithms. Paper [15] introduces \"active fine-tuning\" as a concept (data selection for fine-tuning via transductive active learning), but does not release a library. The closest mechanism match is [17], which releases a Python active learning library designed for compatibility/drop-in use, though the specific primitive of \"drop-in replacement for Nearest Neighbor retrieval\" in the LLM fine-tuning context is more specific. Still, the underlying primitive — releasing a Python active learning library as a modular/compatible replacement — is substantively equivalent to [17].\n\n**EVALUATION: Qualitative; library released alongside the paper.**\n\nPaper [17] (modAL) similarly evaluates by releasing the library alongside the paper with qualitative/descriptive validation (open source, hosted on GitHub). Paper [9] also releases an open-source toolkit alongside the paper. This evaluation design (library release as validation) matches [17] and [9].\n\n**DOMAIN: Software / tooling for LLM fine-tuning.**\n\nPaper [17] operates in software/tooling for active learning (Python library). Paper [6] (JORA) operates in software/tooling for LLM fine-tuning specifically. Paper [9] operates in software/tooling for active learning crowdsourcing. The domain of \"software/tooling for LLM fine-tuning\" is covered by [6], which introduces \"a novel framework for PEFT-compatible fine-tuning\" of LLMs, and by [17] for the software/tooling aspect. Paper [1] also addresses LLM fine-tuning practices. The general area of software tooling for ML/LLM fine-tuning is covered.\n\nVERDICT purpose = 17\nVERDICT mechanism = 17\nVERDICT evaluation = 17\nVERDICT domain = 6",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

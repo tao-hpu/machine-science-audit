@@ -1,0 +1,364 @@
+{
+ "paper_id": "PnfghHD4Pi",
+ "title": "Gap Preserving Distillation by Building Bidirectional Mappings with A Dynamic Teacher",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     4,
+     9
+    ],
+    "mechanism": null,
+    "evaluation": [
+     1,
+     9
+    ],
+    "domain": [
+     1,
+     9
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to mitigate the issue where a large performance gap between teacher and student models in knowledge distillation (KD) hinders training, by maintaining a reasonable performance gap throughout the training process. This purpose is explicitly addressed in [1] (\"as the capacity gap between students and teachers becomes larger, existing KD methods fail to achieve better results\") and [3] (\"the performance gap between the teacher and student networks can affect the student's training\"). Both papers aim to address the same problem of mitigating the negative effects of a large teacher-student performance gap in KD.\n\n### Mechanism\nThe mechanism involves introducing a dynamically trained teacher (Dynamic Teacher, DT) that is co-trained with the student to act as a proxy, converting the problem of \"determining the optimal gap\" into \"constructing an appropriate model size gap\" and dynamically maintaining the teacher-student performance gap during each iteration. This mechanism is not directly equivalent to any prior paper. While [1] proposes dynamic prior knowledge (DPK) by integrating part of the teacher's features, and [3] uses dynamic entropy correction to adjust the student, neither introduces a co-trained dynamic teacher as a proxy to maintain a performance gap. Similarly, [9] introduces a teacher assistant to bridge the gap but does not dynamically co-train a teacher proxy. Thus, the mechanism appears novel.\n\n### Evaluation\nThe evaluation involves demonstrating consistent improvements on ImageNet by combining the proposed method with existing KD methods, showing accuracy gains such as a 1.01% improvement for ResNet34→ResNet18 and a 1.58% improvement for ResNet50→MobileNet. This evaluation design — using ImageNet as a benchmark and reporting accuracy improvements for specific teacher-student pairs — is standard in KD research. For example, [1], [3], and [9] all evaluate their methods on ImageNet or similar benchmarks, reporting accuracy improvements for specific teacher-student pairs. Therefore, the evaluation design is covered.\n\n### Domain\nThe domain is computer vision, specifically knowledge distillation and model compression. This domain is extensively covered by prior work, including [1], [3], [9], and many others, which all focus on KD and model compression in computer vision tasks. The specific teacher-student pairs or datasets used in this contribution (e.g., ResNet34→ResNet18 on ImageNet) are instances within the broader domain and do not constitute a new application area.\n\n---\n\nVERDICT purpose = 1  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": "FACET: mechanism | FINAL: COVERED-BY 3 | reason: DynamicKD (2023-05-09) explicitly addresses the mechanism of reducing the teacher-student performance gap through dynamic entropy correction, which aligns with the concept of dynamically maintaining the teacher-student performance gap as described in GPD. Quoted phrase: \"This paper proposes a novel knowledge distillation algorithm based on dynamic entropy correction to reduce the gap by adjusting the student instead of the teacher.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\n\nThe purpose is to mitigate the problem where too-large teacher-student performance gaps hinder training, and to maintain a reasonable gap throughout training.\n\nPaper [9] explicitly states: \"we show that the student network performance degrades when the gap between student and teacher is large\" and proposes teacher assistants to bridge this gap. Paper [3] states: \"the performance gap between the teacher and student networks can affect the student's training\" and proposes dynamic entropy correction to reduce the gap. Paper [8] observes \"more accurate teachers often don't make good teachers\" due to \"mismatched capacity.\" Paper [10] addresses \"better teachers do not make better students due to the capacity mismatch.\" Paper [1] addresses \"as the capacity gap between students and teachers becomes larger, existing KD methods fail.\"\n\nAll of these share the same purpose: addressing the capacity/performance gap problem in KD. Paper [9] is the most canonical reference for this purpose.\n\n## Mechanism\n\nThe mechanism is GPD: introducing a dynamically trained-from-scratch \"dynamic teacher\" (DT) that co-trains with the student, converting \"finding optimal gap\" into \"building appropriate model size gap,\" maintaining the gap dynamically each iteration.\n\nPaper [9] uses a teacher assistant (TA) — a fixed intermediate model — to bridge the gap, but it's pre-trained and static, not co-trained dynamically. Paper [3] proposes dynamic entropy correction to adjust the student's output entropy dynamically, not a co-trained proxy teacher. Paper [1] proposes \"dynamic prior knowledge\" integrating teacher features, but not a separately trained dynamic teacher model. Paper [12] explores \"dynamic knowledge distillation\" for language models where the student adjusts learning procedure based on competency — dynamic but different primitive (no co-trained proxy teacher). Paper [10] proposes student-customized KD adapting knowledge to student capacity, but no dynamic co-trained teacher.\n\nNone of the prior papers introduce the specific primitive of training a from-scratch dynamic teacher model alongside the student to serve as a proxy that maintains a size-based gap dynamically each iteration. This appears genuinely absent.\n\n## Evaluation\n\nThe evaluation uses ImageNet classification benchmarks with top-1 accuracy metrics, stacking GPD on top of existing KD methods (like DKD) and measuring improvement on standard teacher-student pairs (ResNet34→ResNet18, ResNet50→MobileNet).\n\nPapers [9], [3], [10], [1], [25], [14] all evaluate KD methods on ImageNet with top-1 accuracy on standard teacher-student pairs including ResNet architectures. Paper [25] explicitly uses ResNet→MobileNet pairs on ImageNet. The evaluation design (ImageNet top-1 accuracy, standard teacher-student pairs, plug-in improvement measurement) is well-established in the KD literature. This is a standard benchmark family with standard metric semantics used across many prior papers.\n\n## Domain\n\nThe domain is computer vision / knowledge distillation / model compression. Papers [9], [3], [8], [10], [1], [20], [25], [18] all operate in exactly this domain.\n\n---\n\nVERDICT purpose = 9\nVERDICT mechanism = NONE\nVERDICT evaluation = 9\nVERDICT domain = 9",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes training a from-scratch dynamic teacher (DT) as a proxy alongside the student to convert \"finding optimal gap\" into \"constructing appropriate model size gap\" while dynamically maintaining the performance gap each iteration. Paper [9] (TAKD) uses a static teacher assistant; paper [3] (DynamicKD) adjusts student entropy dynamically but has no proxy teacher trained from scratch; paper [1] (DPK) integrates teacher features dynamically but does not train a separate proxy teacher from scratch to maintain a performance gap. No equivalent mechanism found under any terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The purpose is to mitigate the problem where a large performance gap between the teacher and student models hinders knowledge distillation, and to maintain an optimal gap throughout training. This exact objective is shared by numerous prior works. For example, [4] states its goal is \"To mitigate the impact of the capacity gap\" between teacher and student. Similarly, [3] notes that \"the performance gap between the teacher and student networks can affect the student's training\" and proposes a method to reduce this gap. Paper [9] also observes that \"student network performance degrades when the gap between student and teacher [is large]\" and aims to solve this.\n\n**mechanism**: The proposed mechanism is Gap Preserving Distillation (GPD), which introduces a dynamic teacher (DT) trained from scratch alongside the student to act as a proxy. This co-training dynamically maintains a performance gap by translating the problem into one of managing model size differences. While prior work like [9] introduces a \"Teacher Assistant\" (TA), the TA is a static, intermediate model that is first trained by the teacher and then used to train the student in a sequential process. The GPD's mechanism of *simultaneously* co-training a dynamic proxy teacher from scratch with the student appears to be a distinct approach not described in the provided papers.\n\n**evaluation**: The evaluation design consists of applying the proposed method to existing knowledge distillation techniques (like DKD) and measuring the resulting top-1 accuracy improvement on the ImageNet benchmark for standard model pairs (e.g., ResNet34→ResNet18). This is a standard validation protocol for the field of knowledge distillation. Numerous prior papers use the exact same evaluation design: measuring accuracy on ImageNet for compressing standard architectures, such as [1], [3], [4], and [14] (\"Boosting Vanilla ResNet-50 to 80%+ Top-1 Accuracy on ImageNet\").\n\n**domain**: The application domain is knowledge distillation for model compression within computer vision. This is a well-established research area and is the explicit domain of the vast majority of the provided prior papers. For instance, [1] frames its work in \"transferring learning representations from large models (teachers) to small models (students),\" and [20] is a survey of the entire field of knowledge distillation.\n\nVERDICT purpose = 4\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: The core of the proposed mechanism is a \"dynamic teacher\" (DT) that is trained *from scratch* and *simultaneously with the student* to act as a proxy and maintain an optimal performance gap. After re-examining all papers, none describe this specific co-training dynamic. Papers like [9] and [15] use a \"Teacher Assistant\" as an intermediary, but it is trained sequentially (a powerful teacher trains the assistant, which then trains the student), not co-trained with the student from scratch. Paper [16] uses an iterative, sequential process where a student becomes the next generation's teacher. Other \"dynamic\" methods like [1] or [3] adjust the knowledge being transferred or the student's loss function, but rely on a fixed, pre-trained teacher. The specific method of co-training a proxy teacher and a student from scratch to dynamically manage the gap is not present."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     3
+    ],
+    "mechanism": [
+     5
+    ],
+    "evaluation": [
+     2,
+     5
+    ],
+    "domain": [
+     1,
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 5
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to explicitly strengthen knowledge transfer between teacher and student models, enabling the student to inherit better parameters directly from a stronger teacher model.  \n- Paper [3] (\"Revisiting Knowledge Distillation: An Inheritance and Exploration Framework\") discusses inheritance-based distillation, where the student inherits privileged information from the teacher model. This aligns with the purpose of enabling direct inheritance of better parameters.  \n- Paper [5] (\"Adaptive Teaching with Shared Classifier for Knowledge Distillation\") explores dynamic teacher-student interactions to enhance knowledge transfer, which also aligns with the purpose of improving parameter inheritance.  \n\n#### Mechanism:\nThe contribution's mechanism involves forcing dynamic teacher and student models to share the same set of parameters, encouraging parameter inheritance, with the teacher performing forward propagation and the student conducting online reparameterization.  \n- Paper [5] (\"Adaptive Teaching with Shared Classifier for Knowledge Distillation\") introduces shared classifiers between teacher and student models, which is substantively equivalent to the mechanism of shared parameters for inheritance.  \n- Paper [25] (\"Improving Robustness of Compressed Models with Weight Sharing through Knowledge Distillation\") investigates weight sharing in the context of knowledge distillation, which is substantively equivalent to the mechanism of shared parameters.  \n\n#### Evaluation:\nThe contribution evaluates the mechanism through ablation studies (Table 4), showing the isolated effect of parameter sharing and its combination with gap-maintaining mechanisms.  \n- Paper [5] (\"Adaptive Teaching with Shared Classifier for Knowledge Distillation\") uses ablation studies to validate the effect of shared classifiers, which matches the evaluation design.  \n- Paper [25] (\"Improving Robustness of Compressed Models with Weight Sharing through Knowledge Distillation\") also employs ablation studies to assess the impact of weight sharing, which matches the evaluation design.  \n\n#### Domain:\nThe contribution operates in the domain of computer vision and knowledge distillation.  \n- Paper [1] (\"Learning Student-Friendly Teacher Networks for Knowledge Distillation\") explicitly addresses knowledge distillation in computer vision tasks.  \n- Paper [5] (\"Adaptive Teaching with Shared Classifier for Knowledge Distillation\") also applies knowledge distillation techniques in computer vision.  \n\n---\n\n### Verdicts:\nVERDICT purpose = 3  \nVERDICT mechanism = 5  \nVERDICT evaluation = 5  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 5
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose: Explicitly strengthen knowledge transfer by having students directly inherit parameters from stronger models\n\nThe purpose is to improve knowledge transfer in distillation by enabling direct parameter inheritance from teacher to student. \n\n- Paper [3] \"Revisiting Knowledge Distillation: An Inheritance and Exploration Framework\" explicitly frames KD as \"inheritance\" from teacher to student, aiming to let students inherit teacher parameters/knowledge more directly.\n- Paper [13] \"KnowledgeIE: Unifying Online-Offline Distillation based on Knowledge Inheritance and Evolution\" also frames the goal as \"knowledge inheritance\" from teacher to student.\n- Paper [5] \"Adaptive Teaching with Shared Classifier for Knowledge Distillation\" aims to enhance knowledge transfer effectiveness through parameter sharing between teacher and student.\n\nPaper [3] most directly covers this purpose — it explicitly frames the objective as \"inheritance\" of teacher knowledge/parameters to strengthen the student, which is substantively equivalent to \"letting students directly inherit parameters from stronger models.\"\n\n## Mechanism: Hard strategy forcing dynamic teacher and student to share the same parameter set; student does online re-parameterization during forward pass\n\nThe core primitive is: teacher and student share identical parameters (weight tying), with the student applying a re-parameterization at inference/forward time.\n\n- Paper [5] \"Adaptive Teaching with Shared Classifier for Knowledge Distillation\" explicitly proposes sharing a classifier between teacher and student networks in an online KD setting, with the teacher being dynamic. This is substantively equivalent — shared parameters between dynamic teacher and student, with the student doing some form of adaptation.\n- Paper [21] \"Tied-LoRA\" uses weight tying between components with selective training, but this is in the NLP/LoRA domain and the re-parameterization primitive is similar.\n- Paper [25] \"Improving Robustness of Compressed Models with Weight Sharing through Knowledge Distillation\" combines weight sharing with KD, but the direction is different (weight sharing for compression, not for parameter inheritance from teacher to student).\n- Paper [27] \"Multi-Scale Weight Sharing Network for Image Recognition\" uses weight sharing across scales in CNNs, not between teacher and student.\n\nPaper [5] is the closest match — it shares a classifier (parameters) between a dynamic teacher and student in online KD. However, the specific mechanism of the student doing \"online re-parameterization\" while the dynamic teacher does a direct forward pass is a more specific primitive. Paper [5] covers the shared-parameter-between-dynamic-teacher-and-student aspect substantially.\n\n## Evaluation: Ablation study (Table 4) showing parameter sharing alone gives +0.35% accuracy, combined with gap-preservation mechanism gives +1.01% over baseline\n\nThe evaluation design is an ablation study measuring accuracy gains from individual components in a KD setting on standard vision benchmarks. This is a standard ablation design used across virtually all KD papers.\n\n- Papers [2], [5], [9], [13], [14], [16], [17], [19] all include ablation studies measuring accuracy improvements from individual components in KD frameworks on standard vision benchmarks (e.g., CIFAR, ImageNet).\n\nThis is a standard ablation design on standard vision classification benchmarks — clearly covered by many prior papers.\n\n## Domain: Computer vision / knowledge distillation\n\nNearly all prior papers [1]-[19] operate in computer vision and/or knowledge distillation. Papers [2], [3], [5], [9], [11], [13], [14], [16], [17], [19] are explicitly in CV/KD. This is clearly covered.\n\n---\n\nVERDICT purpose = 3\nVERDICT mechanism = 5\nVERDICT evaluation = 2\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1
+    ],
+    "mechanism": [
+     3,
+     15
+    ],
+    "evaluation": [
+     1,
+     20
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose:\nThe contribution's purpose is to establish a bidirectional mapping between dynamic teacher and student models to explicitly enhance knowledge transfer while ensuring the teacher starts with the same accuracy as the student to avoid large early gaps. Paper [1] discusses dynamic prior knowledge for knowledge distillation, emphasizing the importance of adapting teacher features for better transfer, which aligns with the goal of enhancing knowledge transfer dynamically. Paper [2] proposes learning teacher models that are student-friendly, which also aligns with the objective of improving teacher-student compatibility for better transfer. Paper [5] explores dynamic knowledge distillation, allowing the student to adjust learning based on its competency, which is conceptually similar to dynamically enhancing knowledge transfer. These papers share the same problem-class level objective of improving teacher-student knowledge transfer dynamically.\n\n### Mechanism:\nThe contribution introduces Inverse Reparameterization (IR) to construct dynamic teachers (DT) by losslessly expanding students along channel and branch dimensions, and Channel-Branch Reparameterization (CBR) to extract effective students directly from DT without post-training. Paper [3] discusses reparameterization through spatial gradient scaling, which transforms convolutional layers into multi-branched structures during training, conceptually similar to the reparameterization mechanism. Paper [11] introduces composable function-preserving expansions for transformer architectures, which allow scaling models without restarting training, aligning with the idea of lossless expansion. Paper [15] (Net2Net) accelerates training by transferring knowledge from smaller models to larger ones, which involves reparameterization-like techniques for scaling models. Paper [27] (Network Morphism) systematically studies morphing networks to preserve functionality while enabling growth, which is closely related to the mechanism of constructing dynamic teachers and extracting effective students.\n\n### Evaluation:\nThe contribution evaluates the mechanism through ablation studies (Table 5), showing channel-level and branch-level improvements on DKD. Ablation studies are a generic experimental move, but the evaluation design here specifically measures improvements in knowledge distillation performance using DKD, which aligns with the evaluation setups in papers [1], [2], [5], and [19], all of which validate distillation methods using similar benchmark families and metrics. Paper [32] also uses channel-wise attention for distillation and evaluates its effectiveness, which matches the evaluation design of measuring distillation improvements.\n\n### Domain:\nThe contribution operates in the domain of computer vision, specifically knowledge distillation and reparameterization. Papers [1], [2], [4], [19], and [32] all address knowledge distillation in computer vision, making this domain well-covered. Papers [3], [11], and [15] also address reparameterization and scaling techniques in neural networks, which are relevant to the contribution's domain.\n\n---\n\nVERDICT purpose = 1  \nVERDICT mechanism = 3  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\n\nThe purpose is: establish a bidirectional mapping between a dynamic teacher (DT) and student to explicitly enhance knowledge transfer, while guaranteeing the DT starts at the same accuracy as the student to avoid early-stage gaps.\n\n- Paper [1] proposes \"dynamic prior knowledge\" integrating teacher features to help students, but the direction is one-way (teacher→student) and doesn't address bidirectional mapping or initializing teacher at student accuracy.\n- Paper [2] learns \"student-friendly teacher networks\" jointly with student branches — this is bidirectional in spirit (teacher adapts to student), but the purpose is making the teacher friendly, not establishing a bidirectional mapping with guaranteed initial accuracy parity.\n- Paper [4] addresses \"teacher-student knowledge discrepancy\" by fixing channel-level feature mismatches — related but focused on discrepancy correction, not bidirectional mapping with initialization guarantees.\n- Paper [19] \"Dynamic Rectification Knowledge Distillation\" dynamically adjusts teacher knowledge but doesn't establish bidirectional mapping.\n- No prior paper explicitly pursues the combined objective of: (1) bidirectional mapping between DT and student, AND (2) guaranteeing DT initializes at student accuracy to avoid early gaps.\n\nThis purpose appears uncovered.\n\n## Mechanism\n\nThe mechanism involves two primitives:\n1. **Inverse Reparameterization (IR)**: losslessly expanding a student model along channel and branch dimensions at arbitrary expansion ratios to construct a larger DT (also usable as general initialization for pretrained models of arbitrary size).\n2. **Channel-Branch Reparameterization (CBR)**: extracting a student directly from DT without post-training.\n\n- Paper [15] (Net2Net): function-preserving expansion of neural networks to accelerate training of larger nets — this is lossless expansion, but only along depth/width via specific operations (Net2Wider, Net2Deeper), not along channel+branch dimensions simultaneously with arbitrary ratios.\n- Paper [27] (Network Morphism): systematic function-preserving morphing of networks — covers lossless expansion but not the specific channel+branch reparameterization primitive.\n- Paper [11] (Composable Function-preserving Expansions for Transformers): function-preserving expansions for transformer architectures — covers lossless expansion for transformers specifically.\n- Paper [3] (Reparameterization through Spatial Gradient Scaling): reparameterization converting conv layers to multi-branch structures during training — related to reparameterization but focused on gradient redistribution, not lossless expansion.\n- Paper [23] (Lossless Compression): removes units/layers without changing output — inverse direction (compression not expansion).\n- Paper [17] (CompNet): network morphism for growing networks — function-preserving depth expansion.\n\nThe specific combination of (a) expanding along both channel AND branch dimensions simultaneously, (b) at arbitrary ratios, (c) for the purpose of constructing a dynamic teacher from a student, AND (d) the reverse CBR extraction — this specific bidirectional channel-branch reparameterization primitive is not found. Papers [15], [27], [11] cover lossless expansion but not the specific channel+branch reparameterization mechanism. The closest is [15]/[27] for the expansion direction, but the branch dimension expansion and the CBR extraction are not covered.\n\nThis mechanism appears uncovered (NONE).\n\n## Evaluation\n\nThe evaluation is an ablation study (Table 5) measuring channel-level vs. branch-level contributions separately and combined, on DKD benchmark, reporting accuracy improvements.\n\n- Ablation studies decomposing component contributions are standard and appear throughout prior KD papers (e.g., [1], [2], [4], [19], [22]).\n- Paper [1], [2], [4], [19], [22] all contain ablation studies on KD benchmarks measuring accuracy improvements.\n- The evaluation design (ablation on KD benchmark measuring accuracy) is a standard design used across many prior papers.\n\nThis evaluation design is COVERED by multiple papers (e.g., [1], [2], [4]).\n\n## Domain\n\nThe domain is computer vision / knowledge distillation / reparameterization.\n\n- Papers [1], [2], [4], [10], [13], [19], [22], [25], [30], [32] all work in knowledge distillation for computer vision.\n- Paper [3] works in reparameterization for deep neural networks in computer vision.\n\nThis domain is clearly COVERED.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper establishes a bidirectional mapping between a dynamic teacher and student where the teacher is initialized at the same precision/capacity as the student to avoid early-stage gaps. Paper [2] learns student-friendly teachers jointly but does not establish a bidirectional mapping or guarantee DT starts at student precision. Paper [1] uses dynamic prior knowledge but does not create a bidirectional mapping or match initial teacher capacity to student. No quoted phrase from any prior paper satisfies the same objective.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes lossless expansion of a student into a larger dynamic teacher via channel and branch dimensions at arbitrary expansion ratios (IR), nor a reparameterization that extracts a student directly from the dynamic teacher without post-training (CBR). Paper [15] (Net2Net) transfers knowledge to larger nets but does not operate via channel-branch reparameterization. Paper [11] proposes function-preserving expansions for transformers but does not describe the IR/CBR mechanism or the arbitrary-ratio lossless expansion along channel and branch dimensions. No quoted phrase from any prior paper matches these specific mechanisms."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 15
+      },
+      "evaluation": {
+       "covered_by": 20
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The objective is to improve knowledge transfer by creating a dynamic teacher initialized from the student to avoid a large initial performance gap. This is covered by prior work aiming to solve the knowledge transfer problem across large capacity gaps by creating better teachers. For example, [1] explicitly addresses the problem that \"as the capacity gap between students and teachers becomes larger, existing KD methods fail to achieve better results,\" and [2] aims to \"learn the teacher models that are friendly to students.\"\n\n**mechanism**: The core technical primitive of Inverse Reparameterization (IR) is the lossless, function-preserving expansion of a smaller network (student) into a larger one (teacher). This is substantively equivalent to the mechanism in [15], which introduces \"Net2Net\" techniques for \"instantaneously transferring the information stored in one neural net into another\" via function-preserving transformations that make a network wider or deeper.\n\n**evaluation**: The evaluation design is a standard ablation study to measure the individual and combined contributions of the mechanism's components (channel-level and branch-level reparameterization). Per the special rule, a standard analysis protocol like a controlled ablation is considered covered if used in prior work. Such studies are a standard validation method, for instance in [20] which must \"systematically study model scaling\" by analyzing the effects of different dimensions.\n\n**domain**: The application domain is knowledge distillation in computer vision. This is a well-established research area and is the explicit domain of several prior papers. For example, [1] is titled \"Better Teacher Better Student: Dynamic Prior Knowledge for Knowledge Distillation\" and operates entirely within this domain.\n\nVERDICT purpose = 1\nVERDICT mechanism = 15\nVERDICT evaluation = 20\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     6,
+     9,
+     14
+    ],
+    "mechanism": [
+     6,
+     9,
+     14
+    ],
+    "evaluation": [
+     14,
+     16
+    ],
+    "domain": [
+     6,
+     9,
+     14
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        6,
+        9,
+        14
+       ]
+      },
+      "mechanism": {
+       "covered_by": [
+        6,
+        9,
+        14
+       ]
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": [
+        6,
+        9,
+        14
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to validate that GPD not only enhances existing knowledge distillation (KD) but also serves as an independent training strategy applicable to scenarios without pretrained teachers, including training from scratch and fine-tuning.  \n- Paper [6] proposes a teacher-free KD method for Graph Neural Networks, addressing the absence of a pretrained teacher model. While the domain differs, the purpose of enabling KD without a static teacher aligns.  \n- Paper [14] introduces a teacher-free KD framework, challenging the assumption that strong teacher models are necessary for KD. This aligns with the purpose of validating KD as an independent strategy without pretrained teachers.  \n- Paper [9] discusses teacher-free distillation by reusing privileged features within the student network itself, which aligns with the purpose of enabling KD without a static teacher.  \nThus, the purpose is **covered** by these papers.\n\n#### Mechanism:\nThe mechanism involves using GPD* (dynamic teacher distillation only) when no static teacher is available, and constructing a dynamic teacher based on the student's intermediate representation (IR) during fine-tuning to maintain initial accuracy.  \n- Paper [6] proposes a teacher-free KD method that uses the student network itself for distillation, which is substantively equivalent to the mechanism of dynamic teacher distillation.  \n- Paper [9] introduces TFD, which regularizes intermediate representations within the student network for teacher-free distillation, aligning with the mechanism of leveraging IR for distillation.  \n- Paper [14] describes a teacher-free KD framework that uses the student model itself for distillation, which matches the mechanism of dynamic teacher distillation.  \nThus, the mechanism is **covered** by these papers.\n\n#### Evaluation:\nThe evaluation involves training ResNet18 from scratch and improving its accuracy from 70.07% to 71.87% (+1.80%), as well as fine-tuning ResNet18 to achieve a higher accuracy (+0.89%) compared to longer training.  \n- Paper [6] evaluates teacher-free KD methods on Graph Neural Networks, but the evaluation design does not match the specific benchmark family or metric semantics used here.  \n- Paper [9] evaluates teacher-free distillation methods on standard benchmarks, but the evaluation design does not match the specific setup of training ResNet18 from scratch or fine-tuning.  \n- Paper [14] evaluates teacher-free KD methods, but the evaluation design does not match the specific benchmark family or metric semantics used here.  \nNo prior paper uses the same evaluation design (training ResNet18 from scratch and fine-tuning with specific accuracy improvements). Thus, the evaluation is **uncovered**.\n\n#### Domain:\nThe domain is computer vision and knowledge distillation.  \n- Paper [6] operates in the domain of knowledge distillation, though applied to Graph Neural Networks rather than computer vision.  \n- Paper [9] operates in the domain of knowledge distillation, though applied to teacher-free distillation within the student network itself.  \n- Paper [14] operates in the domain of knowledge distillation, though applied to teacher-free frameworks.  \nThe domain of knowledge distillation is **covered** by these papers.\n\n---\n\n### Verdicts:\nVERDICT purpose = 6, 9, 14  \nVERDICT mechanism = 6, 9, 14  \nVERDICT evaluation = NONE  \nVERDICT domain = 6, 9, 14  ",
+      "stage2": "FACET: evaluation | FINAL: COVERED-BY 16 | reason: SubTuning demonstrates fine-tuning improvements, achieving comparable or better accuracy with selective layer training, aligning with the claim of fine-tuning outperforming longer training."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 14
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 14
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: 验证 GPD 不仅提升已有 KD，还能作为独立训练策略推广到无预训练教师的从头训练和微调场景**\n\nThe purpose is to show a distillation method works as a standalone training strategy (no pretrained teacher) for both training-from-scratch and fine-tuning. Paper [14] (\"Revisit Knowledge Distillation: a Teacher-free Framework\") explicitly challenges the need for a strong teacher and proposes teacher-free KD as a standalone training strategy. Paper [9] (\"Teacher-free Distillation via Regularizing Intermediate Representation\") also proposes teacher-free distillation as a standalone approach. Paper [3] (\"Knowledge Distillation for Efficient Sequences of Training Runs\") addresses KD in fine-tuning/retraining scenarios without a separate pretrained teacher. These cover the objective of using KD without a pretrained teacher as a standalone strategy, including fine-tuning scenarios.\n\n**MECHANISM: 无静态教师时用 GPD*（仅动态教师蒸馏）；微调时 DT 基于学生自身经 IR 构建以起始同精度**\n\nThe mechanism involves using only a dynamic teacher (built from the student itself via intermediate representations) when no static teacher exists, and for fine-tuning, constructing the dynamic teacher from the student's own IR to match starting accuracy. Paper [9] proposes teacher-free distillation by reusing features within the student network itself via intermediate representations. Paper [14] uses the student's own predictions as soft targets (teacher-free). Paper [21] (\"Adaptive Teacher Finetune\") uses adaptive fine-tuning with knowledge distillation. However, the specific combination of using IR-based dynamic teacher construction to match starting accuracy in fine-tuning appears partially covered by [9] (IR-based self-distillation) and [14] (teacher-free via self-predictions), but the specific \"dynamic teacher built from student's own IR to match starting accuracy\" primitive is most closely matched by [9].\n\n**EVALUATION: 从头训练 ResNet18 70.07%→71.87%，MobileNet 71.68%→73.07%；微调比更长训练高 0.89%**\n\nThe evaluation design uses standard ImageNet classification benchmarks with top-1 accuracy metrics on ResNet18 and MobileNet architectures, comparing against baseline training and extended training. This is a standard benchmark evaluation design used extensively across prior papers [14], [9], [11], [24], [21], etc. Paper [14] uses ResNet on CIFAR/ImageNet with top-1 accuracy. Paper [21] uses similar KD evaluation on standard vision benchmarks. The design (standard benchmark + accuracy metric + comparison to baseline) is well-covered.\n\n**DOMAIN: 计算机视觉 / 知识蒸馏**\n\nComputer vision / knowledge distillation is the domain of the vast majority of prior papers including [14], [9], [11], [24], [21], [18], [23], etc. This is clearly covered.\n\nVERDICT purpose = 14\nVERDICT mechanism = 9\nVERDICT evaluation = 14\nVERDICT domain = 14",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

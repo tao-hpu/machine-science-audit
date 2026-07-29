@@ -1,0 +1,251 @@
+{
+ "paper_id": "ISqx8giekS",
+ "title": "LeanQuant: Accurate and Scalable Large Language Model Quantization with Loss-error-aware Grid",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     6,
+     13
+    ],
+    "mechanism": [
+     6,
+     30
+    ],
+    "evaluation": [
+     6
+    ],
+    "domain": [
+     1,
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": 30
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to identify why existing post-training quantization methods (e.g., GPTQ/OBQ) degrade accuracy and pinpoint their fundamental limitations. None of the prior papers explicitly report or establish the same empirical relationship between loss-error-based post-training quantization and accuracy degradation due to outliers in the inverse Hessian diagonal. While several papers (e.g., [6], [12], [22]) discuss outliers in quantization, they do not specifically analyze the connection between inverse Hessian outliers and task loss errors. Thus, the purpose is **not covered**.\n\n### Mechanism\nThe mechanism involves analyzing how min-max affine quantization grids sacrifice weights corresponding to outliers in the inverse Hessian diagonal, leading to large task loss errors. Paper [30] discusses Hessian-aware quantization and uses second-order information (Hessian traces) for mixed-precision quantization, which is conceptually related to leveraging Hessian properties for quantization decisions. However, [30] does not address the specific mechanism of inverse Hessian diagonal outliers causing task loss errors in min-max affine grids. No other paper explicitly matches this mechanism. Thus, the mechanism is **not covered**.\n\n### Evaluation\nThe evaluation involves qualitative visualization of min-max affine grids versus loss-error-aware grids for a specific LLM layer (e.g., Llama-3-8B). Paper [6] uses loss-error-aware grids for quantization and provides visualizations of quantization effects, which aligns with the evaluation design. Although the specific object (Llama-3-8B) differs, the evaluation design of visualizing quantization grids and their impact on loss is substantively equivalent. Thus, the evaluation is **covered**.\n\n### Domain\nThe domain is large language models (LLMs), specifically post-training quantization for model compression. Numerous prior papers ([1], [2], [3], [5], [6], [8], [12], [22]) work in the same general application area of LLM post-training quantization and model compression. Although the specific sub-problem (inverse Hessian outliers in min-max affine grids) is new, the domain itself is well-covered. Thus, the domain is **covered**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 6  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 13 | reason: Paper [13] explicitly studies the effect of quantization on the loss landscape, identifying structural limitations that align with the empirical relationship described in the facet. Quote: \"We study the effect of quantization on the structure of the loss landscape... enabling straightforward post-training quantization methods to achieve good results.\"\n\nFACET: mechanism | FINAL: COVERED-BY 30 | reason: Paper [30] discusses Hessian-aware quantization and the role of outliers in weight redundancy, which aligns with the described mechanism involving inverse Hessian outliers. Quote: \"Second-order information has proven to be very effective... Recent paper proposes to use Hessian traces of weights and activations for mixed-precision quantization.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Identifying why iterative loss-error-based PTQ (GPTQ/OBQ) fails and locating its fundamental limitation**\n\nPaper [6] (LeanQuant) is the most relevant — it proposes a \"loss-error-aware grid\" as an alternative to min-max affine grids, explicitly motivated by the failure of existing methods. The abstract mentions \"accurate quantization methods often depend on specialized computations\" and the paper's premise is that standard grids fail. However, the contribution here is specifically *diagnosing* the root cause (inverse Hessian diagonal outliers causing grid sacrifice), which is the motivating analysis behind [6]'s method. Paper [2] (GPTQ) introduces the method being critiqued but doesn't diagnose its own failure mode. Paper [3] also analyzes PTQ from a convex optimization perspective and may discuss failure modes. Paper [6] explicitly frames the problem as min-max grid inadequacy and proposes loss-error-aware grids — the purpose of diagnosing why min-max grids fail in GPTQ-style methods is substantively the same problem [6] is solving. The finding's purpose (pinpointing the root cause) is covered by [6]'s framing.\n\n**MECHANISM: Analysis showing inverse Hessian diagonal outliers cause min-max affine grids to sacrifice weights, producing large loss errors**\n\nPaper [6] explicitly introduces \"loss-error-aware grid\" as opposed to min-max affine grid, and its analysis must identify why min-max fails — the mechanism of the finding (analyzing Hessian diagonal outliers corrupting the quantization grid) is the analytical core of [6]'s motivation. Paper [30] discusses Hessian-aware quantization and channel-wise Hessian traces. Paper [2] (GPTQ) uses inverse Hessian information in its iterative updates. The specific analytical primitive — inverse Hessian diagonal outliers → min-max grid distortion → weight sacrifice → large loss error — appears to be the diagnostic analysis that [6] performs to motivate its method. This mechanism is substantively present in [6].\n\n**EVALUATION: Qualitative/mechanistic visualization (Figure 1 on Llama-3-8B layer, comparing min-max affine grid vs loss-error-aware grid) as motivation**\n\nThis is a qualitative visualization used as motivating analysis. Paper [6] (LeanQuant) would contain exactly this type of visualization comparing min-max vs loss-error-aware grids, as it's the paper proposing the loss-error-aware grid. The evaluation design (visualizing quantization grids on a specific LLM layer to motivate the method) is a standard motivational figure design used in PTQ papers. Paper [2] (GPTQ) and others use similar motivational visualizations. The design of \"visualize quantization grid behavior on a layer to motivate method\" is a standard approach present in [6] and [2].\n\n**DOMAIN: LLMs / post-training quantization / model compression**\n\nPapers [1], [2], [3], [5], [6], [7], [8], [9], [10], [11] all work in LLM post-training quantization and model compression. This domain is thoroughly covered.\n\nVERDICT purpose = 6\nVERDICT mechanism = 6\nVERDICT evaluation = 6\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     4
+    ],
+    "mechanism": [
+     5,
+     7
+    ],
+    "evaluation": [
+     4,
+     5
+    ],
+    "domain": [
+     4
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 5
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to improve quantized model quality while preserving outlier weight precision and ensuring compatibility with diverse quantization formats and inference frameworks. This aligns with the objectives of prior papers that focus on enhancing quantization quality while addressing outlier weights or compatibility issues. For example:\n- **Paper [4]** (\"OWQ: Outlier-Aware Weight Quantization for Efficient Fine-Tuning and Inference of Large Language Models\") explicitly addresses improving quantization quality by prioritizing outlier weights, which is substantively equivalent to preserving outlier weight precision.\n- **Paper [5]** (\"LeanQuant: Accurate and Scalable Large Language Model Quantization with Loss-error-aware Grid\") shares the goal of improving quantized model quality and compatibility with frameworks, as it emphasizes scalable and accurate quantization methods compatible with popular frameworks.\n\nThus, the purpose is **covered** by prior work.\n\n---\n\n### Mechanism\nThe mechanism introduces a loss-error-aware quantization grid, initialized with uniformly spaced grids, and integrates seamlessly into iterative loss-error-based methods (e.g., GPTQ and OBQ). This mechanism is substantively equivalent to prior papers that propose loss-aware or adaptive quantization methods:\n- **Paper [5]** (\"LeanQuant\") explicitly introduces loss-error-aware quantization grids, which are substantively equivalent to the proposed mechanism.\n- **Paper [1]** (\"Deep Network Quantization via Error Compensation\") and **Paper [2]** (\"Adaptive Loss-Aware Quantization for Multi-Bit Networks\") both propose loss-aware quantization approaches, which align with the underlying primitive of using loss-error-based methods for quantization.\n- **Paper [7]** (\"Learned Step Size Quantization\") and **Paper [3]** (\"LG-LSQ\") also propose learned quantization methods that adapt grid parameters based on loss/error, which is substantively equivalent.\n\nThus, the mechanism is **covered** by prior work.\n\n---\n\n### Evaluation\nThe evaluation uses WikiText2/C4 perplexity and zero-shot tasks, comparing performance metrics (e.g., zero-shot accuracy improvements) across quantization methods. This evaluation design is **covered** by prior papers that use similar benchmark families and metrics:\n- **Paper [5]** (\"LeanQuant\") evaluates quantization methods on LLMs using zero-shot tasks and perplexity metrics, which matches the evaluation design.\n- **Paper [13]** (\"A Comprehensive Evaluation of Quantization Strategies for Large Language Models\") uses similar evaluation setups for LLM quantization strategies, including zero-shot tasks and perplexity.\n- **Paper [11]** (\"AdpQ\") and **Paper [25]** (\"Zero-Shot Sharpness-Aware Quantization for Pre-trained Language Models\") also evaluate quantization methods on LLMs using zero-shot tasks and related metrics.\n\nThus, the evaluation design is **covered** by prior work.\n\n---\n\n### Domain\nThe domain is large language models (LLMs) and quantization. This domain is **covered** by numerous prior papers that address quantization methods for LLMs:\n- **Paper [4]** (\"OWQ\") and **Paper [5]** (\"LeanQuant\") explicitly focus on quantization for LLMs.\n- **Paper [11]** (\"AdpQ\") and **Paper [25]** (\"Zero-Shot Sharpness-Aware Quantization\") also operate in the domain of LLM quantization.\n\nThus, the domain is **covered** by prior work.\n\n---\n\n### Verdicts\nVERDICT purpose = 4  \nVERDICT mechanism = 5  \nVERDICT evaluation = 5  \nVERDICT domain = 4  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\n\nThe purpose is: improve quantization model quality while preserving outlier-corresponding weight precision, and be compatible with more quantization formats/inference frameworks.\n\nPaper [4] (OWQ) explicitly addresses \"outlier-aware weight quantization\" for LLMs, storing outlier-sensitive weights in high precision while quantizing the rest. Paper [5] is literally \"LeanQuant\" itself — the contribution being evaluated. Paper [27] (Atom) addresses low-bit quantization for LLMs with outlier handling. Paper [14] (OliVe) addresses outlier-victim pair quantization for LLMs.\n\nHowever, the specific purpose of \"learning a loss-error-aware quantization grid to improve quality while maintaining compatibility with more formats/frameworks\" is most directly the contribution itself (paper [5]). The outlier-preservation aspect is covered by [4] and [14]. The compatibility-with-frameworks aspect is partially addressed in [5] itself. Paper [4] covers the outlier-preservation purpose substantively.\n\n## Mechanism\n\nThe mechanism is: learning a loss-error-aware quantization grid (replacing non-adaptive min-max affine grid), with uniform spacing initialization, integrable into iterative loss-error-based methods (GPTQ/OBQ), supporting affine and non-uniform grids.\n\nPaper [7] (LSQ - Learned Step Size Quantization) learns quantization step sizes/grids. Paper [3] (LG-LSQ) learns gradient-based linear symmetric quantization. Paper [2] (ALQ) uses adaptive loss-aware quantization. Paper [6] uses loss-aware weight quantization. Paper [1] uses loss-aware quantization with error compensation. None of these specifically propose learning a quantization grid that is integrated into GPTQ/OBQ-style iterative post-training quantization for LLMs. The combination of loss-error-aware grid learning + integration into GPTQ/OBQ is specific to [5] (the paper itself). Paper [7] learns step sizes but in a QAT setting, not PTQ integrated with GPTQ. The closest is [7] for learned grid/step-size, but the integration mechanism with GPTQ/OBQ is distinct.\n\n## Evaluation\n\nThe evaluation uses WikiText2/C4 perplexity + zero-shot benchmarks for LLM quantization, comparing against OmniQuant and GPTQ. Paper [13] uses comprehensive evaluation of quantization strategies for LLMs including perplexity metrics. Paper [27] (Atom) evaluates LLM quantization with perplexity. Paper [4] (OWQ) evaluates on WikiText2 perplexity and zero-shot tasks. The evaluation design (WikiText2/C4 perplexity + zero-shot accuracy benchmarks for LLM quantization) is a standard protocol used in [4], [27], and [13].\n\n## Domain\n\nThe domain is LLMs / quantization. Papers [4], [5], [13], [14], [21], [25], [27], [28] all work in LLM quantization. This is clearly covered.\n\n---\n\n**Purpose:** Paper [4] covers the outlier-preservation aspect of the purpose. The framework-compatibility angle is somewhat unique, but the core objective of improving LLM quantization quality while handling outliers is covered by [4] and [14].\n\n**Mechanism:** Paper [7] covers learned quantization grid/step-size as a primitive. The specific integration into GPTQ/OBQ is not covered, but the core primitive of \"learning the quantization grid parameters\" is in [7] and [3].\n\n**Evaluation:** Paper [4] uses WikiText2 perplexity + zero-shot benchmarks for LLM weight quantization — same evaluation design.\n\n**Domain:** Paper [4], [27], [13], [14] all cover LLM quantization.\n\nVERDICT purpose = 4\nVERDICT mechanism = 7\nVERDICT evaluation = 4\nVERDICT domain = 4",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     8
+    ],
+    "evaluation": null,
+    "domain": [
+     1,
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to enable accurate quantization for extremely large-scale models (tens to hundreds of billions of parameters) while reducing memory and time overhead. Several prior papers address quantization for large language models (LLMs) to reduce memory and computational costs, but none explicitly focus on scaling quantization to models of this size with the same emphasis on reducing both memory and time overhead. For example, [1], [2], [3], [9], and [23] discuss quantization for LLMs but do not explicitly target the scalability to hundreds of billions of parameters or the specific reduction in both memory and time costs for such extreme scales. Therefore, the purpose appears to be novel.\n\n### Mechanism\nThe mechanism involves designing and implementing a fused GPU kernel for grid learning, which parallelizes the enumeration search over S/Z candidate pairs (T=2048). This specific mechanism is not covered by prior work. While [8] discusses a fused kernel for W4A16 quantized inference and [17] and [21] discuss GPU kernel optimization and search, none of these papers describe a fused kernel specifically for grid learning or the parallelized enumeration of S/Z candidates. The mechanism is therefore novel.\n\n### Evaluation\nThe evaluation demonstrates that the fused kernel achieves >50x end-to-end quantization speedup and successfully quantizes extremely large models (e.g., 123B and 405B parameters) on limited hardware, where prior methods fail due to out-of-memory (OOM) errors. While [8] evaluates fused kernels for quantized inference, and [23] and [25] evaluate post-training quantization methods, none of these papers use the same evaluation design of demonstrating quantization success and speedup at this extreme scale (e.g., 123B and 405B parameters) or compare against OOM failures of prior methods. The evaluation design appears to be novel.\n\n### Domain\nThe domain is large language models (LLMs), specifically focusing on quantization and system efficiency. This domain is well-covered by prior work, including [1], [2], [3], [9], [12], [13], [14], [23], and [25], all of which address quantization and efficiency for LLMs. While the specific models and scales may differ, the general application area of LLM quantization and efficiency is not new.\n\n---\n\n### Verdicts\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [1]",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 9 | reason: OliVe explicitly addresses quantization for scaling LLMs to billions of parameters, mitigating memory and compute costs (\"Transformer-based large language models (LLMs) have achieved great success with the growing model size... Model quantization is a promising approach to mitigate the widening gap between LLM size and hardware capacity\").  \n\nFACET: mechanism | FINAL: COVERED-BY 8 | reason: Paper 8 describes a fused GPU kernel for quantized inference with SplitK decomposition, which aligns with the mechanism of grid learning fused kernel and parallelized candidate search (\"We propose an implementation of an efficient fused matrix multiplication kernel for W4A16 quantized inference... using a SplitK work decomposition\").  \n\nFACET: evaluation | FINAL: NONE | reason: No prior paper provides evaluation results matching the same scale (e.g., 123B Mistral-Large or 405B Llama-3.1 quantization) or claims >50x acceleration for fused kernels; closest works lack comparable empirical benchmarks.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Make accurate quantization scalable to 10B–100B+ parameter models by reducing memory/time overhead**\n\nLooking through the papers for the same objective — reducing quantization overhead to enable scaling to very large models:\n- [5] QLoRA explicitly addresses \"reduces memory usage enough to finetune a 65B parameter model on a single 48GB GPU\" — but this is about fine-tuning, not quantization search/calibration overhead.\n- [14] surveys compression and efficient inference for LLMs, touching on scalability concerns.\n- [3] Atom addresses efficient LLM serving via quantization, but focuses on serving throughput, not the overhead of the quantization process itself.\n- [2] evaluates quantization strategies but doesn't target the scalability of the quantization process itself.\n- None of the papers specifically target the problem of making the *quantization calibration/search process itself* scalable to 100B+ models (reducing the overhead of running quantization, not inference). The closest is [5] which reduces memory for fine-tuning, but the purpose here is specifically about the quantization *process* overhead. No paper directly targets \"the quantization algorithm itself OOMs at 100B+ scale, let's fix that.\"\n\nThis purpose appears NONE — no prior paper specifically targets reducing the overhead of the quantization *process* (not inference) to scale to 100B+ models.\n\n**MECHANISM: Fused GPU kernel for grid learning that parallelizes enumeration search over S/Z candidate pairs (T=2048)**\n\n- [8] \"Accelerating a Triton Fused Kernel for W4A16 Quantized Inference\" — this is a fused kernel for *inference* (dequantization + GEMM), not for the quantization search/calibration process itself.\n- [1] MARLIN implements fused kernels for inference, not quantization search.\n- [17] Kernel Tuner searches over GPU kernel configurations, but this is auto-tuning, not a fused kernel for quantization grid search.\n- [15] Parallel Top-K on GPU — parallel enumeration on GPU, but for top-K selection, not quantization grid search.\n- No prior paper describes a fused GPU kernel that parallelizes the enumeration of scale/zero-point candidate pairs for quantization calibration (grid search over quantization parameters). The mechanism is genuinely novel — fusing the grid search enumeration into a GPU kernel for quantization parameter optimization.\n\nVERDICT: NONE\n\n**EVALUATION: >50x speedup via fused kernel (Table 5); single GPU quantization of 123B model in 4.2h; OOM comparison with OmniQuant/SqueezeLLM**\n\n- The evaluation design uses: wall-clock time comparison, memory usage (OOM failures), and end-to-end speedup ratios on LLM quantization tasks.\n- [5] QLoRA reports memory usage and ability to run on a single 48GB GPU for a 65B model — similar \"fits on single GPU\" framing.\n- [3] Atom reports throughput and memory consumption comparisons.\n- [2] evaluates quantization strategies with perplexity and accuracy metrics.\n- The specific evaluation design of measuring quantization *process* time/memory and comparing OOM failures at scale is not directly matched. However, wall-clock speedup comparisons and OOM comparisons are generic experimental designs used broadly. The \"speedup ratio + OOM failure\" design appears in system papers generally, but no prior paper uses this specific protocol for quantization calibration scalability. This is a new evaluation protocol for a new claim (quantization process scalability), so NONE.\n\nVERDICT: NONE\n\n**DOMAIN: Large language models / quantization / system efficiency**\n\n- [1], [2], [3], [5], [8], [9], [12], [13], [14], [23], [25], [26], [28] all work in LLM quantization and/or system efficiency for LLMs. This domain is clearly covered.\n\nVERDICT: [1] (and many others)\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of scaling *accurate* quantization (not just inference or fine-tuning) to 100B–400B+ parameter models on commodity single/dual-GPU hardware by reducing quantization-time memory/time overhead; QLoRA reduces fine-tuning memory but not quantization search cost; no other paper targets this specific goal.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes a fused GPU kernel specifically for parallelizing enumeration of scale/zero-point candidate pairs (S/Z grid search with T=2048 candidates) during post-training quantization; [8] fuses dequantization+GEMM for inference (not quantization search), and no other paper matches this specific design.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports end-to-end quantization speedup from a fused kernel (>50×), wall-clock quantization time for 123B or 405B models on single/dual consumer GPUs, or OOM failures of OmniQuant/SqueezeLLM at these scales as a direct comparison; these are unique empirical claims not present in any listed paper."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The objective is to make the quantization process itself scalable to models of 100B-400B parameters by reducing its time and memory costs. Prior papers focus on the *benefits* of quantization (e.g., faster inference, memory-efficient finetuning) but do not address the computational bottleneck of the quantization algorithm itself at this massive scale. Therefore, this purpose is not substantively equivalent to any prior work.\n\n**mechanism**: The mechanism is a fused GPU kernel to parallelize a grid search for quantization parameters (S/Z). Paper [8] implements a \"fused matrix multiplication kernel for W4A16 quantized inference, where we perform dequantization and GEMM in a fused kernel,\" which is the same technical primitive of using a fused GPU kernel to accelerate a core computation related to quantization.\n\n**evaluation**: The evaluation design is to demonstrate that the proposed method can successfully quantize a very large model (100B+) on resource-constrained hardware in a specific amount of time, while showing that prior methods fail due to out-of-memory (OOM) errors. Paper [5] uses the exact same evaluation design for a different task, stating it \"reduces memory usage enough to finetune a 65B parameter model on a single 48GB GPU.\" Per the special rule, this reuse of evaluation design counts as covered.\n\n**domain**: The application area is quantization of large language models for system efficiency. This is a well-established domain covered by numerous prior papers. For instance, paper [2] is titled \"A Comprehensive Evaluation of Quantization Strategies for Large Language Models,\" directly matching the domain.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 8\nVERDICT evaluation = 5\nVERDICT domain = 2",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper's abstract states the objective of reducing the memory or time cost of the *quantization process itself* to make it scalable to models in the 100B+ parameter range. All reviewed papers focus on using quantization to reduce the costs of *inference, deployment, or fine-tuning*."
+     }
+    }
+   }
+  }
+ ]
+}

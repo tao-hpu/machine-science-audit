@@ -1,0 +1,377 @@
+{
+ "paper_id": "FA0111",
+ "title": "Label-Free Hyperparameter Calibration for Parallel Context Encoding via KL Divergence Matching",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     5,
+     6
+    ],
+    "mechanism": [
+     3,
+     32
+    ],
+    "evaluation": [
+     5,
+     6,
+     11
+    ],
+    "domain": [
+     12,
+     19
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 12
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to enable tuning of Adaptive Parallel Encoding (APE) hyperparameters when no ground-truth labels are available for calibration. Paper [5] discusses estimating calibration error under label shift without labels, which aligns with the goal of label-free calibration. Paper [6] addresses hyperparameter tuning for pseudo-labeling in unsupervised domain adaptation, which also involves optimizing hyperparameters without labeled data. Both papers share the same problem-class level objective of label-free calibration or tuning.\n\n### Mechanism\nThe contribution's mechanism minimizes KL divergence between sequential-teacher and parallel-encoded next-token distributions using model-internal distributional signals. Paper [3] proposes minimizing KL divergence under constraints for inference optimization, which is substantively equivalent to the KL minimization primitive. Paper [4] also minimizes KL divergence, specifically reverse KL, along diffusion trajectories, which involves a similar KL-based optimization approach. Paper [22] discusses inclusive KL minimization, which is another KL-based optimization paradigm. All three papers share the same underlying mechanism of KL divergence minimization.\n\n### Evaluation\nThe contribution positions its method as a label-free proxy, with quantitative payoff reported in C2. Paper [5] evaluates calibration error without labels, which matches the label-free evaluation design. Paper [11] proposes a metric for unsupervised evaluation of domain adaptation models without target-domain labels, which also aligns with the label-free evaluation design. Both papers use the same evaluation design of validating methods without access to labeled data.\n\n### Domain\nThe contribution operates in the domain of long-context LLM parallel context encoding. Papers [12] and [13] address parallel attention mechanisms for sequence-to-sequence learning and scene text recognition, which are substantively equivalent application areas involving parallel encoding in long-context settings. Both papers cover the same general domain.\n\n---\n\nVERDICT purpose = 5  \nVERDICT mechanism = 3  \nVERDICT evaluation = 5  \nVERDICT domain = 12  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 19
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Enable tuning of APE hyperparameters when no ground-truth labels are available for calibration.**\n\nThe purpose is to select/tune hyperparameters (attention temperature, scaling factor) without labels. Paper [6] addresses \"Improving Unsupervised Domain Adaptive Re-Identification Via Source-Guided Selection of Pseudo-Labeling Hyperparameters\" — selecting hyperparameters without target labels. Paper [5] addresses \"Estimating calibration error under label shift without labels.\" Paper [11] proposes evaluating domain adaptation models without target-domain labels. However, none of these target the specific objective of tuning encoding hyperparameters for a parallel context encoding scheme. Paper [6] is closest — it selects hyperparameters for pseudo-labeling without target labels — but the purpose there is UDA re-ID hyperparameter selection, not calibrating a parallel encoding scheme's attention temperature. At the problem-class level, though, \"select hyperparameters without ground-truth labels\" is the shared objective. Paper [6] covers this at the problem-class level: \"the effectiveness of these approaches heavily depends on the choice of some hyperparameters (HP)... The lack [of labels].\"\n\n**MECHANISM: Minimize KL divergence between a teacher (sequential) distribution and a student (parallel) distribution to select hyperparameters, using only model-internal signals.**\n\nThis uses KL divergence between two model output distributions as a proxy signal for hyperparameter selection — no labels needed. Paper [3] uses KL divergence minimization for model pruning/inference. Paper [4] minimizes reverse KL divergence for generative model training. Paper [22] analyzes inclusive KL minimization. None of these use KL divergence between a sequential-teacher and parallel-encoded distribution as a hyperparameter selection criterion. The closest conceptual match is using KL divergence as a proxy objective, but the specific primitive — using distributional divergence between two inference modes of the same model to tune hyperparameters — doesn't appear in any prior paper. Paper [11] proposes a metric for unsupervised evaluation using source-target distribution matching, which is somewhat related but not the same primitive. No prior paper uses KL divergence between sequential vs. parallel encoding distributions as a hyperparameter selection signal.\n\n**EVALUATION: Label-free proxy method; quantitative payoff reported elsewhere (C2).**\n\nThe evaluation design here is essentially: demonstrate that the label-free selection method works by showing downstream performance. This is a standard \"unsupervised proxy vs. supervised oracle\" comparison design. Paper [6] evaluates hyperparameter selection without labels by comparing to supervised baselines. Paper [11] evaluates an unsupervised evaluation metric. Paper [5] evaluates label-free calibration estimation. These all use the same evaluation design: compare label-free proxy selection against labeled/oracle baselines on downstream metrics. Paper [6] uses this exact design.\n\n**DOMAIN: Long-context LLM parallel context encoding.**\n\nThe domain is long-context LLM inference/encoding. Paper [19] is a review of LLMs covering architectures and applications broadly. Paper [15] covers LLMs for clinical knowledge. No prior paper specifically addresses parallel context encoding for long-context LLMs. However, the general area of LLM inference/architecture is covered by [19]. The specific sub-area of parallel context encoding is not addressed by any prior paper, but the broader domain of LLM architectures/inference is covered by [19].\n\nVERDICT purpose = 6\nVERDICT mechanism = NONE\nVERDICT evaluation = 6\nVERDICT domain = 19",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes selecting attention temperature and scaling factor by minimizing KL divergence between sequential-teacher and parallel-encoded next-token distributions as a hyperparameter selection mechanism using model-internal distributional signals. The KL divergence papers (e.g., [3], [22]) address factor pruning or generative model training, not APE hyperparameter tuning; temperature scaling papers ([1],[2],[7],[8],[18]) calibrate classifier confidence, not parallel encoding parameters; none use the sequential-vs-parallel next-token distribution matching framing."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 32
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 19
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: COVERED by [6], which has the same objective of selecting hyperparameters for an unsupervised method when labels are unavailable, stating \"the effectiveness of these approaches heavily depends on the choice of some hyperparameters (HP)... The lack of labels makes it difficult to set the optimal values for the HPs\".\n\nmechanism: COVERED by [32], which describes the general primitive of self-distillation as to \"feed in predictions of the trained model as new target values for retraining\". The contribution applies this by using a sequential model's output distribution as the target for the parallel model, minimizing the KL divergence between them, which is a standard implementation of this primitive.\n\nevaluation: COVERED by [11], which has the same evaluation design of proposing a label-free method to substitute for a label-dependent process. The contribution is positioned as a \"label-free proxy\", and [11] proposes \"a novel metric... for Unsupervised Evaluation of Domain Adaptation\" which is the same design pattern of creating a proxy where labels are absent.\n\ndomain: COVERED by [19], which is a review of the \"Large Language Models: Architectures, Applications...\" domain. The contribution's domain of \"Long-context LLM parallel context encoding\" is a specific sub-problem within this general application area.\n\nVERDICT purpose = 6\nVERDICT mechanism = 32\nVERDICT evaluation = 11\nVERDICT domain = 19",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     2,
+     9
+    ],
+    "evaluation": [
+     11,
+     13,
+     20
+    ],
+    "domain": [
+     13,
+     20
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 13
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to show that distributional (KL) matching is more robust than small-sample label optimization for selecting APE hyperparameters. None of the prior papers explicitly establish this empirical relationship between KL-based distributional matching and label-based optimization for hyperparameter selection. While papers like [8] (\"Label Shift Quantification with Robustness Guarantees via Distribution Feature Matching\") discuss robustness in distributional matching, they do not compare it to label optimization or address hyperparameter selection in this context. Similarly, [11] (\"Automatic Prompt Engineering for Automatic Scoring\") involves APE but does not explore the robustness of KL matching versus label optimization. No prior paper reports this specific relationship.\n\n### Mechanism\nThe mechanism involves comparing KL-tuned APE against a label-tuned oracle on a downstream QA metric. Papers like [8] (\"Label Shift Quantification with Robustness Guarantees via Distribution Feature Matching\") and [4] (\"Adaptive Symmetrization of the KL Divergence\") use KL divergence for optimization and robustness analysis, but neither applies it to APE hyperparameter tuning or directly compares KL-based tuning to label-based tuning. No prior paper matches this mechanism.\n\n### Evaluation\nThe evaluation design uses a downstream QA metric (F1 score) on LongBench 2WikiMultihopQA to validate the robustness of KL-tuned APE. Papers like [11] (\"Automatic Prompt Engineering for Automatic Scoring\") and [20] (\"Submodular Evaluation Subset Selection in Automatic Prompt Optimization\") use downstream task performance metrics to evaluate APE frameworks, which is substantively equivalent to the evaluation design here. The specific benchmark (LongBench 2WikiMultihopQA) is new, but the evaluation design (downstream task performance comparison) is covered.\n\n### Domain\nThe domain is long-context multi-hop QA, specifically LongBench 2WikiMultihopQA. Papers like [13] (\"Large language models encode clinical knowledge\") and [11] (\"Automatic Prompt Engineering for Automatic Scoring\") address QA tasks, including multi-hop reasoning, though not specifically long-context QA or the LongBench dataset. However, the general application area of QA, including multi-hop reasoning, is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 11  \nVERDICT domain = 13  ",
+      "stage2": "1. **FACET: purpose** | **FINAL: NONE** | reason: No prior paper explicitly demonstrates that distributional (KL) matching is more robust than small-sample label optimization for selecting APE hyperparameters. No equivalent objective or empirical relationship was found under different terminology, framing, or domain.\n\n2. **FACET: mechanism** | **FINAL: COVERED-BY 9** | reason: Paper [9] compares importance-weighted risk estimators to an oracle estimator under covariate shift, which aligns with the mechanism of comparing KL-tuned APE against a label-tuned oracle on a downstream QA metric. **QUOTE:** \"We study the sampling variances of the importance-weighted versus the oracle estimator as a function of the relative scale of the training and test distributions.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 20
+      },
+      "domain": {
+       "covered_by": 20
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Show that distributional (KL) matching is more robust than small-sample label optimization for selecting APE hyperparameters.**\n\nThis is a specific empirical claim about KL-based vs. label-based hyperparameter selection for APE (Automatic Prompt Engineering). Paper [20] is the closest — it studies evaluation subset selection for prompt optimization and proposes a principled method (SESS) for selecting evaluation subsets, noting that random sampling is typically used. However, it doesn't specifically compare KL distributional matching against label-tuned oracles for APE hyperparameter selection. Paper [28] surveys APE methods but doesn't establish this specific relationship. Paper [11] applies APE for automatic scoring but doesn't compare KL vs. label-tuned selection. No prior paper reports the same empirical relationship: that KL distributional matching outperforms label-based oracle selection for APE hyperparameter tuning. This purpose appears uncovered.\n\n**MECHANISM: Compare KL-tuned APE against a label-tuned oracle on a downstream QA metric.**\n\nThis is a controlled comparison/ablation design: one variant uses KL divergence for tuning, another uses ground-truth labels as an oracle, measured on a downstream metric. Paper [20] compares different evaluation subset selection strategies for prompt optimization on downstream metrics — this is structurally similar (comparing selection strategies for APE). However, the specific primitive of \"KL distributional matching vs. label oracle\" isn't present. As a generic ablation/substitution design (swap tuning criterion, measure downstream performance), this is a standard experimental shape. Per the rules, generic experimental moves don't establish coverage unless validating the same claim. No prior paper uses this specific mechanism. NONE.\n\n**EVALUATION: KL-tuned APE reaches F1=48.09 on LongBench 2WikiMultihopQA.**\n\nThe evaluation design uses F1 as a metric on a named benchmark (LongBench 2WikiMultihopQA). Paper [20] evaluates prompt optimization methods on downstream task benchmarks using standard metrics. The evaluation design (benchmark-based F1 comparison of prompt optimization variants) is a standard design used in papers like [11] and [20]. Paper [11] uses APE and evaluates on downstream metrics. Paper [20] evaluates prompt optimization on task benchmarks. The design — comparing APE variants on a named benchmark with F1 — is covered by [20] and [11].\n\n**DOMAIN: Long-context multi-hop QA (LongBench 2WikiMultihopQA).**\n\nLongBench 2WikiMultihopQA is a specific instance within the QA/NLP domain. Papers [11], [20], [28] all work in the NLP/LLM prompt engineering area. Paper [13] works in QA (MultiMedQA). The general application area of LLM-based QA and prompt optimization is covered by [20], [11], [28]. The domain is covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 20\nVERDICT domain = 20",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper compares KL-based distributional matching against small-sample label optimization specifically for selecting APE hyperparameters and claims robustness superiority in that context. Paper [20] (SESS) addresses evaluation subset selection for prompt optimization but via submodular objectives, not KL matching vs. label tuning robustness. Paper [10] uses minimum KL divergence for filter parameter selection in speech recognition but in an entirely different domain with no APE or robustness comparison framing. No quoted phrase from any prior paper satisfies the same objective.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper compares a KL-divergence-tuned APE variant against a label-tuned oracle baseline on a downstream QA metric. Paper [11] applies APE for automatic scoring but does not introduce KL-based hyperparameter tuning or compare it to a label-tuned oracle. Paper [20] studies evaluation subset selection for prompt optimization but uses submodular selection, not KL tuning, and does not compare against a label-tuned oracle on QA. No quoted phrase from any prior paper describes this specific comparative mechanism."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 13
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to establish the specific empirical relationship that distributional (KL) matching is a more robust objective for hyperparameter selection than optimizing on a small sample of labels. While prior work discusses issues with label-based optimization under distribution shift ([9], [26]) and separately proposes using KL divergence for robust parameter optimization ([10], [27]), no paper makes the direct comparative claim that one is superior to the other for this task.\n\n**mechanism**: The mechanism is a comparative study comparing a hyperparameter tuning method based on a distributional objective (KL divergence) against one based on a direct label-based objective. This experimental design, a head-to-head comparison of different hyperparameter tuning methods on downstream tasks, is a standard protocol established in prior work such as [2], which performs \"A Comparative Study of Hyperparameter Tuning Methods\" by evaluating TPE, Genetic Search, and Random Search on various tasks.\n\n**evaluation**: The evaluation design involves measuring performance by comparing F1 scores on a large-scale question-answering benchmark (the LongBench family). This design is covered by prior work, as [13] establishes the protocol of using a \"benchmark combining six existing medical question answering datasets\" (MultiMedQA) to assess model capabilities, which is the same benchmark family and evaluation design.\n\n**domain**: The application area is question answering (QA) with large language models, specifically long-context multi-hop QA. This general area is covered by prior work, as [13] operates in the domain of \"medical question answering\" with LLMs, which falls under the same general application area.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 2\nVERDICT evaluation = 13\nVERDICT domain = 13",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the objective of comparing distributional (KL) matching against small-sample label optimization specifically for the task of selecting APE hyperparameters. Papers on hyperparameter tuning do not use KL matching, and papers on KL divergence do not apply it to APE hyperparameter selection or compare its robustness in this manner."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": [
+     14
+    ],
+    "domain": [
+     1,
+     14
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 14
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to characterize the KL landscape to understand which hyperparameter drives calibration behavior. Paper [14] (\"Goal-Oriented Sensitivity Analysis of Hyperparameters in Deep Learning\") conducts sensitivity analysis of hyperparameters in deep learning, focusing on their impact on performance and optimization. While it does not explicitly address KL landscapes or calibration behavior, it shares the broader purpose of analyzing hyperparameters to understand their effects. Paper [19] (\"Adaptive Temperature Scaling for Robust Calibration of Deep Neural Networks\") focuses on calibration but does not analyze hyperparameter sensitivity in the KL landscape. No prior paper explicitly establishes the same empirical relationship between hyperparameters and calibration behavior in the KL landscape.\n\n### Mechanism\nThe contribution analyzes the sensitivity of temperature vs. scale and uses multi-token KL averaging to break single-token degeneracy. Paper [19] (\"Adaptive Temperature Scaling for Robust Calibration of Deep Neural Networks\") explores temperature scaling for calibration but does not compare temperature to scale or use multi-token KL averaging. Paper [23] (\"Parameterized Temperature Scaling for Boosting the Expressive Power in Post-Hoc Uncertainty Calibration\") introduces a novel calibration method but does not analyze sensitivity or use multi-token KL averaging. No prior paper employs the same mechanism.\n\n### Evaluation\nThe contribution demonstrates that temperature dominates with 2.6x higher sensitivity than scale and that multi-token KL averaging breaks single-token degeneracy. Paper [14] (\"Goal-Oriented Sensitivity Analysis of Hyperparameters in Deep Learning\") uses sensitivity analysis to evaluate hyperparameters, which matches the evaluation design of analyzing sensitivity. Paper [19] (\"Adaptive Temperature Scaling for Robust Calibration of Deep Neural Networks\") evaluates calibration methods but does not use sensitivity analysis. Paper [23] (\"Parameterized Temperature Scaling for Boosting the Expressive Power in Post-Hoc Uncertainty Calibration\") evaluates calibration methods but does not use sensitivity analysis. Paper [14] matches the evaluation design.\n\n### Domain\nThe contribution operates in the domain of hyperparameter landscape analysis for parallel encoding. Paper [1] (\"On the Hyperparameter Loss Landscapes of Machine Learning Models: An Exploratory Study\") explores hyperparameter loss landscapes in machine learning, which matches the general domain of hyperparameter landscape analysis. Paper [9] (\"AutoRL Hyperparameter Landscapes\") also addresses hyperparameter landscapes but focuses on reinforcement learning. Paper [14] (\"Goal-Oriented Sensitivity Analysis of Hyperparameters in Deep Learning\") analyzes hyperparameters in deep learning but does not focus on landscape analysis. Paper [1] matches the domain.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 14  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 14 | reason: Goal-oriented sensitivity analysis explicitly investigates hyperparameter impact using HSIC, aligning with the objective to characterize hyperparameter-driven calibration behavior. Quote: \"we study the use of goal-oriented sensitivity analysis... for hyperparameter analysis and optimization.\"\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper explicitly analyzes sensitivity of temperature vs. scale or employs multi-token KL averaging to address single-token degeneracy."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 14
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Characterize the KL landscape to understand which hyperparameter drives calibration behavior.**\n\nThe purpose is to understand which hyperparameter (temperature vs. scale) dominates calibration behavior by analyzing the KL landscape. Papers [1], [9], [12], [14], [15] all study hyperparameter loss/performance landscapes to understand which hyperparameters matter most. Paper [14] (\"Goal-Oriented Sensitivity Analysis of Hyperparameters in Deep Learning\") explicitly studies \"which hyperparameters... strongly impact their performances\" using sensitivity analysis. Paper [1] studies \"topography of the underlying hyperparameter loss landscape.\" However, none of these specifically target KL-based calibration behavior in the context of parallel encoding or language model temperature/scale parameters. The closest is [14] and [1], but the specific relationship being established (temperature vs. scale dominance for KL calibration) is not reported in any prior paper. This is a specific empirical relationship about specific variables — not merely thematic similarity. No prior paper reports the same variables (temperature vs. scale sensitivity for KL calibration). NONE.\n\n**MECHANISM: Analyze sensitivity of temperature vs. scale and use multi-token KL averaging to break single-token degeneracy.**\n\nThe mechanism involves two parts: (1) comparative sensitivity analysis of two hyperparameters, and (2) multi-token KL averaging to resolve a degeneracy. Sensitivity analysis of hyperparameters appears in [1], [12], [14], [15] — these use FANOVA, HSIC, or exploratory methods to compare hyperparameter sensitivities. However, the specific primitive of \"multi-token KL averaging to break single-token degeneracy\" is not present in any prior paper. The degeneracy-breaking via averaging across tokens is a specific technical primitive not found elsewhere. The sensitivity comparison part is covered by [14] or [1], but the combined mechanism (especially the degeneracy-breaking averaging) is not. Since the mechanism is described as a combined approach, and the degeneracy-breaking component is absent, I'll mark NONE.\n\n**EVALUATION: Temperature dominates with 2.6x higher sensitivity than scale; multi-token KL averaging breaks the single-token degeneracy that always selects T=1.0.**\n\nThe evaluation design here involves measuring relative sensitivity ratios between hyperparameters and demonstrating a degeneracy condition. Papers [1], [9], [12], [14], [15] all use sensitivity analysis frameworks to compare hyperparameter impacts — this is a standard evaluation design (sensitivity ratio comparison). Paper [15] uses \"Functional analysis of variance (FANOVA) to quantify main and interaction effects\" and reports dominance of certain hyperparameters. Paper [14] uses HSIC-based sensitivity analysis. The design of \"compare sensitivity of two hyperparameters and report dominance ratio\" is a standard sensitivity analysis design covered by [14] and [1]. However, the specific degeneracy-breaking evaluation (showing that single-token KL always selects T=1.0) is a novel evaluation design not present in prior work. Since the evaluation contains both a standard sensitivity comparison AND a novel degeneracy demonstration, and the degeneracy aspect is genuinely new, I'll consider whether the overall design is covered. The degeneracy demonstration is a new evaluation protocol. NONE.\n\n**DOMAIN: Hyperparameter landscape analysis for parallel encoding.**\n\nParallel encoding is a specific technique in language models/NLP. Papers [1], [9], [12], [14], [15] all work in hyperparameter landscape analysis for ML models (neural networks, RL). The domain of \"hyperparameter landscape analysis\" is clearly covered by [1], [9], [14]. The \"parallel encoding\" aspect is a specific instance within the broader NLP/deep learning area, which is covered by the general ML hyperparameter analysis domain. Paper [14] works with deep neural networks. This is a new specific instance within an existing area. COVERED by [1] or [14].\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 14",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper aims to characterize the KL landscape to understand which hyperparameter (temperature vs. scale) drives calibration behavior; the closest papers (e.g., [1], [9], [12], [14], [15]) analyze hyperparameter loss landscapes or sensitivity in ML/RL but none focus on KL-based calibration landscapes comparing temperature vs. scale parameters.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper performs a comparative sensitivity analysis of temperature vs. scale in a calibration context using multi-token KL averaging to break single-token degeneracy; [8] studies temperature scaling in softmax but does not compare sensitivity against a scale parameter or use multi-token KL averaging, and no other paper contains this mechanism under any terminology.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports a 2.6x sensitivity ratio between temperature and scale, nor identifies or resolves a single-token degeneracy that always selects T=1.0 via multi-token KL averaging; these specific quantitative findings and the degeneracy phenomenon are absent from all prior papers reviewed."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: For a finding, the purpose is the empirical relationship itself. While prior work analyzes hyperparameter landscapes generally or temperature scaling specifically, no listed paper appears to report the same relationship: a direct sensitivity comparison of temperature vs. a separate scale parameter on a KL-based calibration landscape.\n\n**mechanism**: The analysis method is sensitivity analysis, a standard technique for understanding hyperparameter influence, as seen in [14] which uses \"goal-oriented sensitivity analysis... for hyperparameter analysis\" and [15] which uses \"Functional analysis of variance (FANOVA)\". Using multi-token averaging to compute a stable metric over a sequence is a standard statistical procedure, not a novel primitive.\n\n**evaluation**: The evaluation design is a standard sensitivity analysis protocol where hyperparameters are varied and their impact on a metric is measured. This design is explicitly used in prior work like [14] which studies \"the use of goal-oriented sensitivity analysis... for hyperparameter analysis\" and [12] which \"performs the sensitivity analysis of the random forest’s popular hyperparameters\".\n\n**domain**: The general application area is \"hyperparameter landscape analysis\" for machine learning models. This area is explicitly established by prior work, including [1] (\"On the Hyperparameter Loss Landscapes of Machine Learning Models\") and [14] (\"Sensitivity Analysis of Hyperparameters in Deep Learning\").\n\nVERDICT purpose = NONE\nVERDICT mechanism = 14\nVERDICT evaluation = 14\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the objective of characterizing a hyperparameter landscape using a calibration-specific metric (like KL divergence) to specifically identify which hyperparameters are the primary drivers of model calibration. Papers [1] and [9] study hyperparameter landscapes, but for general performance loss to understand the HPO search process, not specifically for calibration. Other papers perform sensitivity analysis but do not frame it as a landscape characterization."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     7
+    ],
+    "mechanism": [
+     3
+    ],
+    "evaluation": [
+     3,
+     8
+    ],
+    "domain": [
+     7
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to provide practical deployment guidance on the reliability of KL-based hyperparameter selection. Paper [7] discusses hyperparameter selection for deployment reliability, framing it as a multiple hypothesis testing problem to provide statistical guarantees. While the framing differs, the objective of improving reliability in hyperparameter selection is substantively equivalent. Paper [26] also addresses stability and generalization in hyperparameter optimization, which aligns with the purpose of ensuring reliable deployment. Both papers share the same problem-class level objective.\n\n### Mechanism\nThe contribution uses bootstrap resampling stability analysis of temperature vs. scale selection with confidence intervals. Papers [1], [2], [3], [4], [5], [9], [10], [20], and [27] all discuss bootstrap resampling techniques for stability analysis or confidence interval construction. Paper [3] explicitly mentions resampling methods like bootstrapping to promote stability in outputs, which matches the mechanism. Paper [21] discusses hyperparameter selection for subsampling bootstraps, which is closely related to the mechanism of bootstrap-based stability analysis for hyperparameter selection.\n\n### Evaluation\nThe evaluation design involves comparing the stability of temperature selection (CI width=0.0) versus scale selection (CI width=0.38) under bootstrap resampling. Papers [1], [2], [3], [4], [5], [9], [10], [20], and [27] all use bootstrap-based confidence intervals or stability analysis as part of their evaluation design. Paper [3] specifically evaluates stability via resampling methods, which matches the evaluation design. Paper [6] and [8] also measure stability in feature selection, which is conceptually similar to the evaluation design here. The evaluation design is therefore covered.\n\n### Domain\nThe contribution operates in the domain of stability/robustness analysis for deployment. Papers [7], [18], [19], [21], and [26] all address hyperparameter selection or stability analysis in deployment contexts, which matches the general application area. Paper [7] explicitly discusses deployment reliability via hyperparameter selection, and paper [26] focuses on stability and generalization in hyperparameter optimization, both of which align with the domain.\n\n---\n\nVERDICT purpose = 7  \nVERDICT mechanism = 3  \nVERDICT evaluation = 3  \nVERDICT domain = 7  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Provide practical deployment guidance on the reliability of KL-based hyperparameter selection.**\n\nThe purpose is specifically about demonstrating differential stability between two types of hyperparameter selection (temperature vs. scale) to guide deployment decisions. Paper [7] \"Ensuring Reliability via Hyperparameter Selection\" directly addresses reliability in hyperparameter selection for AI deployment, framing it as a statistical guarantees problem. However, the specific relationship being established here is \"temperature selection is stable but scale selection is not\" — this is a specific empirical relationship about differential stability of two hyperparameter types. Paper [7] reviews the LTT framework for reliability guarantees but does not report this specific empirical relationship between temperature and scale stability. No prior paper reports the same variables (temperature vs. scale KL-based selection) and direction of effect (differential stability). This purpose appears uncovered.\n\n**MECHANISM: Bootstrap resampling stability analysis with confidence intervals.**\n\nBootstrap resampling to assess stability is covered extensively. Papers [1], [2], [3], [5], [6], [8], [12] all use bootstrap/resampling for stability analysis. Paper [3] explicitly studies \"stability via resampling\" using bootstrapping. Paper [12] introduces \"stability selection\" based on subsampling. The mechanism of using bootstrap resampling to compute confidence intervals as a measure of stability is a standard design covered by multiple papers.\n\n**EVALUATION: Temperature selection perfectly stable (CI width=0.0) while scale selection unstable (CI width=0.38).**\n\nThis is a specific empirical finding/result, not an evaluation design. The evaluation design itself — bootstrap resampling with CI width as a stability metric — is covered by papers [1], [2], [3], [5], [8], [12]. The design of measuring stability via bootstrap CI width appears in prior work (e.g., [6] \"Quantifying the stability of feature selection,\" [8] \"Measuring the Stability of Feature Selection\"). The specific numbers are the finding, but the evaluation design is covered.\n\n**DOMAIN: Stability/robustness analysis for deployment.**\n\nThe domain of stability/robustness analysis is covered by multiple papers. Papers [3], [6], [8], [12] all work in stability analysis. Paper [7] works in hyperparameter selection for AI deployment. This is a well-established area.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 3\nVERDICT evaluation = 8\nVERDICT domain = 7",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 7 | reason: Paper [7] explicitly states \"Ensuring Reliability via Hyperparameter Selection\" and reviews frameworks that \"provide statistical guarantees on population risk measures attained by the selected hyperparameter\" — however, this covers reliability guarantees for hyperparameter selection generally, not specifically KL-based hyperparameter selection deployment guidance. Re-examining strictly: no paper quotes guidance specifically on \"KL-based hyperparameter selection\" reliability in deployment. Paper [7] is about LTT-style hypothesis testing guarantees, not KL divergence-based selection methods. FINAL: NONE | reason: No prior paper provides practical deployment guidance specifically on the reliability of KL-based hyperparameter selection; [7] covers reliability guarantees for hyperparameter selection via hypothesis testing frameworks but not KL-divergence-based selection methods specifically."
+     }
+    }
+   }
+  }
+ ]
+}

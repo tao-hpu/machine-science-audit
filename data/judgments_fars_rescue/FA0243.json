@@ -1,0 +1,368 @@
+{
+ "paper_id": "FA0243",
+ "title": "Silence-Conditional Output Suppression for Training-Free Whisper Hallucination Mitigation",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1
+    ],
+    "mechanism": [
+     19
+    ],
+    "evaluation": [
+     1,
+     2
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to mitigate hallucinations in Whisper ASR on non-speech audio without requiring fine-tuning or external components. Paper [1] explicitly addresses the same problem of reducing hallucinations in Whisper ASR on non-speech audio, as stated in its title and abstract: \"Reduce Whisper Hallucination On Non-Speech By Calming Crazy Heads Down.\" Paper [4] also focuses on mitigating hallucinations in Whisper ASR, though it emphasizes noisy acoustic conditions rather than non-speech audio specifically. However, [1] directly targets the same problem class (hallucinations on non-speech audio) and does so without external components, making it substantively equivalent in purpose.\n\n### Mechanism\nThe mechanism, Silence-Conditional Output Suppression, uses Whisper's internal no-speech probability (`p_no_speech`) from the first decoder step to decide whether to output an empty transcription or proceed with decoding. None of the prior papers describe this specific mechanism. Paper [1] modifies Whisper's self-attentional heads to reduce hallucinations, which is a fundamentally different technical approach. Paper [4] uses adaptive layer attention and knowledge distillation, which also differs from leveraging the no-speech probability. While some papers (e.g., [19], [20], [22]) discuss reject option classification or abstention mechanisms, these are general frameworks and do not involve Whisper's internal no-speech probability or its specific application to hallucination mitigation. Thus, the mechanism is not covered.\n\n### Evaluation\nThe evaluation reports a reduction in hallucination rate on UrbanSound8K, a benchmark dataset. Paper [1] also evaluates hallucination mitigation in Whisper ASR, though the specific dataset and metrics are not detailed in the excerpt. However, the evaluation design — measuring hallucination rates on a benchmark dataset — is a standard approach in ASR research and is not novel. Paper [4] also evaluates hallucination mitigation in Whisper ASR, likely using a similar design. Therefore, the evaluation design is covered.\n\n### Domain\nThe domain is automatic speech recognition (ASR) with a focus on hallucination mitigation. Papers [1], [2], [4], and [7] all address hallucination issues in ASR, specifically in the context of Whisper. While the specific dataset (UrbanSound8K) and sub-problem (non-speech audio) are narrower, the general application area of ASR and hallucination mitigation is well-covered by prior work.\n\n---\n\nVERDICT purpose = 1  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper explicitly describes extracting Whisper's internal no-speech probability (p_no_speech) from the first decoder step and using it as a threshold-based silence suppression mechanism."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 19
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Mitigate Whisper hallucinations on non-speech audio without fine-tuning or external components.**\n\nPaper [1] (Calm-Whisper) explicitly addresses \"reduce Whisper's hallucination on non-speech segments without using any pre- or post-processing techniques\" — this is substantively equivalent to the purpose. Paper [4] also addresses mitigating Whisper hallucinations under noisy/non-speech conditions. Paper [2] investigates Whisper hallucinations on non-speech audio but focuses on investigation rather than mitigation. Papers [1] and [4] are the strongest matches for the purpose of mitigating Whisper hallucinations on non-speech without external components.\n\n**MECHANISM: Extract Whisper's internal no-speech probability (p_no_speech) from the first decoder step; if >= threshold tau, output empty transcription; otherwise proceed with standard greedy decoding.**\n\nThis is a threshold-based suppression using Whisper's internal no-speech probability signal. Paper [1] (Calm-Whisper) uses a different mechanism — it benchmarks self-attention heads and \"calms\" certain heads, not a threshold on p_no_speech. Paper [4] uses adaptive layer attention and knowledge distillation. Paper [2] investigates hallucinations but doesn't propose this suppression mechanism. Papers [19], [20], [22], [24], [25], [26] deal with reject-option classification / abstaining classifiers using thresholds on confidence scores — the primitive of \"if internal confidence score < threshold, abstain/output nothing\" is structurally equivalent to the proposed mechanism. Paper [19] and [20] specifically formulate reject-option classification where a classifier abstains based on a threshold on an internal probability. However, these are in classification settings, not ASR. The mechanism primitive — \"use model's internal probability signal; if above threshold, suppress/abstain output\" — is covered by reject-option classification literature (papers [19], [20], [22]). Paper [15] (VAD for keyword spotting) uses internal model signals for voice activity detection, which is related but not identical. The closest primitive match is the reject-option/abstaining classifier literature ([19], [20]).\n\n**EVALUATION: On UrbanSound8K, hallucination rate drops from 100% to 60.11% at tau=0.3 (a 39.9pp reduction).**\n\nUrbanSound8K as a benchmark for evaluating Whisper hallucinations on non-speech audio: Paper [2] explicitly studies \"hallucinations of the Whisper ASR model induced by non-speech audio segments\" and evaluates with various sound types. Paper [1] benchmarks Whisper hallucinations on non-speech. Neither paper explicitly uses UrbanSound8K as the named benchmark in the abstracts provided. However, the evaluation design — measuring hallucination rate on a non-speech audio dataset — is used in papers [1] and [2]. The metric (hallucination rate on non-speech audio) and the general design are covered by [2] and [1]. UrbanSound8K is a named benchmark family used in audio classification; applying it to measure hallucination rate is a parameter change (different benchmark instance), not a new evaluation design. Papers [1] and [2] use the same evaluation design (hallucination rate on non-speech audio for Whisper).\n\n**DOMAIN: Automatic speech recognition / hallucination mitigation.**\n\nPapers [1], [2], [4], [7] all work in ASR hallucination mitigation for Whisper specifically. This domain is clearly covered.\n\nVERDICT purpose = 1\nVERDICT mechanism = 19\nVERDICT evaluation = 2\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 19
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: COVERED by [1], which has the substantively equivalent objective to \"reduce Whisper's hallucination on non-speech segments without using any pre- or post-possessing techniques,\" matching the contribution's goal of mitigation without external components.\n\n**mechanism**: COVERED by [19], which describes the general primitive of \"Reject Option Classification\" that uses a \"function (e.g., softmax threshold) to select/reject uncertain classifier predictions.\" The contribution's mechanism is an instance of this primitive, using the internal `p_no_speech` signal as the uncertainty measure and a threshold to reject (suppress) the output.\n\n**evaluation**: COVERED by [2], which uses the same evaluation design of feeding non-speech audio to Whisper to quantify its failure modes. Paper [2] aims to \"investigate hallucinations of the Whisper ASR model induced by non-speech audio segments,\" which necessitates the same experimental protocol of running the model on non-speech inputs and analyzing the erroneous outputs.\n\n**domain**: COVERED by [1], [2], and [4], all of which operate in the same application area of automatic speech recognition, specifically addressing the problem of hallucinations in the Whisper model. For instance, [1] explicitly targets how to \"Reduce Whisper Hallucination On Non-Speech\".\n\nVERDICT purpose = 1\nVERDICT mechanism = 19\nVERDICT evaluation = 2\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     4
+    ],
+    "mechanism": [
+     5,
+     6
+    ],
+    "evaluation": [
+     4,
+     14
+    ],
+    "domain": [
+     1,
+     4
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to show that the method preserves speech recognition quality while reducing hallucinations. Paper [4] (\"Listen Like a Teacher\") and paper [6] (\"Calm-Whisper\") both address hallucination mitigation in Whisper ASR systems, specifically targeting the reduction of hallucinations while maintaining transcription quality. Paper [8] (\"Careless Whisper\") evaluates Whisper's hallucination harms but does not propose a method to preserve recognition quality while reducing hallucinations. Paper [1] investigates hallucinations but does not address the preservation of recognition quality. Therefore, papers [4] and [6] cover the purpose.\n\n### Mechanism\nThe contribution evaluates the hallucination-WER tradeoff across thresholds on UrbanSound8K vs LibriSpeech, comparing to default Whisper and an Always-Mask baseline. Paper [4] uses adaptive layer attention and knowledge distillation to mitigate hallucinations, but does not evaluate the hallucination-WER tradeoff across thresholds. Paper [6] benchmarks the contribution of self-attentional heads in Whisper for hallucination mitigation but does not use the same mechanism of threshold-based evaluation across datasets. No prior paper explicitly evaluates hallucination-WER tradeoffs across thresholds in the described manner. Thus, the mechanism is uncovered.\n\n### Evaluation\nThe evaluation design involves measuring WER impact and false-positive rates at specific thresholds (e.g., tau=0.3) on LibriSpeech and UrbanSound8K. Paper [8] evaluates hallucination rates in Whisper using WER metrics, but does not use threshold-based evaluation. Paper [4] evaluates hallucination mitigation using adaptive layer attention but does not use the same evaluation design. Paper [6] benchmarks hallucination mitigation but does not use threshold-based evaluation across datasets. No prior paper uses the same evaluation design involving threshold-based WER and false-positive rate analysis. Thus, the evaluation is uncovered.\n\n### Domain\nThe contribution operates in the domain of automatic speech recognition (ASR) and hallucination mitigation. Papers [1], [4], [6], and [8] all address hallucination mitigation in ASR systems, specifically targeting Whisper. This domain is well-covered by prior work.\n\n---\n\nVERDICT purpose = 4  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 4  ",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper evaluates the hallucination-WER tradeoff across tau thresholds or compares Whisper to an Always-Mask baseline.  \nFACET: evaluation | FINAL: NONE | reason: No prior paper reports WER impact at tau=0.3 or false-positive rate with equivalent metrics or claims.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 5
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Show the method preserves speech recognition quality while reducing hallucinations.**\n\nThis is about demonstrating a tradeoff — that hallucination reduction doesn't significantly hurt WER. Paper [5] (Calm-Whisper) explicitly benchmarks a method to reduce Whisper hallucinations on non-speech segments and would naturally report WER impact. Paper [4] (Listen Like a Teacher) also mitigates Whisper hallucinations and evaluates the tradeoff between hallucination reduction and ASR quality. Paper [1] investigates Whisper hallucinations induced by non-speech audio. The purpose of showing \"hallucination reduction while preserving WER\" is directly addressed in [4] and [5], which both aim to reduce Whisper hallucinations without degrading speech recognition quality — the same objective at the problem-class level.\n\n**MECHANISM: Evaluate the hallucination-WER tradeoff on UrbanSound8K vs LibriSpeech across thresholds tau in {0.3, 0.5, 0.6}, comparing to default Whisper and an Always-Mask head-masking baseline.**\n\nThe mechanism here is a threshold-sweep comparison across two dataset types (non-speech vs. speech) against a baseline head-masking approach. Paper [5] (Calm-Whisper) uses attention head masking (\"calming crazy heads\") and evaluates on non-speech vs. speech datasets comparing to default Whisper. The specific threshold sweep and Always-Mask baseline comparison is closely related to [5]'s methodology. Paper [4] also uses attention-layer modifications and compares against baselines including head-masking approaches. The primitive of \"threshold-based attention head masking evaluated across speech/non-speech datasets vs. a head-masking baseline\" is substantively present in [5].\n\n**EVALUATION: WER impact of +0.19pp on LibriSpeech test-clean, 0 on test-other, with 0.19% false-positive rate.**\n\nThis is a specific quantitative finding. The evaluation *design* uses LibriSpeech WER as the metric for ASR quality preservation — this design (LibriSpeech WER benchmarking) is used in [4] and [5]. The false-positive rate metric on non-speech data is also used in [5] and [1]. The evaluation design (LibriSpeech WER + non-speech hallucination rate) is covered by [4] and [5]. However, the specific numbers are the actual finding being reported, not just the design. Per the special rule, the evaluation design (LibriSpeech WER + hallucination rate comparison) is covered by [4] and [5].\n\n**DOMAIN: Automatic speech recognition / hallucination mitigation.**\n\nPapers [1], [4], [5], [8] all operate in ASR hallucination mitigation, specifically for Whisper. This domain is clearly covered.\n\nVERDICT purpose = 4\nVERDICT mechanism = 5\nVERDICT evaluation = 4\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to show that a method can reduce hallucinations while preserving speech recognition quality (i.e., a successful tradeoff). This same objective is central to prior work proposing hallucination mitigation techniques, such as [4] which aims to \"[mitigate] Whisper Hallucinations\" and [6] which aims to \"reduce Whisper Hallucination\". These papers must also demonstrate this same tradeoff to validate their proposed methods.\n\n**mechanism**: The mechanism is the analysis method: a controlled experiment evaluating a method against baselines (default Whisper) on a mix of speech (LibriSpeech) and non-speech (UrbanSound8K) datasets, measuring both ASR quality (WER) and hallucination rate across a parameter sweep. Papers proposing mitigation techniques for hallucinations on non-speech audio, like [6] which aims to \"reduce Whisper Hallucination On Non-Speech\", must necessarily employ an equivalent analysis design to validate their claims.\n\n**evaluation**: The evaluation design uses Word Error Rate (WER) and a false-positive rate. WER is a standard, long-standing metric in ASR. The use of a false-positive or \"false alarm\" rate to quantify unwanted system activations is also a standard evaluation design element in speech systems, as seen in [14] which evaluates a method by its ability to \"catch 14.6% of previously undetected cases, while not increasing the false alarm rate\".\n\n**domain**: The application area is mitigating hallucinations in automatic speech recognition (ASR). This is explicitly the domain of several prior papers, including [1] (\"Investigation of Whisper ASR Hallucinations\"), [4] (\"Mitigating Whisper Hallucinations\"), and [6] (\"Reduce Whisper Hallucination\").\n\nVERDICT purpose = 4\nVERDICT mechanism = 6\nVERDICT evaluation = 14\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     1,
+     12
+    ],
+    "evaluation": [
+     12
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution aims to characterize when the method works and when it fails, specifically analyzing the relationship between sound class and hallucination rates. None of the prior papers explicitly report or establish this same empirical relationship. While papers like [1], [2], [4], [7], [8], and [9] discuss hallucinations in ASR or audio models, they focus on detecting, mitigating, or categorizing hallucinations rather than characterizing the conditions under which hallucinations occur (e.g., sound class-specific trigger rates). Thus, the purpose is **not covered**.\n\n#### Mechanism:\nThe mechanism involves per-class trigger-rate analysis at tau=0.5 across the 10 UrbanSound8K sound classes. Paper [12] evaluates models on the UrbanSound8K dataset, but it focuses on classification performance metrics (e.g., accuracy, precision, recall) rather than trigger-rate analysis or hallucination-specific metrics. None of the other papers describe a substantively equivalent mechanism for analyzing hallucination rates per sound class. Thus, the mechanism is **not covered**.\n\n#### Evaluation:\nThe evaluation design involves measuring trigger rates for different sound classes and correlating them with hallucination rates. Papers like [1], [2], [4], [7], [8], and [9] evaluate hallucinations in ASR or audio models, but they do not use the same evaluation design (per-class trigger-rate analysis or UrbanSound8K-based hallucination metrics). While [12] uses UrbanSound8K for sound classification, it does not evaluate hallucination rates or trigger rates. Thus, the evaluation design is **not covered**.\n\n#### Domain:\nThe domain is automatic speech recognition (ASR) and hallucination mitigation. Papers [1], [2], [4], [7], [8], and [9] all address hallucinations in ASR or audio models, which falls within the same general application area. Even though this contribution targets a specific sub-problem (hallucination mitigation via sound class analysis), the domain is **covered** under the generous rule for application areas.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly characterizes when the method works and fails under the same empirical relationship.  \nFACET: mechanism | FINAL: NONE | reason: No prior paper performs per-class trigger-rate analysis at tau=0.5 across the 10 UrbanSound8K sound classes.  \nFACET: evaluation | FINAL: COVERED-BY 12 | reason: \"Evaluating Machine Learning and Deep Learning Approaches on the UrbanSound8k\" includes performance metrics and analysis of sound class-specific results, aligning with the evaluation claim.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Characterize when the method works and when it fails (specifically, explaining residual hallucination rate via per-class performance breakdown)**\n\nPaper [1] investigates Whisper hallucinations induced by non-speech audio and studies different sound types, which is closely related but focuses on inducing/cataloging hallucinations rather than characterizing failure modes of a mitigation method. Paper [2] (Calm-Whisper) reduces Whisper hallucinations and benchmarks performance — it characterizes when its method works across different conditions. Paper [8] (Careless Whisper) evaluates hallucination harms but doesn't characterize a mitigation method's failure modes per class. None of these papers establish the same empirical relationship: \"per-class trigger-rate analysis explaining residual hallucination rate of a specific mitigation method.\" However, paper [1] does analyze hallucinations \"by inducting hallucinations with various types of sounds\" — this is characterizing behavior across sound types, which is the same relationship direction. Paper [2] also benchmarks its method's contribution per attention head. Neither precisely establishes the same variables (trigger rate per sound class explaining residual hallucination), so this purpose appears uncovered.\n\n**MECHANISM: Per-class trigger-rate analysis at tau=0.5 across the 10 UrbanSound8K sound classes**\n\nThis is a controlled ablation/breakdown analysis by class on a named dataset (UrbanSound8K). Paper [12] evaluates models on UrbanSound8K with per-class metrics (Accuracy, Precision, Recall, F1-score per class). Paper [1] analyzes hallucinations \"with various types of sounds\" — a per-sound-type breakdown. The mechanism here is a per-class breakdown analysis, which is a standard analysis protocol appearing in [1] (per sound type) and [12] (per class on UrbanSound8K). As a finding-type contribution, the mechanism is judged at design level — per-class breakdown is a standard analysis design present in prior work.\n\n**EVALUATION: High trigger rate on non-speech-like sounds vs. low on speech-like audio**\n\nThe evaluation design here is measuring trigger rates per sound class on UrbanSound8K. Paper [1] uses various sound types to study hallucination induction — same design of measuring hallucination rates across sound categories. Paper [12] uses UrbanSound8K as a benchmark with per-class metrics. The evaluation design (per-class performance on UrbanSound8K) is covered by [12], and the per-sound-type hallucination measurement design is covered by [1].\n\n**DOMAIN: Automatic speech recognition / hallucination mitigation**\n\nPapers [1], [2], [4], [8] all work in ASR hallucination detection/mitigation. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 1\nVERDICT evaluation = 12\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of characterizing when a specific hallucination-detection or hallucination-reduction method works versus fails; the closest candidates ([1], [2], [4], [8]) investigate hallucination phenomena or propose methods but do not explicitly aim to delineate success/failure conditions of their own method as a stated purpose."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to characterize the failure modes of a method, specifically by analyzing its performance on different classes of audio. This is a form of error analysis. Paper [1] has the equivalent purpose of investigating the failure modes of the base ASR model, aiming to understand what causes them: \"investigate hallucinations of the Whisper ASR model induced by non-speech audio segments\". Both share the objective of characterizing system failure as a function of audio input type.\n\n**mechanism**: The mechanism is a per-class performance analysis on the UrbanSound8K dataset. This is a standard analysis protocol for multi-class classification. Paper [12] conducts a \"comprehensive journey, juxtaposing traditional machine learning algorithms with state-of-the-art deep learning architectures, all benchmarked on the UrbanSound8k dataset,\" which would necessarily involve this standard form of per-class analysis to be comprehensive.\n\n**evaluation**: The evaluation design involves using the UrbanSound8K benchmark and measuring a per-class trigger rate, which is a form of classification error/success metric. Paper [12] uses the exact same evaluation design, as it is explicitly \"Evaluating Machine Learning and Deep Learning Approaches on the UrbanSound8k\" using standard classification metrics like \"Accuracy, Precision, Recall, and F1-score\".\n\n**domain**: The contribution is in the domain of automatic speech recognition (ASR) and specifically hallucination mitigation. This is the explicit domain of several prior papers, including [1], which states its focus is on \"Whisper ASR Hallucinations Induced by Non-Speech Audio\".\n\nVERDICT purpose = 1\nVERDICT mechanism = 12\nVERDICT evaluation = 12\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     7
+    ],
+    "evaluation": [
+     7
+    ],
+    "domain": [
+     7
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to establish which component drives the improvement in hallucination mitigation for ASR systems. None of the prior papers explicitly report or establish the same empirical relationship — i.e., that the suppression policy, not decoder head masking, drives the gains. While many papers address hallucination mitigation in ASR (e.g., [1], [2], [5], [7]), they focus on introducing methods or analyzing hallucination causes rather than isolating the specific driver of improvement. No prior paper demonstrates this exact relationship.\n\n### Mechanism\nThe mechanism involves a Skip-Only ablation that applies the `p_no_speech` suppression policy while using standard (unmasked) decoding for non-triggered clips. Paper [7] benchmarks contributions of self-attentional heads in Whisper ASR, which is conceptually similar to isolating components for analysis, but it does not use the same ablation design or suppression policy. Papers like [9] and [27] discuss decoding strategies but do not involve the specific suppression policy or ablation design described here. No prior paper matches this mechanism.\n\n### Evaluation\nThe evaluation design compares Skip-Only to the full method at `tau=0.6` using hallucination rates and WER metrics. Papers [1], [5], [7], and [6] use similar evaluation designs for ASR hallucination mitigation, including metrics like hallucination rates and WER. For example, [7] evaluates hallucination reduction methods using benchmarks and metrics similar to those in this contribution. The specific benchmark instance or tau threshold does not make the evaluation design novel, as the design itself (hallucination rate and WER comparison) is covered.\n\n### Domain\nThe domain is automatic speech recognition (ASR) with a focus on hallucination mitigation. Papers [1], [2], [5], [6], and [7] all work in the same general application area of ASR and hallucination mitigation. While this contribution targets a specific suppression policy and ablation design, the domain itself is well-covered by prior work.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 7  \nVERDICT domain = 7  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly establishes which component drives improvement under the same empirical relationship.  \nFACET: mechanism | FINAL: COVERED-BY 7 | reason: \"benchmark the contribution of each self-attentional head in the Whisper model\" aligns with skip-only ablation applying suppression policy but using standard decoding."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Establish which component actually drives the improvement.**\n\nThe purpose is to identify which specific component (suppression policy vs. decoder head masking) is responsible for observed gains in hallucination mitigation. This is an ablation-style causal attribution finding. Paper [7] (Calm-Whisper) benchmarks the contribution of each self-attentional head in Whisper and introduces head masking for hallucination reduction — but its purpose is to introduce the method, not to isolate which sub-component drives gains. No prior paper reports the same empirical relationship (suppression policy vs. decoder masking as the driver). However, the purpose at the problem-class level is \"identify which sub-component drives improvement in a hallucination mitigation system.\" This is a standard ablation attribution goal. Paper [7] does perform component analysis (\"benchmark the contribution of each self-attentional head\"), which is close but targets a different decomposition. No paper establishes the same relationship between these two specific components. The purpose appears uncovered.\n\n**MECHANISM: Skip-Only ablation — applies suppression policy but uses standard decoding for non-triggered clips.**\n\nThe mechanism is a controlled ablation that isolates one component (suppression policy) by removing another (decoder head masking) to attribute the effect. This is a standard controlled ablation/substitution experiment design. Paper [7] performs component-level ablation of attention heads in Whisper. The generic shape (remove one component, keep another, measure effect) is a standard ablation primitive. However, the specific primitive here — \"Skip-Only\" ablation isolating a suppression policy from a masking policy — is not described in any prior paper. No prior paper uses this exact ablation design. That said, as a generic ablation mechanism, it's a standard analysis protocol. Per the finding-type rules, mechanism is judged at design level — controlled ablation appears in prior work broadly. Paper [7] uses component ablation in the same domain.\n\n**EVALUATION: At tau=0.6, Skip-Only matches full method on hallucination rate, WER test-clean, WER test-other.**\n\nThe evaluation uses hallucination rate metrics and WER (test-clean/test-other from LibriSpeech) — standard ASR benchmarks. Papers [1], [2], [3], [4], [5], [6], [7] all use WER and/or hallucination rate metrics on ASR systems. Paper [7] specifically uses WER and hallucination metrics on Whisper. The benchmark family (LibriSpeech test-clean/test-other, WER) is used in multiple prior papers. This evaluation design is covered.\n\n**DOMAIN: Automatic speech recognition / hallucination mitigation.**\n\nMultiple prior papers ([1], [2], [3], [4], [5], [6], [7]) work in ASR hallucination mitigation, specifically for Whisper. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 7\nVERDICT evaluation = 7\nVERDICT domain = 7",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the objective of establishing which specific component (e.g., attention head modification vs. distillation) actually drives the hallucination-reduction improvement. Paper [7] benchmarks attention head contributions but does not frame this as isolating which component drives improvement in a multi-component system. No paper quotes an equivalent ablation-to-attribute-improvement objective."
+     }
+    }
+   }
+  }
+ ]
+}

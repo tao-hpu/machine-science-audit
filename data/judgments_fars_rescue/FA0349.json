@@ -1,0 +1,277 @@
+{
+ "paper_id": "FA0349",
+ "title": "Overlap-Resampled L-BFGS for Physics-Informed Neural Networks",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     11
+    ],
+    "mechanism": [
+     11
+    ],
+    "evaluation": [
+     6
+    ],
+    "domain": [
+     1,
+     6
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**Purpose:**  \nThe purpose is to resolve the incompatibility between L-BFGS optimization and collocation resampling in PINNs. No prior paper explicitly addresses this incompatibility. Papers such as [6] and [7] discuss challenges in PINN training and collocation point sampling but do not focus on the specific issue of L-BFGS instability under resampling. Similarly, papers like [10], [11], and [15] address multi-batch L-BFGS methods but do not target the PINN-specific resampling incompatibility. Thus, the purpose is **NONE**.  \n\n**Mechanism:**  \nThe mechanism, \"overlap-resampled L-BFGS,\" adapts multi-batch L-BFGS by computing curvature pairs only on the overlap set of collocation points between consecutive batches. This is directly adapted from the multi-batch L-BFGS method described in [11] (\"A Multi-Batch L-BFGS Method for Machine Learning\"), which addresses gradient differences under batch changes. The adaptation to PINNs and resampling does not change the underlying primitive of multi-batch L-BFGS. Thus, the mechanism is **COVERED** by [11].  \n\n**Evaluation:**  \nThe evaluation demonstrates that overlap-resampled L-BFGS enables stable optimization under resampling, validated by running more iterations without premature termination on the 2D Poisson forward problem. Papers such as [6], [7], and [13] use similar evaluation designs for PINNs, including metrics like iteration counts and convergence behavior under varying sampling strategies. The evaluation design (benchmarking stability and iteration counts) is not novel, even though the specific benchmark instance (2D Poisson problem) differs. Thus, the evaluation is **COVERED** by [6].  \n\n**Domain:**  \nThe domain is physics-informed neural network optimization for PDE solving. Numerous prior papers, including [1], [3], [5], [7], and [13], work in the same general application area of PINN optimization for PDE solving. Although this contribution targets a specific incompatibility within PINN optimization, the domain itself is not new. Thus, the domain is **COVERED** by [1].  \n\n**Verdicts:**  \nVERDICT purpose = NONE  \nVERDICT mechanism = 11  \nVERDICT evaluation = 6  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses resolving the incompatibility between L-BFGS optimization and collocation resampling in PINNs, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 11
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Resolve the incompatibility between L-BFGS optimization and collocation resampling in PINNs.**\n\nThis is a very specific objective: making L-BFGS work stably when collocation points change between iterations. Paper [6] discusses challenges in training PINNs and compares Adam, L-BFGS, and Adam+L-BFGS, but does not address the incompatibility with resampling — it treats L-BFGS in a fixed-batch setting. Papers [11] and [10] address L-BFGS instability when batches change in machine learning, but their purpose is general ML optimization, not PINNs resampling compatibility. No prior paper explicitly targets the purpose of resolving L-BFGS/collocation-resampling incompatibility in PINNs. The closest is [11] which addresses L-BFGS instability under changing batches, but that is a general ML purpose, not the PINN-specific framing. However, at the problem-class level, \"resolve L-BFGS instability when the data/collocation set changes between iterations\" is substantively the same objective as [11] pursues. The domain differs (ML vs PINNs), but the purpose facet should be judged at the problem-class level. Paper [11] explicitly states: \"This can cause difficulties because L-BFGS employs gradient differences... when the batch changes at each iteration.\" This is the same gap being closed.\n\n---\n\n**MECHANISM: Overlap-resampled L-BFGS — compute curvature pairs y_k only on the overlap set O_k = C_k ∩ C_{k+1} of points persisting between consecutive batches, so gradient differences reflect the same loss; adapted from multi-batch L-BFGS (Berahas et al., 2016).**\n\nPaper [11] (Berahas et al., 2016, \"A Multi-Batch L-BFGS Method for Machine Learning\") is explicitly cited as the source of this adaptation. Paper [11] states it addresses the problem that \"L-BFGS employs gradient differences\" when batches change, and proposes computing curvature pairs on overlapping subsets of data. This is precisely the same primitive: use the intersection/overlap of consecutive batches to compute stable gradient differences for quasi-Newton updates. Paper [10] (\"A robust multi-batch L-BFGS method\") also addresses this. The contribution's mechanism is directly adapted from [11].\n\n---\n\n**EVALUATION: Enables L-BFGS to run stably under resampling; on the 2D Poisson forward problem runs ~13x more L-BFGS iterations (8240 vs 620) without premature termination.**\n\nThe evaluation design uses a standard PINN benchmark (2D Poisson equation, a named benchmark in the PINN literature) with iteration count and stability as metrics. Papers [6] compares optimizers (Adam, L-BFGS, Adam+L-BFGS) on PINN problems using iteration counts and convergence metrics — same evaluation design (optimizer comparison on PDE benchmarks). The specific metric of \"number of L-BFGS iterations before termination\" is a standard optimizer evaluation metric used in [11], [17], [15] etc. The 2D Poisson problem is a standard PINN benchmark used across the literature. This evaluation design (optimizer stability/iteration count on named PDE benchmarks) is covered by [6] and [11].\n\n---\n\n**DOMAIN: Physics-informed neural network optimization (PDE solving).**\n\nMultiple prior papers ([1], [3], [5], [6], [7], [13], [16], [19]) work in the domain of PINN optimization for PDE solving. This is clearly covered.\n\n---\n\nVERDICT purpose = 11\nVERDICT mechanism = 11\nVERDICT evaluation = 6\nVERDICT domain = 6",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 11
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The objective to resolve the incompatibility between L-BFGS and changing data batches is covered by prior work on multi-batch L-BFGS. Paper [11] addresses this exact problem, stating that a \"multi-batch approach in which the batch changes at each iteration... can cause difficulties because L-BFGS employs gradient differences.\"\n\n**mechanism**: The mechanism of using a consistent subset of points to compute curvature pairs is covered, as the contribution itself notes it is \"adapted from multi-batch L-BFGS (Berahas et al., 2016).\" Paper [11] is this cited work, which introduces the technical approach for making L-BFGS compatible with changing batches.\n\n**evaluation**: The evaluation design, which consists of comparing a proposed optimizer against a baseline on a standard benchmark problem from the domain, is covered. Paper [6] employs the same design by \"compar[ing] gradient-based optimizers Adam, L-BFGS, and their combination Adam+L-BFGS\" for training PINNs.\n\n**domain**: The application area of optimizing Physics-Informed Neural Networks (PINNs) for solving PDEs is covered by numerous prior papers. For example, paper [1] proposes a \"PDE-aware Optimizer for Physics-informed Neural Networks.\"\n\nVERDICT purpose = 11\nVERDICT mechanism = 11\nVERDICT evaluation = 6\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     23
+    ],
+    "mechanism": [
+     11,
+     12,
+     23
+    ],
+    "evaluation": [
+     15,
+     18
+    ],
+    "domain": [
+     4,
+     6
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": 15
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to provide a stable training procedure transitioning from exploration to L-BFGS refinement with continued resampling. This objective is not explicitly covered by any prior paper. While several papers discuss L-BFGS methods (e.g., [6], [9], [11], [12], [25]), none focus on the specific goal of stabilizing the transition between exploration and refinement phases with continued resampling. Papers like [18] and [19] discuss warm-starting techniques, but these are aimed at initialization or scaling rather than stabilizing transitions between optimization phases.\n\n**VERDICT purpose = NONE**\n\n---\n\n### Mechanism\nThe mechanism involves a three-phase pipeline: Phase 1 Adam with resampling (exploration), Phase 2 Adam with fixed collocation (curvature initialization/stabilization), and Phase 3 overlap-resampled L-BFGS with cautious updates (filtering unreliable curvature pairs). Several prior papers discuss components of this mechanism:\n- [6] introduces progressive batching for L-BFGS, which relates to handling stochastic objectives but does not include overlap-resampling or cautious updates.\n- [9] discusses adapting L-BFGS for stochastic training but does not include the specific overlap-resampling or cautious curvature filtering mechanism.\n- [25] proposes stochastic damped L-BFGS with controlled Hessian norms, which partially overlaps with cautious updates but lacks the overlap-resampling mechanism.\n- [17] introduces stochastic block BFGS updates, which enrich curvature information but do not implement the specific cautious filtering or overlap-resampling.\n\nWhile individual components (e.g., stochastic L-BFGS, cautious updates) appear in prior work, the specific combination of overlap-resampling and cautious curvature filtering is absent.\n\n**VERDICT mechanism = NONE**\n\n---\n\n### Evaluation\nThe evaluation involves a warmstart ablation experiment comparing overlap-resampled L-BFGS with and without warmstarting, measuring relL2 error and cautious skip rates under varying overlap levels. Warmstart evaluations are covered by prior papers:\n- [15] explicitly analyzes warmstart techniques.\n- [18] and [19] discuss warmstarting in reinforcement learning and scaling language models, respectively, though applied to different domains.\n- [24] explores switching between optimization algorithms with warmstarting policies.\n\nThe warmstart ablation design is therefore covered, even though the specific object (Poisson problem) differs.\n\n**VERDICT evaluation = 15**\n\n---\n\n### Domain\nThe domain is second-order optimization under stochastic/resampled objectives. This general application area is covered by multiple prior papers:\n- [6], [9], [12], [25] all address stochastic L-BFGS or quasi-Newton methods for large-scale machine learning problems.\n- [4] discusses stochastic quasi-Newton methods for large-scale data science.\n- [17] introduces stochastic block BFGS updates for enriched curvature information.\n\nThe contribution operates within the same general domain of second-order optimization under stochastic objectives.\n\n**VERDICT domain = 6**\n\n---\n\n### Final Verdicts\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 15  \nVERDICT domain = 6  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses a stable training procedure transitioning from exploration to L-BFGS refinement with continued resampling, even under different terminology or framing.\n\nFACET: mechanism | FINAL: COVERED-BY 11 | reason: Paper [11] describes cautious updates in L-BFGS for nonconvex optimization, including filtering unreliable curvature pairs: \"a novel form of cautious updating, where, among others, it is decided anew in each iteration whether curvature pairs are reliable.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 23
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": 15
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Provide a stable training procedure transitioning from exploration to L-BFGS refinement with continued resampling.**\n\nThe purpose is to create a stable multi-phase training pipeline that transitions from stochastic exploration (Adam) to quasi-Newton refinement (L-BFGS) under resampling/stochastic conditions. Paper [6] (Progressive Batching L-BFGS) addresses making L-BFGS work in stochastic settings by progressively increasing batch size to stabilize curvature estimates. Paper [23] (Hybrid PIO-L-BFGS) combines a global exploration method with L-BFGS refinement. Paper [24] (Switching between Numerical Black-box Optimization Algorithms with Warm-starting Policies) addresses switching between optimization algorithms with warm-starting. None of these specifically target the purpose of \"stable transition from exploration to L-BFGS under continued resampling\" as a unified objective — [6] is closest but focuses on batch size progression rather than phase-based exploration-to-refinement with resampling. However, [23] covers \"hybrid exploration + L-BFGS refinement\" at the problem-class level. Paper [24] covers \"switching between optimization algorithms with warm-starting.\" The combination of exploration→L-BFGS transition with resampling stability is closest to [6] and [23] at the problem-class level.\n\n**MECHANISM: Three-phase pipeline: Phase 1 Adam with resampling, Phase 2 Adam with fixed collocation, Phase 3 overlap-resampled L-BFGS with cautious updates (s_k^T y_k > eps ||s_k||^2) filtering unreliable curvature pairs.**\n\nThe cautious update condition s_k^T y_k > eps ||s_k||^2 is a curvature pair filtering mechanism. Paper [11] (Globalization of L-BFGS) explicitly introduces \"cautious updating\" for L-BFGS: \"a novel form of cautious updating, where, among others, it is decided anew in each iteration\" whether to accept curvature pairs. This is the same primitive. The three-phase pipeline with Adam warmstart into L-BFGS is related to [6] (progressive batching L-BFGS) and [23] (hybrid PIO+L-BFGS). The overlap-resampling with L-BFGS is related to [6]'s progressive batching. Paper [11] directly covers the cautious update mechanism. The full three-phase pipeline with overlap resampling is not fully covered by any single paper, but the cautious update primitive is in [11].\n\n**EVALUATION: Warmstart ablation comparing Overlap-LBFGS from scratch vs. with warmstart on Poisson equation; cautious skip rate vs. overlap parameter.**\n\nThis is a warmstart ablation study measuring relative L2 error on a specific PDE (Poisson). The evaluation design is an ablation study comparing warmstarted vs. cold-started optimization. Paper [15] (Theoretical Analysis of a Warm Start Technique) analyzes warm start techniques. Paper [24] (Switching with Warm-starting Policies) evaluates warm-starting in optimization switching. However, the specific design — measuring relL2 on a PDE benchmark with cautious skip rate analysis — is a newly constructed evaluation protocol for this specific setting. The generic ablation design (warmstart vs. no warmstart) appears in [15] and [24], but the specific metric (relL2 on Poisson, cautious skip rate vs. overlap) is new. Under the special rule, the ablation design itself (warmstart comparison) is covered by [15]/[24].\n\n**DOMAIN: Second-order optimization under stochastic/resampled objectives.**\n\nThis domain is clearly covered by multiple papers: [4] (Stochastic Quasi-Newton Methods), [6] (Progressive Batching L-BFGS), [12] (Stochastic L-BFGS), [17] (Stochastic Block BFGS), [25] (Stochastic Damped L-BFGS). All operate in the same general application area of second-order/quasi-Newton optimization under stochastic conditions.\n\nVERDICT purpose = 23\nVERDICT mechanism = 11\nVERDICT evaluation = 15\nVERDICT domain = 4",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 23
+      },
+      "mechanism": {
+       "covered_by": [
+        11,
+        12,
+        23
+       ]
+      },
+      "evaluation": {
+       "covered_by": 18
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: COVERED. Paper [23] pursues the same objective of creating a hybrid optimization procedure that combines an exploration phase with an L-BFGS refinement phase to improve performance, stating it \"proposes a hybrid PIO-L-BFGS algorithm that combines the pigeon-inspired optimization (PIO) and L-BFGS\". This is the same problem class as transitioning from an exploration algorithm to L-BFGS refinement.\n\n**mechanism**: COVERED. The mechanism is a pipeline of known primitives. The hybrid exploration-then-refinement structure is in [23] (\"hybrid PIO-L-BFGS\"). The use of L-BFGS in a stochastic setting is the central topic of [12] (\"A Linearly-Convergent Stochastic L-BFGS Algorithm\"). The use of a cautious update rule to filter unreliable curvature pairs for stability is described in [11] (\"a novel form of cautious updating, where... it is decided anew in each iteration whether the new pair should be added\").\n\n**evaluation**: COVERED. The evaluation design is an ablation study demonstrating that the warm-start phase is critical for the performance of the final L-BFGS phase. This design—comparing a method with and without its warm-start component—is used in [18] to \"build a fundamental understanding on 'whether and when'\" warm-starting is effective, which is the same validation design applied to a different object (RL).\n\n**domain**: COVERED. The domain is \"Second-order optimization under stochastic/resampled objectives\". This is a well-established research area explicitly addressed by numerous prior papers, including the review article [4] (\"Stochastic Quasi-Newton Methods\") and specific methods like [12] (\"A Linearly-Convergent Stochastic L-BFGS Algorithm\").\n\nVERDICT purpose = 23\nVERDICT mechanism = 11, 12, 23\nVERDICT evaluation = 18\nVERDICT domain = 4",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     4
+    ],
+    "mechanism": [
+     6,
+     17
+    ],
+    "evaluation": [
+     1,
+     4
+    ],
+    "domain": [
+     1,
+     4
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to validate the method on complementary forward and inverse benchmarks. Papers [1], [2], [3], [4], [5], and [16] all address validation of methods on both forward and inverse problems using Physics-Informed Neural Networks (PINNs). For example, [1] states, \"least squares formulations of both forward and inverse problems involving partial differential equations (PDEs),\" and [4] mentions, \"successfully employed to solve diverse forward and inverse PDE problems.\" These papers share the same objective of validating methods on forward and inverse benchmarks, making the purpose covered.\n\n### Mechanism\nThe mechanism involves evaluating Overlap-LBFGS against Adam+Resampling and Adam->Fixed L-BFGS under matched gradient-evaluation budgets (30K-50K). Papers [6], [7], [8], [9], [10], [17], and [18] discuss various adaptations of L-BFGS for neural network optimization, including comparisons to stochastic methods like Adam. For example, [6] explores modifications of L-BFGS for deep networks, and [10] introduces momentum-based L-BFGS for distributed optimization. These papers cover the mechanism at the level of comparing L-BFGS variants against stochastic methods under controlled setups, even if the specific Overlap-LBFGS variant is not explicitly mentioned.\n\n### Evaluation\nThe evaluation design involves benchmarking on the ice-shelf inverse problem and 2D Poisson forward problem, with metrics like error reduction percentages and stability thresholds. Papers [1], [2], [3], [4], [5], and [16] all use PINN benchmarks for forward and inverse problems, including similar validation setups. For example, [1] mentions \"least squares formulations of both forward and inverse problems,\" and [16] compares PINNs against classical adjoint optimization for inverse problems. These papers reuse the same evaluation design (PINN benchmarks and metrics), making the evaluation covered.\n\n### Domain\nThe domain is PINN benchmarks, specifically the ice-shelf inverse problem and 2D Poisson forward problem. Papers [1], [2], [3], [4], [5], and [16] all operate in the general application area of PINN benchmarks for forward and inverse problems. For example, [2] states, \"Physics-informed neural networks (PINNs) are an efficient tool for solving forward and inverse problems for fractional diffusion equations,\" and [4] mentions, \"successfully employed to solve diverse forward and inverse PDE problems.\" These papers address the same general domain, even if the specific instances differ.\n\n### Verdicts\nVERDICT purpose = 1  \nVERDICT mechanism = 6  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 17
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Validate the method on complementary forward and inverse benchmarks.**\n\nThe purpose is to validate a specific optimization method (Overlap-LBFGS) on both forward and inverse PDE benchmarks. Papers [1], [2], [3], [4], [5] all validate PINN methods on forward and inverse problems. However, the purpose here is specifically about validating an optimizer (Overlap-LBFGS) rather than a PINN variant. Still, at the problem-class level, \"validate a method on complementary forward and inverse benchmarks\" is a standard validation objective seen in [1], [4], [3], [2], [5] — all of which validate their respective methods on both forward and inverse PDE problems. Paper [4] explicitly states \"successfully employed to solve diverse forward and inverse PDE problems.\" This is the same objective at the problem-class level.\n\n**MECHANISM: Evaluate Overlap-LBFGS against Adam+Resampling and Adam->Fixed L-BFGS under matched gradient-evaluation budgets (30K-50K).**\n\nThe mechanism involves comparing L-BFGS variants against Adam under matched compute budgets. Papers [6], [7], [8], [9], [10], [17] all compare L-BFGS variants against Adam/SGD under controlled computational budgets. Paper [17] (\"A Progressive Batching L-BFGS Method\") explicitly compares L-BFGS against Adam under matched gradient evaluation budgets. Paper [6] compares L-BFGS with Adam. The primitive of \"compare L-BFGS variant vs. Adam under matched gradient-evaluation budgets\" is covered by [17] and [6].\n\n**EVALUATION: Ice-shelf inverse problem: specific numerical results; 2D Poisson forward: specific numerical results; stability at overlap o=0.25.**\n\nThe evaluation design involves running specific PINN benchmarks (ice-shelf inverse, 2D Poisson) and reporting error metrics. Papers [1], [4] use PINN benchmarks with error metrics for forward and inverse problems. However, the specific benchmarks (ice-shelf inverse problem, 2D Poisson) and the stability analysis at a specific overlap threshold are particular instances. The evaluation design — running a method on named PINN benchmark problems and reporting relative error metrics — is covered by [4] (\"gradient-enhanced PINNs for forward and inverse PDE problems\") and [1]. The design (PINN benchmark + relative error metric) appears in prior work even if the specific instances differ.\n\n**DOMAIN: PINN benchmarks (ice-shelf inverse problem, 2D Poisson forward problem).**\n\nThe domain is PINNs applied to forward and inverse PDE problems. Papers [1], [2], [3], [4], [5] all work in this exact domain — PINNs for forward and inverse PDE problems. This is clearly covered.\n\nVERDICT purpose = 4\nVERDICT mechanism = 17\nVERDICT evaluation = 4\nVERDICT domain = 4",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

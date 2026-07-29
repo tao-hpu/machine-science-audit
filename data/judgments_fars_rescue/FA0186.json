@@ -1,0 +1,445 @@
+{
+ "paper_id": "FA0186",
+ "title": "8-bit Quantization Provides No Privacy Benefit Against Training-Free Embedding Inversion",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     10,
+     20
+    ],
+    "mechanism": [
+     5,
+     10,
+     24
+    ],
+    "evaluation": [
+     10,
+     20
+    ],
+    "domain": [
+     1,
+     5,
+     15,
+     26
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 24
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        5,
+        15,
+        26
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to enable a fair comparison of quantization's privacy benefit by controlling for confounding retrieval-utility differences. Paper [12] discusses the privacy implications of quantization in networked control systems, identifying a trade-off between control performance and privacy. However, it does not address the specific objective of controlling for retrieval-utility differences to enable fair privacy comparisons. Paper [18] explores privacy-utility tradeoffs but focuses on constrained data release mechanisms rather than quantization or embedding inversion. No prior paper explicitly targets the same purpose of fair privacy comparison by controlling retrieval utility differences.\n\n### Mechanism\nThe contribution's mechanism involves calibrating a Gaussian noise baseline to match 8-bit quantization's retrieval utility, then attacking both with ZSInvert, a training-free LLM-based embedding inversion. Paper [24] revisits the Gaussian mechanism for differential privacy, providing analytical calibration methods, but does not match quantization's retrieval utility or involve embedding inversion. Paper [19] uses masked diffusion models for embedding inversion but does not involve Gaussian noise calibration or quantization. Paper [17] proposes BeamClean for embedding inversion but does not address Gaussian noise calibration or utility matching. No prior paper combines Gaussian noise calibration with embedding inversion in this manner.\n\n### Evaluation\nThe evaluation uses a utility-matched protocol anchored at nDCG@10 approximately 0.544 for both defenses. Paper [20] critiques privacy evaluations but does not use utility-matched protocols or nDCG@10. Paper [15] evaluates embedding inversion but does not use utility-matched protocols or nDCG@10. Paper [26] evaluates defenses against embedding inversion but does not use utility-matched protocols or nDCG@10. No prior paper employs the same evaluation design.\n\n### Domain\nThe contribution operates in the domain of text-embedding privacy and inversion attacks. Paper [1] investigates privacy risks in text embeddings, focusing on transfer attacks. Paper [5] studies embedding inversion as a privacy risk in NLP and security. Paper [15] explores embedding inversion attacks in dense retrieval systems. Paper [26] defends against embedding inversion attacks in LLM embeddings. All these papers address text-embedding privacy and inversion attacks, covering the domain.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [1, 5, 15, 26]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly aims to enable a fair comparison of quantization's privacy benefit by controlling for confounding retrieval-utility differences.  \n\nFACET: mechanism | FINAL: COVERED-BY 24 | reason: \"We revisit the Gaussian mechanism and show that the original analysis has several important limitations... We address these limitations by developing an analytical calibration method.\" This aligns with the calibration of Gaussian noise to match utility, satisfying the mechanism's standard.  \n\nFACET: evaluation | FINAL: NONE | reason: No prior paper explicitly anchors evaluation at nDCG@10 approximately 0.544 for utility-matched defenses."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 20
+      },
+      "mechanism": {
+       "covered_by": 5
+      },
+      "evaluation": {
+       "covered_by": 20
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Enable a fair comparison of quantization's privacy benefit by controlling for confounding retrieval-utility differences.**\n\nThe specific purpose is to isolate whether quantization provides genuine privacy benefit beyond its utility cost — i.e., a utility-controlled comparison of privacy defenses. Paper [20] \"Evaluations of Machine Learning Privacy Defenses are Misleading\" is the closest match: it identifies \"severe pitfalls in existing empirical privacy evaluations\" and argues that prior evaluations produce \"misleading conclusions\" by failing to make fair comparisons (e.g., not controlling for utility). The paper explicitly addresses the problem of unfair defense comparisons. This is substantively equivalent — both aim to enable fair/valid comparison of privacy defenses by controlling for confounds. No other paper addresses this specific objective.\n\n**MECHANISM: Calibrate a Gaussian noise baseline to match 8-bit quantization's retrieval utility, then attack both with ZSInvert (training-free LLM-based embedding inversion).**\n\nThe mechanism has two parts: (1) utility-matching via Gaussian noise calibration, and (2) ZSInvert as the attack. Paper [5] \"Universal Zero-shot Embedding Inversion\" describes a training-free, zero-shot embedding inversion method — this is the ZSInvert primitive (training-free LLM-based inversion). For the utility-matching calibration part, paper [20] discusses calibrating attacks/defenses to comparable utility levels. Paper [25] \"Empirical Calibration and Metric Differential Privacy\" discusses empirical calibration of noise mechanisms to match utility metrics. However, the specific combination — calibrating Gaussian noise to match quantization's retrieval utility, then comparing under a unified attack — is not directly present. Paper [5] covers the ZSInvert attack primitive. The calibration-to-utility-match primitive is partially in [20] and [25], but the specific mechanism of calibrating Gaussian noise to match quantization's nDCG@10 for fair comparison is not fully covered as a combined primitive. Paper [20] is the closest for the calibration-for-fair-comparison idea, and [5] for the attack. Since the mechanism combines these, and [5] covers the core attack primitive while [20] covers the calibration-for-fairness idea, I'll note both but the combination is not fully present in any single paper. The ZSInvert component is covered by [5].\n\n**EVALUATION: Utility-matched protocol anchored at nDCG@10 ≈ 0.544 for both defenses.**\n\nThe evaluation design is a utility-matched comparison protocol using nDCG@10 as the anchor metric. Paper [20] uses a utility-controlled evaluation design for privacy defenses — it explicitly argues for and implements comparisons at matched utility levels. The use of nDCG@10 as a retrieval metric is standard in IR evaluation. Paper [13] \"Does Vec2Text Pose a New Corpus Poisoning Threat?\" evaluates embedding inversion in retrieval settings using retrieval metrics. The utility-matched protocol design (anchor both defenses at the same utility level, then compare privacy) is substantively present in [20]'s framework for fair privacy defense evaluation.\n\n**DOMAIN: Text-embedding privacy / inversion attacks.**\n\nPapers [1], [3], [5], [8], [13], [15], [17], [19], [26] all work in text-embedding privacy and inversion attacks. This domain is clearly covered.\n\nVERDICT purpose = 20\nVERDICT mechanism = 5\nVERDICT evaluation = 20\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 10
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**REASONING:**\n\n**purpose:** The contribution's purpose is to \"Enable a fair comparison of quantization's privacy benefit by controlling for confounding retrieval-utility differences.\" This is an objective focused on evaluation methodology. Paper [10], \"A Comparative Analysis of Data Privacy and Utility Parameter Adjustment,\" has the explicit purpose of investigating how to compare methods where \"attaining an equilibrium between data privacy and utility needs is well documented, requiring trade-offs.\" The objective of conducting a comparative analysis in the presence of a tradeoff is substantively equivalent to the contribution's purpose of enabling a fair comparison by managing that tradeoff.\n\n**mechanism:** The contribution's mechanism is a protocol: \"Calibrate a Gaussian noise baseline to match 8-bit quantization's retrieval utility, then attack both with ZSInvert, a training-free LLM-based embedding inversion.\" This mechanism has two main primitives. The first, a protocol of adjusting a method's parameters to match a utility target for fair comparison, is the core idea in [10]'s \"Comparative Analysis of Data Privacy and Utility Parameter Adjustment.\" The second primitive, using a \"training-free LLM-based embedding inversion\" attack, is substantively equivalent to the \"Universal Zero-shot Embedding Inversion\" method proposed in [5].\n\n**evaluation:** The evaluation design is a \"Utility-matched protocol\" where two defenses are tuned to the same utility level (measured by nDCG@10) before their privacy is compared. This evaluation design is substantively equivalent to the methodology implied by paper [10], \"A Comparative Analysis of Data Privacy and Utility Parameter Adjustment,\" which is premised on creating a valid comparison basis for technologies that involve a privacy-utility tradeoff. Applying this design to a different metric or object does not make the design novel.\n\n**domain:** The contribution's domain is \"text-embedding privacy / inversion attacks.\" This general application area is explicitly addressed by numerous prior papers. For example, paper [1] \"investigates the privacy risks associated with text embeddings\" and develops an attack, clearly operating in the same domain.\n\nVERDICT purpose = 10\nVERDICT mechanism = 10\nVERDICT evaluation = 10\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     9,
+     18,
+     26
+    ],
+    "evaluation": [
+     2,
+     9,
+     26
+    ],
+    "domain": [
+     1,
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Facet Analysis\n\n#### Purpose:\nThe contribution aims to determine whether 8-bit quantization protects embeddings from inversion attacks. This specific empirical relationship — the protective effect of quantization against embedding inversion — is not established in any prior paper. While several papers (e.g., [1], [5], [9], [15], [22], [25]) discuss embedding inversion attacks and privacy risks, none of them explicitly investigate quantization as a defense mechanism against inversion attacks or report findings on its effectiveness. Papers like [3], [10], [12], and [13] discuss quantization in the context of robustness or backdoor defenses, but they do not address embedding inversion or privacy protection. Therefore, the purpose is **not covered**.\n\n#### Mechanism:\nThe contribution measures attribute recovery under quantization versus utility-matched Gaussian noise using ZSInvert. Papers [1], [5], [9], [22], and [25] discuss embedding inversion attacks and methods for attribute recovery, including techniques like ZSInvert ([9]). However, none of these papers compare quantization against Gaussian noise as a defense mechanism for privacy protection. Papers [7], [8], [11], [12], and [13] discuss quantization and its effects, but they do not use ZSInvert or compare quantization to Gaussian noise for privacy protection. Thus, the mechanism is **not covered**.\n\n#### Evaluation:\nThe evaluation design involves measuring attribute recovery rates (e.g., Canary-EM recovery rates) under quantization and Gaussian noise. Papers [1], [5], [9], [22], and [25] use similar evaluation designs for embedding inversion attacks, including measuring recovery rates of sensitive attributes. For example, [9] uses ZSInvert to evaluate embedding inversion, and [22] measures attribute inference attack success rates. While the specific benchmarks (Canary-EM) and comparison setup (quantization vs. Gaussian noise) are new, the evaluation design — measuring recovery rates under different conditions — is **covered**.\n\n#### Domain:\nThe domain is text-embedding privacy, which is broadly addressed in papers [1], [5], [6], [9], [15], [22], and [25]. These papers focus on privacy risks, embedding inversion attacks, and defenses in the context of text embeddings. While the specific focus on quantization as a defense is new, the general application area of text-embedding privacy is **covered**.\n\n---\n\n### Verdicts\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 9  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly investigates whether 8-bit quantization protects embeddings from inversion under the same objective.  \nFACET: mechanism | FINAL: COVERED-BY 9 | reason: \"Embedding inversion, i.e., reconstructing text given its embedding and black-box access to the embedding encoder, is a fundamental problem in both NLP and security.\" This paper measures inversion under different conditions, satisfying the same empirical relationship standard."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Determine whether 8-bit quantization actually protects embeddings from inversion.**\n\nThe purpose is specifically to test whether quantization serves as a privacy defense for text embeddings — a negative/empirical finding about quantization's (in)effectiveness as a privacy mechanism. Paper [2] (SPARSE) discusses defenses against embedding inversion attacks and mentions that existing DP defenses cause utility degradation, implying quantization isn't the focus. Paper [9] (ZSInvert) focuses on embedding inversion itself. Paper [5] examines obfuscated embedding vectors and whether they protect privacy. None of the prior papers specifically ask \"does 8-bit quantization protect embeddings from inversion?\" — the closest is [5] which tests obfuscation of embeddings, but that's about a different obfuscation mechanism (matrix transformation), not quantization. Papers [3], [10], [12], [13] examine quantization's effect on robustness/backdoor defenses, not on embedding inversion privacy. No prior paper establishes the same empirical relationship (quantization → embedding inversion privacy) with the same variables and direction.\n\n**MECHANISM: Measure attribute recovery (Canary-EM) under quantization versus utility-matched Gaussian noise using ZSInvert.**\n\nThis involves: (1) ZSInvert as the inversion tool, (2) Canary-EM as the attribute recovery metric, (3) comparing quantization vs. utility-matched noise. Paper [9] introduces ZSInvert. Paper [2] uses noise-based defenses and measures attribute recovery. Paper [18] discusses attack-aware noise calibration for DP. However, the specific combination of ZSInvert + Canary-EM + utility-matched comparison between quantization and noise as a controlled experiment doesn't appear in any prior paper. Paper [9] introduces ZSInvert but doesn't use it to compare quantization vs. noise defenses. No prior paper uses this specific analysis protocol combining these tools for this comparison.\n\n**EVALUATION: Negative result showing 6% vs 70% reduction comparison.**\n\nThe evaluation design involves measuring attribute recovery rates under two conditions (quantization vs. noise) and comparing them quantitatively. This is a controlled ablation/substitution experiment comparing defense mechanisms on a privacy metric. Paper [2] evaluates privacy defenses (including noise) against attribute inference on embeddings using similar metrics. Paper [26] does empirical evaluation of perturbation-based defenses comparing different approaches. The design of \"compare defense A vs defense B on the same privacy metric\" is used in [2] and [26]. However, the specific protocol of utility-matched comparison between quantization and noise on embedding inversion is not found. The evaluation design (comparing two defenses on attribute recovery) is generically present in [2].\n\n**DOMAIN: Text-embedding privacy.**\n\nPapers [1], [2], [5], [9] all work in text-embedding privacy — the same application area. This is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 2\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper asks whether 8-bit quantization specifically protects embeddings from inversion; the closest papers either study quantization's effect on adversarial robustness (not embedding inversion) or study embedding inversion defenses (not quantization as a defense mechanism). No quoted phrase from any prior paper states this same objective.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper measures attribute recovery under quantization versus utility-matched Gaussian noise using ZSInvert or any equivalent inversion tool with a Canary-EM metric. Paper [9] introduces ZSInvert but does not use it to compare quantization against noise under utility-matching. No quoted phrase from any prior paper describes this specific comparative measurement procedure."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        9,
+        18,
+        26
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        9,
+        26
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        2
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: No prior paper appears to investigate the specific empirical relationship between quantization and embedding inversion attack success. Papers either evaluate quantization against different security threats like backdoor or evasion attacks [3, 13], or evaluate different defenses against embedding inversion [2], making the contribution's objective of determining if quantization protects against inversion a novel question.\n\n**mechanism**: The analysis method is a comparative experiment using established primitives. The core attack, ZSInvert, is from [9]; the concept of comparing perturbation-based defenses is demonstrated in [26]; and the principle of calibrating noise based on a privacy-utility trade-off is discussed in [18].\n\n**evaluation**: The evaluation design is a standard comparative benchmark, not a new protocol, metric, or benchmark suite. It uses an existing attack protocol from [9] (\"Universal Zero-shot Embedding Inversion\") and a standard comparative framework for evaluating defenses, as seen in [26] (\"An Empirical Evaluation of Perturbation-based Defenses\").\n\n**domain**: The application area of privacy for text embeddings is explicitly addressed by prior work. For example, [1] investigates \"Privacy Risks in Text Embeddings\" and [2] proposes defenses for \"Embedding Inversion Attacks\".\n\nVERDICT purpose = NONE\nVERDICT mechanism = 9, 18, 26\nVERDICT evaluation = 9, 26\nVERDICT domain = 1, 2",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper empirically investigates the effect of quantization (specifically 8-bit) as a defense against embedding inversion attacks. Several papers ([10], [12], [13]) study quantization's effect on robustness to *adversarial attacks* (evasion attacks), and others ([3]) study its effect on *backdoor defenses*, but none test its efficacy for preventing the reconstruction of input from embeddings (inversion attacks)."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": [
+     1,
+     20
+    ],
+    "domain": [
+     1,
+     2,
+     5,
+     8,
+     13,
+     21
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 20
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        2,
+        5,
+        8,
+        13,
+        21
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose:\nThe contribution aims to explain mechanistically why quantization fails to protect embeddings while noise succeeds. No prior paper explicitly establishes this specific empirical relationship between quantization and noise in the context of embedding protection against ZSInvert-like attacks. Papers such as [3], [4], [6], [10], and [25] discuss quantization vulnerabilities and robustness but do not mechanistically compare quantization and noise in terms of embedding cosine-similarity structure disruption. Similarly, papers like [24] and [23] explore noise addition strategies but do not address the specific failure of quantization versus the success of noise in protecting embeddings.\n\n### Mechanism:\nThe contribution uses geometric analysis of how quantization and noise perturb cosine-similarity structure and angular deviation exploited by ZSInvert. Papers such as [20] and [21] discuss cosine similarity and angular metrics in embedding contexts, but they do not analyze the geometric effects of quantization versus noise perturbation. Papers like [27] and [16] explore geometric robustness and invariance but focus on adversarial robustness or geometric transformations rather than embedding perturbation mechanisms. No prior paper performs a geometric analysis of angular deviation and pairwise correlation specifically for quantization versus noise defenses.\n\n### Evaluation:\nThe evaluation measures angular deviation and pairwise correlation (rho) to validate the structural effects of quantization and noise. Papers such as [3], [6], [10], and [25] benchmark quantized models' robustness, but they do not use angular deviation or pairwise correlation as metrics. Papers like [20] and [21] use cosine similarity metrics, but not in the context of evaluating quantization versus noise effects on embedding geometry. No prior paper employs this specific evaluation design.\n\n### Domain:\nThe contribution operates in the domain of embedding geometry. Papers such as [1], [2], [5], [8], [13], and [21] address embedding geometry in various contexts, including binary embedding, angular embedding, constrained clustering, graph embedding, and zero-shot embedding inversion. While the specific focus on embedding geometry in the context of quantization and noise defenses is new, the general domain of embedding geometry is well-covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [1], [2], [5], [8], [13], [21]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper mechanistically explains why quantization fails to protect while noise succeeds under the same empirical relationship.  \nFACET: mechanism | FINAL: NONE | reason: No prior paper geometrically analyzes cosine-similarity structure and angular deviation perturbations exploited by ZSInvert.  \nFACET: evaluation | FINAL: COVERED-BY 20 | reason: \"direction of adversarial perturbation matters most\" aligns with angular deviation and cosine similarity analysis."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 13
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Explain mechanistically why quantization fails to protect while noise succeeds (in the context of embedding inversion/privacy).**\n\nThe purpose is to explain *why* quantization fails as a privacy defense against embedding inversion attacks while noise succeeds. Paper [13] is about embedding inversion (ZSInvert context), but it doesn't establish this comparative mechanistic explanation. Papers [3], [4], [6], [10], [25] compare quantization and noise/robustness but in the context of adversarial attacks on classification models, not embedding inversion privacy. None of these papers establish the same empirical relationship: \"quantization fails to protect embeddings from inversion while noise succeeds, and here's the geometric reason why.\" No prior paper reports this same variables-and-direction relationship in the embedding inversion setting.\n\n**MECHANISM: Geometric analysis of how each defense perturbs cosine-similarity structure and angular deviation that ZSInvert exploits.**\n\nThe mechanism is geometric analysis of cosine-similarity preservation/disruption under quantization vs. noise, specifically measuring angular deviation and pairwise rank correlation. Paper [13] introduces ZSInvert but doesn't perform this geometric comparative analysis. Papers [1] and [2] involve angular embedding and binary quantization's effect on angle preservation, but not in the context of comparing defenses against embedding inversion. Paper [20] uses local cosine similarity for adversarial detection. None of the prior papers use this specific geometric analysis primitive (angular deviation + pairwise cosine rank correlation) to compare quantization vs. noise as privacy defenses for embeddings.\n\n**EVALUATION: Quantization preserves structure (0.9 degree angular deviation, pairwise rho=0.9999); noise disrupts it (41.5 degree deviation, rho=0.656).**\n\nThe evaluation design uses angular deviation measurements and Spearman rank correlation of pairwise cosine similarities to compare two defenses. Paper [1] analyzes angle preservation under binary embedding/quantization. Paper [2] uses angular embedding analysis. However, neither uses this specific evaluation design (angular deviation + pairwise rho as metrics to compare quantization vs. noise as privacy defenses). The specific protocol of measuring angular deviation and pairwise cosine similarity rank correlation as a defense evaluation framework does not appear in prior work. This is a newly defined metric/protocol combination for this specific evaluation purpose.\n\n**DOMAIN: Embedding geometry.**\n\nPaper [13] works directly in the embedding inversion/security domain. Papers [1] and [2] work in embedding geometry. Paper [8] works in graph embedding with privacy. The domain of embedding geometry is clearly covered by multiple prior papers.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 13",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explains mechanistically why quantization fails to protect embeddings while noise succeeds in the context of embedding inversion attacks; the closest papers (e.g., [4], [6], [25]) address quantization robustness against adversarial attacks on classifiers, not the asymmetric protection failure of quantization vs. noise for embedding privacy.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper performs a geometric analysis of how quantization vs. noise defenses perturb cosine-similarity structure and angular deviation in the specific context of ZSInvert or any embedding inversion attack; [20] uses cosine similarity for adversarial detection but does not analyze defense-induced angular distortion.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports the specific empirical measurements of 0.9 degree angular deviation and pairwise rho=0.9999 for quantization versus 41.5 degree deviation and rho=0.656 for noise, nor any equivalent quantitative comparison of these two defenses' structural preservation under embedding inversion conditions."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 20
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to provide a mechanistic explanation for the observed difference in effectiveness between quantization and noise as defenses. No prior paper establishes this specific empirical relationship or provides this explanation; papers discuss quantization and robustness ([4], [6]) or noise and robustness ([24]), but do not present a comparative analysis explaining why one fails where the other succeeds based on their geometric effects.\n\n**mechanism**: The mechanism is a geometric analysis of how defenses perturb cosine similarity and angular structure. This method of analysis is not new; for example, [20] proposes a detection method based on analyzing \"Local Cosine Similarity (LCS)\" and is \"Motivated by the idea that the direction of adversarial perturbation matters most,\" which is a geometric analysis of perturbations.\n\n**evaluation**: The evaluation design involves measuring the change in geometric properties (angular deviation, similarity correlation) after applying a transformation. This design is standard in work on embeddings; for instance, [1] evaluates binary embeddings by their ability to \"approximate the angle up to epsilon-distortion,\" which is the same evaluation design of measuring angular preservation.\n\n**domain**: The application area is embedding geometry. This domain is explicitly addressed by numerous prior papers, including [1] on \"Binary embedding\", [2] on \"Angular Embedding\", and [8] on \"Graph embedding\".\n\nVERDICT purpose = NONE\nVERDICT mechanism = [20]\nVERDICT evaluation = [1]\nVERDICT domain = [1]",
+      "stage2": "FACET: purpose: Explain mechanistically why quantization fails to protect while noise succeeds. | FINAL: NONE | reason: No paper has the purpose of providing a mechanistic explanation for the *difference* in robustness effects between quantization and noise addition. Papers either observe quantization's failure ([3], [4], [10]) or study noise's success ([24]), but none are framed to explain the contrast between the two."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     5,
+     13
+    ],
+    "mechanism": [
+     5,
+     13
+    ],
+    "evaluation": [
+     5,
+     14
+    ],
+    "domain": [
+     1,
+     3,
+     5,
+     14
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        1,
+        5
+       ]
+      },
+      "mechanism": {
+       "covered_by": 5
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        5
+       ]
+      },
+      "single_paper_covers_all": 5
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**Purpose:**  \nThe contribution's purpose is to guide practitioners on relying on efficiency optimizations for privacy. Paper [1] discusses efficiency and privacy tradeoffs in mechanism design, exploring how socially efficient decisions can reduce communication costs and potentially increase privacy. This aligns with the same problem-class level objective of understanding the interplay between efficiency and privacy. Paper [5] also touches on the insufficiency of efficient protocols for privacy, which indirectly relates to guiding practitioners on separating efficiency optimizations from privacy mechanisms. Both papers substantively cover the purpose.  \n\n**Mechanism:**  \nThe contribution argues that efficiency optimizations and privacy defenses require separate, explicit mechanisms. Paper [5] explicitly demonstrates that efficient key agreement protocols are insufficient for computational differential privacy, requiring separate mechanisms for privacy. This matches the underlying primitive of separating efficiency optimizations from privacy mechanisms.  \n\n**Evaluation:**  \nThe contribution does not introduce a separate experimental evaluation but draws implications from prior results. Paper [5] uses theoretical results to argue the insufficiency of efficient protocols for privacy, which is a substantively equivalent evaluation design (theoretical reasoning based on prior results).  \n\n**Domain:**  \nThe contribution operates in the domain of privacy engineering practice. Paper [1] addresses privacy in mechanism design, and Paper [5] discusses computational differential privacy in protocol design. Both papers fall within the general application area of privacy engineering practice, even if their specific focus differs.  \n\n**Verdicts:**  \nVERDICT purpose = 1, 5  \nVERDICT mechanism = 5  \nVERDICT evaluation = 5  \nVERDICT domain = 1, 5  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 5
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 14
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Guide practitioners on relying on efficiency optimizations for privacy.**\n\nThe purpose is to warn practitioners that efficiency optimizations cannot substitute for explicit privacy defenses — i.e., that these are orthogonal concerns requiring separate mechanisms. Paper [1] explores \"tradeoffs between communication cost and efficiency, and more recently, communication and privacy\" in mechanism design, but its purpose is to find protocols that achieve both, not to warn that efficiency ≠ privacy. Paper [5] shows \"efficient key agreement protocols is insufficient for efficient computationally differentially private protocols\" — this is close: it demonstrates that an efficiency primitive does not yield privacy, which is the same relationship being established. However, [5] is in the cryptographic/two-party DP setting, not general efficiency optimizations. No paper directly establishes the same empirical relationship (efficiency optimizations ≠ privacy defenses) as a practitioner-facing finding. The closest is [5], but it addresses a specific cryptographic separation, not the general practitioner guidance about efficiency optimizations. NONE is appropriate.\n\n**MECHANISM: Argue from results that efficiency optimizations and privacy defenses require separate, explicit mechanisms.**\n\nThe analytical method here is drawing an implication/argument from negative and geometric results — essentially a logical/theoretical argument rather than a new experimental protocol. Paper [5] uses a similar argumentative structure: proving separation between computational efficiency primitives and privacy guarantees via theoretical results. This is the same primitive of \"argue from formal/negative results that two properties are orthogonal.\" Paper [1] also argues from impossibility results about tradeoffs. The mechanism (arguing from negative results to separation) is a standard theoretical argumentation approach present in [5] and [1].\n\n**EVALUATION: No separate experiment; implication drawn from negative and geometric results above.**\n\nThe evaluation design here is: no new experiment, just logical inference from prior results in the same paper. This is a standard theoretical argumentation move. Paper [5] similarly draws conclusions from theoretical/impossibility results without separate empirical experiments. This design (deriving implications from formal results) is a standard approach used across many of the theory papers here ([1], [2], [5]).\n\n**DOMAIN: Privacy engineering practice.**\n\nMultiple prior papers operate in the domain of privacy engineering practice, including [1], [3], [7], [11], [14]. Paper [14] explicitly addresses \"privacy-preserving machine learning systems\" and practitioner-facing tradeoffs. Paper [3] addresses \"decision-makers tasked with deciding how much privacy can be provided.\" This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 5\nVERDICT evaluation = 5\nVERDICT domain = 14",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the objective of guiding practitioners on whether to rely on efficiency optimizations as a privacy mechanism. Papers [1],[3],[7],[8] address privacy-utility tradeoffs or optimization under privacy constraints, but none advise practitioners on trusting efficiency optimizations as a substitute or basis for privacy guarantees — a distinct objective not found under any alternative framing in the prior works."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe purpose is to establish that efficiency optimizations are not a substitute for explicit privacy mechanisms. This relationship is a well-known tradeoff in security and privacy engineering. For example, [13] states that security \"is about trade-offs, rather than absolutes\" and is \"intrusive and increases the total cost,\" directly implying that performance/efficiency and security are opposing goals, not synergistic ones. Furthermore, the entire literature on side-channel attacks (e.g., [20], [21], [25]) demonstrates that efficiency optimizations like caches and compression can actively create privacy vulnerabilities, providing strong evidence for the same finding.\n\n**MECHANISM**\nThe mechanism is to argue from a set of results to a conclusion about engineering practice. This is a fundamental method of scientific and engineering discourse, not a novel technical primitive. For instance, [13] argues from the general observation that security mechanisms have a cost (\"does not come cheaply\") to conclude that a tradeoff with performance exists, which is the same argumentative structure.\n\n**EVALUATION**\nThe evaluation method is drawing an implication from a set of existing results without a new experiment. This is a form of synthesis or interpretation, not a novel evaluation design. For example, [14] performs a \"systematic treatment connecting three threads\" of prior work to navigate \"Fundamental Tradeoffs,\" which constitutes drawing broader implications from existing results, matching the evaluation design here.\n\n**DOMAIN**\nThe domain is \"privacy engineering practice.\" This is a broad, well-established application area covered by numerous prior papers. For example, [3] directly addresses this domain by creating tools for \"decision-makers tasked with deciding how much privacy can be provided in a particular application while maintaining acceptable utility.\"\n\nVERDICT purpose = 13\nVERDICT mechanism = 13\nVERDICT evaluation = 14\nVERDICT domain = 3",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

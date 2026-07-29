@@ -1,0 +1,264 @@
+{
+ "paper_id": "fRNDDFkPiv",
+ "title": "Controlling Forgetting with Test-Time Data in Continual Learning",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     17
+    ],
+    "evaluation": [
+     4
+    ],
+    "domain": [
+     4
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 17
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to introduce a new continual-learning (CL) setting where unlabeled test-time data is leveraged self-supervised to refresh a model's memory of prior tasks and reduce catastrophic forgetting, particularly in the challenging class-incremental CL (CIL-CL) scenario without a replay buffer. Paper [1] discusses leveraging external unlabeled data to mitigate catastrophic forgetting in CIL, but it relies on queried external data rather than test-time data. Paper [2] uses pseudo-labeling for CIL with additional unlabeled data, but it does not explicitly address self-supervised adaptation during test-time or the absence of a replay buffer. Paper [3] focuses on unsupervised continual learning but does not address leveraging test-time data for memory refresh in CIL-CL. No prior paper explicitly introduces the same purpose of leveraging test-time data self-supervised for memory refresh in CIL-CL without a replay buffer.\n\n### Mechanism\nThe contribution formalizes a setting where supervised training sessions are interleaved with online unsupervised adaptation on test-time data (processed once and discarded for privacy), drawn from the mixture of all previously seen task distributions, and evaluates on held-out data distinct from the adaptation data. Paper [17] discusses continual test-time domain adaptation (CTTA), where a pre-trained model adapts to continually changing unsupervised target domains, but it does not address interleaving supervised training with unsupervised test-time adaptation or the specific mixture of prior task distributions. Paper [26] also addresses CTTA but focuses on suppressing domain shifts rather than leveraging test-time data for memory refresh in CIL-CL. No prior paper formalizes the same mechanism.\n\n### Evaluation\nThe contribution evaluates its setting on CLIP ViT-B/16 across five vision datasets (Aircraft, CUB, Stanford Cars, Oxford Pets, CIFAR100, plus OOD GTSRB), each split into 10 disjoint-class tasks, using metrics Average Accuracy and Average Forgetting. Paper [4] evaluates rehearsal-free continual learning using Average Accuracy and Average Forgetting, which matches the evaluation design. Paper [24] uses similar metrics for replay-based continual learning in semantic segmentation, which also matches the evaluation design. Although the specific datasets differ, the evaluation design (metrics and continual learning setup) is covered by prior work.\n\n### Domain\nThe contribution operates in the domain of continual learning with vision-language foundation models. Paper [4] addresses rehearsal-free continual learning in vision tasks, and Paper [24] addresses replay-based continual learning in semantic segmentation, both of which fall within the general domain of continual learning in vision. While the contribution applies to vision-language foundation models, this is a specific instance within the broader domain of continual learning in vision, which is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 4  \nVERDICT domain = 4  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper introduces a continual-learning setting leveraging unlabeled test-time data self-supervisedly to refresh memory in class-incremental CL without a replay buffer.  \nFACET: mechanism | FINAL: COVERED-BY 17 | reason: \"Test-time domain adaptation aims to adapt a source pre-trained model to a target domain without using any source data... the target domain distribution can change over time.\" This aligns with interleaving supervised training with online unsupervised adaptation on test-time data."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 17
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Introduce a CL setting where unlabeled test-time/deployment data is leveraged self-supervised to refresh memory of prior tasks and reduce catastrophic forgetting, especially in CIL without replay buffer.**\n\nPapers [1] and [2] use unlabeled data in CIL to reduce forgetting, but they query/assume external unlabeled data available during training sessions, not specifically test-time deployment data that arrives naturally. Paper [9] (ORDisCo) does semi-supervised CL with partially labeled incremental data. Paper [3] does unsupervised CL but on unlabeled task sequences, not test-time data from mixed prior distributions. Papers [12], [17], [18], [13], [26] do test-time adaptation but their purpose is domain shift adaptation, not catastrophic forgetting across class-incremental tasks. None of these precisely match the purpose of using naturally arriving test-time data (from a mixture of all prior task distributions) to combat CIL forgetting without a replay buffer. Paper [1] is closest — it uses \"free external unlabeled data\" in CIL — but it frames this as queried external data during training, not deployment-time data. The specific framing of interleaving supervised training with self-supervised adaptation on naturally arriving test-time data from prior task mixtures, specifically to address CIL forgetting without replay, is not substantively covered.\n\n**MECHANISM: Supervised training sessions interleaved with online unsupervised adaptation on test-time data (processed once, discarded for privacy), drawn from mixture of all previously seen task distributions; evaluate on held-out data distinct from adaptation data.**\n\nPaper [17] (CoTTA) interleaves a pre-trained model with continual test-time adaptation using self-supervised signals on streaming unlabeled data. However, CoTTA addresses domain shift, not class-incremental forgetting, and doesn't formalize the \"mixture of all prior task distributions\" aspect. Paper [13] similarly does continual TTA with buffering. Paper [12] does self-supervised test-time adaptation on video. The \"process once, discard for privacy\" constraint and the specific formalization of test data as a mixture of all prior task distributions is a distinguishing primitive. However, the core mechanism — unsupervised/self-supervised adaptation on unlabeled test-time data interleaved with supervised training — is present in [17] and [13]. The \"once, discard\" privacy constraint is a detail; the underlying primitive of online unsupervised adaptation on test-time data interleaved with supervised learning is covered by [17].\n\n**EVALUATION: CLIP ViT-B/16 across 5 vision datasets split into 10 disjoint-class tasks; metrics Average Accuracy and Average Forgetting.**\n\nAverage Accuracy and Average Forgetting are standard CL metrics used in many prior papers (e.g., [3], [4], [11], [27]). The use of disjoint-class task splits on standard vision datasets is also standard in CL evaluation. Paper [4] uses \"A Closer Look at Rehearsal-Free Continual Learning\" with CLIP and standard CL benchmarks. The evaluation design (standard CL benchmarks split into tasks, AA and AF metrics) is covered by multiple papers including [3], [4], [11]. The specific use of CLIP ViT-B/16 with these datasets is a parameter change, not a design change.\n\n**DOMAIN: Continual learning with vision-language foundation models.**\n\nPaper [4] explicitly uses CLIP for continual learning (\"A Closer Look at Rehearsal-Free Continual Learning\" uses CLIP). Multiple papers work in continual learning for vision ([1], [2], [3], [4], [7], [9], [11]). Paper [4] specifically applies CLIP to CL, covering the vision-language foundation model + CL domain.\n\n---\n\nVERDICT purpose = NONE\nVERDICT mechanism = 17\nVERDICT evaluation = 4\nVERDICT domain = 4",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper introduces a CL setting where unlabeled *test-time/deployment* data is leveraged self-supervisedly to refresh memory of *prior tasks* and reduce catastrophic forgetting at no labeling cost, specifically in CIL-CL without a replay buffer. Papers [1] and [2] use external unlabeled data during *training* increments (not deployment/test-time), [9] uses semi-supervised incremental learning during training, [3]/[6]/[25]/[27] address unsupervised CL but focus on learning from unlabeled task sequences (not leveraging test-time data to revisit prior tasks), and [13]/[17]/[26] address continual test-time adaptation to domain shifts (not class-incremental forgetting of prior tasks). None matches the same objective of using deployment-phase unlabeled data to self-supervisedly consolidate prior-task knowledge in CIL-CL without replay."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     17,
+     20
+    ],
+    "mechanism": null,
+    "evaluation": [
+     4,
+     18,
+     23
+    ],
+    "domain": [
+     3,
+     18,
+     20
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 17
+      },
+      "mechanism": {
+       "covered_by": [
+        13,
+        27,
+        31
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        4,
+        18,
+        23
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        3,
+        18,
+        20
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to provide a replay-buffer-free method that exploits test-time data to control forgetting while adapting to new tasks. Paper [17] (\"Continual Reinforcement Learning Without Replay Buffers\") introduces a replay-buffer-free approach for continual reinforcement learning, aiming to avoid catastrophic forgetting while adapting to non-stationary environments. Although the domain differs (reinforcement learning vs continual learning with CLIP), the purpose at the problem-class level — controlling forgetting without replay buffers — is substantively equivalent. \n\n### Mechanism\nThe mechanism, DoSAPP, involves gradient-scored sparse updates restricted to the first MLP layer of each transformer block, dual EMA smoothing with distinct momentum for masked/frozen vs selected teacher parameters, and pseudo-labeling based on max-logit confidence. Paper [13] (\"Gradient Sparsification For Masked Fine-Tuning of Transformers\") uses gradient sparsification for masked fine-tuning, which is equivalent to the sparse updates restricted to specific layers. Paper [31] (\"Local Clustering with Mean Teacher for Semi-supervised learning\") employs exponential moving average (EMA) smoothing for teacher-student models, which matches the dual EMA smoothing aspect. Paper [27] (\"Meta Pseudo Labels\") uses pseudo-labeling with teacher-student frameworks, which aligns with the pseudo-labeling mechanism here. Together, these papers cover the mechanism's components.\n\n### Evaluation\nThe evaluation design involves continual learning benchmarks (CIL datasets), ablation studies, and comparison against methods with and without experience replay. Paper [4] (\"Practical Recommendations for Replay-based Continual Learning Methods\") uses continual learning benchmarks and ablation studies to validate replay-based methods, which matches the evaluation design. Paper [23] (\"RDumb: A simple approach that questions our progress in continual test-time adaptation\") introduces the CCC benchmark for continual test-time adaptation, which aligns with the continual learning evaluation framework. Paper [18] (\"Controllable Continual Test-Time Adaptation\") also evaluates continual test-time adaptation methods using benchmarks and ablation studies. These papers collectively cover the evaluation design.\n\n### Domain\nThe domain is continual learning/test-time adaptation of CLIP. Paper [3] (\"Continual Learning in Open-vocabulary Classification with Complementary Memory Systems\") addresses continual learning in open-vocabulary classification using CLIP, which matches the application area. Paper [20] (\"Online Zero-Shot Classification with CLIP\") studies online zero-shot classification with CLIP, which also falls within the same domain. Paper [18] (\"Controllable Continual Test-Time Adaptation\") addresses continual test-time adaptation, which overlaps with the domain here. These papers cover the domain.\n\n---\n\nVERDICT purpose = 17  \nVERDICT mechanism = 13, 27, 31  \nVERDICT evaluation = 4, 18, 23  \nVERDICT domain = 3, 18, 20  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 17
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## PURPOSE: \"Provide a concrete, replay-buffer-free method that exploits test-time data to control forgetting while adapting to new tasks.\"\n\nPaper [17] \"Continual Reinforcement Learning Without Replay Buffers\" explicitly addresses \"continual reinforcement learning... without experience replay (ER) from a large buffer\" while avoiding catastrophic forgetting. Paper [19] \"Continual Test-Time Domain Adaptation\" addresses adapting to continually changing target domains without source data, controlling forgetting. Paper [23] \"RDumb\" addresses continual test-time adaptation. Paper [18] \"Controllable Continual Test-Time Adaptation\" addresses CTTA with forgetting control. However, the specific combination of \"replay-buffer-free\" + \"test-time data exploitation\" + \"forgetting control\" in a class-incremental learning (not domain adaptation) setting is closest to [17] at the problem-class level — both aim to eliminate replay buffers while preventing forgetting during continual adaptation. Paper [19] and [18] also cover this purpose in CTTA. The purpose is COVERED by [17], [19], [18].\n\n## MECHANISM: DoSAPP — student-teacher framework with (a) gradient-scored sparse updates restricted to first MLP layer (top-K, c=0.1), (b) dual EMA smoothing with distinct momentum for masked/frozen vs selected teacher params via affine projection of binary mask, (c) unsupervised phase using max-logit OOD-inspired pseudo-label selection between teacher/student, (d) union of prior-task masks.\n\nBreaking this down:\n- **Gradient-scored sparse updates (top-K)**: Paper [24] \"Training Neural Networks with Fixed Sparse Masks\" uses top-K gradient magnitude to construct sparse masks. Paper [13] \"Gradient Sparsification For Masked Fine-Tuning\" uses gradient sparsification for masked fine-tuning of transformers. Paper [12] \"Composable Sparse Fine-Tuning\" uses sparse fine-tuning with mask composition (union of masks across tasks is directly described).\n- **Student-teacher with EMA**: Paper [19] uses student-teacher with EMA (stochastic restore). Paper [31] \"Local Clustering with Mean Teacher\" uses EMA-based mean teacher.\n- **Dual EMA with distinct momentum for different parameter groups**: This specific \"affine projection of binary mask\" with two distinct EMA momenta for masked vs. frozen parameters is not clearly described in any prior paper. Paper [19] uses a single EMA. No paper describes dual-momentum EMA via affine projection of a binary mask.\n- **Max-logit pseudo-label selection between teacher/student**: Paper [20] \"Online Zero-Shot Classification with CLIP\" uses confidence-based pseudo-label selection online. Paper [15] discusses noisy student self-training. The specific \"take the more confident of teacher vs student\" is not explicitly described.\n- **Union of prior-task masks**: Paper [12] explicitly describes composing sparse masks via union across tasks.\n\nThe combination of dual-EMA via affine projection of binary mask is the most distinctive primitive. No single prior paper covers this specific mechanism. The closest are [24], [13], [12] for sparse masking, and [19], [31] for EMA teacher, but the dual-momentum affine projection is not present. However, the question is whether the UNDERLYING PRIMITIVE is covered. The affine projection of a binary mask to implement dual EMA is essentially: EMA_teacher = m*EMA_teacher + (1-m)*student for selected params, different m for frozen params. This is a parameterized EMA — no prior paper explicitly covers this combination. MECHANISM appears NONE.\n\n## EVALUATION: State-of-the-art comparison on 5 CIL datasets, with/without ER buffer (200), ablation of momentum choices, CLIP ViT-B/16, mean of 5 runs.\n\nPaper [19] evaluates CTTA methods on benchmark datasets with/without replay. Paper [23] evaluates CTTA on benchmarks. Paper [4] \"Practical Recommendations for Replay-based Continual Learning Methods\" explicitly compares methods with/without replay buffers on CIL benchmarks. The evaluation design (benchmark comparison on CIL datasets, with/without ER, ablation studies) is a standard CIL evaluation design used in [4], [3], [19]. The \"with/without ER\" comparison design is directly in [4]. EVALUATION is COVERED by [4].\n\n## DOMAIN: Continual learning / test-time adaptation of CLIP\n\nPaper [19] covers continual test-time adaptation. Paper [3] covers continual learning with CLIP. Paper [20] covers online zero-shot classification with CLIP. Paper [18] covers controllable CTTA. The domain of continual learning with CLIP / test-time adaptation is covered by [3], [19], [20].\n\nVERDICT purpose = 17\nVERDICT mechanism = NONE\nVERDICT evaluation = 4\nVERDICT domain = 3",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper combines (a) gradient-scored sparse updates restricted to the first MLP layer of each transformer block with top-K selection, (b) dual EMA smoothing with distinct momenta for masked/frozen vs. selected parameters via affine projection of a binary mask, and (c) unsupervised pseudo-label selection via max-logit confidence comparison between teacher and student with union of prior-task masks. Individual components (sparse masks [24], EMA teacher [31], pseudo-labels [27]) appear separately but the specific compound mechanism is not described in any prior paper even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        17,
+        20
+       ]
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": [
+        3,
+        20
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "**purpose**: COVERED. The objective of creating a method for continual learning that does not require a replay buffer is shared by prior work. For example, paper [17] explicitly targets \"Continual Reinforcement Learning Without Replay Buffers\", and paper [20] studies an online scenario where data is \"visited only once to obtain prediction immediately without storing\".\n\n**mechanism**: NONE. The proposed mechanism is a student-teacher framework combining several elements. While primitives like student-teacher frameworks ([27], [31]), sparse updates ([12], [21]), and pseudo-labeling ([27]) are well-established, the core technical component appears to be the \"dual EMA smoothing\" with distinct momentum for different parameter subsets in the teacher model. No prior paper in the provided list describes this specific mechanism for updating a teacher model, which is presented as a key contribution distinguished from a standard single-momentum teacher.\n\n**evaluation**: COVERED. The evaluation design consists of running the proposed method on standard Continual Image Learning (CIL) benchmarks, measuring average accuracy, and comparing its performance (with and without a replay buffer) against existing baselines. This is the canonical evaluation protocol in the continual learning field, and is used or analyzed in numerous prior papers such as [4], which makes \"Practical Recommendations for Replay-based Continual Learning Methods\" based on such comparisons.\n\n**domain**: COVERED. The contribution operates in the application area of continual learning and test-time adaptation applied to the CLIP model. This exact domain is addressed by prior work. For instance, paper [3] proposes a method for \"Continual Learning in Open-vocabulary Classification\" that explicitly uses \"a CLIP zero-shot model\", and paper [20] studies \"Online Zero-Shot Classification with CLIP\".\n\nVERDICT purpose = 17, 20\nVERDICT mechanism = NONE\nVERDICT evaluation = 4\nVERDICT domain = 3, 20",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: The core components of the DoSAPP mechanism are not found in the prior papers. Specifically, no paper describes (a) gradient-scored top-K sparse updates, (b) a \"dual EMA\" smoothing for the teacher model with distinct momentum values for updated vs. frozen parameters, or (c) a pseudo-labeling strategy where the student learns from the more confident prediction between itself and the teacher. While elements like student-teacher frameworks [27, 31], sparse fine-tuning [12, 21], and EMA for teacher updates [31] exist individually, the specific, combined DoSAPP algorithm is not described."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     7
+    ],
+    "mechanism": [
+     7
+    ],
+    "evaluation": [
+     14
+    ],
+    "domain": [
+     4
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**Purpose:**  \nThe contribution aims to demonstrate that the approach retains old-task knowledge and generalizes across a long task sequence with domain shift, unlike recency-biased baselines. Paper [14] (\"Beyond Not-Forgetting: Continual Learning with Backward Knowledge Transfer\") explicitly addresses backward knowledge transfer, showing how learning new tasks can improve performance on old tasks, which aligns with the purpose of retaining old-task knowledge. Paper [7] (\"On Generalizing Beyond Domains in Cross-Domain Continual Learning\") also investigates continual learning under domain shifts, focusing on generalization across varying conditions, which matches the purpose of generalizing across domain shifts.  \n\n**Mechanism:**  \nThe mechanism involves investigating baselines (self-labeling without student-teacher, SPU, Finetune) and running a long 20-task sequence concatenating Aircraft (10 tasks) + Cars (10 tasks) with a domain shift after task 10. Paper [7] (\"On Generalizing Beyond Domains in Cross-Domain Continual Learning\") uses continual learning under domain shifts, which involves mechanisms for handling domain variability across tasks. Paper [5] (\"Learning With Style: Continual Semantic Segmentation Across Tasks and Domains\") also tackles domain shifts and task variability, addressing mechanisms for unified solutions across tasks and domains. Both papers align with the mechanism of handling domain shifts in continual learning.  \n\n**Evaluation:**  \nThe evaluation design involves measuring performance on a long task sequence, including metrics like current-task accuracy (CTA), overall average accuracy, and first-task accuracy, as well as observing positive backward transfer. Paper [14] (\"Beyond Not-Forgetting: Continual Learning with Backward Knowledge Transfer\") evaluates backward knowledge transfer and measures performance improvements on old tasks, which matches the evaluation design of observing positive backward transfer. Paper [7] (\"On Generalizing Beyond Domains in Cross-Domain Continual Learning\") evaluates generalization under domain shifts, using metrics to assess performance across tasks, which aligns with the evaluation design of measuring accuracy across a sequence of tasks.  \n\n**Domain:**  \nThe domain is long-sequence class-incremental continual learning. Paper [4] (\"Class-Incremental Learning: Survey and Performance Evaluation on Image Classification\") explicitly addresses class-incremental learning, which is the same general application area. Paper [7] (\"On Generalizing Beyond Domains in Cross-Domain Continual Learning\") also operates in the domain of continual learning with domain shifts, which falls under the broader area of class-incremental continual learning.  \n\n**Verdicts:**  \nVERDICT purpose = 7  \nVERDICT mechanism = 7  \nVERDICT evaluation = 14  \nVERDICT domain = 4  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Show the approach retains old-task knowledge and generalizes across a long task sequence with domain shift, unlike recency-biased baselines.**\n\nThis purpose combines anti-forgetting (retaining old-task knowledge) with cross-domain generalization across a long sequence. Paper [7] \"On Generalizing Beyond Domains in Cross-Domain Continual Learning\" explicitly addresses \"preventing catastrophic forgetting under domain shifts where the model must generalize.\" Paper [15] \"Towards Cross-Domain Continual Learning\" addresses retaining knowledge while handling domain shifts. Paper [8] \"Cross Domain Lifelong Learning Based on Task Similarity\" addresses lifelong learning across domains. However, the specific purpose of demonstrating retention + generalization across a *long* sequence with domain shift mid-sequence, contrasted against recency-biased baselines, is most closely matched by [7] and [15], which share the same objective at the problem-class level: show a method retains old knowledge while generalizing under domain shift in continual learning.\n\n**MECHANISM: Investigate baselines (self-labeling without student-teacher, SPU, Finetune) and run a long 20-task sequence concatenating Aircraft (10 tasks) + Cars (10 tasks) with domain shift after task 10.**\n\nThe mechanism here is an ablation/comparison study using specific baselines (including a self-labeling variant and a fine-tuning baseline) on a long task sequence with domain shift. Paper [7] investigates cross-domain continual learning with baseline comparisons. Paper [15] similarly compares methods across domain-shifted sequences. Paper [5] \"Learning With Style\" investigates continual learning across tasks and domains with baseline comparisons. None of these specifically use the same primitive of \"self-labeling without student-teacher\" as a baseline variant, nor the specific SPU baseline. The generic structure of comparing ablated baselines on a long sequence is a standard experimental design, but the specific primitive of investigating a student-teacher self-labeling mechanism vs. its ablation is not clearly present. However, at the design level, running ablation comparisons with finetune and no-replay baselines on a multi-domain sequence is covered by [7] and [15].\n\n**EVALUATION: Long sequence (20 tasks), CTA, overall average accuracy, first-task accuracy, backward transfer metrics; DoSAPP outperforms SPU and Finetune.**\n\nThe evaluation design uses standard CIL metrics (average accuracy, per-task accuracy, backward transfer) on a long task sequence. Paper [4] \"Class-Incremental Learning: Survey\" uses these standard metrics. Paper [14] \"Beyond Not-Forgetting\" explicitly measures backward knowledge transfer as a metric. Paper [7] evaluates cross-domain continual learning with accuracy metrics across task sequences. The use of average accuracy, first-task accuracy, and backward transfer metrics on a long sequence is a standard evaluation design covered by [14] (backward transfer) and [4] (standard CIL metrics). The 20-task long sequence design is an instance of long-sequence evaluation, which appears in [1] (long-tail CIL) and [4].\n\n**DOMAIN: Long-sequence class-incremental continual learning.**\n\nThis is clearly within the class-incremental continual learning area. Papers [1], [4], [7], [9], [12], [15] all operate in class-incremental continual learning. The \"long sequence\" aspect is an instance parameter within this area, not a new area. Paper [1] specifically addresses long-tail class-incremental learning with sequences, and [4] surveys class-incremental learning broadly.\n\nVERDICT purpose = 7\nVERDICT mechanism = 7\nVERDICT evaluation = 14\nVERDICT domain = 4",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

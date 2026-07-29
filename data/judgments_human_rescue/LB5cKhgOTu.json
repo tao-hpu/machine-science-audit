@@ -1,0 +1,319 @@
+{
+ "paper_id": "LB5cKhgOTu",
+ "title": "QERA: an Analytical Framework for Quantization Error Reconstruction",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     13,
+     17
+    ],
+    "mechanism": [
+     13,
+     17,
+     19
+    ],
+    "evaluation": [
+     13,
+     20,
+     25
+    ],
+    "domain": [
+     1,
+     3,
+     9,
+     10,
+     11,
+     15,
+     20
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 17
+      },
+      "evaluation": {
+       "covered_by": 20
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        3,
+        9,
+        10,
+        11,
+        15,
+        20
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to establish the correct optimization objective for quantization error reconstruction, contrasting prior methods that minimize weight approximation error without theoretical justification. Paper [17] proposes Bias Compensation to minimize output error in quantization, which aligns with the purpose of addressing the relationship between quantization error and model output error. Paper [14] studies the effect of quantization on the loss landscape and its impact on accuracy, which indirectly relates to the purpose of optimizing quantization objectives. However, neither paper explicitly establishes the theoretical justification for minimizing layer output error as the correct optimization objective. Thus, no prior paper fully covers the purpose.\n\n### Mechanism\nThe mechanism involves formal analysis contrasting minimizing weight approximation error (||W - W_tilde||_p) against minimizing layer output error (||y - y_tilde||_p), tracing the effect to the final model output error. Paper [14] analyzes the loss landscape structure under quantization, which involves studying the relationship between quantization and model loss but does not explicitly contrast weight approximation error with layer output error. Paper [17] minimizes output error through bias compensation but does not formally analyze the relationship between weight and layer output errors. No prior paper performs the specific formal analysis described in the contribution.\n\n### Evaluation\nThe evaluation analytically demonstrates that minimizing weight approximation error does not guarantee reduced model output error, while minimizing layer output error is closely related to minimizing model output error. Paper [14] analyzes the loss landscape under quantization, which involves evaluating the impact of quantization on model loss, but does not use the same analytical design to contrast weight and layer output errors. Paper [17] evaluates bias compensation's effect on output error but does not analytically contrast weight and layer output errors. No prior paper uses the same evaluation design.\n\n### Domain\nThe domain is LLM quantization, efficient fine-tuning, and inference. Papers [1], [3], [9], [10], [11], [15], and [20] all address LLM quantization or efficient inference, making the domain covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [1, 3, 9, 10, 11, 15, 20]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly establishes the optimization objective for quantization error reconstruction with the same theoretical justification.  \n\nFACET: mechanism | FINAL: COVERED-BY 17 | reason: \"Bias Compensation (BC) to minimize the output error, thus realizing ultra-low-precision quantization without model fine-tuning\" aligns with formal analysis contrasting weight approximation error and layer output error.  \n\nFACET: evaluation | FINAL: COVERED-BY 20 | reason: \"Loss-aware quantization has been proposed to directly formulate the impact of weight quantization on the model’s final loss\" analytically demonstrates the relationship between weight quantization and model output error.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Establish the correct optimization objective for quantization error reconstruction — arguing that minimizing weight approximation error lacks theoretical justification and that minimizing layer output error is the proper objective.**\n\nPaper [13] (AdaRound) explicitly analyzes the rounding objective: \"We start by theoretically analyzing the rounding problem and show that minimizing the mean squared error of the weights is not optimal.\" It argues for minimizing task loss / layer output error instead of weight approximation error. This is substantively the same purpose — identifying that weight-error minimization is the wrong objective and that output-error minimization is correct.\n\nPaper [4]/[7] (BRECQ) also motivates block reconstruction (output error) over weight error, and Paper [2] (PD-Quant) uses prediction difference as a metric rather than weight error. Paper [17] explicitly states \"minimize the output error\" rather than weight quantization error. However, [13] is the clearest match to the specific purpose of establishing the correct optimization objective theoretically.\n\n**MECHANISM: Formal analysis contrasting ||W - W_tilde||_p vs. ||y - y_tilde||_p, tracing effect to final model output error.**\n\nPaper [13] (AdaRound) performs exactly this formal analysis: it uses a Taylor expansion to show that weight rounding error propagates to task loss, and explicitly contrasts minimizing weight MSE against minimizing output/task loss. The mechanism is the same formal derivation contrasting weight-space error vs. output-space error and tracing through to model output. Paper [4]/[7] (BRECQ) similarly uses block reconstruction with formal justification. Paper [17] also formally analyzes output error vs. weight error. Paper [13] is the strongest match.\n\n**EVALUATION: Analytical (negative) result showing weight approximation error minimization does NOT guarantee reduced model output error, plus positive result for layer output error.**\n\nPaper [13] provides an analytical/theoretical argument (not just empirical) showing weight rounding error ≠ task loss reduction, which is the same evaluation design — a formal/analytical proof establishing a negative result about weight-error objectives. This is a theoretical derivation, not a benchmark. Paper [4]/[7] also provides theoretical justification for output reconstruction. The evaluation design here is \"formal analytical proof contrasting two objectives,\" which appears in [13].\n\n**DOMAIN: LLM quantization / efficient fine-tuning and inference.**\n\nPapers [1], [3], [8], [9], [10], [11], [15] all work in LLM quantization. Papers [4]/[7], [13] work in neural network PTQ (pre-LLM era but same general area). The domain of \"neural network quantization / efficient inference\" is clearly covered by many papers, and LLM quantization specifically by [1], [3], [8], [9], [10], [11], [15].\n\nVERDICT purpose = 13\nVERDICT mechanism = 13\nVERDICT evaluation = 13\nVERDICT domain = 9",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        13,
+        17
+       ]
+      },
+      "mechanism": {
+       "covered_by": 19
+      },
+      "evaluation": {
+       "covered_by": 25
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        15
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: COVERED. The purpose of establishing that minimizing layer output error is the correct objective is covered by multiple prior papers. [13] explicitly formulates its method to \"minimize the quantization error of a layer’s output,\" and [17] has the direct title \"Minimize Quantization Output Error with Bias Compensation,\" showing this objective is not new.\n\n**mechanism**: COVERED. The mechanism is a formal analysis tracing the effect of a local, surrogate objective (layer error) to the final model output error. This is a standard analytical design in machine learning theory, as seen in [19] which analyzes the \"calibration function' relating the excess surrogate risk to the actual risk.\"\n\n**evaluation**: COVERED. The evaluation design is an analytical demonstration showing the relationship between different error objectives. This is a standard validation protocol used in prior theoretical work, such as [25] which performs a \"Mean Squared Error Analysis of Quantizers With Error Feedback\" to validate its claims.\n\n**domain**: COVERED. Numerous prior papers operate in the domain of LLM quantization. For instance, [1] addresses the \"quantization of large language models (LLMs)\" and [15] proposes \"Weight Quantization for LLM Compression and Acceleration.\"\n\nVERDICT purpose = 13, 17\nVERDICT mechanism = 19\nVERDICT evaluation = 25\nVERDICT domain = 1, 15",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     15
+    ],
+    "evaluation": [
+     15
+    ],
+    "domain": [
+     1,
+     11
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 15
+      },
+      "evaluation": {
+       "covered_by": 15
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to provide a theoretically grounded, closed-form way to compute the low-rank reconstruction terms \\( A_k, B_k \\), replacing hand-crafted heuristics like LQ-LoRA and LQER. This specific objective — replacing heuristic methods with a closed-form, theoretically grounded solution for low-rank reconstruction in the context of LLM quantization — is not directly addressed in any prior paper. While papers like [11] (LQER) and [1] (LRQ) address low-rank quantization and error reduction, they do not aim to replace heuristics with a closed-form analytical framework. Their focus is on empirical methods or heuristic-driven approaches, not on deriving a theoretical, closed-form solution.\n\n### Mechanism\nThe mechanism involves deriving QERA, an analytical framework with a closed-form solution to layer-output-error minimization, using the Eckart-Young-Mirsky theorem for QERA-exact and a statistical assumption for QERA-approx. This mechanism is partially covered by prior work. Papers like [15] and [26] discuss the Eckart-Young-Mirsky theorem and its applications to low-rank approximations, providing the theoretical foundation for QERA-exact. Additionally, [12] and [13] address weighted low-rank approximation (WLRA), which overlaps with the statistical assumptions and approximations used in QERA-approx. However, no prior paper combines these elements into a unified framework specifically for layer-output-error minimization in LLM quantization.\n\n### Evaluation\nThe evaluation facet involves Theorems 1-2, which provide exact and approximate solutions, and a computational efficiency analysis of QERA-approx. This evaluation design is covered by prior work. Papers like [15] and [26] provide theoretical proofs and closed-form solutions for low-rank approximations, which align with the evaluation design of proving theorems and analyzing computational efficiency. While the specific theorems and assumptions differ, the evaluation design itself — proving theoretical results and analyzing their computational implications — is not novel.\n\n### Domain\nThe domain is LLM quantization, which is extensively covered by prior work. Papers like [1], [3], [4], [6], [7], and [11] all address LLM quantization, including post-training quantization (PTQ) and low-rank methods for reducing quantization error. While this contribution may target a specific sub-problem within LLM quantization, the general application area is well-established in the literature.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 15  \nVERDICT evaluation = 15  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly provides a theoretically grounded, closed-form method to compute low-rank reconstruction terms \\(A_k, B_k\\) as a replacement for hand-crafted heuristics (LQ-LoRA, LQER)."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 15
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 11
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Provide a theoretically grounded, closed-form way to compute low-rank reconstruction terms A_k, B_k, replacing hand-crafted heuristics (LQ-LoRA, LQER).**\n\nPaper [11] (LQER) introduces low-rank quantization error reconstruction but uses heuristics (activation-induced scale matrix) rather than a closed-form theoretical solution — it is the target being replaced, not a solution to the same purpose. Paper [7] explores PTQ with low-rank compensation but also uses empirical/heuristic approaches. No prior paper pursues the specific objective of providing a *theoretically grounded, closed-form* derivation of the low-rank reconstruction terms to replace heuristics in LLM quantization. The purpose is distinct from general low-rank approximation theory (papers [15],[17],[26]) because those don't target the LLM quantization error reconstruction problem specifically.\n\n**MECHANISM: Closed-form solution to layer-output-error minimization via Eckart-Young-Mirsky truncated SVD using input autocorrelation matrix; approximate version under uncorrelated-embedding-dimension assumption.**\n\nPapers [15],[17],[26] generalize the Eckart-Young-Mirsky theorem and derive closed-form solutions for rank/norm regularized problems. Paper [26] is \"A generalization of the Eckart-Young-Mirsky matrix approximation theorem.\" These cover the core mathematical primitive (truncated SVD / EYM theorem for closed-form low-rank approximation). However, the specific application to layer-output-error minimization with an input autocorrelation matrix weighting, and the approximate version under a statistical assumption about embedding dimensions, is more specific. Yet the underlying primitive — using EYM/truncated SVD to get a closed-form low-rank solution — is clearly present in [15],[17],[26]. The autocorrelation-weighted formulation resembles weighted low-rank approximation (papers [8],[12],[18]), but those don't have closed-form solutions in general. The specific mechanism of using the input autocorrelation to transform the problem into a standard SVD (making it tractable) is the novel step. Papers [15],[17],[26] cover the EYM primitive but not the autocorrelation-weighted formulation that makes it applicable here. Still, the core mechanism (EYM truncated SVD for closed-form low-rank approximation) is covered by [15],[17],[26].\n\n**EVALUATION: Theorems 1-2 give exact and approximate solutions; computational efficiency comparison; testability of the statistical assumption on real data.**\n\nThe evaluation design here is primarily theoretical (theorem proofs) plus empirical validation of assumptions on real data. This is a standard mathematical/empirical validation design. Paper [11] (LQER) validates on LLM benchmarks. Papers [7],[3] use standard LLM quantization benchmarks. The evaluation design of proving theorems and then testing assumptions empirically on real data is a standard approach used across many papers. However, no prior paper uses this specific design of \"prove closed-form solution theorems + test statistical assumption on real LLM data\" for this problem. The theorem-proving aspect is genuinely part of the contribution's evaluation. Looking at the special rule: the evaluation design (theorem + empirical assumption testing) is a standard mathematical paper design, but no prior paper in this list uses this exact design for LLM quantization reconstruction. I'll mark this as NONE since the specific evaluation design (theoretical theorems + assumption testability) is genuinely new in this context.\n\n**DOMAIN: LLM quantization.**\n\nPapers [11],[7],[1],[3],[4],[6] all work in LLM quantization. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 15\nVERDICT evaluation = NONE\nVERDICT domain = 11",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper proposes replacing hand-crafted heuristics for computing low-rank reconstruction terms A_k, B_k with a theoretically grounded closed-form solution. LQER [11] uses an activation-induced scale matrix heuristically; LQ-LoRA [7] uses empirical compensation without closed-form derivation. No paper frames the objective as \"replacing hand-crafted heuristics with a closed-form, theoretically grounded method for A_k, B_k specifically.\"\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper presents theorems giving exact and approximate solutions for the low-rank reconstruction problem in quantization (analogous to Theorems 1-2), nor evaluates a computational efficiency trade-off between exact and approximate variants with a testable assumption on real data. Papers [15]/[17] give closed-form solutions for rank/norm regularization but in a different domain (subspace clustering) with no connection to quantization or testability of approximation assumptions on LLM weight matrices."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 15
+      },
+      "mechanism": {
+       "covered_by": 15
+      },
+      "evaluation": {
+       "covered_by": 15
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "The contribution's purpose is to provide a theoretically grounded, closed-form solution for computing low-rank terms to compensate for quantization error. Paper [15] has the same purpose at the problem-class level, as it aims to \"obtain closed-form solutions for a set of rank/norm regularized problems\" by generalizing the same underlying mathematical theorem.\n\nThe core mechanism is using truncated SVD to find the optimal low-rank approximation of a matrix, which is the content of the Eckart-Young-Mirsky theorem. This technical primitive is explicitly identified in paper [15], which states the theorem \"characterizes the best rank k approximation of a matrix.\"\n\nThe evaluation design consists of proving theorems to establish the exact and approximate closed-form solutions. This design—validating a method via mathematical proof—is standard in theoretical works and is used in paper [15], which states \"we prove a generalization of the Eckart-Young-Mirsky theorem\" to derive its results.\n\nThe application domain is LLM quantization. This general area is explicitly addressed by multiple prior papers, including [1] which is titled \"LRQ: Optimizing Post-Training Quantization for Large Language Models\".\n\nVERDICT purpose = 15\nVERDICT mechanism = 15\nVERDICT evaluation = 15\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     4
+    ],
+    "evaluation": [
+     4
+    ],
+    "domain": [
+     1,
+     4
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": 4
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to demonstrate that the analytical framework improves state-of-the-art QPEFT and PTQ methods under the same compute budget. Paper [4] (LQER) shares a substantively equivalent purpose, as it aims to recover model capability and reduce quantization errors in PTQ methods for LLMs, achieving nearly-lossless quantization. Similarly, paper [21] (Exploring Post-training Quantization in LLMs) conducts a comprehensive study of PTQ schemes and investigates methods to mitigate quantization errors, aligning with the goal of improving PTQ methods. Both papers address the same problem-class level objective of improving quantization methods for LLMs under resource constraints.\n\n### Mechanism\nThe contribution applies QERA solutions to initialize/compute reconstruction terms in existing methods (LoftQ for QPEFT, ZeroQuant-V2 and LQER for PTQ). Paper [4] (LQER) uses low-rank approximation combined with quantization error reduction, which is substantively equivalent to the mechanism of leveraging low-rank techniques to reconstruct quantization terms. Paper [8] (INT2.1) also employs low-rank adaptation to correct quantization errors, aligning with the mechanism of using low-rank methods for error reconstruction. Paper [18] (QDyLoRA) introduces dynamic low-rank adaptation for quantized models, which similarly involves low-rank decomposition and quantization error compensation. These papers share the same underlying primitive of using low-rank methods to address quantization errors.\n\n### Evaluation\nThe contribution reports improvements in accuracy and perplexity metrics (Delta_acc and Delta_ppl) for quantized LLMs across benchmarks like GLUE, six LLM tasks, and WikiText2. Paper [4] (LQER) evaluates quantization performance using similar metrics (accuracy and task performance) on downstream tasks, including multitask language understanding. Paper [21] (Exploring Post-training Quantization in LLMs) uses a systematic evaluation of PTQ methods across various benchmarks and tasks, including weight-and-activation quantization. Both papers employ the same evaluation design — benchmarking quantized LLMs on task performance metrics — even if the specific benchmarks differ.\n\n### Domain\nThe contribution operates in the domain of LLM quantization. Paper [4] (LQER), paper [21] (Exploring Post-training Quantization in LLMs), and paper [8] (INT2.1) all address LLM quantization, focusing on improving PTQ methods and reducing quantization errors. This domain is well-established in prior work, and the contribution does not introduce a new application area.\n\n### Verdicts\nVERDICT purpose = 4  \nVERDICT mechanism = 4  \nVERDICT evaluation = 4  \nVERDICT domain = 4  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Show the analytical framework improves state-of-the-art QPEFT and PTQ methods under the same compute budget.**\n\nThe purpose is to demonstrate that a new analytical framework (QERA) outperforms existing QPEFT methods (LoftQ) and PTQ methods (ZeroQuant-V2, LQER) under the same compute budget. Paper [4] (LQER) introduces a PTQ method that QERA is being compared against — but LQER's purpose is to introduce the method, not to show a new framework beats it. Paper [21] conducts comprehensive PTQ analysis and introduces low-rank compensation, which is close but focuses on systematic study rather than showing a new framework beats existing ones. No prior paper has the specific purpose of showing that a new analytical framework (QERA-style) improves upon LoftQ, ZeroQuant-V2, and LQER simultaneously. However, papers like [4] and [21] do benchmark against prior methods to show improvement — this is a standard \"our method beats prior work\" purpose. Paper [21] explicitly explores \"low rank compensation\" for PTQ and benchmarks against existing methods. The purpose of demonstrating improvement over existing QPEFT and PTQ methods is a standard research objective covered by essentially every paper in this space, including [4], [21], [1], [2].\n\n**MECHANISM: Apply QERA solutions to initialize/compute reconstruction terms in existing methods (LoftQ for QPEFT, ZeroQuant-V2 and LQER for PTQ) and benchmark on GLUE, six LLM tasks, and WikiText2.**\n\nThe mechanism involves using QERA's analytical solutions to initialize/replace reconstruction terms in LoftQ and LQER/ZeroQuant-V2. Paper [4] (LQER) uses low-rank approximation to reconstruct quantization error. Paper [21] uses low-rank compensation for PTQ reconstruction. Paper [2] (LoftQ) uses low-rank approximation for QPEFT initialization. The specific primitive of \"plugging an analytical low-rank solution into existing methods' reconstruction terms\" is not explicitly described in any prior paper — they each introduce their own reconstruction approach rather than showing how a new analytical solution can replace/initialize existing methods' components. This appears to be a genuinely new mechanism.\n\n**EVALUATION: Delta_acc comparisons on GLUE, six LLM tasks, WikiText2 perplexity.**\n\nGLUE benchmarking appears in [2] (LoftQ), [16], [20]. WikiText2 perplexity is used in [4] (LQER), [21], [23], [1], [2]. Six LLM task benchmarks are used in [4], [21], [1]. These are all standard evaluation designs used across the prior papers. The evaluation design (GLUE accuracy, WikiText2 perplexity, standard LLM task benchmarks) is clearly covered by [4] and [2].\n\n**DOMAIN: LLM quantization.**\n\nPapers [1], [2], [3], [4], [5], [6], [8], [9], [10], [21], [22], [23] all work in LLM quantization. This is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 4\nVERDICT domain = 4",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper states the objective of showing that an analytical low-rank framework improves state-of-the-art QPEFT and PTQ methods under the same compute budget; the closest candidates (LQER [4], LoftQ-style works) propose their own methods rather than benchmarking an external framework's ability to boost existing SOTA methods.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes applying externally derived low-rank solutions to initialize or compute reconstruction terms inside existing methods (LoftQ, ZeroQuant-V2, LQER) and then benchmarking across GLUE, six LLM tasks, and WikiText2; each prior paper proposes its own standalone pipeline rather than plugging analytical solutions into other methods as initialization."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "purpose: The contribution's purpose is to show that a specific analytical framework (QERA) improves existing state-of-the-art methods. No prior paper establishes or reports this specific empirical relationship; they instead propose their own standalone methods or conduct broader analyses.\n\nmechanism: The core technical primitive is using a low-rank approximation to model or compensate for quantization error. This is substantively equivalent to the mechanism in [4], which introduces \"Low-rank Quantization Error Reduction (LQER), which combines quantization and low-rank approximation to recover the model capability.\"\n\nevaluation: The evaluation design consists of benchmarking on standard NLP datasets (GLUE, WikiText2, etc.) using standard metrics (accuracy, perplexity) to compare a new method against existing baselines. This exact evaluation design is used by numerous prior papers, including [4], which evaluates on \"various LLMs and downstream tasks\" to show its method's superiority.\n\ndomain: The application area is the quantization of large language models (LLMs). This is the explicit domain of many prior papers, including [1] (\"Optimizing Post-Training Quantization for Large Language Models\").\n\nVERDICT purpose = NONE\nVERDICT mechanism = 4\nVERDICT evaluation = 4\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: After re-review, no prior paper states the explicit objective of proposing a single framework designed to outperform state-of-the-art methods in *both* the QPEFT and PTQ categories. Papers focus on improving one or the other, but not on creating a unified method to beat both."
+     }
+    }
+   }
+  }
+ ]
+}

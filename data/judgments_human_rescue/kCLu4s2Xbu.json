@@ -1,0 +1,308 @@
+{
+ "paper_id": "kCLu4s2Xbu",
+ "title": "Trajectory-level Data Generation with Better Alignment for Offline Imitation Learning",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     5,
+     29
+    ],
+    "mechanism": [
+     13,
+     16
+    ],
+    "evaluation": [
+     10,
+     21
+    ],
+    "domain": [
+     5
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": 16
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to address instability, inaccurate weights/rewards, and hyperparameter sensitivity in offline imitation learning methods that rely on importance weights (weighted behavioral cloning) or reward functions (offline RL). Papers [1], [2], and [5] discuss instability and reliability issues in offline RL and behavioral cloning, but they do not specifically address the combined issues of weight/reward inaccuracies and hyperparameter sensitivity. Paper [26] focuses on single-demonstration imitation learning and sparse rewards but does not address the broader instability and sensitivity issues. No prior paper explicitly targets this combination of challenges in offline imitation learning.\n\n### Mechanism\nThe mechanism introduces the TDGBA framework, which uses optimal transport/Wasserstein distance to measure alignment between unlabeled trajectories and expert demonstrations, employs a trajectory diffuser (FTB) to iteratively optimize low-alignment trajectories into near-expert trajectories, and directly applies behavioral cloning (BC) on high-alignment trajectories without learning reward functions or importance weights. Papers [16], [18], [28], and [29] use optimal transport or Wasserstein distance in imitation learning, but they focus on reward shaping or adversarial learning rather than trajectory alignment and diffusion-based optimization. Papers [12], [13], [19], and [14] use diffusion models for trajectory optimization or augmentation, but none combine diffusion with optimal transport for trajectory alignment as described here. This mechanism appears genuinely novel.\n\n### Evaluation\nThe evaluation uses the D4RL benchmark on nine medium-level MuJoCo locomotion tasks, reporting superior performance across all tasks and significant average improvement over the second-best method. Papers [10], [19], and [13] also evaluate offline RL or imitation learning methods on D4RL MuJoCo tasks, making the evaluation design covered. While the specific benchmark instances and results differ, the use of D4RL and standard metrics for comparison aligns with prior work.\n\n### Domain\nThe domain is offline reinforcement learning, imitation learning, and robot control. Papers [5], [8], [9], [10], [13], and [19] all operate within these areas, even if they target different sub-problems or datasets. The domain is therefore covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 10  \nVERDICT domain = 5  ",
+      "stage2": "- **FACET: purpose** | **FINAL: COVERED-BY 5** | reason: Paper [5] explicitly addresses the instability and sensitivity issues in offline imitation learning caused by learning reward functions or importance weights, stating: *\"Prior works that address this problem either require that expert data occupies the majority proportion of the offline dataset, or need to learn a reward function and perform offline reinforcement learning (RL) afterwards.\"* This aligns with the purpose facet's objective of solving instability and sensitivity issues in offline imitation learning.\n\n- **FACET: mechanism** | **FINAL: COVERED-BY 16** | reason: Paper [16] introduces Regularized Optimal Transport (ROT) to align trajectories with expert demonstrations using optimal transport distances, stating: *\"We present Regularized Optimal Transport (ROT), a new imitation learning framework that measures the alignment between unlabeled trajectories and expert demonstrations using optimal transport distances.\"* This is conceptually equivalent to the mechanism facet's use of Wasserstein distance for trajectory alignment, and the iterative optimization of trajectories aligns with the trajectory diffusion process described."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 21
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\n\nThe contribution's purpose is to solve offline imitation learning problems caused by needing to learn importance weights (weighted BC) or reward functions (offline RL), which cause training instability, inaccurate weights/rewards, and hyperparameter sensitivity.\n\nPaper [5] addresses \"offline Imitation Learning where an agent aims to learn an optimal expert behavior policy without additional online environment interactions\" and explicitly notes prior works \"either require that expert data occupies the majority proportion of the offline dataset, or need to learn a reward function and perform offline reinforcement learning (RL) afterwards\" — this is essentially the same gap being closed.\n\nPaper [8] (SEABO) addresses offline imitation learning without reward labels, targeting the same problem of avoiding reward function learning.\n\nPaper [21] (OTR) also addresses offline RL without reward annotation, targeting the same practical challenge.\n\nPaper [29] addresses \"Offline Imitation Learning via Optimal Transport\" and explicitly targets learning without explicit rewards or action labels in offline settings.\n\nPapers [5], [8], [21], [29] all share the same purpose at the problem-class level: offline imitation learning without needing to learn reward functions or importance weights.\n\n## Mechanism\n\nThe mechanism is: use optimal transport/Wasserstein distance to measure alignment between unlabeled trajectories and expert demonstrations, then use a trajectory diffuser (FTB) to iteratively refine low-alignment trajectories toward expert-like ones, then apply direct BC on the generated high-alignment trajectories — no reward or importance weight learning needed.\n\n**OT/Wasserstein for trajectory alignment**: Papers [16], [18], [21], [24], [28], [29] all use optimal transport or Wasserstein distance to measure alignment between agent and expert trajectories/distributions. Paper [29] specifically uses OT for offline imitation learning trajectory alignment. Paper [21] uses OT for reward labeling in offline IL.\n\n**Diffusion-based trajectory refinement/generation**: Paper [19] (DiffStitch) uses diffusion-based trajectory stitching to augment offline RL data by generating transitions toward high-reward regions. Paper [13] uses diffusion model-augmented BC. Paper [12] uses model-based diffusion for trajectory optimization.\n\nThe **combination** of OT-based alignment scoring + diffusion-based trajectory refinement toward expert + direct BC is the novel primitive. No single prior paper combines these three elements. Paper [29] uses OT for offline IL but not diffusion-based trajectory refinement. Paper [19] uses diffusion for trajectory improvement but not OT alignment scoring feeding into BC. Paper [13] uses diffusion + BC but not OT alignment. This specific pipeline (OT alignment → diffusion refinement → BC) appears absent.\n\n## Evaluation\n\nThe contribution evaluates on D4RL benchmark with MuJoCo locomotion tasks, comparing against baselines including OTR and PWIL, using normalized scores across medium-level datasets, multi-seed evaluation.\n\nPaper [21] (OTR) evaluates on D4RL MuJoCo locomotion tasks with normalized scores. Paper [28] (PWIL) evaluates on MuJoCo continuous control. Paper [5] evaluates on D4RL benchmarks. Paper [8] evaluates on D4RL. Paper [29] evaluates on D4RL MuJoCo tasks. The D4RL benchmark family with normalized scores on MuJoCo locomotion is a well-established evaluation design used across many prior papers.\n\n## Domain\n\nThe domain is offline reinforcement learning / imitation learning / robot control. Papers [5], [8], [13], [16], [19], [21], [28], [29] all operate in offline RL/imitation learning for continuous control/robotics. This is clearly covered.\n\n---\n\nVERDICT purpose = 5\nVERDICT mechanism = NONE\nVERDICT evaluation = 21\nVERDICT domain = 5",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper combines all three elements — using Wasserstein/OT distance to measure unlabeled-trajectory-to-expert alignment, then using a trajectory diffuser to iteratively refine low-alignment trajectories into near-expert ones, then applying BC directly on those generated high-alignment trajectories without learning a reward function or behavior weights. Paper [21] (OTR) uses OT to assign rewards for offline RL (not diffusion-based refinement + BC). Paper [29] uses OT for offline IL but not with a diffusion-based trajectory optimizer. Paper [28] (PWIL) uses primal Wasserstein as a reward signal with online interaction. Paper [13] (DMBC) uses diffusion for data augmentation with BC but not OT-based alignment filtering. No single paper quotes a mechanism equivalent to: measure alignment via Wasserstein → diffuse low-alignment trajectories toward expert → BC on generated trajectories, without reward learning."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 29
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 21
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: [29] covers this by aiming to learn an imitating agent \"despite the absence of explicit rewards or action labels,\" which is the same objective of avoiding the need to learn/specify a reward function. [8] also covers this by aiming to \"tackle this challenge\" that hand-crafting or learning a reward function is \"difficult, labor-intensive, or inefficient.\"\n\nmechanism: [29] covers the primitive of using Optimal Transport for offline imitation learning to align agent and expert distributions (\"Offline Imitation Learning via Optimal Transport\"). [13] covers the primitive of using a diffusion model to generate data for behavioral cloning (\"Diffusion Model-Augmented Behavioral Cloning\"). The contribution combines these known primitives, but does not introduce a new one.\n\nevaluation: [21] and [28] use the same evaluation design, as they are the originators of the OTR and PWIL baselines that the contribution compares against on the standard D4RL benchmark suite. The design is \"evaluate on D4RL MuJoCo tasks and compare normalized scores,\" which is the standard protocol in this area.\n\ndomain: [5] works in the exact same domain, as it states \"We study the problem of offline Imitation Learning (IL)\". Many other papers, including [8, 19, 21, 29], also operate in the same domain of offline imitation/reinforcement learning.\n\nVERDICT purpose = 29\nVERDICT mechanism = 13\nVERDICT evaluation = 21\nVERDICT domain = 5",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     32
+    ],
+    "mechanism": [
+     13,
+     32
+    ],
+    "evaluation": [
+     13,
+     32
+    ],
+    "domain": [
+     7,
+     13
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 32
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 13
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to identify implicit expert preferences from unlabeled trajectories and use them to guide trajectory generation, particularly in scenarios with minimal expert demonstrations (even as few as one). This objective is not covered by any prior paper. While papers like [6], [9], [16], [29], and [32] address imitation learning with limited expert data, they do not focus on identifying implicit preferences from unlabeled trajectories or using such preferences to guide trajectory generation. For example, [32] focuses on single-demonstration imitation learning but uses proximity-based surrogate rewards rather than implicit preference metrics. None of the prior papers explicitly address the problem of identifying implicit preferences from unlabeled trajectories to guide generation.\n\n### Mechanism\nThe mechanism defines implicit expert preferences using a Wasserstein distance-based alignment metric (low distance = high alignment) to label unlabeled trajectories and drive a preference-based trajectory diffusion model. This mechanism is covered by [13], which connects inverse reinforcement learning and optimal transport (including Wasserstein distance) for imitation learning. [13] uses Wasserstein distance to measure alignment between trajectories and expert behavior, which is substantively equivalent to using Wasserstein distance as a preference metric. Additionally, [25] employs diffusion-based trajectory generation, which overlaps with the trajectory diffusion aspect of the mechanism. Together, these papers cover the mechanism.\n\n### Evaluation\nThe evaluation involves qualitative and correlation-based validation, showing strong alignment between the Wasserstein-based metric and true trajectory rewards, and demonstrating superior trajectory diversity and lower dynamic error compared to Gaussian augmentation. This evaluation design is covered by [13], which validates Wasserstein-based metrics by comparing them to expert trajectories and rewards. Additionally, [25] evaluates trajectory generation using metrics like diversity and error, which align with the evaluation design here. The specific benchmarks and objects differ, but the evaluation design itself is not novel.\n\n### Domain\nThe domain is offline imitation learning, preference learning, and diffusion models. This domain is covered by multiple prior papers, including [13], [25], and [27]. For example, [13] addresses imitation learning and preference modeling using Wasserstein distance, [25] applies diffusion models to trajectory generation, and [27] focuses on imitation learning via generative adversarial methods. While the specific sub-problem and dataset differ, the general application area is not novel.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 13  \nVERDICT evaluation = 13  \nVERDICT domain = 13  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 32 | reason: Paper [32] explicitly addresses single-demonstration imitation learning, focusing on identifying preferences from a single expert trajectory to guide trajectory generation, aligning with the queried purpose. Quoted phrase: \"In contrast to typical IL settings with multiple demonstrations, single-demonstration IL involves an agent having access to only one expert trajectory.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 32
+      },
+      "domain": {
+       "covered_by": 13
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\n\nThe contribution's purpose is: identify preferences over unlabeled trajectories to guide trajectory generation, using minimal expert demonstrations (even a single one), without additional human preference datasets.\n\n- [32] focuses on \"single-demonstration imitation learning\" where \"acquiring multiple expert demonstrations is costly or infeasible\" — this is closely related but the purpose there is to mitigate sparse reward signals via surrogate rewards, not to label unlabeled trajectories with preferences to drive a diffusion generator.\n- [29] \"One-Shot Imitation Learning\" uses meta-learning from very few demonstrations, but the purpose is generalization to new tasks, not labeling unlabeled trajectories with preferences.\n- [16] \"One-Shot Imitation Learning\" with a single demonstration, but focuses on pose estimation for trajectory transfer.\n- [9] tackles few-demonstration imitation learning by extending the region of attraction.\n- None of these prior papers share the specific purpose of \"identifying preferences over unlabeled trajectories (without human preference labels) to guide a trajectory diffusion model\" using alignment metrics. The closest is [32] (single-demo IL with surrogate rewards), but the objective of labeling unlabeled trajectories with implicit preferences to drive a preference-based diffusion generator is not covered.\n\n**Purpose: NONE** — no prior paper pursues the same objective of using alignment metrics as implicit preference labels over unlabeled trajectories to guide a preference-based trajectory diffusion model with minimal expert data.\n\n## Mechanism\n\nThe mechanism is: use Wasserstein distance as an implicit expert preference signal to annotate unlabeled trajectories, then drive a preference-based trajectory diffusion model.\n\n- [13] \"Wasserstein Adversarial Imitation Learning\" uses Wasserstein distance/optimal transport for imitation learning reward functions — this covers using Wasserstein distance as an alignment/reward signal in imitation learning.\n- [32] uses \"expert proximity as surrogate rewards\" — proximity to expert as implicit preference, which is conceptually similar to using alignment metrics as implicit preference.\n- [25] uses trajectory diffusion for world models.\n- [17] uses diffusion-based trajectory generation.\n\nThe specific combination of (1) Wasserstein distance as implicit preference label + (2) preference-based diffusion model is novel as a combination. However, [13] covers using Wasserstein distance as an alignment signal in imitation learning, and [32] covers using expert proximity as surrogate/implicit preference. The preference-based diffusion component is not covered by any prior paper. The mechanism as a whole — defining Wasserstein distance as implicit preference to drive a preference-based diffusion model — is not substantively equivalent to any single prior paper's mechanism.\n\n**Mechanism: NONE** — while [13] uses Wasserstein distance in imitation learning and [32] uses expert proximity as surrogate reward, no prior paper combines Wasserstein-based alignment as implicit preference labels specifically to drive a preference-based trajectory diffusion model.\n\n## Evaluation\n\nThe evaluation design includes: correlation analysis between a proposed metric and ground-truth returns (Figure 2), comparison against a baseline (FTB with 15 human preference pairs) using 1 expert trajectory, and diversity/dynamic error comparison against Gaussian augmentation.\n\n- [32] evaluates single-demonstration IL with comparisons against baselines using reward/return metrics — similar evaluation design (compare against baselines, measure returns).\n- [13] evaluates imitation learning methods with standard RL benchmarks and return metrics.\n- [27] uses standard RL benchmark evaluation with return metrics.\n- The correlation analysis between a metric and ground-truth returns is a standard validation design used in many papers. The comparison against preference-learning baselines with return metrics is also standard. These evaluation designs (correlation analysis, benchmark comparison with return metrics) appear in prior work.\n\n**Evaluation: 32** — [32] uses the same evaluation design of comparing single-demo IL methods against baselines using return/reward metrics, and the correlation/proximity analysis is a standard design present in prior work.\n\n## Domain\n\nThe domain is offline imitation learning / preference learning / diffusion models for trajectory generation.\n\n- [27] covers offline imitation learning from heterogeneous demonstrations.\n- [13] covers imitation learning with Wasserstein distance.\n- [6] covers imitation learning with limited expert data.\n- [17], [25] cover diffusion-based trajectory generation.\n- Multiple papers cover offline imitation learning broadly.\n\n**Domain: 13** — [13] operates in imitation learning with Wasserstein-based methods, and [27] covers offline imitation learning, both within the same general application area.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 32\nVERDICT domain = 13",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of identifying preferences among *unlabeled* trajectories using only minimal (single) expert demonstrations to guide trajectory generation without additional human preference datasets. Paper [32] addresses single-demonstration IL but uses expert proximity as surrogate rewards for RL, not preference labeling of unlabeled trajectories for a diffusion generator. Paper [16] also does one-shot IL but via pose estimation. None match the same objective.\n\nFACET: mechanism | FINAL: NONE | reason: Paper [13] uses Wasserstein distance in adversarial imitation learning as a reward/divergence measure between agent and expert state-action distributions, but does not define \"implicit expert preference\" as a Wasserstein-based alignment metric to *label* unlabeled trajectories and drive a preference-based trajectory diffuser. No paper combines Wasserstein-distance-as-alignment-score → preference annotation of unlabeled data → preference-conditioned diffusion trajectory generation as a unified mechanism."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 32
+      },
+      "mechanism": {
+       "covered_by": 32
+      },
+      "evaluation": {
+       "covered_by": 32
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: COVERED. Paper [32] addresses the exact same objective: \"single-demonstration imitation learning (IL)... where the ground truth reward function is not available.\" The contribution's goal of identifying preferences from a single expert demo to guide generation is substantively equivalent to the goal of [32].\n\n**mechanism**: COVERED. The core primitive is using a distance metric to an expert trajectory as a preference or reward signal. Paper [32] explicitly proposes this: \"propose to mitigate this issue [sparse reward] by using expert proximity as a surrogate reward.\" Furthermore, paper [13] uses Wasserstein distance in an imitation learning context to learn a reward function, covering the specific choice of metric. The use of a diffusion model for trajectory generation is also present in prior work like [17] and [25].\n\n**evaluation**: COVERED. The evaluation design consists of (1) comparing the proposed method against baselines in a low-data (single demonstration) imitation learning setting and (2) measuring the quality and diversity of generated trajectories. This is a standard validation design for methods in this sub-field. For instance, [32], which addresses the same single-demonstration IL problem, would necessarily employ the same evaluation design of comparing its proposed surrogate reward method against other IL approaches on benchmark tasks.\n\n**domain**: COVERED. The contribution operates in the domains of Offline Imitation Learning, Preference Learning, and Diffusion Models. Prior work clearly exists in all these areas. For example, paper [7] explicitly works on \"Learning from Offline Heterogeneous Demonstrations,\" and paper [17] presents a \"Diffusion-based Trajectory Generation\" method, covering the key application areas.\n\nVERDICT purpose = 32\nVERDICT mechanism = 32\nVERDICT evaluation = 32\nVERDICT domain = 7",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     5
+    ],
+    "mechanism": [
+     4,
+     7,
+     23
+    ],
+    "evaluation": [
+     4,
+     7,
+     23
+    ],
+    "domain": [
+     4,
+     7,
+     23
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to validate the performance of TDGBA relative to existing offline imitation learning (IL) methods and demonstrate that preference learning advantages can transfer to offline IL. Papers [4] and [5] both address offline preference-based reward learning and apprenticeship learning, which involve leveraging offline data to learn reward functions and policies. However, neither explicitly establishes the empirical relationship that preference learning advantages transfer to offline IL. Paper [7] discusses offline imitation learning but does not address preference learning advantages. No prior paper explicitly reports or establishes the same empirical relationship.\n\n### Mechanism\nThe contribution compares BC-based and reward-based (offline RL + learned reward) SOTA methods on D4RL locomotion and antmaze tasks, performing alignment metrics, diversity, and dynamic accuracy ablations. Papers [4], [5], and [7] all involve offline preference-based learning or imitation learning, and [4] specifically benchmarks offline preference-based reward learning algorithms on D4RL tasks. Paper [7] also discusses offline IL methods and their evaluation on locomotion tasks. These papers use substantively equivalent mechanisms, including benchmarking offline RL/IL methods and performing ablations to validate claims.\n\n### Evaluation\nThe evaluation design involves comparing reward learning methods across 11 tasks, showing that preference learning achieves leading or near-optimal performance in 7 tasks and the highest overall average score. Papers [4] and [5] benchmark offline preference-based reward learning methods on D4RL tasks, which matches the evaluation design. Paper [7] benchmarks offline IL methods, which also aligns with the evaluation design. The evaluation design is covered by these prior works.\n\n### Domain\nThe contribution operates in the domain of offline imitation learning. Papers [4], [5], [7], and [23] all address offline imitation learning or offline preference-based reward learning, which are substantively equivalent application areas. The domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 4  \nVERDICT evaluation = 4  \nVERDICT domain = 4  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 5 | reason: Paper [5] explicitly evaluates the performance of offline imitation learning (IL) methods and discusses the transferability of preference learning advantages to offline IL, as evidenced by: \"our observation is that [offline data] can be a surprisingly rich source of information for preference-based reward learning, enabling effective policy optimization.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 23
+      },
+      "evaluation": {
+       "covered_by": 23
+      },
+      "domain": {
+       "covered_by": 23
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: 验证 TDGBA 相对已有离线 IL 方法的性能,并证明偏好学习优势可迁移到离线 IL**\n\nThe purpose is to demonstrate that preference learning advantages transfer to offline IL, and to benchmark against existing offline IL methods. Paper [4] \"Benchmarks and Algorithms for Offline Preference-Based Reward Learning\" explicitly studies offline preference-based reward learning and benchmarks it against offline IL/RL methods. Paper [5] \"Offline Preference-Based Apprenticeship Learning\" similarly studies preference learning in the offline IL setting. However, neither paper specifically claims to demonstrate that \"preference learning advantages transfer to offline IL\" as a novel finding — they use preference learning within offline settings but don't frame it as proving transferability of preference learning advantages. The specific empirical relationship being established (preference learning advantages → offline IL improvement) is not directly reported as a finding in prior papers. No prior paper reports this exact relationship as a demonstrated finding.\n\n**MECHANISM: D4RL locomotion + antmaze 对比 BC-based 与 reward-based SOTA,并做对齐度量/多样性/dynamic accuracy 消融**\n\nPapers [4] and [5] compare preference-based reward learning methods against offline RL baselines on D4RL benchmarks. Paper [23] (SEABO) compares BC-based and reward-based offline IL methods on D4RL locomotion and antmaze tasks. Paper [26] also compares offline IL methods on D4RL. The mechanism of comparing BC-based vs reward-based methods on D4RL with ablations is present in [23] and [26]. The specific ablations (alignment metric, diversity, dynamic accuracy) are more specialized, but the overall comparative analysis design is covered.\n\n**EVALUATION: Table 3 对比 reward learning 方法在 11 任务中 7 个领先,总平均分最高**\n\nThe evaluation design uses D4RL locomotion and antmaze benchmarks with normalized score metrics, comparing against SOTA methods across multiple tasks. This exact evaluation design (D4RL benchmark family, normalized score metric, multi-task comparison table) appears in papers [4], [5], [23], [24], [25], [26]. Paper [23] specifically uses D4RL locomotion and antmaze with the same benchmark family and metric semantics. This is a standard D4RL evaluation design, clearly covered.\n\n**DOMAIN: 离线模仿学习**\n\nOffline imitation learning is the domain of papers [7], [12], [16], [23], [24], [26], among others. Paper [23] explicitly focuses on offline imitation learning. Paper [26] is titled \"How to Leverage Diverse Demonstrations in Offline Imitation Learning.\" This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 23\nVERDICT evaluation = 23\nVERDICT domain = 23",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of validating a TDGBA-style method against existing offline IL baselines while demonstrating that preference-learning advantages transfer to the offline IL setting. Papers [4] and [5] do offline preference-based reward learning but do not benchmark against offline IL methods or make claims about transferring preference-learning benefits into offline IL. No quoted phrase from any prior paper captures this same empirical objective."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "VERDICT purpose = 5\nVERDICT mechanism = 7\nVERDICT evaluation = 7\nVERDICT domain = 7",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

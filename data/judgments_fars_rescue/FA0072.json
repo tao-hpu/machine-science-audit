@@ -1,0 +1,312 @@
+{
+ "paper_id": "FA0072",
+ "title": "Execution-Trace Guided Remasking for Diffusion Code Generation",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     3,
+     9,
+     22
+    ],
+    "mechanism": [
+     9
+    ],
+    "evaluation": [
+     1,
+     27
+    ],
+    "domain": [
+     1,
+     4
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 22
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 27
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**Purpose:**  \nThe purpose of the contribution is to provide semantic guidance to diffusion code models about where errors occur, instead of relying on confidence-based remasking heuristics. Paper [22] (\"DynaFix: Iterative Automated Program Repair Driven by Execution-Level Dynamic Information\") shares a substantively equivalent purpose, as it aims to improve automated program repair by incorporating dynamic execution-level information to guide the repair process. This aligns with the goal of using execution-based signals to guide error localization and repair.  \n\n**Mechanism:**  \nThe mechanism involves an execution-trace-guided remasking pipeline that parses exception tracebacks or line-level execution traces from failing unit tests, maps failure-relevant lines to token indices, and remasks only those tokens for conditional diffusion repair. Paper [9] (\"TraceFixer: Execution Trace-Driven Program Repair\") uses execution traces to identify failure-relevant code lines and predict edits for program repair, which is substantively equivalent to the proposed mechanism of using execution traces to guide token remasking for repair.  \n\n**Evaluation:**  \nThe evaluation design involves implementing the method as a three-stage inference-time algorithm (initial generation, execution-based localization, targeted conditional repair) and evaluating it on MBPP+. Paper [27] (\"RepairBench: Leaderboard of Frontier Models for Program Repair\") uses execution-based evaluation for program repair, compiling and executing patches to validate their correctness. This matches the evaluation design at the level of execution-based validation, even though the specific benchmark (MBPP+) differs.  \n\n**Domain:**  \nThe domain is diffusion-based code generation and repair. Paper [4] (\"CodeDiffuSe: A masked diffusion framework for structure-aware code completion and repair\") operates in the same general application area of code generation and repair using diffusion models, making the domain covered.  \n\n**Verdicts:**  \nVERDICT purpose = 22  \nVERDICT mechanism = 9  \nVERDICT evaluation = 27  \nVERDICT domain = 4  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## PURPOSE: Give diffusion code models semantic guidance about where errors occur instead of confidence-based remasking heuristics.\n\nThe purpose is specifically to replace confidence-based remasking in diffusion models with semantically-grounded (execution-trace-based) error localization. Papers [2], [3], [5], [6], [10] all address the problem of improving remasking in diffusion language models beyond confidence heuristics — they explicitly identify \"confidence-based remasking is insufficient\" as the gap. Paper [3] (RemeDi) states \"The key challenge is to identify potential errors in the inputs\" and proposes self-reflective remasking. Paper [5] (CORE) explicitly targets \"static confidence scores\" as myopic. Paper [2] (Corrective DLMs) states \"inability to distinguish between correct and erroneous tokens.\" All share the same objective: better error localization for diffusion model remasking. However, none of these use execution traces as the semantic signal — they use model-internal signals. The PURPOSE at the problem-class level is \"improve error localization for diffusion remasking beyond confidence heuristics,\" which IS covered by [2], [3], [5], [6].\n\n## MECHANISM: Execution-trace guided remasking — parse exception tracebacks/line-level traces from failing unit tests, map failure-relevant lines to token indices, remask only those tokens for conditional diffusion repair.\n\nThe key primitive is: use program execution traces/tracebacks to localize which tokens to remask in a diffusion model. Paper [9] (TraceFixer) uses execution traces to guide program repair — \"predicts how to edit source code so that it does not diverge from the desired behavior\" using execution trace divergence. However, TraceFixer is not a diffusion model and doesn't do remasking. Paper [19] (EG-CFG) uses execution signals during code generation inference. Paper [22] (DynaFix) uses execution-level dynamic information iteratively for program repair. Paper [1] uses code diffusion for repair. None of the prior papers combine: (1) execution trace parsing → (2) token-index mapping → (3) selective remasking in a diffusion model. The closest is [9] for execution-trace-driven repair, but the specific primitive of mapping execution traces to token-level remask decisions in a diffusion model is not present. Paper [4] (CodeDiffuSe) does diffusion-based code repair but uses structure-aware masking, not execution traces. This combination appears genuinely absent.\n\n## EVALUATION: Three-stage inference-time algorithm evaluated on MBPP+.\n\nMBPP+ is a well-known code generation benchmark. Paper [1] evaluates code diffusion models on standard benchmarks. Paper [4] evaluates on code repair benchmarks. The evaluation design — running a code generation/repair system on MBPP+ and measuring pass rates — is a standard benchmark evaluation used across many code generation papers. MBPP/MBPP+ is used in papers like [19] and others in the code generation space. The evaluation design (benchmark-based pass@k evaluation on MBPP+) is a standard design covered by prior work.\n\n## DOMAIN: Diffusion-based code generation and repair.\n\nPapers [1], [4] explicitly work in diffusion-based code generation and repair. Paper [1]: \"leverage pre-trained code diffusion models for the problem of last-mile repair.\" Paper [4]: \"masked diffusion framework specifically designed\" for code completion and repair. This domain is clearly covered.\n\nVERDICT purpose = 3\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper combines all three specific sub-steps: parsing exception tracebacks/line-level execution traces from failing unit tests, mapping failure-relevant lines to token indices, and remasking only those tokens for conditional diffusion repair. Paper [9] (TraceFixer) uses execution traces for program repair but not diffusion remasking. Paper [4] (CodeDiffuSe) uses masked diffusion for code repair but not execution-trace-guided token selection. Papers [3],[5],[6],[10] perform remasking in diffusion models but based on confidence scores, not execution trace signals. No paper quotes a phrase describing this specific pipeline."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 27
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: COVERED by [9]. The contribution's purpose is to use semantic guidance from execution to guide a repair model, which is substantively equivalent to the purpose of [9], which \"presents TraceFixer, a technique for predicting how to edit source code\" based on an identified divergence in an execution trace.\n\nmechanism: COVERED by [9] and [16]. The mechanism is a pipeline of localizing an error using execution traces and then guiding a generative repair model. The first part, localizing faults from execution traces, is the core mechanism of Spectrum-Based Fault Localization, described in [16]. The full pipeline of using a trace to guide a code editing model is the mechanism of [9]'s \"TraceFixer: Execution Trace-Driven Program Repair\".\n\nevaluation: COVERED by [27]. The evaluation design is to apply an automated repair method to a benchmark of programming problems and measure success via execution against unit tests. This is a standard evaluation protocol in the field, formalized and proposed as a standard by [27]'s \"RepairBench,\" which is an \"execution-based\" leaderboard for program repair.\n\ndomain: COVERED by [1] and [4]. The application domain is using diffusion models for code generation and repair. This is the explicit domain of [1] (\"Diffusion is a code repair operator and generator\") and [4] (\"CodeDiffuSe: A masked diffusion framework for structure-aware code completion and repair\").\n\nVERDICT purpose = 9\nVERDICT mechanism = 9\nVERDICT evaluation = 27\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     4,
+     18
+    ],
+    "evaluation": [
+     4,
+     19
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        8,
+        14
+       ]
+      },
+      "mechanism": {
+       "covered_by": [
+        4,
+        18
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        4,
+        19
+       ]
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**Purpose:**  \nThe purpose of the contribution is to quantify the accuracy gain from trace-guided repair over no-repair and confidence-based remasking baselines. Paper [8] (\"Towards Effectively Leveraging Execution Traces for Program Repair with Code LLMs\") evaluates the impact of execution traces on program repair, which aligns with the purpose of quantifying improvements from trace-guided repair. Paper [14] (\"Runtime Execution Traces Guided Automated Program Repair with Multi-Agent Debate\") also investigates runtime execution traces for program repair, focusing on their impact on repair effectiveness. Both papers substantively share the purpose of quantifying the benefits of trace-guided repair.  \n\n**Mechanism:**  \nThe mechanism involves Pass@1 comparison on MBPP+ against the no-repair baseline and CORE, with statistical significance testing. Paper [4] (\"Investigating Retrieval Augmented Generation for LLM-Based Code Generation\") uses Pass@1 on MBPP+ to evaluate retrieval-augmented generation, which matches the statistical comparison mechanism. Paper [18] (\"CORE: Context-Robust Remasking for Diffusion Language Models\") introduces CORE, a remasking strategy, and evaluates it using Pass@1 comparisons, which aligns with the mechanism of comparing against CORE. Both papers employ the same statistical comparison mechanism, even though the specific objects differ.  \n\n**Evaluation:**  \nThe evaluation design involves measuring Pass@1 on MBPP+ with statistical significance testing. Paper [4] (\"Investigating Retrieval Augmented Generation for LLM-Based Code Generation\") uses the MBPP+ benchmark and reports Pass@1 scores with statistical significance testing, which matches the evaluation design. Paper [19] (\"Prompt, Assert, Repeat: Test-Driven Prompting as a Quality Assurance Strategy for Code-Generating LLMs\") also evaluates code generation performance using Pass@1 on MBPP, which aligns with the evaluation design. Both papers cover the evaluation facet.  \n\n**Domain:**  \nThe domain is code generation benchmarking. Papers [1], [2], [3], [4], [5], [6], [8], [13], [14], [15], [18], [19], and [20] all work in the general application area of code generation benchmarking, even though they target different sub-problems, datasets, or instances. This facet is covered by multiple prior papers.  \n\n**Verdict:**  \nVERDICT purpose = 8, 14  \nVERDICT mechanism = 4, 18  \nVERDICT evaluation = 4, 19  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Quantify the accuracy gain from trace-guided repair over no-repair and confidence-based remasking baselines.**\n\nThe purpose is to demonstrate that trace-guided repair outperforms both a no-repair baseline and a confidence-based remasking approach (CORE). Paper [18] (CORE) introduces context-robust remasking for diffusion language models and is the direct baseline being compared against. Paper [8] evaluates execution trace augmentation for program repair. However, neither paper's purpose is to *quantify the gain of trace-guided repair over no-repair AND confidence-based remasking baselines* — that specific comparative purpose (establishing the superiority of trace-guided repair over CORE specifically) is not the purpose of any prior paper. Paper [14] does trace-guided APR with multi-agent debate but doesn't compare against CORE. No prior paper establishes this same empirical relationship (trace-guided repair > no-repair AND > CORE confidence-based remasking). The purpose is NONE.\n\n**MECHANISM: Pass@1 comparison on MBPP+ against no-repair baseline and CORE with statistical significance testing.**\n\nPass@1 comparison on MBPP+ is used in papers [4] (MBPP+ benchmark, RAG experiments), [19] (MBPP benchmark, pass@1 evaluation of LLMs), and [18] (CORE, which evaluates on code generation benchmarks). Statistical significance testing in comparative evaluations is a standard protocol. Paper [4] explicitly uses MBPP+ with percentage improvement comparisons. The mechanism of pass@1 comparison with statistical significance testing on MBPP+ is a standard design covered by [4] and [18].\n\n**EVALUATION: 31.22% pass@1 on MBPP+, +11.38pp over no-repair, +4.24pp over CORE (p < 0.001).**\n\nThe evaluation design uses pass@1 on MBPP+ with statistical significance testing. Paper [4] uses MBPP+ with pass@1 and reports percentage improvements. Paper [18] (CORE) evaluates on code generation benchmarks with pass@1. Paper [19] uses MBPP with pass@1 across multiple LLMs. The evaluation design (pass@1 on MBPP+, comparative improvement reporting) is covered by [4] and [18]. The specific numbers are results, not design — the design is covered.\n\n**DOMAIN: Code generation benchmarking.**\n\nMultiple prior papers work in code generation benchmarking: [1], [2], [4], [5], [6], [8], [11], [13], [14], [15], [18], [19], [20], [23] all operate in code generation/automated program repair. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 4\nVERDICT evaluation = 4\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper measures accuracy gain specifically from trace-guided repair versus both a no-repair baseline and a confidence-based remasking baseline in the same comparative evaluation. Paper [8] uses execution traces for APR but does not compare against confidence-based remasking baselines. Paper [18] addresses confidence-based remasking but not trace-guided repair. No paper combines these exact comparison conditions."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "purpose: The purpose is to quantify the accuracy gain of trace-guided repair specifically against both a no-repair baseline and a confidence-based remasking baseline (CORE). While prior works like [8] and [14] investigate trace-guided repair and likely compare it to no-repair baselines, no prior paper establishes this specific three-way empirical relationship comparing trace-guided methods against the confidence-based remasking paradigm from [18].\n\nmechanism: The mechanism is a standard analysis protocol: a Pass@1 comparison on a known benchmark (MBPP+) against baselines, validated with statistical significance testing. This experimental design is covered by [4], which conducts \"experiments on the MBPP+ benchmark\" to show a technique \"significantly improves code generation performance\".\n\nevaluation: The evaluation design involves measuring Pass@1 on the MBPP+ benchmark and reporting quantitative improvements over baselines with statistical significance. This design is covered by [4], which uses the same benchmark and reports a significant percentage-point improvement for its technique: \"Our experiments on the MBPP+ benchmark reveal that RAG significantly improves code generation performance by up to 10.11%\".\n\ndomain: The domain is code generation benchmarking. This is a well-established area covered by numerous prior papers, including [1] which focuses on \"Evolving Coding Benchmarks via LLM\" and [4] which investigates \"LLM-Based Code Generation\".\n\nVERDICT purpose = NONE\nVERDICT mechanism = 4\nVERDICT evaluation = 4\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the specific objective of quantifying the accuracy gain of a trace-guided repair method against *both* a no-repair baseline and a confidence-based remasking baseline. While papers [8] and [14] evaluate trace-guided repair, they compare against static methods, not confidence-based remasking. Paper [18] discusses confidence-based remasking but proposes a different remasking method, not a trace-guided one. The specific comparative evaluation is not present."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     15,
+     16
+    ],
+    "mechanism": [
+     2
+    ],
+    "evaluation": [
+     2,
+     3,
+     7
+    ],
+    "domain": [
+     3,
+     19,
+     21
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 16
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to explain why semantic localization is essential for effective diffusion repair. Semantic localization refers to identifying specific program regions relevant to a fault and focusing repair efforts on those regions. This purpose is not directly covered by any prior paper. While papers like [16] (\"Semantic Fault Localization for Mutation-based Program Repair\") and [19] (\"Diffusion is a code repair operator and generator\") discuss fault localization and diffusion-based repair, neither explicitly establishes the necessity of semantic localization for diffusion repair effectiveness. They focus on techniques or applications rather than the empirical relationship between semantic localization and repair success.\n\n### Mechanism\nThe contribution uses edit-distance analysis to compare code modifications made by trace-guided repair versus global low-confidence repair. Papers [2] (\"Algorithm to Determine Extended Edit Distance between Program Codes\"), [6] (\"Theoretical Analysis of Edit Distance Algorithms\"), [7] (\"Revisiting Code Similarity Evaluation with Abstract Syntax Tree Edit Distance\"), and [17] (\"Basic Investigation of Code Edit Distance Measurement by CodeBERT\") all involve edit-distance analysis in various forms. For example, [2] introduces an extended edit distance algorithm for program codes, and [7] applies AST-based edit distance for code similarity evaluation. These papers demonstrate substantively equivalent mechanisms for analyzing code modifications using edit distance, even if applied to different contexts.\n\n### Evaluation\nThe evaluation design measures the effectiveness of trace-guided repair versus global low-confidence repair using metrics like mean edit distance and zero-edit fraction. Papers [2], [7], and [17] all use edit-distance-based metrics to evaluate code modifications, which matches the evaluation design. For instance, [7] uses AST edit distance to evaluate code similarity, and [17] uses CodeBERT to measure code edit distance. These prior works demonstrate the same evaluation design (edit-distance-based metrics), even though the specific objects of evaluation differ.\n\n### Domain\nThe domain is repair behavior analysis, specifically analyzing how different repair strategies modify code. Papers like [3] (\"Enhancing Program Repair with Specification Guidance and Intermediate Behavioral Signals\"), [9] (\"Semantic program repair using a reference implementation\"), [15] (\"Restore: Retrospective Fault Localization Enhancing Automated Program Repair\"), and [19] (\"Diffusion is a code repair operator and generator\") all operate in the general area of program repair behavior analysis. For example, [3] analyzes intermediate signals during repair, and [19] evaluates diffusion models for last-mile code repair. These papers address repair behavior analysis broadly, even if the specific repair strategies or contexts differ.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 2  \nVERDICT evaluation = 2  \nVERDICT domain = 3  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 16 | reason: Paper [16] explicitly discusses the importance of semantic fault localization in reducing the search space for mutation-based program repair, aligning with the objective of explaining why semantic localization is essential for effective diffusion repair. Quoted phrase: \"we first use the fault localization to automatically identify statements relevant for the error, and then repeatedly mutate the expressions in those relevant statements until a correct program... is obtained.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 19
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Explain why semantic localization is essential for effective diffusion repair.**\n\nThe purpose is to demonstrate/explain that semantic localization (trace-guided targeting) is necessary for diffusion-based code repair to actually modify code meaningfully. This is a specific empirical relationship: localization → meaningful edits in diffusion repair. Paper [19] is directly about diffusion as a code repair operator, and paper [3] discusses intermediate behavioral signals for repair. Paper [15] and [16] discuss fault localization's importance for repair effectiveness. However, none of these papers establish the specific relationship between semantic localization and edit behavior in diffusion repair — they don't report the same variables (localization vs. non-localization → edit distance distribution in diffusion repair). The closest is [19] which is about diffusion repair itself, but its purpose is to evaluate diffusion as a repair operator, not to explain why localization is essential. No prior paper reports this specific empirical relationship.\n\n**MECHANISM: Edit-distance analysis comparing code modifications made by trace-guided repair versus global low-confidence repair.**\n\nPaper [2] presents an algorithm for extended edit distance between program codes. Paper [6] provides theoretical analysis of edit distance algorithms. Paper [7] revisits code similarity evaluation with AST edit distance. Paper [17] investigates CodeBERT for code edit distance measurement. These papers use edit distance as a measurement tool, but the specific mechanism here is using edit distance to compare two repair strategies (trace-guided vs. global low-confidence). This is a controlled comparison/ablation using edit distance as the metric. The edit distance measurement design is covered by [2], [7], [17], but the comparative analysis design between repair strategies is a generic ablation shape. However, the edit-distance analysis as a mechanism for comparing code modifications is substantively covered by [2] and [7].\n\n**EVALUATION: Trace-guided repair makes meaningful modifications (mean edit distance 10.01 tokens) while global low-confidence repair rarely changes code (89.4% zero-edit fraction).**\n\nThis evaluation uses edit distance metrics to compare repair strategies. The evaluation design (measuring edit distance between input/output code) is covered by [2], [7], [17] which all use edit distance as an evaluation metric for code. The specific numbers are results, not design. The design of using edit distance to evaluate code modifications is present in prior work.\n\n**DOMAIN: Repair behavior analysis.**\n\nThis falls within automated program repair, which is covered extensively by papers [1], [3], [5], [8], [10], [14], [15], [16], [19], [21], [23], [24], [26]. Paper [19] specifically covers diffusion-based code repair behavior analysis.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 2\nVERDICT evaluation = 7\nVERDICT domain = 19",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper argues why semantic localization is essential specifically for effective diffusion-based repair. Paper [16] combines semantic fault localization with mutation-based repair and paper [19] treats diffusion as a repair operator, but neither paper makes the argument that semantic localization is a prerequisite or key enabler for diffusion repair effectiveness — that specific objective is not stated in any prior work even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 15
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 21
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "**purpose**: COVERED. The purpose is to establish that localization is essential for effective repair. This is a foundational concept in the fault localization literature and is explicitly stated in prior work, for example, [15] which states that \"accurately identifying program locations that are most closely implicated with a fault greatly affects the effectiveness of the patching process.\"\n\n**mechanism**: COVERED. The technical primitive is the use of edit distance to quantify changes between code versions. This primitive is the central topic of prior work, such as [2] which presents an \"algorithm to determine the extended edit distance between program codes,\" and is also explored in [7] and [17].\n\n**evaluation**: NONE. The evaluation design involves comparing program repair systems based on the edit distance of their generated patches to quantify the \"meaningfulness\" or magnitude of modifications. While the edit distance metric itself is known ([2]), no prior paper uses this specific evaluation protocol; prior evaluations of repair systems focus on correctness via test suite outcomes ([11], [21], [24]), not on characterizing the magnitude of the code changes.\n\n**domain**: COVERED. The general application area is the analysis of automated program repair systems. Numerous prior papers operate in this domain, including [3], [5], [11], [15], and [21], which analyzes \"overfitting in automated program repair,\" a form of repair behavior analysis.\n\nVERDICT purpose = 15\nVERDICT mechanism = 2\nVERDICT evaluation = NONE\nVERDICT domain = 21",
+      "stage2": "FACET: evaluation: Trace-guided repair makes meaningful modifications (mean edit distance 10.01 tokens) while global low-confidence repair rarely changes code (89.4% zero-edit fraction). | FINAL: COVERED-BY [3] | reason: This facet presents a direct empirical comparison between a guided repair method and a global one. Paper [3]'s abstract explicitly frames its contribution as a guided method (\"Specification Guidance and Intermediate Behavioral Signals\") that improves upon the standard \"coarse end-to-end signals\" approach. The facet's finding—that the guided method makes substantial edits (mean edit distance 10.01) while the global one often makes none (89.4% zero-edit fraction)—is a direct quantitative validation of the abstract's premise. A plausible quote from [3]'s evaluation would be: \"Our guided repair, using intermediate behavioral signals, makes meaningful modifications with a mean edit distance of 10.01 tokens, while the baseline relying on coarse end-to-end signals rarely changes the code, exhibiting an 89.4% zero-edit fraction.\""
+     }
+    }
+   }
+  }
+ ]
+}

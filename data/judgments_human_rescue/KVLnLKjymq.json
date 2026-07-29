@@ -1,0 +1,256 @@
+{
+ "paper_id": "KVLnLKjymq",
+ "title": "Star Attention: Efficient LLM Inference over Long Sequences",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     2,
+     11
+    ],
+    "mechanism": [
+     4,
+     21
+    ],
+    "evaluation": [
+     4,
+     28
+    ],
+    "domain": [
+     2,
+     4
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to reduce the quadratic cost and memory of self-attention for long-context LLM inference while preserving accuracy, without any model fine-tuning.  \n- **Paper 2**: \"Faster Causal Attention Over Large Sequences Through Sparse Flash Attention\" explicitly addresses the quadratic cost of self-attention for long sequences and proposes sparse attention mechanisms to reduce computational overhead. This aligns with the same problem-class level objective of reducing quadratic cost for long-context inference.  \n- **Paper 11**: \"RetrievalAttention: Accelerating Long-Context LLM Inference via Vector Retrieval\" also targets the quadratic complexity of self-attention and aims to reduce GPU memory consumption and inference speed for long-context LLMs.  \n- **Paper 21**: \"Longformer: The Long-Document Transformer\" introduces an attention mechanism that scales linearly with sequence length, directly addressing the quadratic cost problem in self-attention for long-context processing.  \n\n**Verdict**: The purpose is **COVERED** by prior papers 2, 11, and 21.\n\n---\n\n### Mechanism\nThe contribution mechanism is Star Attention, a two-phase block-sparse attention: Phase 1 shards the context into blocks processed with blockwise-local attention in parallel across hosts, and Phase 2 uses sequence-global attention for query and response tokens to attend to all cached tokens.  \n- **Paper 4**: \"Ring Attention with Blockwise Transformers for Near-Infinite Context\" introduces blockwise-local attention combined with global attention, which is conceptually equivalent to the two-phase block-sparse attention mechanism described here.  \n- **Paper 8**: \"Striped Attention: Faster Ring Attention for Causal Transformers\" builds on Ring Attention and further optimizes blockwise-local attention combined with global attention, matching the mechanism's underlying primitive.  \n- **Paper 19**: \"Tree Attention: Topology-aware Decoding for Long-Context Attention on GPU clusters\" uses parallelized blockwise-local attention combined with global attention across GPUs, which is substantively equivalent to the mechanism described here.  \n\n**Verdict**: The mechanism is **COVERED** by prior papers 4, 8, and 19.\n\n---\n\n### Evaluation\nThe contribution evaluates Star Attention on Llama-3.1-8B (base/instruct), Gradient.ai 1M-context Llama-3-8B, and Llama-3.1-70B-Instruct using the RULER and BABILong benchmarks, measuring speedup and accuracy retention.  \n- **Paper 23**: \"BABILong: Testing the Limits of LLMs with Long Context Reasoning-in-a-Haystack\" introduces the BABILong benchmark, which is directly reused here.  \n- **Paper 28**: \"RULER: What's the Real Context Size of Your Long-Context Language Models?\" introduces the RULER benchmark, which is also directly reused here.  \n- The evaluation design (benchmark-based comparison of speedup and accuracy retention) is standard and appears in multiple prior papers, including **Paper 4** (\"Ring Attention\") and **Paper 8** (\"Striped Attention\"), which evaluate sparse attention mechanisms using similar benchmark-based setups.  \n\n**Verdict**: The evaluation is **COVERED** by prior papers 4, 8, 23, and 28.\n\n---\n\n### Domain\nThe contribution operates in the domain of efficient long-context LLM inference.  \n- **Paper 2**: \"Faster Causal Attention Over Large Sequences Through Sparse Flash Attention\" explicitly addresses efficient long-context LLM inference.  \n- **Paper 4**: \"Ring Attention with Blockwise Transformers for Near-Infinite Context\" focuses on efficient long-context inference for LLMs.  \n- **Paper 11**: \"RetrievalAttention: Accelerating Long-Context LLM Inference via Vector Retrieval\" also targets efficient long-context LLM inference.  \n- **Paper 21**: \"Longformer: The Long-Document Transformer\" operates in the same domain of efficient long-context LLM inference.  \n\n**Verdict**: The domain is **COVERED** by prior papers 2, 4, 11, and 21.\n\n---\n\n### Final Verdicts\nVERDICT purpose = 2  \nVERDICT mechanism = 4  \nVERDICT evaluation = 4  \nVERDICT domain = 2  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 11
+      },
+      "mechanism": {
+       "covered_by": 21
+      },
+      "evaluation": {
+       "covered_by": 28
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Reduce quadratic cost and memory of self-attention for long-context LLM inference while preserving accuracy, without any model fine-tuning.**\n\nPapers [3], [10], [11], [12] explicitly target training-free long-context LLM inference efficiency. Paper [3] (InfLLM) states \"Training-Free Long-Context Extrapolation for LLMs.\" Paper [10] (DCA) states \"enables Llama2 70B to support context windows of more than 100k tokens without continual training.\" Paper [11] (RetrievalAttention) states \"a training-free approach to both accelerate attention computation and reduce GPU memory consumption.\" These all share the same objective: reduce attention cost for long-context LLM inference without fine-tuning.\n\n---\n\n**MECHANISM: Two-phase block-sparse attention — Phase 1: blockwise-local attention sharding context across hosts in parallel; Phase 2: query/response tokens attend globally to all cached KV.**\n\nPaper [4] (Ring Attention) distributes attention across devices with blockwise processing — but uses global attention throughout, not a two-phase local-then-global scheme. Paper [21] (Longformer) combines local windowed attention with global attention for specific tokens, which is structurally similar: most tokens use local attention, while certain tokens (e.g., [CLS]) attend globally. Paper [21] states it \"combines a local windowed attention with a task motivated global attention.\" This is the same primitive: local attention for context tokens + global attention for special (query/task) tokens. Paper [10] (DCA) decomposes attention into chunk-based modules for long sequences, also combining local and global components. Paper [7] also combines local and global attention. However, the specific two-phase distributed inference design (Phase 1 parallel sharding across hosts, Phase 2 global attention for query tokens) most closely matches Longformer's local+global primitive, even if the distributed/inference framing differs.\n\n---\n\n**EVALUATION: RULER and BABILong benchmarks, Llama models, vs Ring Attention baseline, measuring accuracy and speedup across 16K–1M tokens.**\n\nPaper [28] introduces RULER benchmark — the exact benchmark used. Paper [23] introduces BABILong benchmark — also used directly. The evaluation design (using RULER and/or BABILong to assess long-context LLM performance) is covered by [28] and [23]. The comparison against Ring Attention baseline is a standard substitution/swap experiment. Using these named benchmarks with accuracy metrics for long-context evaluation is covered.\n\n---\n\n**DOMAIN: Efficient long-context LLM inference.**\n\nNumerous prior papers operate in this exact domain: [3], [4], [10], [11], [12], [14], [19] all work on efficient long-context LLM inference. This domain is clearly covered.\n\n---\n\nVERDICT purpose = 11\nVERDICT mechanism = 21\nVERDICT evaluation = 28\nVERDICT domain = 4",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     5,
+     7
+    ],
+    "evaluation": null,
+    "domain": [
+     7,
+     9,
+     17
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": [
+        9,
+        17
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to prevent accuracy collapse in blockwise-local context encoding by addressing the issue of independent block processing. This is a specific problem within the broader area of attention mechanisms for long-context inference. Paper [9] (\"ABC: Attention with Bounded-memory Control\") addresses the computational overhead of attention mechanisms for long sequences, focusing on bounded-memory control to improve efficiency. While it does not explicitly address accuracy collapse due to independent block processing, it shares the broader objective of improving attention mechanisms for long contexts. Paper [17] (\"Ring Attention with Blockwise Transformers for Near-Infinite Context\") also tackles blockwise attention mechanisms for long contexts but focuses on memory efficiency and handling long sequences rather than accuracy collapse. Neither paper explicitly addresses the same problem-class level objective of preventing accuracy collapse in blockwise-local context encoding. Therefore, no prior paper matches the purpose.\n\n#### Mechanism:\nThe contribution introduces an anchor block mechanism where the first block is prefixed to subsequent blocks, retaining its original position indices, and its KVs are computed to condition attention but discarded afterward. Paper [5] (\"Anchor-based Large Language Models\") discusses anchor-based mechanisms for efficient information storage and processing in LLMs but does not describe the specific mechanism of prefixing the first block to subsequent blocks with retained position indices and discarded KVs. Paper [10] (\"Detecting Text in Scene and Traffic Guide Panels With Attention Anchor Mechanism\") uses an anchor mechanism in attention but focuses on predicting appropriate anchors for scene text detection, which is unrelated to the described mechanism. Paper [20] (\"Hard Anchor Attention in Anchor-based Detector\") discusses anchor mechanisms in object detection but does not describe the specific anchor block mechanism introduced here. No prior paper matches the mechanism.\n\n#### Evaluation:\nThe contribution evaluates the anchor block mechanism through ablations, showing that anchor block content is critical while its position is not, and that using the previous block as an anchor lowers accuracy. Paper [9] (\"ABC: Attention with Bounded-memory Control\") uses ablations to validate claims about bounded-memory attention mechanisms, but these ablations do not target the same claim about anchor block content and position. Paper [17] (\"Ring Attention with Blockwise Transformers for Near-Infinite Context\") also uses ablations to validate claims about blockwise attention mechanisms but does not evaluate anchor block content or position. No prior paper uses the same evaluation design targeting the same claim. Therefore, the evaluation design is novel.\n\n#### Domain:\nThe contribution operates in the domain of attention approximation and long-context inference. Paper [9] (\"ABC: Attention with Bounded-memory Control\") and Paper [17] (\"Ring Attention with Blockwise Transformers for Near-Infinite Context\") both address attention mechanisms for long-context inference, which is the same general application area. While the specific sub-problem and mechanism differ, the domain is covered.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 9, 17  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses preventing accuracy collapse in blockwise-local context encoding.  \nFACET: mechanism | FINAL: COVERED-BY 7 | reason: \"Block-attention divides retrieved documents into discrete blocks, with each block independently calculating key-value (KV) states except for the final block.\"  \nFACET: evaluation | FINAL: NONE | reason: No prior paper provides ablations on anchor block content, position, or size with equivalent claims.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Make blockwise-local context encoding actually work by preventing the accuracy collapse that occurs when blocks are processed independently.**\n\nPaper [7] (Block-Attention for Efficient Prefilling) divides retrieved documents into discrete blocks with each block independently calculating KV states — this directly addresses the same problem of making blockwise-local attention work. However, [7]'s purpose is efficiency in RAG prefilling, not specifically preventing accuracy collapse from independent block processing. Paper [5] (Anchor-based LLMs) addresses memory efficiency in LLMs with anchor tokens but doesn't specifically target the accuracy collapse from independent block processing. Paper [17] (Ring Attention with Blockwise Transformers) also addresses blockwise processing but focuses on memory/communication efficiency. None of these papers specifically target \"preventing accuracy collapse when blocks are processed independently\" as their stated purpose — they assume blockwise processing works and optimize for efficiency. This purpose is not substantively covered.\n\n**MECHANISM: Anchor block mechanism — prefix every context block (except first) with the first block, keeping anchor's original position indices; anchor KVs computed but discarded, only current block's KVs cached.**\n\nPaper [5] (Anchor-based LLMs) introduces anchor tokens that are retained across the KV cache to provide persistent context — \"This study introduces the concept of 'anchor tokens,' which are tokens that are always retained in the KV cache.\" However, the specific mechanism here is different: the anchor is the *first block* prepended to each subsequent block during encoding, with its KVs *discarded* after attention computation (not cached). Paper [7] uses blockwise independent encoding but doesn't use an anchor block prefix mechanism. Paper [14] (Landmark Attention) uses landmark tokens to enable retrieval-based access but doesn't prepend a fixed block. No prior paper describes the specific primitive of: prepend the first block to each subsequent block during encoding, compute attention conditioning on it, then discard those anchor KVs from the cache. This mechanism is not covered.\n\n**EVALUATION: Ablations showing anchor block content is critical while position is not; previous block as anchor lowers accuracy; larger anchor size improves accuracy.**\n\nThis evaluation involves ablation studies comparing variants of a proposed mechanism. Paper [7] performs ablations on block-attention variants. Paper [5] performs ablations on anchor token configurations. These are generic ablation designs (swap a component, measure accuracy), which per the rules don't establish coverage unless they validate the same claim. The specific claims being tested (content vs. position of anchor, anchor identity, anchor size) are unique to this mechanism. No prior paper uses the same named benchmark family, metric, or protocol family to validate these specific relationships. The evaluation design itself (controlled ablation of anchor properties) is a generic experimental shape, not a named protocol. However, the ablation design is standard — but the special rule says generic ablation shapes don't count unless validating the same claim. These ablations validate claims specific to this new mechanism, so NONE.\n\n**DOMAIN: Attention approximation / long-context inference.**\n\nPaper [7] operates in attention approximation for long-context inference (RAG scenarios with long contexts). Paper [5] operates in long-context LLM inference with KV cache compression. Paper [17] operates in long-context transformer inference. Paper [14] operates in long-context attention mechanisms. This domain is clearly covered by multiple prior papers.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 7",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: Paper [7] (Block-Attention) also does blockwise independent encoding but its purpose is RAG inference efficiency, not preventing accuracy collapse from independent block processing; no prior paper frames the goal as fixing the accuracy degradation caused by blockwise-local context isolation.\n\nFACET: mechanism | FINAL: NONE | reason: Paper [5] (Anchor-based LLMs) uses anchor tokens but as fixed memory slots for KV retention across all layers, not as a prefixed first-block that is processed alongside each subsequent block with its original position indices and then discarded from the cache; no prior paper describes this specific prefix-then-discard anchor block construction.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper contains ablations specifically testing anchor block content vs. position independence, the effect of using the previous block vs. first block as anchor, or the relationship between anchor block size and accuracy in a blockwise context encoding setting."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 17
+      },
+      "mechanism": {
+       "covered_by": 5
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 17
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The objective of preventing accuracy collapse in blockwise-local attention by adding global context is covered. Prior work identifies the same problem; for example, [17] proposes a method for \"Blockwise Transformers\" to handle \"long sequences,\" and [24] notes that \"window-based local self-attention... fails to capture the relationship between distant image patches,\" which is the same underlying problem.\n\n**mechanism**: The mechanism is covered. The name itself appears in [5] \"Anchor-based Large Language Models,\" which addresses the same long-context problem space. The underlying primitive of using a fixed, shared set of tokens (the anchor block) to provide global context to all local blocks is also substantively equivalent to the mechanism in [14] \"Landmark Attention,\" which proposes special \"landmark\" tokens that all other tokens can attend to.\n\n**evaluation**: The evaluation design is not covered by prior work. The evaluation consists of a specific set of ablation studies designed to validate the unique properties of the proposed anchor block mechanism (e.g., that content matters but position does not). This is a bespoke experimental design, not a reused named benchmark or protocol, and no prior paper would have run these specific experiments to validate these specific claims about this mechanism.\n\n**domain**: The application domain of attention approximation for long-context inference is covered. Many prior papers operate in this area, for example [17] \"Ring Attention with Blockwise Transformers for Near-Infinite Context\" which explicitly aims to \"handle long sequences\" in Transformers.\n\nVERDICT purpose = 17\nVERDICT mechanism = 5\nVERDICT evaluation = NONE\nVERDICT domain = 17",
+      "stage2": "FACET: evaluation: Ablations (Table 3, Fig 7): anchor block content is critical while its position is not (random/previous-block positions have minimal impact); using the previous block as anchor lowers accuracy; larger anchor block size improves accuracy, best when anchor size equals context block size. | FINAL: NONE | reason: No prior paper presents this specific set of ablation results. While [14] ablates the number of \"landmark tokens\" (analogous to anchor size) and finds more is better, it does not test or report on the criticality of content versus position, nor the specific finding about using the previous block as an anchor. The full set of empirical claims is unique."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     6,
+     23
+    ],
+    "evaluation": [
+     6
+    ],
+    "domain": [
+     6
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 23
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to characterize the success and failure modes of block-sparse approximations in long-context LLMs, focusing on the accuracy-speed trade-off. No prior paper explicitly establishes this empirical relationship between block-sparse approximations and their performance trade-offs across tasks. While papers like [6] and [8] discuss sparse attention methods for long-context LLMs, they do not characterize the specific trade-offs or failure modes of block-sparse approximations. Similarly, papers like [7], [11], and [10] address block-sparse optimization but in unrelated contexts (e.g., signal recovery or error correction), not LLM performance characterization.\n\n### Mechanism\nThe mechanism involves per-category analysis on RULER task types and block-size/anchor-size sweeps. Papers [7], [11], and [10] discuss block-sparse methods but focus on signal recovery or optimization frameworks, not task-specific performance analysis in LLMs. Papers like [6], [8], and [29] explore sparse attention mechanisms for LLMs but do not employ the specific experimental setup of per-category analysis or block-size sweeps. Thus, the mechanism appears uncovered.\n\n### Evaluation\nThe evaluation design involves comparing block-sparse approximations to global attention across task types and analyzing accuracy-speed trade-offs. Papers like [6], [8], and [29] evaluate sparse attention methods against global attention in long-context LLMs, using similar benchmark families and metrics (e.g., accuracy comparisons across tasks). While the specific tasks differ, the evaluation design (comparing sparse methods to global attention) is substantively equivalent. Therefore, the evaluation facet is covered.\n\n### Domain\nThe domain is long-context LLM analysis. Papers [1], [4], [5], [6], [8], and [29] all operate in the same general application area of long-context LLMs, even if they target different specific tasks or methods. Thus, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 6  \nVERDICT domain = 6  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly characterizes the success/failure of block-sparse approximation or its accuracy-speed trade-off.  \nFACET: mechanism | FINAL: COVERED-BY 23 | reason: \"Multi-hop reasoning chain based adversarial attack method\" aligns with per-category analysis on Multi-Hop Tracing and QA tasks."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Characterize where block-sparse approximation succeeds/fails and the accuracy-speed trade-off it exposes.**\n\nThis purpose is specifically about diagnosing failure modes and success conditions of a block-sparse attention approximation in long-context LLMs, including accuracy-speed trade-offs. Paper [6] (MInference 1.0) addresses speeding up pre-filling for long-context LLMs via dynamic sparse attention and discusses accuracy/efficiency trade-offs of sparse attention patterns. However, its purpose is to *propose* a method, not to *characterize failure modes* of block-sparse approximation specifically. No prior paper establishes the same empirical relationship: which task categories block-sparse attention fails on and why (e.g., inter-block communication gaps). The closest is [6], but it doesn't characterize block-sparse failure modes per task category. No paper covers this specific diagnostic purpose.\n\n**MECHANISM: Per-category analysis on RULER task types and block-size/anchor-size sweeps.**\n\nThe mechanism is a per-category breakdown analysis on RULER benchmark task types combined with hyperparameter sweeps (block size, anchor size). Paper [6] uses sparse attention and evaluates on long-context benchmarks with some breakdown, but doesn't use RULER per-category analysis specifically. Paper [3] evaluates compression techniques under long-context with per-task breakdowns. The RULER benchmark itself is referenced implicitly through the task types listed (Single-NIAH, Multi-NIAH, etc.). The analysis design — per-category breakdown + hyperparameter sweep — is a standard controlled ablation design. Paper [6] performs similar sweep-style analysis for sparse attention patterns. This is a standard analysis protocol (per-category breakdown + sweep) that appears in prior work like [6] and [3].\n\n**EVALUATION: Near-identical to global attention on Single-NIAH; specific numeric findings on RULER task categories.**\n\nThe evaluation design uses RULER benchmark task categories with accuracy metrics and block-size sweeps. RULER as a named benchmark family is used in the long-context LLM evaluation space. Papers [1], [3], [4], [5] all use long-context benchmarks with per-task accuracy metrics. The evaluation *design* (per-task accuracy breakdown on a named long-context benchmark with hyperparameter sensitivity analysis) is covered by papers like [3] and [6], which evaluate sparse/compressed LLMs on long-context benchmarks with per-task breakdowns. The specific numeric findings are new, but the design is covered.\n\n**DOMAIN: Long-context LLM analysis.**\n\nMultiple prior papers operate in the long-context LLM domain: [1], [2], [3], [4], [5], [6] all explicitly work on long-context LLMs. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 6\nVERDICT evaluation = 6\nVERDICT domain = 6",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of characterizing where block-sparse attention approximation succeeds/fails and the accuracy-speed trade-off it exposes in long-context LLM inference; [6] (MInference) proposes and uses block-sparse patterns but does not systematically characterize failure modes or the accuracy-speed trade-off as an explicit analytical purpose; no other paper matches even under different terminology."
+     }
+    }
+   }
+  }
+ ]
+}

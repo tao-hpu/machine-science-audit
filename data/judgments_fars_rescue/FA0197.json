@@ -1,0 +1,383 @@
+{
+ "paper_id": "FA0197",
+ "title": "Cache Preemption Poisoning Attacks on LLM-Based Log Parsers",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     6,
+     10
+    ],
+    "evaluation": [
+     4,
+     9,
+     10
+    ],
+    "domain": [
+     9
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to introduce a new attack vector exploiting adaptive caching in LLM-based log parsers. None of the prior papers explicitly introduce or discuss an attack vector targeting adaptive caching in LLM-based log parsers. Papers [6], [7], [10], [12], [20], [21], [25], and [26] discuss cache-related attacks, but they focus on DNS cache poisoning, web cache pollution, or cache timing attacks, which are unrelated to adaptive caching in LLM-based log parsers. Paper [9] introduces adversarial attacks on log parsers but does not address adaptive caching mechanisms. Therefore, the purpose is **uncovered**.\n\n### Mechanism\nThe mechanism involves cache preemption poisoning, where crafted log lines front-load over-generalized templates to intercept later clean logs via prefix-tree matching. Paper [4] (LILAC) describes the use of prefix-tree caching in LLM-based log parsers but does not discuss poisoning or adversarial manipulation of the cache. Papers [6], [7], [10], [12], [20], [21], [25], and [26] discuss various cache-related attacks, but none involve prefix-tree matching or poisoning mechanisms specific to log parsing. Paper [9] introduces adversarial attacks on log parsers but does not involve cache poisoning or prefix-tree manipulation. Therefore, the mechanism is **uncovered**.\n\n### Evaluation\nThe evaluation demonstrates the attack qualitatively on LILAC's prefix-tree cache as an exploitable surface created by the efficiency mechanism. Paper [4] (LILAC) uses prefix-tree caching for efficiency but does not evaluate it as an attack surface. Papers [6], [7], [10], [12], [20], [21], [25], and [26] evaluate cache-related attacks, but none use prefix-tree caching or LILAC's specific setup. Paper [9] evaluates adversarial attacks on log parsers but does not involve prefix-tree caching or qualitative demonstrations of cache poisoning. Therefore, the evaluation design is **uncovered**.\n\n### Domain\nThe domain is the security of LLM-based log parsing. Papers [1], [2], [3], [4], [5], [8], [11], and [13] all address LLM-based log parsing, including its efficiency, accuracy, and security aspects. Paper [9] specifically discusses adversarial attacks on log parsers, which falls within the security domain of LLM-based log parsing. Therefore, the domain is **covered**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 9  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper introduces an attack vector exploiting adaptive caching in LLM-based log parsers.  \nFACET: mechanism | FINAL: NONE | reason: No prior paper defines cache preemption poisoning or an equivalent mechanism targeting prefix-tree matching in adaptive caches.  \nFACET: evaluation | FINAL: COVERED-BY 4 | reason: \"LILAC's prefix-tree cache\" is explicitly named and described as an exploitable efficiency mechanism in [4].  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Introduce a new attack vector that exploits the adaptive caching used by LLM-based log parsers.**\n\nThe purpose is to identify and demonstrate a security vulnerability in LLM-based log parsers' caching mechanisms. Paper [9] (LogBug) is the closest — it explicitly states \"the security vulnerabilities of the log parsers have not been unveiled yet\" and proposes \"the first step to propose a novel real-time black-box attack framework LogBug in which attackers slightly modify the logs to deviate the analysis result.\" However, LogBug targets anomaly detection evasion, not exploitation of adaptive caching mechanisms specifically. No prior paper targets the specific objective of exploiting adaptive caching in LLM-based log parsers as an attack surface. Paper [9] attacks log parsers but for a different purpose (evading anomaly detection, not exploiting caching). The purpose here is specifically about the caching mechanism as the vulnerability — no prior paper covers this.\n\n**MECHANISM: Cache preemption poisoning via crafted log lines that front-load over-generalized templates intercepting later clean logs via prefix-tree matching.**\n\nThis mechanism involves injecting crafted inputs to corrupt a cache structure (prefix-tree) so that subsequent legitimate queries are mishandled. Papers [6], [7], [10], [12] involve DNS cache poisoning — injecting malicious entries to corrupt a cache so legitimate lookups are redirected. Paper [21] discusses cache pollution attacks on CDNs. However, the specific primitive here is injecting inputs that cause over-generalized templates to be cached in a prefix-tree, intercepting future legitimate log lines — this is closer to cache poisoning but in a very specific structural form (prefix-tree template generalization). Paper [10] (\"Cache-Poisoned Denial-of-Service\") involves injecting content to corrupt web caches so legitimate requests get wrong responses — structurally similar. Paper [18] (poisoning retrieval corpora) injects adversarial passages so a retrieval system returns wrong results for future queries — also structurally similar. The core primitive — inject crafted content into a cache/index so future legitimate queries are intercepted/corrupted — is present in [10] and [18]. The prefix-tree specificity is an instance detail.\n\n**EVALUATION: Demonstrated qualitatively on LILAC's prefix-tree cache as an exploitable attack surface.**\n\nThis is a qualitative/conceptual demonstration on a specific system (LILAC), not using a named benchmark, metric, or statistical framework. No prior paper uses this evaluation design — it's a system-specific vulnerability demonstration. However, qualitative attack demonstrations appear in [9] (LogBug demonstrates attacks on log parsers), [6], [10]. The evaluation design here is essentially a \"proof-of-concept attack demonstration on a specific system\" — this generic shape appears in security papers like [9], [10]. But the SPECIAL RULE says generic experimental moves don't establish coverage unless validating the same claim. Paper [9] does qualitative attack demonstration on log parsers, which is the same design shape applied to a related object.\n\n**DOMAIN: Security of LLM-based log parsing.**\n\nPaper [9] (LogBug) explicitly operates in the domain of security of log parsers. Papers [1]-[5], [8], [11], [13] operate in LLM-based log parsing. The combination (security + LLM-based log parsing) is most directly covered by [9] for the security angle and [4] for LLM log parsing. Domain = security of log parsing systems is covered by [9].\n\nVERDICT purpose = NONE\nVERDICT mechanism = 10\nVERDICT evaluation = 9\nVERDICT domain = 9",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of introducing an attack vector that exploits the adaptive caching mechanism specific to LLM-based log parsers. Paper [9] (LogBug) attacks log parsers but targets anomaly detection evasion, not caching mechanisms. Paper [4] (LILAC) introduces adaptive parsing cache but as a feature, not as an attack surface. No paper combines the attack framing with LLM log parser caching as the exploited vulnerability."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: Papers [6] and [10] share the same objective of introducing a new attack vector that exploits a cache mechanism, with [6] introducing a \"new class of DNS poisoning attacks targeting the client-side DNS cache\" and [10] a \"Cache-Poisoned Denial-of-Service Attack\" on web caches.\nmechanism: The core primitive of poisoning a cache with a crafted entry to preemptively and incorrectly service future legitimate requests is present in prior work. Paper [6] does this by injecting a poisoned DNS record to intercept future lookups, and [10] does this by exploiting unkeyed inputs to poison a web cache entry.\nevaluation: The evaluation design, a qualitative proof-of-concept demonstration of an attack against a specific system, is not new. For example, [10] demonstrates its attack \"by successfully poisoning the cache of a popular open-source cache proxy,\" which is the same evaluation design applied to a different object.\ndomain: The general application area of security for log parsers is not new. Paper [9] explicitly addresses this by proposing \"a novel real-time black-box attack framework\" to uncover \"the security vulnerabilities of the log parsers.\"\n\nVERDICT purpose = 6\nVERDICT mechanism = 6\nVERDICT evaluation = 10\nVERDICT domain = 9",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     6,
+     7
+    ],
+    "mechanism": [
+     2,
+     11,
+     22
+    ],
+    "evaluation": [
+     7,
+     20
+    ],
+    "domain": [
+     3,
+     5,
+     15
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        6,
+        7
+       ]
+      },
+      "mechanism": {
+       "covered_by": [
+        2,
+        11,
+        22
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        7,
+        20
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        3,
+        5,
+        15
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose:\nThe contribution's purpose is to quantify the severity and specificity of a poisoning attack under a small budget. Paper [7] (\"A Systematic Evaluation of Data Poisoning Severity Under Label Flipping and Gradient Manipulation Based Attacks\") evaluates how increasing poisoning levels affect model behavior, which aligns with the goal of quantifying poisoning severity. Paper [6] (\"Are Targeted Data Poisoning Attacks as Effective as We Think?\") also focuses on evaluating the effectiveness of poisoning attacks, particularly under targeted conditions, which overlaps with the purpose of assessing attack specificity. Both papers substantively address the same problem-class level objective.\n\n### Mechanism:\nThe contribution uses a crafted 2% poison budget of log lines and compares its impact against random-noise injection. Paper [2] (\"MetaPoison: Practical General-purpose Clean-label Data Poisoning\") introduces bi-level optimization to craft poisons, which is substantively equivalent to the mechanism of crafting targeted poisoning samples. Paper [22] (\"Poison Frogs! Targeted Clean-Label Poisoning Attacks on Neural Networks\") also explores crafting poisoning samples, albeit in a different domain, which matches the underlying primitive of crafting targeted poisons. Paper [11] (\"Neural Adversarial Attacks with Random Noises\") discusses random noise injection as a baseline for adversarial attacks, which matches the comparison against random noise in the contribution.\n\n### Evaluation:\nThe contribution evaluates poisoning severity by measuring catastrophic degradation (-67.17 percentage points in parsing accuracy) and comparing crafted poison effectiveness to random noise (35x more effective). Paper [7] (\"A Systematic Evaluation of Data Poisoning Severity Under Label Flipping and Gradient Manipulation Based Attacks\") uses a systematic evaluation of poisoning severity, including controlled poisoning levels and their impact on model performance, which matches the evaluation design. Paper [20] (\"Just How Toxic is Data Poisoning? A Unified Benchmark for Backdoor and Data Poisoning Attacks\") also benchmarks poisoning attacks, focusing on their practical threat and effectiveness, which aligns with the evaluation design.\n\n### Domain:\nThe contribution operates in adversarial log parsing, specifically using the BGL benchmark. Paper [3] (\"LPB-Gen: Systematic Large Log-Parsing Benchmarks Generation\") and Paper [5] (\"LogPM: Character-Based Log Parser Benchmark\") both address log parsing as a domain, which includes adversarial considerations. Paper [15] (\"Log Poisoning Attacks in IoT: Methodologies, Evasion, Detection, Mitigation, and Criticality Analysis\") explicitly discusses log poisoning attacks, which directly overlaps with the domain of adversarial log parsing.\n\n---\n\nVERDICT purpose = 6, 7  \nVERDICT mechanism = 2, 11, 22  \nVERDICT evaluation = 7, 20  \nVERDICT domain = 3, 5, 15  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 15
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Quantify the severity and specificity of the poisoning attack under a small budget.**\n\nPaper [7] is the closest match: \"A Systematic Evaluation of Data Poisoning Severity Under Label Flipping and Gradient Manipulation Based Attacks\" explicitly aims to quantify how increasing poisoning levels affect model performance — same objective of measuring severity under constrained budgets. Paper [20] also benchmarks poisoning attacks to assess their true effectiveness. However, the specific purpose here is quantifying severity AND specificity (crafted vs. random) of poisoning under a small budget in log parsing. Paper [7] covers \"quantify severity under a small/varying budget\" at the problem-class level — same gap being closed (understanding how bad poisoning is at a given injection rate).\n\n**MECHANISM: Inject a 2% poison budget of crafted log lines and compare against random-noise injection.**\n\nThe core primitive is: inject a small fraction of crafted malicious samples and compare effectiveness against random/baseline noise injection. Paper [7] uses \"a range of poisoning intensities\" with controlled comparisons. Paper [20] compares poisoning attacks under consistent experimental design. Paper [11] specifically addresses \"Neural Adversarial Attacks with Random Noises\" — comparing adversarial crafted attacks vs. random noise is the mechanism. Paper [2] (MetaPoison) uses crafted poison vs. baselines. The primitive of \"crafted poison vs. random noise at fixed budget\" appears in [11] and implicitly in [7] and [20].\n\n**EVALUATION: 2% poison causes -67.17 pp degradation in PA, crafted poison 35x more effective than random noise.**\n\nThe evaluation design here involves: measuring accuracy degradation at a fixed poison budget, and computing a ratio of crafted-to-random effectiveness. Paper [7] uses controlled poisoning intensity experiments measuring classification performance degradation — same design (vary poison rate, measure accuracy drop). Paper [20] benchmarks poisoning attacks measuring performance degradation. The \"crafted vs. random\" ratio comparison design appears in [11]. These are standard poisoning evaluation designs (fixed budget, accuracy metric, comparative ratio) covered by [7] and [20].\n\n**DOMAIN: Adversarial log parsing (BGL benchmark).**\n\nPaper [15] covers \"Log Poisoning Attacks in IoT\" — adversarial manipulation of log files, same general area of adversarial log analysis. Paper [16] covers \"data poisoning attacks on firewall log data\" — adversarial attacks on log-based ML systems. Paper [3] and [23] cover log parsing benchmarks including BGL. The combination of adversarial attacks + log parsing is touched by [15] and [16], placing this in a covered domain area.\n\nVERDICT purpose = 7\nVERDICT mechanism = 11\nVERDICT evaluation = 7\nVERDICT domain = 15",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     4,
+     22
+    ],
+    "evaluation": [
+     22
+    ],
+    "domain": [
+     4
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to show that the attack nullifies the benefit of adaptive caching entirely. None of the prior papers explicitly establish this specific empirical relationship — that an attack can negate the advantage of adaptive caching. While some papers (e.g., [4], [9], [22]) discuss adversarial attacks or caching mechanisms, none demonstrate or report the same relationship between an attack and the negation of adaptive caching benefits.\n\n### Mechanism\nThe mechanism involves comparing poisoned LILAC against a naive stateless LLM baseline on template accuracy. Paper [4] (\"LogBug\") introduces a black-box attack framework targeting log parsers, which is conceptually similar to the poisoning attack on LILAC, as both involve adversarial manipulation of logs to disrupt downstream tasks. However, no prior paper explicitly compares poisoned adaptive caching (LILAC) against a stateless baseline, making this mechanism unique.\n\n### Evaluation\nThe evaluation design involves showing that the attack pushes LILAC below the stateless baseline (56.03% vs 66.67% FTA), negating the advantage of adaptive caching. Paper [4] (\"LogBug\") evaluates the impact of adversarial attacks on log parsers, but it does not use the same evaluation design of comparing poisoned adaptive caching against a stateless baseline. Similarly, no other prior paper uses this specific evaluation design. Thus, the evaluation design appears novel.\n\n### Domain\nThe domain is adversarial log parsing, specifically using the BGL benchmark. Paper [4] (\"LogBug\") operates in the same general application area of adversarial log parsing, even though it does not target the BGL benchmark specifically. Under the domain facet's rules, this counts as covered because the area (adversarial log parsing) is the same.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 4  \nVERDICT evaluation = NONE  \nVERDICT domain = 4  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly shows an attack nullifying the benefit of adaptive caching entirely, even under different terminology or framing.  \nFACET: evaluation | FINAL: NONE | reason: No prior paper evaluates an attack that pushes LILAC below a stateless baseline, negating the advantage of adaptive caching, with the same claim or named design.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 22
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Show the attack nullifies the benefit of adaptive caching entirely.**\n\nThe purpose is to demonstrate that a poisoning attack eliminates the performance advantage of an adaptive caching system (LILAC), reducing it below a naive baseline. Paper [4] (LogBug) attacks log parsers to deviate analysis results, but its purpose is evasion of anomaly detection, not demonstrating that an attack nullifies the benefit of adaptive caching. Paper [22] introduces LILAC itself but does not study attacks against it. Paper [11] studies \"how increasing poisoning levels affect classification performance\" — this is about degradation under poisoning, but not specifically about nullifying the benefit of an adaptive/stateful system versus a stateless baseline. No prior paper establishes the same empirical relationship: that poisoning an adaptive caching mechanism causes it to fall *below* a stateless baseline, thereby negating the adaptive advantage. This specific relationship (attack nullifies adaptive caching benefit) is not covered.\n\n**MECHANISM: Compare poisoned LILAC against a naive stateless LLM baseline on template accuracy.**\n\nThe mechanism is a controlled comparison: poisoned adaptive system vs. stateless baseline, measuring template accuracy. Paper [4] (LogBug) attacks log parsers and measures parsing accuracy, but doesn't compare against a stateless baseline to show nullification. Paper [22] compares LILAC against baselines but without poisoning. The specific primitive of \"compare poisoned stateful system vs. stateless baseline to measure nullification\" doesn't appear in any prior paper. However, as a generic experimental design (ablation/comparison), this is a standard controlled comparison. No prior paper uses this exact comparison design for this claim.\n\n**EVALUATION: Attack pushes LILAC below stateless baseline (56.03% vs 66.67% FTA), negating the advantage of adaptive caching.**\n\nThe evaluation design uses template accuracy (FTA) on a named benchmark (BGL). Paper [22] uses FTA on BGL for log parsing evaluation. Paper [4] evaluates log parser attacks using accuracy metrics on system logs. The FTA metric on BGL benchmark is used in [22] and [10]. The evaluation design (FTA metric on BGL benchmark) is covered by [22].\n\n**DOMAIN: Adversarial log parsing (BGL benchmark).**\n\nPaper [4] (LogBug) explicitly works in adversarial log parsing. Paper [22] works in log parsing (BGL benchmark). The domain of adversarial log parsing is covered by [4].\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 22\nVERDICT domain = 4",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper contains the objective of showing that a cache-poisoning attack nullifies the performance benefit of adaptive caching itself; the closest works (LogBug [4], LILAC [22]) address log parsing or cache attacks separately but neither frames the goal as demonstrating that the caching advantage is entirely eliminated by the attack.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper compares a poisoned cache-based LLM log parser against a naive stateless LLM baseline on template accuracy; LILAC [22] describes the stateless baseline but does not poison the cache and compare the two, and no other paper performs this specific poisoned-vs-stateless comparative evaluation."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": 22
+      },
+      "evaluation": {
+       "covered_by": 22
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "For each facet, I will first state my reasoning and then provide the final verdict.\n\n**Purpose:** The contribution's purpose is to demonstrate that a poisoning attack can completely negate the benefits of an advanced feature (adaptive caching), making the system perform worse than a simpler baseline without that feature. This specific finding—that an attack can invert a feature's benefit into a liability—is covered by paper [9], which describes a \"Cache-Poisoned Denial-of-Service Attack\" that turns a web cache's protective qualities into a vector for system failure.\n\n**Mechanism:** The mechanism is the analysis method used: comparing the performance of the poisoned advanced system (LILAC) against a naive baseline (stateless LLM). This is a standard comparative experimental design, which is covered by paper [22] that originally introduced LILAC and compared it against 15 different baselines to establish its performance.\n\n**Evaluation:** The evaluation design involves measuring template accuracy on a log parsing benchmark to quantify the performance drop caused by the attack. This design is covered by paper [22], which uses the same family of metric (\"Parsing Accuracy\") on the same type of benchmark data (system logs) to evaluate the performance of the LILAC system.\n\n**Domain:** The application domain is adversarial attacks on log parsing. This domain is covered by paper [4], which explicitly introduces an \"attack framework LogBug\" for \"Generating Adversarial System Logs\" to fool log parsers.\n\nVERDICT purpose = 9\nVERDICT mechanism = 22\nVERDICT evaluation = 22\nVERDICT domain = 4",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     9,
+     14
+    ],
+    "mechanism": null,
+    "evaluation": [
+     2,
+     9,
+     10,
+     11,
+     12
+    ],
+    "domain": [
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": [
+        9,
+        10,
+        11,
+        12
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        2,
+        3,
+        4,
+        5,
+        6
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to provide a partial defense against the attack. Several prior papers address defenses against poisoning or adversarial attacks, but none specifically focus on partial defenses targeting over-generalized poison templates. Papers like [9], [10], [11], [12], and [14] propose defenses against poisoning attacks, but their objectives are broader (e.g., certified robustness, aggregation-based defenses, or detection frameworks). None explicitly aim to provide a partial defense tailored to over-generalized templates.\n\n### Mechanism\nThe mechanism is a wildcard density screening defense that filters over-generalized poison templates. Papers [9], [10], [11], and [12] propose aggregation-based defenses or certified robustness frameworks, which are substantively different primitives. Papers [24] and [26] focus on detecting poisoning or backdoor attacks but rely on agnostic detection frameworks or trigger inversion, which do not involve filtering based on wildcard density. No prior paper proposes a substantively equivalent mechanism.\n\n### Evaluation\nThe evaluation recovers 40.30% of lost PA and identifies limitations for future work. Papers [9], [10], [11], and [12] use certified robustness metrics and aggregation-based evaluations, which are substantively equivalent evaluation designs. These papers validate defenses against poisoning attacks using recovery metrics or robustness guarantees, even if applied to different datasets or models. Thus, the evaluation design is covered.\n\n### Domain\nThe domain is defenses for LLM-based log parsing. Papers [2], [3], [4], [5], and [6] all address LLM-based log parsing, making this domain covered. While the specific sub-problem of defending against poisoning attacks in log parsing is new, the general application area of LLM-based log parsing is well-established in these prior works.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = [9], [10], [11], [12]  \nVERDICT domain = [2], [3], [4], [5], [6]  ",
+      "stage2": "1. **FACET: purpose** | **FINAL: COVERED-BY 9** | reason: Paper [9] explicitly states, *\"This paper proposes a framework of random selection based certified defenses against data poisoning attacks,\"* which aligns with the objective of providing a partial defense against the attack.\n\n2. **FACET: mechanism** | **FINAL: NONE** | reason: No prior paper proposes or evaluates a \"wildcard density screening defense\" or an equivalent mechanism under any terminology, framing, or domain vocabulary."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 14
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: \"Provide a partial defense against the attack\" (specifically against poisoning/backdoor attacks on LLM-based log parsing)**\n\nLooking for prior papers that pursue the same objective: defending against data poisoning or backdoor attacks. Papers [1], [9], [10], [11], [12], [14], [15], [23], [24] all address defenses against data poisoning attacks. Paper [14] \"Defending Against Adversarial Denial-of-Service Data Poisoning Attacks\" is particularly close — \"To mitigate this threat, we propose a new approach of detecting DoS poisoned instances.\" Paper [11] \"Certified Defenses for Data Poisoning Attacks\" also directly addresses this purpose. The purpose of defending against an attack is covered by multiple prior papers.\n\n**MECHANISM: \"Wildcard density screening defense that filters over-generalized poison templates\"**\n\nThis is a specific filtering mechanism targeting over-generalized templates (templates with too many wildcards/variables) in log parsing. I need to find any prior paper using a similar primitive: filtering/screening based on a density or generalization measure of patterns. Paper [14] proposes \"detecting DoS poisoned instances\" but uses outlier detection, not wildcard density screening. Papers [9], [10], [11], [12] use aggregation/partitioning-based certified defenses. Paper [24] uses data distribution analysis. Paper [18] and [26] do trigger inversion for backdoor detection in NLP. None of these papers use a \"wildcard density\" or \"template over-generalization\" screening primitive — this is specific to log parsing template structure. No prior paper uses this mechanism.\n\n**EVALUATION: \"Recovers 40.30% of lost PA, while its limitations are identified\"**\n\nThe evaluation design uses Parsing Accuracy (PA) as a metric, which is a standard metric in log parsing benchmarks (used in papers [2], [3], [4], [5]). The design of measuring recovery of a metric after applying a defense, and identifying limitations, is a standard evaluation design used in defense papers like [14] (\"we propose a new approach... and evaluate\"). The metric (PA) appears in prior log parsing papers [2], [3], [4], [5]. The evaluation design (measure metric recovery, ablation of limitations) is a standard design covered by prior work.\n\n**DOMAIN: \"Defenses for LLM-based log parsing\"**\n\nThe domain is LLM-based log parsing. Papers [2], [3], [4], [5], [6] all work in LLM-based log parsing. This domain is clearly covered. The \"defense\" aspect is a sub-problem within this area, but the area itself (LLM-based log parsing) is covered.\n\nVERDICT purpose = 14\nVERDICT mechanism = NONE\nVERDICT evaluation = 2\nVERDICT domain = 2",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper proposes or evaluates a wildcard density screening defense that filters over-generalized poison templates in log parsing. Papers on backdoor/poisoning defenses (e.g., [9],[10],[11],[12],[13],[24]) address classification models via aggregation, outlier removal, or trigger inversion — none involve wildcard density as a filtering criterion for poison templates in a log parsing context. No equivalent mechanism found under any alternative terminology."
+     }
+    }
+   }
+  }
+ ]
+}

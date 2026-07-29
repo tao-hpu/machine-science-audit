@@ -1,0 +1,278 @@
+{
+ "paper_id": "FA0082",
+ "title": "Context Bagging: Inference-Time Ensembling for Robust Long-Context QA Under Hard Distractors",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     21
+    ],
+    "mechanism": [
+     12,
+     22
+    ],
+    "evaluation": [
+     5
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to allocate test-time compute to context diversity instead of decoding diversity for robust long-context QA. No prior paper explicitly addresses this objective. While papers like [5] and [6] discuss retrieval-augmented generation (RAG) for question answering and multi-hop questions, they do not focus on the specific problem of reallocating test-time compute to context diversity over decoding diversity. Therefore, the purpose is **not covered**.\n\n### Mechanism\nThe mechanism, Context Bagging (CoBag), involves sampling K diverse context subsets via relevance-weighted selection, randomly permuting paragraph order within each subset, generating answers with greedy decoding, and aggregating by majority voting. Papers like [2], [8], [9], [14], and [30] discuss bagging and ensemble methods, which involve sampling subsets and aggregating predictions, but none describe relevance-weighted selection combined with random permutation of paragraph order and majority voting in the context of long-context QA. While [12] and [28] discuss majority voting for self-consistency, they do not incorporate the specific combination of techniques used in CoBag. Thus, the mechanism is **not covered**.\n\n### Evaluation\nThe evaluation uses a noisy MuSiQue split with hard distractors, where CoBag significantly outperforms self-consistency. Papers like [5], [6], [10], [17], and [28] evaluate RAG systems or self-consistency methods under noisy or challenging conditions, using benchmarks and metrics that assess robustness and distractor handling. The evaluation design (benchmarking under noisy conditions and comparing against self-consistency) is conceptually similar to these prior works, even though the specific dataset (MuSiQue) and instance differ. Therefore, the evaluation is **covered**.\n\n### Domain\nThe domain is long-context question answering / RAG. Papers like [1], [3], [4], [5], [6], [10], and [17] all work within the general application area of retrieval-augmented generation (RAG) and question answering. Although the specific dataset or sub-problem (long-context QA) may differ, the domain is clearly within the established area of RAG-based QA. Therefore, the domain is **covered**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 5  \nVERDICT domain = 1  ",
+      "stage2": "**FACET: purpose | FINAL: NONE | reason: No prior paper explicitly allocates test-time compute to context diversity instead of decoding diversity for robust long-context QA. No equivalent objective found under different terminology or framing.**\n\n**FACET: mechanism | FINAL: COVERED-BY 12 | reason: \"Majority voting is considered an effective method to enhance chain-of-thought reasoning, as it selects the answer with the highest 'self-consistency' among different reasoning paths.\" This aligns with CoBag's aggregation by majority voting, satisfying the mechanism-specific standard.**"
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 21
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## PURPOSE: \"Allocate test-time compute to context diversity instead of decoding diversity for robust long-context QA\"\n\nThe key objective is redirecting test-time compute budget from sampling diverse *outputs* (self-consistency/decoding diversity) toward sampling diverse *input contexts* for robustness. Paper [21] \"Diverse LLMs or Diverse Question Interpretations?\" compares \"model diversity\" vs \"question interpretation diversity\" for ensembling LLMs on binary questions — this is about *what kind of diversity* to exploit, but it's about model vs. question framing diversity, not context-subset diversity vs. decoding diversity. It's thematically related but the specific gap (context diversity vs. decoding diversity for long-context QA robustness) isn't directly addressed. No prior paper specifically frames the purpose as \"redirect test-time compute from decoding diversity to context diversity.\" Paper [21] is the closest but targets a different axis of diversity comparison. I'll mark this as partially covered by [21] since both ask \"which type of diversity is more effective\" — the underlying objective (comparing diversity strategies for LLM ensembling) is substantively equivalent at the problem-class level.\n\n## MECHANISM: \"Context Bagging (CoBag) — sample K diverse context subsets via relevance-weighted selection, randomly permute paragraph order within each subset, greedy decoding, majority voting\"\n\nThis combines several primitives:\n- **Bagging** (bootstrap/subset sampling + voting): Papers [2], [8], [9], [14], [18], [23], [30] all cover bagging as a mechanism.\n- **Majority voting for LLM aggregation**: Paper [12] uses majority voting for self-consistency in LLMs; [35] uses self-consistency voting.\n- **Random permutation of order within subsets**: Paper [34] (Janossy Pooling) explicitly addresses permutation-invariant functions by averaging over reorderings of input sequences — this is the same primitive as randomly permuting paragraph order to reduce position bias.\n- **Relevance-weighted sampling of context subsets**: This is a specific adaptation of bagging to retrieval contexts. Papers [3] discusses retrieval component design for RAG.\n- The combination of bagging applied to *context subsets* for LLM QA with permutation and majority voting is not explicitly present in any single prior paper, but the primitives are covered. Paper [9] covers bagging+voting, [34] covers permutation averaging, [12] covers majority voting for LLMs. The specific combination applied to context subsets in RAG is not found as a unified mechanism.\n\nThe closest single paper is [9] (bagging with voting) combined with [34] (permutation averaging). No single paper covers the full mechanism. However, the question is whether any paper covers a *substantively equivalent* mechanism. The core primitive of \"sample diverse subsets of inputs, aggregate by voting\" is classic bagging ([9]). The permutation component is in [34]. Since no single paper combines relevance-weighted context subset sampling + permutation + greedy decoding + majority voting for LLM QA, I'll check more carefully. Paper [21] compares diversity strategies but doesn't implement context bagging. The mechanism as a unified primitive (bagging applied to retrieved context subsets for LLM QA) appears genuinely absent from prior work as a single mechanism.\n\n## EVALUATION: \"Evaluated on a noisy MuSiQue split with hard distractors, comparing CoBag vs. self-consistency\"\n\nMuSiQue is a named multi-hop QA benchmark. Papers [6] mentions multi-hop questions in RAG context. The evaluation design (benchmark QA with noisy/distractor documents, comparing ensemble methods) is used in papers [3] (\"The Power of Noise\" evaluates RAG under noisy retrieval), [5] (evaluates LLMs in RAG under noisy conditions). The design of evaluating RAG/QA systems under noisy retrieval conditions with distractor documents is covered by [3] and [5]. MuSiQue as a specific benchmark isn't named in prior papers here, but the evaluation *design* (noisy retrieval benchmark + accuracy metric comparing methods) is covered.\n\n## DOMAIN: \"Long-context question answering / RAG\"\n\nMultiple prior papers work in RAG and QA: [1], [3], [4], [5], [6], [10], [17] all operate in RAG/QA. This is clearly covered.\n\n---\n\nVERDICT purpose = 21\nVERDICT mechanism = NONE\nVERDICT evaluation = 5\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes the specific combination of relevance-weighted sampling of K diverse context subsets, random permutation of paragraph order within each subset, greedy decoding per subset, and majority voting aggregation. Paper [21] discusses diversity-based ensembling for LLMs but focuses on model diversity vs. question interpretation diversity, not context subset sampling. Paper [12] uses ranked voting for self-consistency but does not sample diverse context subsets. Paper [34] addresses permutation-invariant functions via averaging over reorderings but is not applied to RAG or context selection. No paper contains this specific mechanism even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 21
+      },
+      "mechanism": {
+       "covered_by": 22
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose:** The contribution's purpose is to reallocate test-time compute from decoding diversity (e.g., self-consistency) to context diversity to improve robustness. This is covered by paper [21], which explicitly frames and investigates the same problem class: \"compare two diversity approaches for answering binary questions using LLMs: model diversity... and question interpretation diversity,\" which is the trade-off between sourcing diversity from the generation process versus the input.\n\n**mechanism:** The mechanism is an ensemble method that creates multiple predictions by perturbing the input context (subsampling and permuting paragraphs) and aggregating the results. This is a form of Test-Time Augmentation, a primitive covered by [22], which describes it as \"the aggregation of predictions across transformed versions of a test input.\" The specific perturbation of permuting input elements is also covered by [34] (\"Janossy pooling\").\n\n**evaluation:** The evaluation design involves comparing the proposed method against a baseline (self-consistency) on a noisy version of a standard question-answering benchmark (MuSiQue). This design is covered by [5], which performs an \"evaluation of ... models within a RAG pipeline for the Question Answering (Q&A) task under noisy retrieval conditions,\" establishing the protocol of evaluating RAG on QA under noise.\n\n**domain:** The application area is long-context question answering and Retrieval-Augmented Generation (RAG). This domain is covered by numerous prior papers, including [1], which introduces a benchmark specifically for \"Retrieval-Augmented Generation (RAG) systems.\"\n\nVERDICT purpose = 21\nVERDICT mechanism = 22\nVERDICT evaluation = 5\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     11,
+     12
+    ],
+    "evaluation": [
+     22
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": 22
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to demonstrate that context-level diversity outperforms decoding-level diversity under hard distractors. Paper [4] discusses \"context’s diversity\" as a concept but does not establish the specific empirical relationship between context-level diversity and decoding-level diversity under hard distractors. Paper [8] addresses diverse decoding strategies but focuses on semantic diversity rather than the comparative advantage of context-level diversity over decoding-level diversity. No prior paper explicitly reports or establishes the same empirical relationship.\n\n### Mechanism\nThe contribution uses a head-to-head comparison of CoBag against self-consistency at matched inference budgets on MuSiQue with hard distractors. Paper [11] introduces PETS, which optimizes trajectory allocation for efficient test-time self-consistency, but does not involve CoBag or a direct comparison against self-consistency under hard distractors. Paper [10] discusses self-consistency methods but does not include CoBag or the specific comparison setup described here. No prior paper employs the same mechanism.\n\n### Evaluation\nThe evaluation reports a +3.12 EM improvement of CoBag over self-consistency (p<0.001). Paper [22] evaluates EM scores on HotpotQA, which is a similar benchmark family to MuSiQue, and uses EM as a metric for multi-hop QA performance. Paper [26] also evaluates multi-hop QA systems using EM and F1 metrics. Both papers employ evaluation designs that match the benchmark family and metric semantics of this contribution, even though the specific dataset (MuSiQue) differs.\n\n### Domain\nThe domain is test-time compute strategies. Papers [1], [2], [10], and [11] all address test-time scaling or self-consistency strategies, which fall under the same general application area of test-time compute strategies. While the specific focus on hard distractors in MuSiQue is new, the domain itself is covered by prior work.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 22  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper demonstrates the empirical relationship that context-level diversity beats decoding-level diversity under hard distractors.  \nFACET: mechanism | FINAL: COVERED-BY 11 | reason: PETS paper explicitly compares self-consistency methods under matched inference budgets, satisfying the same claim standard. Quote: \"achieving sample-efficient test-time self-consistency under a limited budget remains an open challenge.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 22
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Demonstrate that context-level diversity beats decoding-level diversity under hard distractors.**\n\nThis is a specific empirical claim about the relative effectiveness of context-level vs. decoding-level diversity strategies under hard distractor conditions. I need to find a prior paper that establishes the same relationship (context diversity > decoding diversity, specifically under hard distractors). Paper [8] discusses diverse decoding for LLMs and compares diversity strategies, but doesn't establish the specific relationship that context-level diversity beats decoding-level diversity under hard distractors. Paper [12] compares prompt ensembles vs. self-consistency but doesn't frame it as context-level vs. decoding-level diversity under hard distractors. No prior paper reports this specific directional relationship between these two variables under hard distractor conditions.\n\n**MECHANISM: Head-to-head comparison of CoBag against self-consistency at matched inference budgets on MuSiQue with hard distractors.**\n\nThe mechanism here is a controlled head-to-head comparison at matched inference budgets. Paper [1] conducts \"thorough empirical analysis\" comparing verification strategies at matched budgets. Paper [11] studies \"sample-efficient test-time self-consistency under a limited budget.\" Paper [12] compares boosted prompt ensembles against self-consistency. The generic design of \"compare method A vs. self-consistency at matched budget\" appears in papers [1], [2], [10], [11], [12]. This is a standard controlled comparison design used across multiple prior papers.\n\n**EVALUATION: CoBag achieves +3.12 EM improvement over self-consistency (p<0.001).**\n\nThe evaluation design uses EM (Exact Match) metric with statistical significance testing comparing against self-consistency baseline. Paper [22] uses EM scores on multi-hop QA (HotpotQA). Paper [26] uses EM and F1 on multi-hop QA. The EM metric on multi-hop QA benchmarks is a standard evaluation design appearing in [22] and [26]. Statistical significance testing in comparative NLP evaluations is also standard. The combination of EM metric + comparison against self-consistency baseline appears in papers like [12] and [22].\n\n**DOMAIN: Test-time compute strategies.**\n\nPapers [1], [2], [10], [11] all explicitly work in the domain of test-time compute/scaling strategies for LLMs. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 12\nVERDICT evaluation = 22\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper compares context-level diversity against decoding-level diversity specifically under hard distractors; paper [8] addresses semantic diverse decoding and paper [4] addresses context diversity in language models, but neither frames the objective as demonstrating that context-level diversity outperforms decoding-level diversity under hard-distractor conditions — the specific empirical claim is absent across all prior works."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     9,
+     21
+    ],
+    "evaluation": [
+     7,
+     13,
+     32
+    ],
+    "domain": [
+     2,
+     7,
+     11
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to isolate which component of context diversity drives the improvement. This is a specific empirical relationship being established. Prior paper [2] investigates how diversity among training samples impacts predictive performance in subsampling-based ensembles, but it does not isolate specific components of diversity or establish their individual contributions. Similarly, [6] provides a theoretical framework for understanding ensemble diversity but does not empirically isolate specific components of diversity. Papers like [13] and [7] discuss diversity in ensembles but do not isolate or decompose its components. None of the prior papers explicitly establish the same empirical relationship.\n\n### Mechanism\nThe mechanism involves an ablation study decomposing CoBag into two components: order diversity (via paragraph shuffling) and subset diversity (via relevance-weighted subset sampling). Paper [9] introduces ordered diverse sampling for textual data, which involves generating ordered diverse samples, but it does not perform an ablation to decompose diversity into order and subset components. Paper [7] discusses diversity in feature subspaces for bagging but does not involve paragraph shuffling or relevance-weighted subset sampling. No prior paper uses this specific decomposition mechanism.\n\n### Evaluation\nThe evaluation design involves measuring the contributions of order diversity (+1.44 EM) and subset diversity (+0.40 EM) to overall performance. This is a standard ablation analysis where components are isolated and their effects are measured. Ablation studies are common in prior work, such as [7], [13], and [9], which analyze the effects of diversity or ordering on performance. While the specific dataset or metric (e.g., EM) may differ, the evaluation design itself — isolating components and measuring their contributions — is covered by prior work.\n\n### Domain\nThe domain is the ablation analysis of ensembling mechanisms. Papers like [7], [13], and [6] all operate in the general area of ensemble learning and diversity analysis. While the specific instance (e.g., CoBag) may differ, the general application area of ensemble diversity analysis is well-covered by prior work.\n\n---\n\n**VERDICT purpose = NONE**  \n**VERDICT mechanism = NONE**  \n**VERDICT evaluation = 7**  \n**VERDICT domain = 7**  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper isolates specific components of context diversity driving improvement; all focus on general diversity effects without decomposition.  \n\nFACET: mechanism | FINAL: COVERED-BY 9 | reason: \"We present a novel approach for generating ordered diverse samples for textual data that uses principal components on the embedding vectors.\" This aligns with decomposing diversity into order and subset components."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 32
+      },
+      "domain": {
+       "covered_by": 11
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**PURPOSE: Isolate which component of context diversity drives the improvement.**\n\nThe purpose is to determine which specific sub-component (order diversity vs. subset diversity) is the dominant driver of performance gains in a context-bagging (CoBag) approach for RAG/QA. This is about decomposing the source of improvement within a specific RAG ensemble method. No prior paper appears to investigate this specific relationship — papers [1]-[28] address ensemble diversity broadly, but none isolate \"order diversity vs. subset diversity\" as the specific variables in a RAG/QA context. Papers [24], [26], [29], [30], [32] address RAG but don't decompose diversity components this way. The closest is [2] which investigates how diversity among training samples impacts subsampling-based ensembles, but it's about training data diversity in classical ML, not order vs. subset diversity in context presentation for LLMs. No prior paper reports the same empirical relationship (order shuffling dominates subset sampling in context diversity for QA).\n\n**MECHANISM: Ablation decomposing CoBag into order diversity (paragraph shuffling) and subset diversity (relevance-weighted subset sampling).**\n\nThis is a controlled ablation that isolates two components. The generic shape (ablate components, measure contribution) appears throughout ensemble literature. Papers [1], [5], [7], [11] perform ablations of ensemble components. However, the specific primitives — paragraph shuffling as order diversity and relevance-weighted subset sampling as subset diversity — are not decomposed this way in any prior paper. The mechanism design (controlled ablation) is generic and appears widely, but the specific decomposition into these two primitives in a RAG context is not present. Per the rules, generic ablation shape alone doesn't establish coverage unless it validates the same claim.\n\n**EVALUATION: Order diversity is the dominant mechanism (+1.44 EM) while subset diversity adds marginal benefit (+0.40 EM).**\n\nThe evaluation uses Exact Match (EM) as a metric on QA benchmarks, which is a standard named metric/benchmark family used in papers [26], [29], [32] for RAG/QA evaluation. The evaluation design (EM metric on QA benchmarks, ablation-style comparison) is a standard design used in prior RAG papers. Paper [32] uses similar QA evaluation designs with EM-style metrics. This is a standard evaluation design (EM on QA) applied to a new object.\n\n**DOMAIN: Ablation analysis of ensembling mechanisms.**\n\nThe domain is ensemble methods analysis/RAG. Papers [1], [5], [7], [11], [14], [20] all work in ensemble methods. Papers [24], [26], [29], [30], [32] work in RAG. Both areas are covered by prior work.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 32\nVERDICT domain = 11",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the objective of isolating which specific component of context diversity (order vs. subset) drives RAG performance improvement; the ensemble diversity papers address classifier/sample diversity decomposition in entirely different settings, and none frame the goal as disentangling these two context-diversity components.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes an ablation that decomposes a bagging-style RAG method into paragraph-order shuffling versus relevance-weighted subset sampling as separate diversity sources; the closest papers (e.g., [2], [9]) address subsampling diversity or ordered diverse sampling but never combine both into a single decomposition ablation in a retrieval-augmented generation context."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 21
+      },
+      "mechanism": {
+       "covered_by": 21
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: COVERED. The objective of isolating which component of a complex input or method is responsible for an observed effect is covered by prior work. For example, [21] has the same purpose, seeking to \"document how several features of prompt architecture (order, label, framing, and justification) interact to produce methodological artifacts,\" which is the same problem class as isolating the effects of order vs. subset diversity.\n\n**mechanism**: COVERED. The mechanism is a controlled ablation study to decompose a system's performance into the contributions of its components. This is a standard analysis protocol, used for instance in [21] which employs \"large-scale, full-factorial experiments\" to isolate the effects of different prompt features.\n\n**evaluation**: COVERED. The evaluation design involves comparing the performance of ablated systems to determine the relative importance of each component. This design is used in [13], which draws conclusions based on comparing an \"Ensemble without Diversity and Ensemble with Diversity\" to determine the impact of the diversity component.\n\n**domain**: COVERED. The domain is the analysis of ensembling mechanisms, particularly the role of diversity. Many prior papers operate in this area, for example [2] \"investigates how diversity among training samples impacts the predictive performance of a subsampling-based ensemble method,\" and [6] presents \"a unified theory of diversity in ensemble learning.\"\n\nVERDICT purpose = 21\nVERDICT mechanism = 21\nVERDICT evaluation = 13\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,402 @@
+{
+ "paper_id": "FA0069",
+ "title": "Timeout Bootstrapping for Long-CoT RLVR: Promise and Pitfalls",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     24
+    ],
+    "mechanism": [
+     8,
+     24
+    ],
+    "evaluation": [
+     1
+    ],
+    "domain": [
+     1,
+     3,
+     6,
+     7,
+     17
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 24
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": [
+        3,
+        6,
+        7,
+        17
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to systematize how truncation of long chain-of-thought (CoT) rollouts is handled in RLVR training. Paper [1] discusses RL training design choices for long CoT reasoning but does not specifically address truncation handling strategies. Paper [3] mentions challenges in extending RLVR to reasoning-intensive domains but does not focus on truncation handling. Paper [8] discusses truncating trajectories in Monte Carlo RL but focuses on fixed-length episodes rather than systematic strategies for handling truncation in long CoT rollouts. Paper [24] provides a formal account of handling time limits in RL but does not address truncation strategies specific to RLVR or CoT reasoning. No prior paper explicitly systematizes truncation handling in RLVR training.\n\n### Mechanism\nThe contribution formalizes three truncation handling strategies: truncate-as-failure, DAPO overlong shaping, and timeout bootstrapping from the critic's value estimate. Paper [8] discusses truncating trajectories in Monte Carlo RL but does not cover these specific strategies. Paper [10] provides mathematical insights into DAPO but does not address truncation handling. Paper [24] discusses time limits in RL but does not formalize truncation strategies like those in this contribution. Paper [22] mentions bootstrapping in value learning but does not apply it to truncation handling in RLVR. None of the prior papers formalize the same mechanisms.\n\n### Evaluation\nThe contribution evaluates truncation handling strategies through systematic comparison on long-horizon mathematical reasoning with DeepSeek-R1-Distill-Qwen-1.5B. Paper [2] uses DeepSeek-R1 for reasoning tasks but does not systematically compare truncation handling strategies. Paper [14] evaluates RL training recipes for reasoning but does not focus on truncation handling. Paper [12] uses BFS-PO for reasoning tasks but does not evaluate truncation strategies. Paper [9] addresses rollout inefficiencies in RLVR but does not evaluate truncation handling. No prior paper uses the same evaluation design for truncation handling strategies.\n\n### Domain\nThe contribution operates in RLVR training for long-CoT reasoning. Paper [3] explicitly addresses RLVR for long-CoT reasoning, as does paper [7]. Paper [6] discusses RL methods for long-horizon tasks, including reasoning. Paper [17] addresses RL algorithms for reasoning tasks, including long-CoT reasoning. The domain is covered by prior work.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [3, 6, 7, 17]  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 24 | reason: Paper [24] explicitly discusses formal accounts for handling time limits in RL, which aligns with systematizing truncation strategies in RLVR training. Quote: \"We provide a formal account for how time limits could effectively be handled in each of the settings.\"\n\nFACET: mechanism | FINAL: COVERED-BY 8 | reason: Paper [8] discusses truncating trajectories in Monte Carlo RL and explores strategies for handling overlong rollouts, which conceptually overlaps with the formalization of truncation handling strategies. Quote: \"Given the discounted nature of the RL objective, this data collection strategy might not be the best option.\"\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper systematically compares long-horizon mathematical reasoning with DeepSeek-R1-Distill-Qwen-1.5B or equivalent models."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 24
+      },
+      "mechanism": {
+       "covered_by": 24
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Systematize how truncation of long chain-of-thought rollouts is handled in RLVR training.**\n\nThe purpose is specifically to systematize/compare truncation handling strategies for long CoT rollouts in RLVR. Paper [1] \"systematically investigate the mechanics of long CoT reasoning, identifying the key factors\" in RL training, which is close but focuses on emergence conditions broadly, not specifically truncation handling. Paper [24] \"provide a formal account for how time limits could effectively be handled\" in RL — this is about time limits/truncation handling in RL episodes, which is the same problem class (how to handle episode termination/truncation in RL training). However, [24] is in classical RL, not LLM/RLVR. The purpose of [24] is essentially \"systematize how truncation/time-limits are handled in RL training\" — same objective at the problem-class level. Paper [8] also addresses truncating trajectories in Monte Carlo RL. Neither [24] nor [8] targets RLVR/LLM specifically, but the purpose facet rule says domain differences don't break equivalence. Paper [24] most directly covers the purpose of formalizing how truncation/time-limits should be handled in RL training.\n\n**MECHANISM: Formalizes three truncation handling strategies (truncate-as-failure, DAPO overlong shaping, timeout bootstrapping from critic's value estimate) and compares them systematically.**\n\n- \"Truncate-as-failure\": treating a truncated episode as a terminal failure is a known approach in RL.\n- \"DAPO overlong shaping\": Paper [10] covers DAPO mathematics; DAPO's overlong reward shaping is described in the DAPO framework referenced by papers [10], [12], [17].\n- \"Timeout bootstrapping from critic's value estimate\": Paper [24] explicitly discusses bootstrapping from value estimates at timeout as a mechanism for handling time limits in RL — \"we provide a formal account for how time limits could effectively be handled\" including using value bootstrapping. Paper [11] also discusses combining value estimates (cost-to-go oracle) with truncated horizons. Paper [8] discusses truncating trajectories and using value estimates. The three-way comparison as a unified formalization is the novel packaging, but the individual primitives (treat-as-failure, reward shaping, value bootstrapping at truncation) all appear in [24], [8], [11]. The systematic three-way comparison framework itself — while the individual components are covered — is the contribution. However, since the primitives are all present across prior work, the mechanism is covered.\n\n**EVALUATION: First systematic comparison on long-horizon mathematical reasoning with DeepSeek-R1-Distill-Qwen-1.5B.**\n\nThe evaluation design uses standard math reasoning benchmarks (AIME, AMC, etc.) with LLM performance metrics, applied to a specific model. Paper [1] uses systematic comparison on math reasoning benchmarks. Paper [14] evaluates on math/code reasoning with RL training. The evaluation design (benchmark-based math reasoning evaluation with RL-trained models) is well-established across [1], [2], [14]. The specific model (DeepSeek-R1-Distill-Qwen-1.5B) is just a parameter change.\n\n**DOMAIN: RLVR training for long-CoT reasoning.**\n\nPapers [1], [2], [3], [4], [14] all work in RLVR training for long-CoT reasoning. This domain is clearly covered.\n\nVERDICT purpose = 24\nVERDICT mechanism = 24\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 24
+      },
+      "mechanism": {
+       "covered_by": 24
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The objective is to systematize how to handle truncated rollouts in RL. This exact problem is addressed by prior work in general reinforcement learning. Paper [24] aims to \"provide a formal account for how time limits could effectively be handled,\" which is the same purpose at the problem-class level, even though it's not specific to RLVR or CoT.\n\n**mechanism**: The mechanism consists of comparing three primitives: treating truncation as failure, using reward shaping for overlong trajectories, and bootstrapping from the critic's value estimate at the timeout. All three are standard, known techniques in RL. Paper [24] explicitly discusses and compares the first and third strategies, while paper [17] discusses using \"length rewards\" which is equivalent to the second strategy.\n\n**evaluation**: The evaluation design is a systematic comparison of different algorithmic choices (truncation handling strategies) on a mathematical reasoning benchmark. This design is not new; for example, paper [1] conducts a \"systematic investigation\" of factors in long CoT reasoning, and paper [17] compares its method against baselines that \"incorporate length rewards,\" establishing the design of comparing approaches to handling sequence length.\n\n**domain**: The application area is RLVR (Reinforcement Learning with Verifiable Rewards) for long chain-of-thought (CoT) reasoning. This is a well-established domain covered by numerous prior papers. For instance, paper [3] states that reasoning can be \"improved through Reinforcement Learning with Verifiable Reward (RLVR),\" and paper [4] notes that \"Reinforcement learning (RL) enhances large language models (LLMs) in complex, long-chain-of-thought (long-CoT) reasoning.\"\n\nVERDICT purpose = 24\nVERDICT mechanism = 24\nVERDICT evaluation = 1\nVERDICT domain = 3",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     25
+    ],
+    "evaluation": [
+     6,
+     25,
+     28
+    ],
+    "domain": [
+     6,
+     12,
+     23,
+     30
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 25
+      },
+      "evaluation": {
+       "covered_by": [
+        25,
+        28
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        6,
+        12,
+        23,
+        30
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to test whether timeout bootstrapping improves over standard truncation handling under pre-registered criteria. None of the prior papers explicitly test this specific empirical relationship between timeout bootstrapping and truncation handling under pre-registered criteria. While several papers discuss bootstrapping (e.g., [7], [10], [11], [19]) or truncation strategies (e.g., [15], [20], [24]), none establish or report the same empirical relationship between these variables. Thus, the purpose is **NONE**.\n\n### Mechanism\nThe mechanism involves pre-registered evaluation of three truncation strategies on MATH-500. Pre-registration as a methodological tool is discussed in [25], which investigates its role in reducing p-hacking and publication bias. While [25] does not apply pre-registration to truncation strategies or MATH-500, the mechanism of pre-registered evaluation itself is substantively equivalent. Therefore, the mechanism is **COVERED** by [25].\n\n### Evaluation\nThe evaluation design involves comparing timeout bootstrapping against standard truncation handling using pre-registered criteria, reporting mixed/negative results. Pre-registered evaluation designs are discussed in [25], which uses pre-registration to validate statistical claims. Additionally, [28] introduces a synthetic evaluation framework for long-context reasoning, which aligns with the general design of evaluating reasoning performance under specific criteria. Both papers use similar evaluation designs (pre-registration or structured validation frameworks), even though the specific benchmark (MATH-500) differs. Thus, the evaluation is **COVERED** by [25] and [28].\n\n### Domain\nThe domain is mathematical reasoning RL evaluation. Papers such as [6], [12], [23], and [30] address reinforcement learning (RL) in reasoning contexts, including mathematical reasoning ([6], [12]) and RL evaluation ([23], [30]). While none of these papers target MATH-500 specifically, they operate in the same general application area of mathematical reasoning RL evaluation. Thus, the domain is **COVERED** by [6], [12], [23], and [30].\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 25  \nVERDICT evaluation = 25, 28  \nVERDICT domain = 6, 12, 23, 30  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly tests whether timeout bootstrapping improves over standard truncation handling under pre-registered criteria, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 25
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Test whether timeout bootstrapping improves over standard truncation handling under pre-registered criteria.**\n\nThe purpose is specifically about evaluating whether a particular truncation strategy (timeout bootstrapping) outperforms a baseline under pre-registered criteria in mathematical reasoning RL. Paper [25] discusses pre-registration and pre-analysis plans in RCTs and whether they reduce p-hacking — this is about the methodology of pre-registration itself, not about testing a specific truncation strategy. Paper [24] addresses dynamic outlier truncation for training efficient reasoning models, but its purpose is to reduce verbosity/overthinking, not to compare truncation strategies under pre-registered criteria. No prior paper establishes the same empirical relationship: testing timeout bootstrapping vs. standard truncation under pre-registered criteria. The purpose is not covered.\n\n**MECHANISM: Pre-registered evaluation of three truncation strategies on MATH-500.**\n\nThe mechanism is a pre-registered evaluation protocol applied to truncation strategies. Paper [25] discusses pre-registration/pre-analysis plans as a methodology. This is the closest match — it uses pre-registration as an evaluation design primitive. However, the mechanism here is specifically the application of pre-registered evaluation to compare truncation strategies in RL training, which is a design-level match with pre-registration methodology from [25]. At the design level, pre-registered evaluation is the primitive, and [25] covers this.\n\n**EVALUATION: Mixed/negative result reported with specific numbers (52.50% vs 53.80%).**\n\nThe evaluation design uses MATH-500 as a benchmark with accuracy metrics. Papers [6] and [24] evaluate reasoning models on mathematical benchmarks. The MATH benchmark family is used in prior work on LLM reasoning. Paper [6] uses RLVR for long-context reasoning and evaluates on math benchmarks. Paper [24] evaluates on MATH-related benchmarks. The evaluation design (accuracy on MATH-500) is a standard benchmark evaluation used in prior reasoning papers. This is covered by the general use of MATH benchmark family in [6] and [24].\n\n**DOMAIN: Mathematical reasoning RL evaluation.**\n\nPapers [6] and [24] both operate in mathematical reasoning with RL (RLVR). Paper [6] explicitly addresses \"Reinforcement Learning with Verifiable Rewards (RLVR)\" for reasoning tasks including math. Paper [24] addresses \"reinforcement learning with verifiable rewards\" for reasoning models. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 25\nVERDICT evaluation = 6\nVERDICT domain = 6",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper tests whether timeout bootstrapping improves over standard truncation handling under pre-registered criteria; the closest papers (e.g., [15] on truncating temporal differences, [20] on truncated emphatic TD) address truncation methods in RL but none frame their objective as a pre-registered comparative test of timeout bootstrapping versus standard truncation handling."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     13,
+     22
+    ],
+    "evaluation": [
+     22
+    ],
+    "domain": [
+     8,
+     18,
+     22
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": [
+        8,
+        18
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to identify why timeout bootstrapping fails in this setting. None of the prior papers explicitly investigate the failure of timeout bootstrapping or analyze its breakdown in reinforcement learning. Papers like [23] (\"Time Limits in Reinforcement Learning\") and [24] (\"Truncated Horizon Policy Search\") discuss time limits and truncated horizons but do not address the specific failure mechanism of timeout bootstrapping. Similarly, papers like [14] and [19] discuss timeout effects in reinforcement contexts but focus on behavioral or aversive functions rather than bootstrapping failure analysis. No prior paper establishes the same empirical relationship or failure cause.\n\n#### Mechanism:\nThe mechanism involves failure-mode analysis of the critic during training, tracking bootstrapped value estimates over training steps. Papers such as [6] (\"A Generalized Bootstrap Target for Value-Learning\") and [13] (\"Target Networks and Over-parameterization Stabilize Off-policy Bootstrapping\") discuss bootstrapping mechanisms in RL, including value estimation and stabilization techniques. However, none of these papers specifically analyze critic failure modes during training or track bootstrapped value collapse over steps. The mechanism is not substantively equivalent to any prior work.\n\n#### Evaluation:\nThe evaluation design involves observing critic value collapse, where bootstrapped values degenerate to -1.0 within 15-20 training steps, rendering bootstrapping equivalent to truncate-as-failure. Papers like [13] and [20] (\"Ensemble Bootstrapping for Q-Learning\") evaluate bootstrapping behavior in RL, but their designs focus on stabilizing or improving bootstrapping rather than observing collapse or failure. No prior paper uses the same evaluation design to validate critic value collapse or bootstrapping failure. The evaluation design is novel.\n\n#### Domain:\nThe domain is RL training failure analysis. Papers such as [8] (\"Optimizing Reinforcement Learning Using Failure Data\") and [18] (\"Challenges of real-world reinforcement learning: definitions, benchmarks and analysis\") address RL training failures and challenges, making the domain covered. While the specific instance of timeout bootstrapping failure is new, the general area of RL training failure analysis is well-established.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [8], [18]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper identifies why timeout bootstrapping fails in this specific setting.  \nFACET: mechanism | FINAL: COVERED-BY 13 | reason: \"We prove that the combination of a target network and over-parameterized linear function approximation establishes a weaker convergence condition for bootstrapped value estimation in certain cases.\"  \nFACET: evaluation | FINAL: NONE | reason: No prior paper evaluates critic value collapse or bootstrapped values degenerating to -1.0 within 15-20 training steps."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 22
+      },
+      "evaluation": {
+       "covered_by": 22
+      },
+      "domain": {
+       "covered_by": 22
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**PURPOSE: Identify why timeout bootstrapping fails in this setting.**\n\nThe purpose is to explain a specific failure mode: why using bootstrapped value estimates for timeout handling in RL training breaks down. Paper [23] \"Time Limits in Reinforcement Learning\" directly addresses how time limits and episode termination (including timeout) should be handled in RL, discussing failure modes of naive approaches. However, it focuses on the general problem of time limits, not specifically diagnosing why bootstrapping fails during training. No prior paper specifically investigates \"why timeout bootstrapping fails\" as a diagnostic purpose — the closest is [23] which discusses timeout handling correctness, but frames it as a design choice rather than a failure-mode diagnosis. None of the bootstrapping papers ([1],[2],[3],[5],[6],[17],[20]) address timeout bootstrapping failure specifically. The purpose appears uncovered.\n\n**MECHANISM: Failure-mode analysis of the critic during training, tracking bootstrapped value estimates over training steps.**\n\nThis is a training dynamics analysis tracking critic value estimates over time. Paper [22] \"Dissecting Deep RL with High Update Ratios\" performs failure-mode analysis of value functions during training, tracking divergence and overestimation. Paper [11] also analyzes overestimation bias in critic updates. However, the specific primitive of tracking bootstrapped values collapsing to a degenerate constant is not described. The general mechanism of \"monitor critic values over training steps to diagnose failure\" is a standard diagnostic approach present in [22] and [11]. This counts as covered at the design level.\n\n**EVALUATION: Critic value collapse: bootstrapped values degenerate to -1.0 within 15-20 training steps.**\n\nThis is a specific empirical observation/measurement — tracking critic values over training steps and observing collapse to a specific value. As a finding-type contribution, the evaluation design is \"track value estimates over training steps,\" which is a standard diagnostic used in [22] (tracking value divergence over training) and [11] (tracking Q-value estimates). The design of monitoring value estimates over training steps is covered by [22].\n\n**DOMAIN: RL training failure analysis.**\n\nMultiple prior papers operate in the domain of RL training failure analysis: [22] explicitly dissects deep RL failure modes, [18] addresses challenges of real-world RL, [11] analyzes overestimation in RL training. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 22\nVERDICT evaluation = 22\nVERDICT domain = 22",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper identifies why timeout bootstrapping specifically fails in this setting — [23] discusses time limits in RL but addresses how to handle them correctly, not diagnosing failure modes of bootstrapping under timeouts; no other paper matches the same objective even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 23
+      },
+      "mechanism": {
+       "covered_by": 22
+      },
+      "evaluation": {
+       "covered_by": 22
+      },
+      "domain": {
+       "covered_by": 22
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**PURPOSE:** The contribution's purpose is to identify the specific reason why timeout bootstrapping fails. This is a finding that establishes a new empirical relationship: timeout bootstrapping leads to value collapse. While other papers analyze different RL failure modes, such as [22] which links high update ratios to value divergence, none appear to establish or report this specific causal link for timeout bootstrapping. Therefore, the purpose is not substantively covered.\n\n**MECHANISM:** The mechanism is a \"failure-mode analysis... tracking bootstrapped value estimates over training steps.\" This is a standard diagnostic method in reinforcement learning research used to understand algorithmic behavior. For instance, [22] in its effort to \"Dissecting Deep RL... [and] Combatting Value Overestimation and Divergence\" necessarily employs this same primitive of tracking value function estimates over training to identify and analyze pathologies like divergence.\n\n**EVALUATION:** The evaluation design consists of demonstrating the failure by showing that \"bootstrapped values degenerate to -1.0 within 15-20 training steps.\" This design, which involves plotting a key internal variable (the value estimate) over training time to illustrate a pathological dynamic, is a standard protocol for presenting findings about RL algorithm behavior. Papers like [22] and [21] use the same evaluation design to demonstrate phenomena like value divergence or overestimation, respectively.\n\n**DOMAIN:** The domain is \"RL training failure analysis.\" This is a well-established research area within reinforcement learning. Multiple prior papers operate in this domain, including [22] (\"Dissecting Deep RL... Combatting Value Overestimation and Divergence\") and [21] (\"The Effect of Multi-step Methods on Overestimation in Deep Reinforcement Learning\").\n\nVERDICT purpose = NONE\nVERDICT mechanism = 22\nVERDICT evaluation = 22\nVERDICT domain = 22",
+      "stage2": "FACET: purpose: Identify why timeout bootstrapping fails in this setting. | FINAL: COVERED-BY [23] | reason: Paper [23] has the explicit purpose of analyzing how to handle time limits in RL, and in doing so, it identifies the failure of the \"traditional approach of bootstrapping with a value of zero\" at a timeout, explaining why this is incorrect and how to fix it."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     18,
+     34
+    ],
+    "mechanism": [
+     13,
+     18
+    ],
+    "evaluation": [
+     5,
+     18
+    ],
+    "domain": [
+     5,
+     18
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 34
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 18
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose:\nThe contribution's purpose is to explain mechanistically why value bootstrapping fails on reasoning prefixes. Paper [34] discusses value bootstrapping in the context of model-based RL and highlights how accumulated model errors degrade predictions over long horizons, but it does not address reasoning prefixes or provide a mechanistic explanation for failure in this specific context. Paper [21] explores bootstrapping in temporal-difference methods but focuses on asymmetric value functions and does not analyze reasoning prefixes. No prior paper explicitly establishes the same empirical relationship or mechanistic explanation for value bootstrapping failure on reasoning prefixes.\n\n### Mechanism:\nThe contribution uses mechanistic analysis correlating the critic's value estimates with final answer correctness. Paper [18] discusses uncertainty calibration of process reward models and observes overestimation of success probabilities for partial reasoning steps, which is related to critic miscalibration. Paper [33] introduces Q-value rankings for process reward modeling, addressing interdependencies among reasoning steps, but does not explicitly correlate critic value estimates with correctness. Paper [9] addresses function approximation errors in actor-critic methods but focuses on overestimation bias rather than miscalibration or reasoning prefixes. None of the prior papers perform the same mechanistic analysis correlating critic value estimates with correctness.\n\n### Evaluation:\nThe contribution evaluates critic miscalibration using Pearson correlation (r = -0.211) and AUROC (0.314). Paper [13] discusses Pearson correlation in machine learning applications, including its limitations, but does not use it to evaluate critic calibration. Paper [11] examines linear correlation significance testing but does not apply it to critic calibration. Paper [10] introduces Smooth ECE for calibration measures but does not use Pearson correlation or AUROC for critic evaluation. No prior paper uses the same evaluation design (Pearson correlation and AUROC) for this specific claim.\n\n### Domain:\nThe contribution operates in the domain of critic calibration analysis. Paper [18] addresses uncertainty calibration of process reward models, which overlaps with the general area of calibration analysis. Paper [6] extends confidence calibration to generalized measures of variation, also within the calibration domain. Paper [5] studies calibration in biomedical NLP tasks, further confirming the domain's coverage. The domain is covered by prior work in calibration analysis.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 5  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 34 | reason: Paper [34] explicitly discusses \"model errors over long horizons degrading future predictions,\" which aligns with the mechanistic explanation of value bootstrapping failure on reasoning prefixes.  \n\nFACET: mechanism | FINAL: NONE | reason: No prior paper correlates the critic's value estimates with final answer correctness under the same empirical framing or vocabulary.  \n\nFACET: evaluation | FINAL: COVERED-BY 18 | reason: Paper [18] states, \"PRMs tend to overestimate the success probability that a partial reasoning step will lead to a correct final answer,\" which matches the miscalibration claim with negative correlation."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 18
+      },
+      "evaluation": {
+       "covered_by": 18
+      },
+      "domain": {
+       "covered_by": 18
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Explain mechanistically why value bootstrapping fails on reasoning prefixes.**\n\nThe purpose is to understand *why* value bootstrapping (specifically a critic/value function) fails when applied to reasoning chain prefixes — a mechanistic explanation of this failure mode. Paper [18] addresses calibration of Process Reward Models (PRMs) and observes that \"even state-of-the-art PRMs can be poorly calibrated\" and \"tend to overestimate the success probability that a partial reasoning step will lead to a correct final answer.\" This is closely related but focuses on calibration correction rather than mechanistic explanation of *why* bootstrapping fails. Paper [27] identifies \"the main cause of PRM-induced reward hacking: the canonical summation-form credit assignment.\" Paper [21] analyzes \"Action-Value Temporal-Difference Methods\" and bootstrapping from value functions. None of these specifically target the mechanistic explanation of *why* value bootstrapping fails on reasoning prefixes (as opposed to fixing it or analyzing TD methods generally). The specific relationship — critic value estimates being negatively correlated with correctness on reasoning prefixes — is not established by any prior paper.\n\n**MECHANISM: Mechanistic analysis correlating the critic's value estimates with final answer correctness.**\n\nThis involves computing correlation (Pearson r, AUROC) between a critic's value estimates at intermediate reasoning steps and the final answer correctness. Paper [18] performs calibration analysis of PRMs, examining \"success probability that a partial reasoning step will lead to a correct final answer\" — this is essentially the same primitive: measuring how well intermediate value/reward estimates predict final correctness. The analysis design (correlating intermediate estimates with final outcomes) is substantively equivalent. No paper explicitly uses Pearson r / AUROC between critic values and correctness, but the underlying primitive of \"measure alignment between intermediate value estimates and final correctness\" appears in [18] and [27].\n\n**EVALUATION: Critic exhibits negative correlation with correctness (Pearson r = -0.211, AUROC = 0.314).**\n\nThis is a specific empirical finding (negative Pearson r, AUROC < 0.5) demonstrating miscalibration. The evaluation design uses Pearson correlation and AUROC as metrics to assess critic calibration. Paper [18] uses calibration analysis of PRMs with quantile regression. Paper [5] assesses LLM calibration using confidence scores. The use of AUROC and Pearson r to measure correlation between predictions and outcomes is a standard evaluation design. However, the specific design of computing Pearson r between value estimates and binary correctness labels, plus AUROC, on reasoning prefixes — this is a standard statistical evaluation design (correlation + discrimination metric) that appears generically in calibration literature. Papers [11], [13], [22] discuss Pearson correlation methodology. The evaluation design (correlation + AUROC for calibration assessment) is covered by the combination of calibration literature [18] and correlation methodology papers.\n\n**DOMAIN: Critic calibration analysis.**\n\nThe domain is calibration analysis of critics/value functions in the context of LLM reasoning. Paper [18] works in \"calibration of Process Reward Models\" for LLM reasoning — this is the same general application area. Paper [5] covers LLM calibration in biomedical NLP. The domain of critic/reward model calibration for LLM reasoning is covered by [18].\n\nVERDICT purpose = NONE\nVERDICT mechanism = 18\nVERDICT evaluation = 18\nVERDICT domain = 18",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explains mechanistically why value bootstrapping fails specifically on reasoning prefixes; [21] analyzes TD methods with asymmetric value functions and [27] identifies summation-form credit assignment as causing reward hacking, but neither provides a mechanistic explanation of why bootstrapping fails on reasoning prefixes specifically — the closest candidates address different failure modes (overestimation bias, credit assignment) without the same objective."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 18
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 18
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to explain the mechanism behind the failure of value bootstrapping on reasoning prefixes, which stems from the critic's miscalibration. Paper [18] establishes the same core empirical relationship, observing that \"Process reward models (PRMs) can be poorly calibrated. Specifically, they tend to overestimate the success probability that a partial reasoning step will lead to a correct final answer,\" which is the same phenomenon of critic miscalibration on reasoning prefixes that this contribution aims to explain.\n\n**mechanism**: The mechanism is a \"mechanistic analysis correlating the critic's value estimates with final answer correctness.\" This is an application of a standard statistical analysis technique. Paper [13] describes this primitive, stating that Pearson's correlation is \"instrumental in... assessing the model performance,\" which is precisely how it is used here.\n\n**evaluation**: The evaluation design involves using standard statistical metrics (Pearson correlation, AUROC) to quantify the miscalibration between a critic's value estimate and the correctness of the final outcome. This is a standard design for calibration analysis. Paper [5] employs the same general design of assessing model calibration by comparing \"responses and corresponding confidence scores,\" and paper [13] specifically discusses using Pearson's correlation for \"assessing the model performance.\"\n\n**domain**: The domain is \"Critic calibration analysis.\" Several prior papers operate in this domain. For instance, paper [18] focuses on the \"Uncertainty Calibration of Process Reward Models,\" which are a form of critic for reasoning tasks. Similarly, papers like [3] and [9] analyze value approximation bias and error in actor-critic methods, which is the same general application area.\n\nVERDICT purpose = 18\nVERDICT mechanism = 13\nVERDICT evaluation = 5\nVERDICT domain = 18",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

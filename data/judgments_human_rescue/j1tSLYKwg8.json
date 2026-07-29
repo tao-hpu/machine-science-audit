@@ -1,0 +1,325 @@
+{
+ "paper_id": "j1tSLYKwg8",
+ "title": "Scaling Diffusion Language Models via Adaptation from Autoregressive Models",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": [
+     8,
+     11,
+     13,
+     14,
+     15,
+     17,
+     20,
+     30
+    ],
+    "domain": [
+     2,
+     8,
+     9,
+     11,
+     14,
+     17
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        14,
+        16,
+        30
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        8,
+        11,
+        13,
+        14,
+        17
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        2,
+        8,
+        11,
+        14,
+        17
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to overcome the resource-intensive nature of training large-scale diffusion language models (DLMs) from scratch and to leverage existing open-source autoregressive (AR) large language models (LLMs) to construct DLMs. No prior paper explicitly addresses this specific objective. Papers like [1] and [3] focus on efficiency improvements in LLM training but do not target the specific problem of adapting AR models into DLMs. Papers such as [8], [11], and [17] discuss diffusion models in text generation but do not address the resource challenges of training DLMs from scratch or propose leveraging AR models for this purpose. Thus, the purpose is uncovered.\n\n### Mechanism\nThe mechanism involves a simple continual pretraining adaptation scheme that unifies AR and diffusion modeling objectives, breaks AR causal masking via attention mask annealing to enable bidirectionality, inherits AR's shift operation, and adopts a no-time-embedding architecture. Paper [14] introduces autoregressive diffusion models (ARDMs) that generalize AR and absorbing discrete diffusion models, which overlap with the idea of bridging AR and diffusion objectives. Paper [16] proposes BANG, which bridges AR and non-autoregressive (NAR) generation, including bidirectional attention mechanisms, aligning with the contribution's mechanism of breaking causal masking for bidirectionality. Paper [30] discusses incorporating bidirectional attention into decoder-only LLMs, which is conceptually similar to attention mask annealing. Therefore, the mechanism is covered.\n\n### Evaluation\nThe evaluation involves converting GPT2 and LLaMA2 into DiffuGPT/DiffuLLaMA using <200B tokens and demonstrating that DiffuGPT outperforms GPT2 on most tasks. Papers [8], [11], and [17] evaluate diffusion models in text generation tasks, which aligns with the contribution's evaluation design of benchmarking diffusion models against AR models. Paper [13] evaluates LLaMA models on various benchmarks, and paper [14] evaluates ARDMs on generative tasks, which are similar evaluation setups. The evaluation design is therefore covered.\n\n### Domain\nThe domain is natural language processing (NLP), specifically text generation using diffusion language models. Papers [2], [8], [11], and [17] explicitly address diffusion models in text generation, which is the same application area. Papers [14] and [19] also focus on generative modeling in NLP, including autoregressive and diffusion approaches. Thus, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 14, 16, 30  \nVERDICT evaluation = 8, 11, 13, 14, 17  \nVERDICT domain = 2, 8, 11, 14, 17  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses the objective of overcoming the resource consumption of training large-scale diffusion language models (DLMs) from scratch by leveraging existing open-source autoregressive (AR) LLMs to construct DLMs."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 17
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: 克服从零训练大规模DLM资源消耗巨大的问题，利用现成开源AR LLM构建DLM**\n\nThe purpose is specifically to *convert/adapt* a pretrained AR LLM into a diffusion LM to avoid training from scratch. Paper [15] proposes \"AR pretraining to the NAR encoder to reduce the accuracy gap\" in ASR — this is AR→NAR transfer but in speech, not text diffusion. Paper [16] (BANG) bridges AR and NAR generation via pretraining but builds a new model rather than converting an existing AR LLM. No prior paper specifically targets the objective of \"take an existing open-source AR LLM and convert it into a DLM to avoid the resource cost of training DLMs from scratch.\" The closest conceptually is [15] (AR pretraining helps NAR), but that's about pretraining strategy for NAR ASR, not converting a pretrained AR LLM to a text diffusion model. This purpose appears uncovered.\n\n---\n\n**MECHANISM: 注意力掩码退火(attention mask annealing)打破因果掩码使其双向化 + 继承shift operation + 无时间嵌入架构 + 统一AR与扩散建模目标**\n\n- Paper [30] (Bitune) proposes \"incorporating bidirectional attention into prompt processing\" for decoder-only LLMs by modifying the causal mask — this is directly related to breaking causal masking for bidirectionalization. However, Bitune does this for instruction-tuning/QA, not for converting to a diffusion model, and uses a different mechanism (separate bidirectional pass, not annealing).\n- Paper [24] studies \"bidirectionality as a key factor\" in LM pretraining and proposes frameworks generalizing causal/bidirectional attention.\n- Paper [21] (XLNet) uses permutation-based autoregressive modeling to capture bidirectional context without masking.\n- Paper [16] (BANG) designs attention masks to unify AR and NAR generation via a novel masking structure.\n\nThe specific primitive of **attention mask annealing** — gradually transitioning from causal to bidirectional masks during continued pretraining — is not described in any prior paper. [30] modifies attention masks but not via annealing/gradual transition. [16] uses mixed masking but for a new pretraining model, not adaptation. The combination of annealing + inheriting shift operation + no time embedding as a continued-pretraining adaptation recipe appears uncovered.\n\n---\n\n**EVALUATION: 在FineWeb/SlimPajama上以<200B tokens将GPT2/LLaMA2转换，在多数任务上优于GPT2**\n\nThe evaluation design uses standard NLP benchmarks to compare language model performance — this is a standard evaluation design used across many prior papers [13], [17], [9], etc. Paper [17] (Simple and Effective Masked Diffusion Language Models) explicitly evaluates masked diffusion models against AR baselines on standard benchmarks. Paper [9] similarly evaluates discrete diffusion on standard benchmarks. The design of \"train/adapt a diffusion LM on a large text corpus, evaluate on standard NLP benchmarks, compare against AR baseline\" is well-established in [17] and [9]. The specific datasets (FineWeb/SlimPajama) and models (GPT2/LLaMA2) differ, but the evaluation design is the same.\n\n---\n\n**DOMAIN: 自然语言处理 / 文本生成 / 扩散语言模型**\n\nMultiple prior papers operate in NLP text generation with diffusion language models: [2], [8], [9], [11], [17] all work in this exact area. This domain is clearly covered.\n\n---\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 17\nVERDICT domain = 17",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the specific objective of converting an existing open-source AR LLM into a DLM via continued pretraining to avoid the resource cost of training a DLM from scratch. [15] and [16] adapt AR models for NAR generation but in speech/seq2seq domains with different motivations, and none frame the goal as \"leverage AR LLMs to build competitive-scale DLMs.\"\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper proposes the specific combination of (1) continued pretraining to unify AR and diffusion objectives, (2) attention mask annealing to gradually break causal masking into bidirectional attention, (3) inheriting the AR shift operation, and (4) a time-embedding-free architecture. [30] (Bitune) introduces bidirectional attention into decoder-only LLMs but via fine-tuning for instruction-following, not diffusion adaptation, and does not quote any equivalent of \"attention mask annealing\" or the unified AR-diffusion training objective. No other paper covers this combination."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 15
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": [
+        15,
+        20,
+        30
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        2,
+        8,
+        9,
+        11,
+        14,
+        17
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "purpose: Covered by [15]. The contribution's purpose is to leverage a pre-trained autoregressive (AR) model to efficiently create a diffusion language model (DLM), which is a type of non-autoregressive (NAR) model; this is substantively equivalent to the purpose of [15], which is to \"propose AR pretraining to the NAR encoder to reduce the accuracy gap,\" leveraging an AR model to improve a NAR model.\n\nmechanism: NONE. The core mechanism is converting a pre-trained AR model into a bidirectional/diffusion model via \"attention mask annealing\" during a continued pre-training phase. While prior works like [16] and [24] discuss the continuum between AR and NAR models, none appear to describe this specific, dynamic conversion process of gradually changing the attention mask on an existing model.\n\nevaluation: Covered by [15], [20], [30]. The evaluation design is to apply a proposed modification technique to a standard pre-trained model (GPT2, LLaMA2) and then compare the performance of the modified model against the original baseline on a set of downstream tasks. This \"adapt-and-compare\" protocol is a standard evaluation design and is used by prior works like [30], which \"evaluate[s] Bitune... showing significant improvements in performance\" over the baseline.\n\ndomain: Covered by [2], [8], [9], [11], [14], [17]. The contribution operates in the domain of \"Diffusion Language Models\" for text generation. This is an established research area, as evidenced by multiple prior papers that explicitly focus on this topic, such as [2] (\"discrete diffusion model for text generation\") and the surveys [8] and [11].\n\nVERDICT purpose = 15\nVERDICT mechanism = NONE\nVERDICT evaluation = 15, 20, 30\nVERDICT domain = 2, 8, 9, 11, 14, 17",
+      "stage2": "FACET: mechanism: 提出简单的持续预训练适配方案:统一 AR 与扩散的建模目标(§3.2),用注意力掩码退火(attention mask annealing)打破 AR 的因果掩码使其双向化,继承 AR 的 shift operation,并采用无时间嵌入架构 | FINAL: NONE | reason: The proposed mechanism is a specific combination of four elements: 1) unifying Autoregressive (AR) and Diffusion objectives, 2) using attention mask annealing to transition from a causal to a bidirectional model, 3) inheriting the AR shift operation, and 4) using a time-embedding-free architecture. While prior works touch upon some of these elements in isolation (e.g., [14] unifies AR and diffusion models but is not time-embedding-free and does not use attention mask annealing; [24] explores controlling bidirectionality but does not connect it to diffusion models), no single prior paper presents this specific combination as a coherent mechanism. The novelty lies in using attention mask annealing as the specific method to unify AR and diffusion, which in turn enables a simplified time-embedding-free architecture. This complete, combined mechanism is not found."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     8,
+     12
+    ],
+    "mechanism": [
+     12
+    ],
+    "evaluation": [
+     8,
+     12
+    ],
+    "domain": [
+     4
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to demonstrate that adapting a 7B autoregressive (AR) model (LLaMA2) into a diffusion language model (DiffuLLaMA) significantly enhances its capabilities, resulting in the strongest diffusion language model (DLM) to date. None of the prior papers explicitly establish this empirical relationship between scaling/adapting a 7B AR model into a DLM and achieving state-of-the-art (SOTA) performance. While [12] explores scaling diffusion language models and their capabilities, it does not specifically focus on adapting a 7B AR model or demonstrate the same empirical finding. Similarly, [11] discusses improving iteration-based non-autoregressive diffusion models but does not establish the same purpose. No prior paper directly addresses this specific purpose.\n\n### Mechanism\nThe mechanism involves adapting a 7B AR model (LLaMA2) into a diffusion language model (DiffuLLaMA) and evaluating its capabilities in context learning, code generation, infilling, and generation speed. [12] describes scaling diffusion language models and their application to various tasks, including infilling and code generation, which overlaps with the mechanism of this contribution. Additionally, [11] discusses iteration-based non-autoregressive diffusion models and their improvements, which also align with the mechanism of adapting AR models into diffusion models. Both papers cover the underlying technical primitive of adapting or scaling diffusion models for language tasks.\n\n### Evaluation\nThe evaluation demonstrates that DiffuLLaMA achieves SOTA performance in diffusion language modeling, showcasing strong results in in-context learning (ICL), code generation, infilling, and generation speed. The evaluation design includes standard benchmarks and metrics for these tasks. [12] evaluates diffusion language models on similar tasks, including ICL, code generation, and infilling, using comparable benchmarks and metrics. [11] also evaluates diffusion models on generation quality and speed, which aligns with the evaluation design of this contribution. Thus, the evaluation design is covered by prior work.\n\n### Domain\nThe domain is natural language processing (NLP) and large language models (LLMs). This domain is extensively covered by prior papers, including [4], [5], [6], [8], [9], [12], and others, which all address NLP and LLMs. While this contribution focuses on a specific instance (adapting a 7B AR model into a diffusion model), the general domain of NLP and LLMs is well-covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 12  \nVERDICT evaluation = 12  \nVERDICT domain = 4  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 8 | reason: LLaMA paper explicitly demonstrates scaling to 7B and its significant impact on achieving state-of-the-art diffusion language model (DLM) capabilities: \"We introduce LLaMA, a collection of foundation language models ranging from 7B to 65B parameters... LLaMA-13B outperforms GPT-3 (175B) on most benchmarks.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 12
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: 证明将适配扩展到 7B 规模能显著提升 DLM 能力，得到当前最强 DLM**\n\nThe purpose is to demonstrate that scaling adaptation to 7B parameters significantly improves diffusion language model capability, achieving SOTA DLM. Paper [12] directly addresses this: \"scaling diffusion models w.r.t. data, sizes, and tasks can effectively make them strong language learners\" and \"demonstrates that scaling diffusion models... can effectively make them strong language learners.\" This is the same objective — showing scaling improves DLM capability to SOTA level. The relationship (scale → stronger DLM) is the same.\n\n**MECHANISM: 将 7B AR 模型(LLaMA2)适配为 DiffuLLaMA，评估其上下文学习、代码生成、infilling 能力及生成速度**\n\nThe mechanism involves adapting a 7B AR model (LLaMA2) into a diffusion LM and evaluating ICL, code generation, infilling, and generation speed. Paper [12] adapts/scales diffusion language models and evaluates them on general language tasks including instruction-following. However, the specific primitive of *adapting an existing AR model* (rather than training a diffusion model from scratch or scaling a native diffusion model) is more specific. Paper [7] (LLaMA-Adapter) adapts LLaMA via lightweight methods, but for AR instruction-following, not diffusion. No prior paper specifically adapts a pretrained AR model into a DLM as the core mechanism. Paper [12] scales diffusion models but doesn't adapt from AR. This specific primitive (AR→DLM adaptation at 7B scale) appears absent.\n\n**EVALUATION: DiffuLLaMA 成为 SOTA DLM，展现 ICL、代码生成、强 infilling；无条件生成速度与 AR 相当；数学 few-shot benchmarks (MAWPS, SATMath, TriviaQA)**\n\nThe evaluation design uses standard NLP benchmarks (MAWPS, SATMath, TriviaQA), ICL evaluation, code generation benchmarks, infilling tasks, and speed comparison. Paper [12] uses the same evaluation design: \"scaling diffusion models... evaluated on general language tasks\" with benchmark-based evaluation including few-shot settings. Paper [8] (LLaMA) uses TriviaQA and similar benchmarks. The evaluation design (standard NLP benchmarks, few-shot evaluation, speed comparison) is well-covered by [12] and [8].\n\n**DOMAIN: 自然语言处理 / 大语言模型**\n\nThe domain is NLP/LLMs. Papers [4], [5], [8], [12], [16] all operate in NLP/LLM domain explicitly.\n\nVERDICT purpose = 12\nVERDICT mechanism = NONE\nVERDICT evaluation = 12\nVERDICT domain = 4",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes adapting a 7B autoregressive model (specifically LLaMA2) into a diffusion LM and evaluating the resulting model on in-context learning, code generation, infilling, and generation speed. Paper [12] scales diffusion models with instruction-finetuning but does not adapt an existing AR model. Paper [9] covers code infilling but is purely autoregressive. No paper covers this specific AR-to-diffusion adaptation mechanism even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 12
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe purpose is to demonstrate that scaling up a diffusion language model (DLM) to 7B parameters significantly improves its capabilities, making it a state-of-the-art (SOTA) DLM. This is an empirical finding about a scaling relationship. Paper [12] explicitly shares this purpose, stating its goal is to \"demonstrate that scaling diffusion models w.r.t. data, sizes, and tasks can effectively make them strong language learners.\" The contribution's finding is a specific instance of the general relationship already established by [12].\n\n**MECHANISM**\nThe mechanism is adapting a 7B autoregressive (AR) model, LLaMA2, into a diffusion-based model (DiffuLLaMA). This involves using a transformer architecture as the core component of a diffusion model for language. This technical primitive is covered by [12], which builds \"competent diffusion language models\" to test scaling, and by [15], which uses a \"transformer that operates on latent patches\" as the backbone for a diffusion model, albeit for images.\n\n**EVALUATION**\nThe evaluation design involves assessing capabilities on in-context learning (ICL), code generation, and infilling, comparing generation speed to AR models, and reporting scores on standard benchmarks (MAWPS, SATMath, TriviaQA). Each part of this design is pre-existing: evaluating on code generation and infilling is seen in [9]; evaluating ICL for diffusion models is in [18]; comparing speed to AR models is a standard protocol for non-AR models as discussed in [11] and [28]; using standard benchmarks like TriviaQA is done in [8].\n\n**DOMAIN**\nThe domain is Natural Language Processing (NLP) and Large Language Models (LLMs). This is a very broad and well-established research area. Numerous prior papers, including the surveys [4] and [5] and foundational model papers like [8], operate squarely within this domain.\n\nVERDICT purpose = 12\nVERDICT mechanism = 12\nVERDICT evaluation = 8\nVERDICT domain = 4",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "resource",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     6
+    ],
+    "mechanism": [
+     13,
+     18
+    ],
+    "evaluation": [
+     4,
+     6,
+     13,
+     18
+    ],
+    "domain": [
+     4,
+     6,
+     18,
+     22
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 18
+      },
+      "evaluation": {
+       "covered_by": [
+        6,
+        4,
+        18
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        6,
+        4,
+        18,
+        22
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to provide a fair benchmark and reusable resources for diffusion language model (DLM) research. None of the prior papers explicitly focus on creating benchmarks and reusable resources specifically tailored for DLMs. While papers like [6] (HELM) and [4] (Paloma) discuss benchmarks for language models, they do not address diffusion language models or aim to provide reusable resources for DLM research. Similarly, [18] explores diffusion language models but does not focus on creating benchmarks or reusable resources for fair comparison. Thus, no prior paper matches this purpose.\n\n### Mechanism\nThe mechanism involves constructing a comprehensive benchmark and open-sourcing adapted diffusion models (127M/355M/7B), along with adaptation code, efficient fine-tuning scripts, and evaluation toolkits. Paper [18] discusses scaling and instruction-finetuning for diffusion language models, which overlaps with the adaptation and scaling aspect of the mechanism. However, no other prior paper explicitly combines the creation of benchmarks, open-sourcing adapted models, and providing associated tools in this manner. Thus, [18] partially covers the mechanism.\n\n### Evaluation\nThe evaluation facet involves releasing the DiffuGPT/DiffuLLaMA model suite and associated tools on GitHub. Papers like [6] (HELM), [4] (Paloma), and [18] (Diffusion Language Models) use evaluation setups involving benchmarks and tools for assessing language models, which aligns with the design-level reuse rule. While the specific models and tools differ, the evaluation design (benchmarking and toolkits for validation) is substantively equivalent. Therefore, evaluation is covered by [6], [4], and [18].\n\n### Domain\nThe domain is natural language processing (NLP) with a focus on open-source tools and benchmarks. Papers like [6] (HELM), [4] (Paloma), [18] (Diffusion Language Models), and [22] (GPT4All) all operate within the NLP domain and involve open-source tools or benchmarks. While the specific focus on diffusion language models is narrower, the general domain of NLP and open-source benchmarking is well-covered by these prior works.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 18  \nVERDICT evaluation = 6, 4, 18  \nVERDICT domain = 6, 4, 18, 22  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 6 | reason: HELM explicitly aims to improve transparency and provide benchmarks for fair comparison across LMs, aligning with the objective of providing reusable resources for DLM research. Quote: \"We present Holistic Evaluation of Language Models (HELM) to improve the transparency of LMs.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 18
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: 为 DLM 研究提供公平比较的基准与可复用资源**\n(Provide fair comparison benchmarks and reusable resources for Diffusion Language Model research)\n\nThe purpose is to create a standardized benchmark and open-source resources specifically for Diffusion Language Models (DLMs). Paper [18] is the closest — it works on diffusion language models with scaling and instruction-finetuning — but its purpose is to demonstrate DLMs can perform tasks, not to provide a fair comparison benchmark/resource suite for the community. Papers [6] (HELM) and [4] (Paloma) provide benchmarks for LM evaluation generally, which is substantively equivalent at the problem-class level: \"provide fair comparison benchmarks for language model research.\" The specific target (DLMs vs. general LMs) is a domain difference, not a purpose difference.\n\n**MECHANISM: 构建综合基准并开源适配后的扩散模型及适配代码、高效微调脚本、评估工具包**\n(Build comprehensive benchmark + open-source adapted diffusion models at multiple scales + adaptation code + fine-tuning scripts + evaluation toolkit)\n\nThe mechanism is releasing an open-source suite of adapted models at multiple scales with accompanying code and evaluation tools. Paper [13] (OpenFlamingo) does exactly this: \"an open-source replication... We share our models and code.\" Paper [22] (GPT4All) similarly releases open-source compressed LLMs with an ecosystem. Paper [8] (MEDITRON) releases \"a suite of open-source LLMs with 7B and 70B parameters adapted to the medical domain.\" These are all substantively equivalent: adapt/train models at multiple scales and release them open-source with code.\n\n**EVALUATION: 定性发布 DiffuGPT/DiffuLLaMA 模型套件与配套代码工具**\n(Qualitative: release of model suite and accompanying code tools)\n\nThe evaluation here is essentially the release itself as validation — demonstrating the resource exists and is usable. Papers [13] and [22] use the same \"evaluation design\": release models and code, demonstrate their availability and functionality as the primary contribution validation. This is a standard resource-paper evaluation design covered by [13] and [22].\n\n**DOMAIN: 自然语言处理 / 开源工具与基准**\n(NLP / open-source tools and benchmarks)\n\nMultiple prior papers operate in NLP with open-source tools and benchmarks: [6], [13], [22], [4], [18] all work in NLP open-source/benchmark space. This domain is clearly covered.\n\nVERDICT purpose = 6\nVERDICT mechanism = 13\nVERDICT evaluation = 13\nVERDICT domain = 18",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

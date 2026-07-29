@@ -1,0 +1,300 @@
+{
+ "paper_id": "P98KMCf60l",
+ "title": "Theoretical Insights into Fine-Tuning Attention Mechanism: Generalization and Optimization",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     1,
+     6,
+     19
+    ],
+    "evaluation": [
+     17,
+     19
+    ],
+    "domain": [
+     5,
+     7,
+     17,
+     21
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": [
+        5,
+        7,
+        17,
+        21
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to explain the \"Unequal Importance of Attention Matrices\" phenomenon and justify why fine-tuning only \\( W_q \\) and \\( W_v \\) is preferable to fine-tuning all three matrices (\\( W_q, W_k, W_v \\)). No prior paper explicitly establishes or explains this specific empirical relationship between the gradients of \\( W_q, W_k, W_v \\) and their importance in fine-tuning. While some papers discuss fine-tuning strategies (e.g., [5], [7], [17], [21]), none address this particular phenomenon or provide a theoretical justification for the unequal importance of attention matrices. Thus, the purpose is **not covered**.\n\n### Mechanism\nThe contribution uses an information-theoretic generalization analysis to establish bounds (Theorem 1) for fine-tuning pre-trained attention models, showing that fine-tuning \\( W_q \\) and \\( W_v \\) reduces parameters while improving generalization bounds. Papers such as [1], [3], [8], [10], [11], [12], [13], [14], [15], and [18] discuss information-theoretic generalization bounds, but none specifically analyze fine-tuning attention matrices or derive bounds motivated by the gradient behavior of \\( W_q, W_k, W_v \\). The mechanism is **not covered**.\n\n### Evaluation\nThe evaluation includes both theoretical (Theorem 1 generalization bound) and empirical validation, showing that fine-tuning \\( W_q \\) and \\( W_v \\) yields better performance than fine-tuning \\( W_k \\) or all three matrices, while reducing tunable parameters. Papers such as [5], [7], [17], and [21] evaluate parameter-efficient fine-tuning methods, but none use the same evaluation design (theoretical generalization bound combined with empirical validation of attention matrix importance). Thus, the evaluation design is **not covered**.\n\n### Domain\nThe contribution operates in the domain of parameter-efficient fine-tuning of large language models (LLMs) and attention mechanism theory. Papers such as [5], [7], [17], and [21] address parameter-efficient fine-tuning in LLMs, and papers such as [6], [16], and [23] study attention mechanisms. Therefore, the domain is **covered**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [5, 7, 17, 21]  ",
+      "stage2": "- **FACET: purpose** | **FINAL: NONE** | reason: No prior paper explicitly explains the 'Unequal Importance of Attention Matrices' phenomenon or justifies fine-tuning only Wq and Wv over all three matrices (Wq, Wk, Wv) with the same objective.  \n- **FACET: mechanism** | **FINAL: COVERED-BY 6** | reason: Paper [6] discusses gradient flow on softmax attention and the implicit regularization of Wq and Wk, which aligns with the observation that gradients of Wq, Wk vanish while Wv's gradient remains non-zero. Quote: \"Under a separability assumption on the data, we show that... gradient flow achieves the minimal loss value... implicitly minimizes the nuclear norm of the product of the key and query weight matrices.\"  \n- **FACET: evaluation** | **FINAL: NONE** | reason: No prior paper provides the same theoretical generalization bound (Theorem 1) or empirical results comparing fine-tuning Wq, Wv versus all three matrices."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 19
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE:**\nThe purpose is to theoretically explain why fine-tuning only Wq and Wv is preferable to fine-tuning all three attention weight matrices, specifically explaining the \"Unequal Importance of Attention Matrices\" phenomenon. I need to find a prior paper that establishes the same empirical relationship — that Wv is more important than Wk in attention fine-tuning, or that selective attention matrix fine-tuning is theoretically justified.\n\nPaper [16] analyzes query-key interaction in vision transformers via SVD of the interaction matrix, but focuses on Wq/Wk interaction, not on the relative importance of Wv vs Wk for fine-tuning. Paper [6] studies gradient flow on softmax attention training Wq and Wk separately, finding implicit regularization — this touches on Wq/Wk dynamics but doesn't establish the Wv > Wk importance relationship. Paper [17] explores parameter-efficient fine-tuning design spaces and may compare which matrices to tune, but doesn't specifically establish the theoretical justification for Wq+Wv superiority. No prior paper appears to establish the specific relationship: \"Wv is more important than Wk for fine-tuning, and this can be explained theoretically via generalization bounds and gradient vanishing near zero.\"\n\n**MECHANISM:**\nThe mechanism is an information-theoretic generalization bound analysis applied to fine-tuning pre-trained attention models, combined with gradient analysis showing Wq/Wk gradients vanish near zero while Wv's don't due to softmax normalization. Papers [1], [3], [8], [10], [11], [14], [15] all develop information-theoretic generalization bounds, but none apply them specifically to attention fine-tuning parameter selection. Paper [19] derives Hessian-based generalization guarantees for fine-tuning pretrained deep networks — this is the closest, as it applies generalization theory to fine-tuning. However, the specific primitive of using info-theoretic bounds to justify which attention matrices to fine-tune, combined with the softmax-gradient-vanishing argument, doesn't appear in prior work. Paper [6] studies gradient flow on softmax attention but focuses on implicit regularization of Wq·Wk product, not on the Wv gradient remaining non-zero. The combination is not covered, but the info-theoretic generalization bound mechanism itself is covered by [1], [8], [10], [11], [14] etc., and the fine-tuning generalization analysis is covered by [19].\n\n**EVALUATION:**\nThe evaluation includes: (1) a theoretical theorem (generalization bound), and (2) empirical comparison of fine-tuning Wv vs Wk vs all three matrices on standard benchmarks. The empirical design — comparing subsets of fine-tuned parameters on standard NLP/LLM benchmarks — is a standard PEFT evaluation design used in papers [7], [17]. Paper [17] explicitly compares different parameter-efficient fine-tuning design choices. This evaluation design (ablation over which parameters to tune, measured on standard benchmarks) is covered.\n\n**DOMAIN:**\nThe domain is parameter-efficient fine-tuning of LLMs / attention mechanism theory. Papers [7], [17], [21], [5] all work in parameter-efficient fine-tuning of large language models. This is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 19\nVERDICT evaluation = 17\nVERDICT domain = 7",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper provides a theoretical explanation for why Wq and Wv are more important than Wk in attention fine-tuning, nor justifies selecting only Wq and Wv over all three matrices. Paper [16] analyzes query-key interaction via SVD but does not address differential importance of Wq/Wk/Wv for fine-tuning selection. No other paper contains this objective even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 19
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to theoretically explain the 'Unequal Importance of Attention Matrices' and justify why fine-tuning only Wq and Wv is preferable. No prior paper addresses this specific theoretical question; papers on generalization bounds ([1], [3], [10], etc.) provide general tools but not this specific objective, and papers on PEFT ([5], [7], [17]) describe or propose methods without providing this specific theoretical justification.\n\n**mechanism**: The mechanism is an \"Information-theoretic generalization analysis\" used to establish bounds for fine-tuning. This is a standard theoretical primitive in machine learning. Multiple prior papers use this exact mechanism, such as [1] which aims to \"derive information-theoretic generalization bounds for supervised learning algorithms\" and [10] which analyzes \"information-theoretic bounds that quantify the dependence between a learning algorithm and the training data.\"\n\n**evaluation**: The evaluation design consists of deriving a theoretical generalization bound and supplementing it with empirical experiments comparing the performance of models fine-tuned on different subsets of parameters. This design is not new. The theoretical part is covered by numerous papers on generalization theory like [19] (\"Hessian-based Generalization Guarantees\"), and the empirical part (comparing tuning strategies) is a standard ablation used in papers like [21] to compare their modified LoRA to the original.\n\n**domain**: The domain is \"Parameter-efficient fine-tuning of LLMs / attention mechanism theory\". This is a well-established research area. Prior papers such as [5] (\"Q-PEFT: Query-dependent Parameter Efficient Fine-tuning... with Large Language Models\"), [7] (\"Modular and Parameter-Efficient Fine-Tuning for NLP Models\"), and [17] (\"Parameter-Efficient Fine-Tuning Design Spaces\") all operate squarely within this domain.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 1\nVERDICT evaluation = 19\nVERDICT domain = 5",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the specific objective of theoretically explaining the unequal importance of all three attention matrices (Wq, Wk, Wv) to justify why fine-tuning only Wq and Wv is a preferable strategy. Papers [6] and [16] analyze the Wq-Wk interaction but do not include Wv in their core theoretical analysis, nor do they aim to justify the specific Wq/Wv fine-tuning choice."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     1,
+     8
+    ],
+    "evaluation": [
+     8,
+     14,
+     26
+    ],
+    "domain": [
+     1,
+     9,
+     14,
+     18,
+     25,
+     26
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": [
+        9,
+        14,
+        18,
+        25
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to explain the phenomenon that assigning a higher learning rate to \\( W_v \\) in attention matrices leads to better convergence. None of the prior papers explicitly report or establish this specific empirical relationship between learning rates of \\( W_v \\) and convergence dynamics in attention mechanisms. While some papers discuss learning rate adaptation (e.g., [9], [14], [18]), they do not address this particular phenomenon or justify the relationship between \\( W_v \\) and convergence.\n\n### Mechanism\nThe mechanism involves analyzing the learning dynamics of attention mechanisms, specifically showing inefficient learning in \\( W_v \\) (Case 1) and deriving scaling arguments for large-width networks (Theorem 2) to justify assigning a higher learning rate to \\( W_v \\). Papers such as [1], [8], [15], and [23] analyze learning dynamics in neural networks, including attention mechanisms and infinite-width scaling, but none derive scaling arguments or analyze \\( W_v \\) learning inefficiency in the same way. The specific mechanism of scaling arguments for \\( W_v \\) learning rate adjustment appears absent in prior work.\n\n### Evaluation\nThe evaluation facet involves Theorem 2, which theoretically validates efficient feature learning under large-width scaling when \\( W_v \\) has a higher learning rate relative to \\( W_q \\) and \\( W_k \\). Papers such as [5], [8], [15], and [23] use theoretical scaling arguments and asymptotic analysis for wide networks, but none employ the same evaluation design or theoretical framework to validate learning rate adjustments for \\( W_v \\). The evaluation design appears novel.\n\n### Domain\nThe domain is optimization and learning-rate tuning for attention fine-tuning. Papers such as [9], [14], [18], and [25] address learning-rate tuning and optimization in deep networks, including layer-wise or adaptive learning rates. While these papers do not specifically target attention mechanisms, the general application area of optimization and learning-rate tuning is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [9], [14], [18], [25]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly explains or justifies assigning a higher learning rate to Wv for better convergence under the same empirical relationship.  \nFACET: mechanism | FINAL: COVERED-BY 8 | reason: \"We discuss the acceleration phenomena by drawing scaling arguments for large-width networks and analyzing learning dynamics.\"  \nFACET: evaluation | FINAL: COVERED-BY 14 | reason: \"We also give the theorem proving faster convergence rates with layer-wise learning rate adaptation.\"  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 26
+      },
+      "domain": {
+       "covered_by": 26
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Explain why attention matrices benefit from customized learning rates and justify a higher learning rate for Wv specifically.**\n\nThis is a very specific purpose: explaining the convergence phenomenon for Wv vs Wq/Wk in attention mechanisms. Paper [1] studies optimization of self-attention (key-query matrix convergence), but focuses on Wq/Wk implicit bias, not on justifying a higher learning rate for Wv. No prior paper appears to address the specific relationship between Wv's learning rate and convergence efficiency in attention. Papers on layer-wise learning rates ([9], [14], [17], [18]) address different layers of CNNs/general networks, not the specific Wq/Wk vs Wv distinction within a single attention operation. Paper [26] (muP/muTransfer) addresses hyperparameter transfer across scales but not the specific Wv vs Wq/Wk learning rate justification. None of the prior papers establish the same empirical/theoretical relationship between Wv's learning rate and efficient feature learning in attention.\n\n**MECHANISM: Convergence/optimization analysis of attention using learning dynamics (Case 1 for Wv inefficiency) and large-width scaling arguments to derive a theorem showing Wv needs a larger learning rate.**\n\nPaper [1] analyzes optimization/convergence of self-attention but focuses on implicit bias of Wq/Wk, not on Wv learning dynamics or large-width scaling arguments for learning rate assignment. Paper [15] and [26] use large-width/scaling arguments (muP framework), and [26] explicitly derives scaling rules for learning rates in large-width networks. However, [26] applies this to general neural networks, not specifically to the Wv vs Wq/Wk distinction in attention. Paper [8] analyzes feature learning dynamics in infinite-width networks with bottlenecks. The specific combination — attention-specific learning dynamics analysis + large-width scaling to justify differential Wv learning rate — does not appear covered by any single prior paper. Paper [26] is closest on the scaling mechanism but doesn't analyze Wv specifically.\n\n**EVALUATION: Theorem 2 (theoretical) on efficient feature learning under large-width scaling; higher Wv learning rate accelerates convergence.**\n\nThe evaluation design here is a theoretical theorem with large-width scaling arguments. Papers [15], [26], [27] use large-width/scaling theoretical frameworks. Paper [26] uses muP scaling theory to derive learning rate transfer results. Paper [1] uses theoretical convergence analysis for attention. These represent the same evaluation design (theoretical convergence/scaling theorem), just applied to different objects. Paper [26] in particular uses scaling arguments to derive learning rate prescriptions theoretically.\n\n**DOMAIN: Optimization / learning-rate tuning for attention fine-tuning.**\n\nMultiple prior papers work in optimization and learning-rate tuning for deep networks ([9], [14], [17], [18], [26]). Paper [1] specifically addresses attention optimization. Paper [26] addresses learning rate tuning for transformers. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 26\nVERDICT domain = 26",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explains why assigning a higher learning rate specifically to Wv improves convergence in attention mechanisms; the closest paper [1] analyzes implicit bias of Wq/Wk (key-query matrix) convergence but does not address Wv learning rate assignment or justify differential learning rates across attention weight matrices.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper performs a convergence/optimization analysis specific to attention mechanisms showing Wv learns inefficiently (Case 1 dynamics) and derives via large-width scaling arguments that Wv's learning rate must be much larger than Wq/Wk's for efficient feature learning; [1] analyzes self-attention optimization but focuses on implicit bias of the key-query matrix, not Wv learning dynamics or differential learning rate requirements derived from scaling arguments."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to explain a specific phenomenon — that a higher learning rate for the value matrix `Wv` relative to `Wq` and `Wk` improves convergence — and provide a theoretical justification. None of the prior papers investigate or aim to explain this specific relationship between the learning rates of different matrices within the self-attention block. While paper [1] studies the optimization of self-attention, it focuses on the key-query matrix and its implicit bias, not the differential learning dynamics of `Wv` versus `Wq`/`Wk`.\n\n**mechanism**: The mechanism is a convergence and optimization analysis of the attention mechanism, using large-width scaling arguments to derive a theoretical result. Paper [1] employs a substantively equivalent mechanism, as it also studies the \"fundamental optimization principles of self-attention, the defining mechanism of transformers, by analyzing the implicit bias of gradient-based optimizers\". This constitutes a direct overlap in the technical approach of analyzing the learning dynamics of attention matrices.\n\n**evaluation**: The evaluation design consists of a theoretical analysis using large-width or infinite-width scaling to derive a theorem about learning dynamics, specifically convergence acceleration. This evaluation design is present in prior work. For example, paper [8] \"analyze[s] the learning dynamics of infinitely wide neural networks\" to \"discuss the acceleration phenomena\", which is the same evaluation design of using scaling analysis to theoretically explain an observed training speedup.\n\n**domain**: The contribution's domain is the optimization and learning-rate tuning for the attention mechanism in transformers. Paper [1] operates in the exact same domain, as it explicitly states its goal is to \"study the fundamental optimization principles of self-attention\". Other papers like [9], [14], and [18] also work on the general problem of adaptive or per-component learning rates for deep networks.\n\nVERDICT purpose = NONE\nVERDICT mechanism = [1]\nVERDICT evaluation = [8]\nVERDICT domain = [1]",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: The prior art discusses layer-wise adaptive learning rates ([9], [14], [17], [18]), but none of these papers analyze the different optimization dynamics of the individual matrices (Wq, Wk, Wv) *within* a self-attention layer. The objective of explaining why Wv in particular benefits from a higher learning rate is not addressed. Paper [1] analyzes the key-query matrix but does not compare its dynamics to the value matrix or discuss differential learning rates."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     2
+    ],
+    "mechanism": [
+     8
+    ],
+    "evaluation": [
+     1,
+     6
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to \"turn theoretical insights into a practical fine-tuning strategy that improves storage and time efficiency.\" This aligns with the general goal of parameter-efficient fine-tuning (PEFT), which is extensively discussed in prior papers. For example, [1] explicitly states the need for parameter-efficient adaptation of PLMs to address storage and computational constraints. Similarly, [6] and [18] focus on improving fine-tuning efficiency in terms of storage and training speed. These papers share the same high-level objective of improving fine-tuning efficiency, even if the specific theoretical insights or strategies differ.\n\n### Mechanism\nThe mechanism involves a new fine-tuning strategy that applies customized learning rates to \\( W_q \\) and \\( W_v \\), with a higher learning rate for \\( W_v \\), derived from theoretical insights. This specific mechanism is not directly covered by any prior paper. While [8] and [19] discuss layer-wise or weight-wise learning rate tuning, they do not address the specific customization of learning rates for \\( W_q \\) and \\( W_v \\) in the context of PEFT. Similarly, [17] introduces \"Gradual Tuning,\" which modifies progressively larger sets of parameters, but this is a different primitive. No prior paper explicitly implements or discusses the same mechanism of differential learning rates for \\( W_q \\) and \\( W_v \\) based on theoretical insights.\n\n### Evaluation\nThe evaluation involves experiments on benchmark datasets and open-source pre-trained models to verify the strategy's efficiency improvements. This evaluation design is standard in PEFT research and is covered by prior papers. For example, [6], [18], and [13] all evaluate PEFT methods on benchmark datasets and pre-trained models to demonstrate efficiency improvements. The specific datasets or models may differ, but the evaluation design (benchmark-based validation of efficiency) is equivalent.\n\n### Domain\nThe domain is parameter-efficient fine-tuning of large language models (LLMs). This domain is extensively covered by prior papers, including [1], [6], [18], and [13], which all focus on PEFT for LLMs. While some papers may target specific sub-problems or applications (e.g., [4] for medical applications), the general domain of PEFT for LLMs is well-established.\n\n---\n\nVERDICT purpose = 1  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 6  \nVERDICT domain = 1  ",
+      "stage2": "FACET: mechanism | FINAL: COVERED-BY 8 | reason: Paper [8] discusses \"auto-tuning of layer-wise learning rates,\" which aligns with the proposed mechanism of using customized learning rates for Wq and Wv, satisfying the same empirical relationship. Quoted phrase: \"auto-tuning of layer-wise learning rates in fine-tuning of deep networks.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: \"Turn theoretical insights into a practical fine-tuning strategy that improves storage and time efficiency.\"**\n\nPapers [1], [2], [6], [18] all address improving efficiency (storage/compute) in fine-tuning. However, the specific purpose here is to *derive a fine-tuning strategy from theoretical insights* — bridging theory to practice for efficiency. Paper [2] explicitly mentions \"calibration based on stable rank\" with theoretical motivation for efficiency. Paper [14] provides \"thorough theoretical exploration of selective layer fine-tuning\" to guide practice. Paper [12] \"theoretically connects smaller weight gradient norms... to improvements in model generalization\" and proposes a method motivated by theory. None of these, however, specifically target the purpose of using theoretical insights to improve *storage and time efficiency* through differential learning rates on Wq/Wv. The closest is [2] (theory-guided PEFT for efficiency) and [14] (theory-guided selective fine-tuning). Paper [2] covers the purpose at the problem-class level: theory-guided PEFT for efficiency improvement.\n\n**MECHANISM: \"Fine-tune Wq, Wv with customized (higher for Wv) learning rates, derived from theoretical insights.\"**\n\nThis involves two sub-primitives: (a) assigning different learning rates to different weight matrices within the same layer, and (b) specifically targeting Wq and Wv. Papers [8]/[19] propose \"layer-wise pruning and auto-tuning of layer-wise learning rates\" — different learning rates per layer. Paper [16] proposes \"weight-wise adaptive learning rates\" — different learning rates per weight. Paper [20] re-examines hyperparameters including learning rates for fine-tuning. However, none specifically assign differentiated learning rates to Wq vs. Wv within attention, derived from theoretical analysis of those matrices. Paper [8]/[19] cover the primitive of assigning different learning rates to different components, which is the core mechanism here, even if the granularity (layer-wise vs. matrix-wise within attention) differs. The underlying primitive — differentiated learning rates across model components — is covered by [8]/[19] and [16].\n\n**EVALUATION: \"Experiments on benchmark datasets and open-source pre-trained models; no comparison against other PEFT methods; positioned as theory-to-practice demonstration.\"**\n\nThe evaluation design uses standard benchmark datasets with pre-trained LLMs to measure fine-tuning efficiency. This is a standard evaluation design used across [1], [2], [6], [7], [18], etc. The \"no comparison against PEFT baselines\" framing is a choice about scope, not a new evaluation design. Paper [1] and [2] use benchmark datasets with pre-trained language models to evaluate fine-tuning efficiency — same design. The evaluation design (benchmark datasets + pre-trained models + efficiency metrics) is clearly covered.\n\n**DOMAIN: \"Parameter-efficient fine-tuning of LLMs.\"**\n\nThis is directly covered by numerous papers: [1] \"Parameter-efficient fine-tuning of large-scale pre-trained language models,\" [2] \"Enhancing Parameter-efficient Fine-tuning,\" [6] \"Parameter-Efficient Fine-Tuning without Introducing New Latency,\" [18] \"Low-rank Attention Side-Tuning for Parameter-Efficient Fine-Tuning,\" etc.\n\nVERDICT purpose = 2\nVERDICT mechanism = 8\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

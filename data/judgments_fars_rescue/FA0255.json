@@ -1,0 +1,273 @@
+{
+ "paper_id": "FA0255",
+ "title": "FCBoost: Static Frequency-Aware Channel Selection for 2-Bit KV Cache Quantization",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     20
+    ],
+    "mechanism": [
+     12
+    ],
+    "evaluation": [
+     1
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to \"eliminate the per-page dynamic channel-selection overhead of mixed-precision 2-bit KV cache quantization.\" This specific objective — reducing the *dynamic channel-selection overhead* in mixed-precision KV cache quantization — is not directly addressed in any prior paper. While many papers (e.g., [1], [4], [6], [8], [20]) discuss KV cache quantization and related efficiency challenges, none explicitly focus on the *dynamic channel-selection overhead* as the problem to solve. For example, [20] addresses the overhead of dynamic quantization and dequantization steps in autoregressive generation but does not target the per-page dynamic channel-selection overhead in mixed-precision quantization. Similarly, [6] focuses on system-level constraints like paged memory layouts and fused attention execution but does not address the specific problem of dynamic channel-selection overhead.\n\n**Conclusion**: No prior paper shares the same purpose.\n\n---\n\n### Mechanism\nThe mechanism, FCBoost, is a static channel-selection method that profiles Contextual Agreement (CA) scores offline to identify structurally important RoPE frequency pairs, selects the top-F pairs per KV head to form a fixed boolean mask, and boosts those channels from INT2 to INT4 at inference. This mechanism involves three key components: (1) profiling Contextual Agreement (CA) scores, (2) selecting top-F frequency pairs per KV head, and (3) applying a fixed boolean mask to boost selected channels to higher precision.\n\n- **Profiling Contextual Agreement (CA) scores**: No prior paper explicitly mentions profiling CA scores to identify structurally important RoPE frequency pairs. While [8] and [20] discuss identifying salient tokens or channels, their methods rely on attention scores or token-level saliency rather than CA scores or RoPE frequency pairs.\n- **Static channel selection**: Papers like [6], [20], and [15] discuss static quantization methods, but none describe a mechanism equivalent to FCBoost's fixed boolean mask for boosting selected channels. For example, [20] uses per-channel calibration for static quantization but does not involve CA scores or RoPE frequency pairs.\n- **Boosting selected channels from INT2 to INT4**: While [6] and [20] discuss mixed-precision quantization, they do not describe boosting specific channels from INT2 to INT4 based on a fixed mask derived from CA scores.\n\n**Conclusion**: No prior paper shares an equivalent mechanism.\n\n---\n\n### Evaluation\nThe evaluation design involves reducing selection complexity from Kitty's O(N/P) to O(1) with no per-page metadata and validating the method on a short-context GSM8K sanity check (achieving 89.84%, within 0.46pp of FP16). This evaluation design has two components: (1) complexity reduction analysis and (2) accuracy validation on GSM8K.\n\n- **Complexity reduction analysis**: Papers like [6] and [20] discuss reducing computational overhead in KV cache quantization but do not explicitly analyze or report complexity reductions in terms of O(N/P) to O(1). For example, [6] focuses on system-level constraints, and [20] addresses dynamic quantization overhead but does not provide a comparable complexity analysis.\n- **Accuracy validation on GSM8K**: GSM8K is a specific benchmark for arithmetic reasoning tasks. None of the prior papers explicitly use GSM8K as part of their evaluation. While [6] and [20] evaluate accuracy on various benchmarks, they do not use GSM8K or a similar arithmetic reasoning benchmark.\n\n**Conclusion**: No prior paper shares an equivalent evaluation design.\n\n---\n\n### Domain\nThe domain of the contribution is \"LLM inference efficiency / KV cache quantization.\" Many prior papers ([1], [4], [6], [8], [20], etc.) operate in the same general application area of LLM inference efficiency and KV cache quantization. For example, [1] focuses on KV cache quantization for large-context LLM inference, and [6] addresses KV cache quantization for real-world LLM serving. While the specific sub-problem (eliminating per-page dynamic channel-selection overhead) is new, the general domain is well-covered.\n\n**Conclusion**: The domain is covered by prior work.\n\n---\n\n### Verdicts\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly eliminates per-page dynamic channel-selection overhead for mixed-precision 2-bit KV cache quantization.  \nFACET: mechanism | FINAL: NONE | reason: No prior paper profiles Contextual Agreement scores offline, selects top-F RoPE frequency pairs per KV head, and boosts channels from INT2 to INT4 using a fixed boolean mask.  \nFACET: evaluation | FINAL: NONE | reason: No prior paper reduces selection complexity to O(1) without per-page metadata or reports GSM8K short-context accuracy within 0.46pp of FP16.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 20
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Eliminate the per-page dynamic channel-selection overhead of mixed-precision 2-bit KV cache quantization.**\n\nThe purpose is specifically to remove runtime/dynamic channel-selection overhead in KV cache quantization by making selection static. Paper [20] (MergeQuant) explicitly addresses \"the overhead of repeated dynamic quantization and dequantization steps\" and proposes \"per-channel static quantization\" to eliminate dynamic calibration overhead in LLM inference. Paper [15] (PrefixQuant) also argues \"static quantization beats dynamic\" by eliminating per-token dynamic overhead. Both share the same objective: replace dynamic per-step overhead with a static, offline-computed alternative. Paper [6] (SAW-INT4) also targets practical serving constraints including metadata overhead. Paper [20] is the closest match — same objective of eliminating dynamic selection overhead via static offline profiling.\n\n---\n\n**MECHANISM: FCBoost — offline profiling of CA scores to identify structurally important RoPE frequency pairs, selecting top-F pairs per KV head as a fixed boolean mask, then boosting those channels from INT2 to INT4.**\n\nThe mechanism has several components: (1) offline profiling of a structural signal (CA scores tied to RoPE frequency pairs), (2) forming a fixed boolean channel mask, (3) selectively boosting specific channels to higher precision. Paper [12] (AWQ) identifies \"salient weights\" offline using activation statistics and protects them at higher precision — same primitive of offline-profiled importance → selective precision boost. Paper [1] (KVQuant) uses per-channel quantization with offline calibration. Paper [5] identifies channel-wise outliers offline and applies mixed precision. However, the RoPE frequency-pair-specific CA scoring is a distinct signal. The core primitive — offline profile a saliency score → fixed mask → boost important channels to higher bit-width — is covered by AWQ [12] and KVQuant [1]. The \"fixed boolean mask\" + \"boost to higher precision\" is the same primitive as AWQ's salient-weight protection, just applied to KV cache channels.\n\n---\n\n**EVALUATION: O(N/P)→O(1) complexity reduction claim + GSM8K short-context sanity check at ~89.84% (within 0.46pp of FP16).**\n\nGSM8K is a named benchmark used widely in LLM quantization evaluation. Papers [1], [5], [8], [15], [20] all use standard LLM benchmarks (including reasoning benchmarks like GSM8K or equivalent) to validate quantization accuracy. The evaluation design — run a standard LLM reasoning benchmark, compare quantized model accuracy to FP16 baseline — is a standard design used across many prior papers. Paper [20] explicitly uses accuracy benchmarks to compare static vs. dynamic quantization. The complexity analysis (O notation) is also a standard analytical tool. This evaluation design is covered.\n\n---\n\n**DOMAIN: LLM inference efficiency / KV cache quantization.**\n\nNumerous prior papers operate in exactly this domain: [1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11] all address KV cache quantization for LLM inference efficiency. This is clearly covered.\n\n---\n\nVERDICT purpose = 20\nVERDICT mechanism = 12\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 20
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: Paper [20] shares the same objective, stating that \"the overhead of repeated dynamic quantization and dequantization steps becomes considerably expensive,\" and in response proposes \"an accurate and efficient per-channel static quantization method\" to eliminate this overhead.\n\n**mechanism**: The core primitive of performing an offline analysis to identify a fixed subset of important elements and assigning them higher precision is covered by prior work. Paper [12] applies this to weights, \"protecting a small portion of salient weights,\" and paper [30] applies it to hardware operands by using \"sensitivity analysis\" to \"automate the selection of the optimal number representation.\"\n\n**evaluation**: The evaluation design, which combines an analysis of computational/memory overhead with accuracy measurement on a standard benchmark (GSM8K), is a common protocol in this field. Paper [1] uses this same design, evaluating on \"perplexity... and accuracy on downstream tasks including... GSM8K\" while also analyzing memory consumption.\n\n**domain**: The application area of \"LLM inference efficiency / KV cache quantization\" is explicitly the domain of numerous prior papers. For example, paper [1] is titled \"Towards 10 Million Context Length LLM Inference with KV Cache Quantization\" and works on the exact same problem area.\n\nVERDICT purpose = 20\nVERDICT mechanism = 12\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     7
+    ],
+    "evaluation": [
+     7
+    ],
+    "domain": [
+     1,
+     7
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to demonstrate that a static frequency-aware mask outperforms dynamic magnitude-based boosting in accuracy. None of the prior papers explicitly establish or report this specific empirical relationship between static frequency-aware masking and dynamic boosting methods. While several papers (e.g., [7], [16], [23]) discuss dynamic precision boosting or mixed-precision quantization techniques, they do not compare static masking against dynamic boosting or establish the same relationship. Therefore, the purpose is **not covered**.\n\n### Mechanism\nThe mechanism involves evaluating FCBoost against Kitty (dynamic boosting) and KIVI-KV2* (no boosting) on mathematical reasoning tasks with matched boost ratios. Paper [7] introduces \"Dynamic Channel-wise Precision Boost,\" which ranks channels by sensitivity and adjusts precision dynamically, aligning with the dynamic boosting mechanism in Kitty. Paper [16] discusses query-aware mixed-precision quantization, which involves adaptive adjustments based on task-specific requirements, conceptually similar to boosting mechanisms. These prior works cover the dynamic boosting mechanism, but none explicitly describe static frequency-aware masking as a primitive. Thus, the mechanism is **not covered**.\n\n### Evaluation\nThe evaluation design compares FCBoost, Kitty, and KIVI-KV2* on mathematical reasoning tasks using accuracy as the primary metric, with variance as a secondary metric. Paper [7] evaluates dynamic precision boosting using accuracy metrics on reasoning tasks, and paper [16] evaluates mixed-precision quantization on long-context reasoning tasks, both using similar benchmark families and metrics. These prior works employ comparable evaluation designs (accuracy-based comparison across models on reasoning tasks), even though the specific benchmark instances differ. Therefore, the evaluation design is **covered**.\n\n### Domain\nThe domain is LLM inference efficiency and KV cache quantization. Papers [1], [2], [3], [4], [5], [6], [7], [16], and [23] all address KV cache quantization or LLM inference efficiency, with applications to reasoning tasks, long-context processing, or memory bottlenecks. This contribution operates within the same general application area, even though it targets a specific sub-problem (static vs. dynamic boosting). Therefore, the domain is **covered**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 7  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly compares static frequency-aware masks to dynamic magnitude-based boosting on accuracy.  \nFACET: mechanism | FINAL: COVERED-BY 7 | reason: \"Dynamic Channel-wise Precision Boost -- which ranks Key-cache channels by sensitivity and keeps only a small fraction at higher precision -- maintains near-zero loss in accuracy during reasoning tasks.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**Purpose:** The contribution's purpose is to show that a static frequency-aware mask outperforms dynamic magnitude-based boosting on accuracy for KV cache quantization. Paper [7] (Kitty) introduces \"Dynamic Channel-wise Precision Boost\" and is the direct comparator, but it does not establish the finding that static beats dynamic — it argues for dynamic. No prior paper reports the empirical relationship \"static frequency-aware masking > dynamic magnitude-based boosting in KV cache quantization accuracy.\" The closest is [7], which is the foil, not the establisher of this finding. NONE.\n\n**Mechanism:** The mechanism is a controlled comparison of FCBoost (static frequency-aware channel mask) vs. Kitty (dynamic magnitude-based channel boost) vs. KIVI-KV2* (no boost) on AIME24/25 with Qwen3-8B at matched boost ratio. Paper [7] (Kitty) describes the dynamic channel-wise precision boost mechanism and uses AIME-style benchmarks for evaluation. Paper [4] (KIVI) is the baseline. Paper [8] evaluates quantized reasoning models on AIME-type benchmarks. The analysis method here is a controlled ablation/substitution experiment comparing static vs. dynamic channel selection — this is a standard controlled comparison design that appears broadly in prior work (e.g., [7] compares its dynamic approach against static baselines). Paper [7] explicitly compares dynamic vs. static channel selection as part of its ablation. This is a standard controlled comparison design covered by [7].\n\n**Evaluation:** The evaluation uses AIME24/25 benchmarks with accuracy (%) and standard deviation metrics, comparing quantization methods on a reasoning model. Paper [7] uses AIME benchmarks for evaluating KV cache quantization methods. Paper [8] also evaluates quantized reasoning models on AIME24/25. The evaluation design (AIME benchmark family, accuracy metric, comparison of quantization methods) is covered by [7] and [8].\n\n**Domain:** LLM inference efficiency / KV cache quantization is directly covered by papers [1], [2], [3], [4], [5], [6], [7], [8], [16], [23], among others.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 7\nVERDICT evaluation = 7\nVERDICT domain = 7",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper compares a static frequency-aware mask against dynamic magnitude-based boosting as competing design choices to demonstrate accuracy superiority; paper [7] (Kitty) does the opposite, advocating for dynamic channel-wise precision boost, and no other paper makes this specific comparative claim."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     16
+    ],
+    "mechanism": null,
+    "evaluation": [
+     3,
+     16
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 16
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to confirm that quantization sensitivity is structurally determined by RoPE frequency, not random or magnitude-based. None of the prior papers explicitly establish this specific empirical relationship between RoPE frequency and quantization sensitivity. While [16] discusses RoPE frequency selection in the context of KV cache compression, it does not investigate or confirm the structural determination of quantization sensitivity by RoPE frequency. Similarly, papers like [27] and [3] discuss quantization sensitivity but do not address RoPE frequency as the structural determinant. Therefore, no prior paper covers this purpose.\n\n#### Mechanism:\nThe mechanism involves ablation comparing the CA-derived mask against random static masks (3 seeds) and a CA-vs-magnitude channel-set overlap analysis. Papers such as [13], [20], and [28] discuss random masking strategies, but these are unrelated to the specific CA-derived mask or the quantization sensitivity analysis described here. Additionally, while [16] and [27] discuss RoPE frequency and quantization sensitivity, they do not employ the same ablation or overlap analysis methods. Thus, no prior paper matches the mechanism.\n\n#### Evaluation:\nThe evaluation design includes CA mask performance comparison against random masks (6.67pp improvement), random masks falling below the no-boost baseline, and CA vs magnitude sets showing low Jaccard overlap but moderate Spearman rank correlation. Papers like [16], [27], and [3] discuss quantization sensitivity and RoPE frequency, but none use this specific evaluation design. The metrics (Jaccard overlap, Spearman rank correlation) and comparison setup (CA mask vs random masks) are unique to this contribution. Therefore, no prior paper matches the evaluation design.\n\n#### Domain:\nThe domain is LLM inference efficiency and KV cache quantization. Papers [1], [2], [3], [4], [5], [6], [7], [12], [15], [16], [22], and [27] all address KV cache quantization or LLM inference efficiency, making this domain well-covered. While the specific sub-problem (quantization sensitivity determined by RoPE frequency) is new, the general application area of LLM inference efficiency/KV cache quantization is not novel.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 16 | reason: EliteKV explicitly links RoPE frequency selection to quantization sensitivity, stating: \"quantization sensitivity of a layer is structurally influenced by RoPE frequency selection.\"\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper includes ablation comparing CA-derived masks against random static masks or CA-vs-magnitude channel-set overlap analysis.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports CA mask performance metrics or Jaccard/Spearman overlap analysis for CA vs magnitude sets."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Confirm that quantization sensitivity is structurally determined by RoPE frequency, not random or magnitude-based.**\n\nPaper [16] (EliteKV) explicitly connects RoPE frequency selection to KV cache compression, stating \"Rotary Position Embedding (RoPE) enables each attention head to capture multi-frequency information\" and that \"the nonlinearity introduced by RoPE complicates optimization of the key state.\" However, this paper proposes a method using RoPE frequency for compression — it doesn't specifically establish the empirical relationship that quantization sensitivity is *structurally determined* by RoPE frequency rather than being random or magnitude-based. No prior paper reports the same empirical relationship (RoPE frequency → quantization sensitivity, not magnitude) as a confirmed finding. The purpose here is to validate a causal/structural claim about what drives sensitivity, which is distinct from using RoPE frequency as a design choice.\n\n**MECHANISM: Ablation comparing CA-derived mask against random static masks (3 seeds), plus CA-vs-magnitude channel-set overlap analysis (Jaccard + Spearman).**\n\nPaper [16] performs analysis related to RoPE frequency and channel selection but doesn't describe a random-mask ablation with multiple seeds or a Jaccard/Spearman overlap analysis between two channel-selection criteria. Paper [3] (KVTuner) analyzes layer-wise sensitivity but uses different analytical methods. The specific combination of (1) random-mask ablation with seed control and (2) Jaccard/Spearman overlap between CA and magnitude channel sets is not found in any prior paper. However, the generic design of \"compare a proposed selection method against random selection\" is a standard ablation. The Jaccard/Spearman overlap analysis between two channel-selection criteria is also a standard analytical tool. No prior paper uses this specific combination to validate a structural claim about RoPE-driven quantization sensitivity.\n\n**EVALUATION: CA mask beats random masks by 6.67pp, random masks fall below no-boost baseline; CA vs magnitude sets have low Jaccard (0.299) but moderate Spearman (0.670).**\n\nThe evaluation design involves: (a) comparison against random baselines with multiple seeds, and (b) set-overlap metrics (Jaccard, Spearman rank correlation) between two selection methods. These are standard statistical/evaluation designs. Paper [16] uses benchmark evaluation for KV cache compression. The generic design of \"compare proposed method vs. random baseline on accuracy benchmarks\" appears broadly across papers [1]-[7], [16]. The Jaccard/Spearman overlap analysis as an evaluation design is a standard statistical tool. The evaluation design (accuracy comparison + overlap metrics) is covered by the general practice in the field, though no single paper uses this exact combination for this exact claim.\n\n**DOMAIN: LLM inference efficiency / KV cache quantization.**\n\nPapers [1], [2], [3], [4], [5], [6], [7], [16] all operate in LLM inference efficiency and KV cache quantization. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 16\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: Paper [16] (EliteKV) connects RoPE frequency to KV cache compression but does not make the specific claim that quantization sensitivity is *structurally determined* by RoPE frequency rather than being random or magnitude-based; no prior paper contains that equivalent empirical assertion.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper contains an ablation comparing a CA-derived quantization mask against random static masks (multiple seeds) nor a CA-vs-magnitude channel-set overlap analysis; these specific experimental designs appear nowhere in the prior works under any terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 16
+      },
+      "mechanism": {
+       "covered_by": 20
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to establish an empirical relationship: that quantization sensitivity is determined by RoPE frequency. Paper [16] covers this by proposing a method, \"EliteKV,\" based on this very relationship, as its title \"Scalable KV Cache Compression via RoPE Frequency Selection\" makes clear; building a method on a principle presupposes that principle.\n\n**mechanism**: The mechanism is an ablation study comparing a principled selection mask against random masks, a standard experimental design. Paper [20] uses the same analysis design, proposing \"systematic tests on whether selectively masking certain words improves performance\" over the default random masking in transformer models, which is the same primitive of comparing a targeted selection to a random baseline.\n\n**evaluation**: The evaluation design uses standard metrics: task performance improvement reported in percentage points, and common statistical measures like Jaccard overlap and Spearman correlation. This is not a new evaluation design. For example, paper [3] evaluates its KV cache quantization method to show it is \"nearly lossless,\" which requires using standard task performance metrics to compare against baselines.\n\n**domain**: The domain is LLM inference efficiency, specifically KV cache quantization. This is explicitly covered by numerous prior papers. For instance, paper [1] is titled \"KVQuant: Towards 10 Million Context Length LLM Inference with KV Cache Quantization.\"\n\nVERDICT purpose = 16\nVERDICT mechanism = 20\nVERDICT evaluation = 3\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

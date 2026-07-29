@@ -1,0 +1,295 @@
+{
+ "paper_id": "FA0036",
+ "title": "EMA-KPO: Simplifying Kalman Policy Optimization with Fixed-Gain Exponential Smoothing",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     24
+    ],
+    "mechanism": [
+     1,
+     5,
+     24
+    ],
+    "evaluation": [
+     1,
+     11
+    ],
+    "domain": null
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 5
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": null
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation",
+      "domain"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution reveals that KPO's supposedly adaptive Kalman filter actually follows a fixed schedule. This purpose is about exposing the non-adaptive nature of a Kalman filter implementation. None of the prior papers explicitly report or establish this specific empirical relationship — that a Kalman filter, under fixed noise parameters, results in deterministic gain dynamics tied to token position rather than observations. While some papers (e.g., [9], [6], [12]) discuss adaptation or steady-state gain scheduling, they do not demonstrate or reveal the fixed-schedule behavior of a supposedly adaptive filter. Therefore, no prior paper covers this purpose.\n\n#### Mechanism:\nThe mechanism involves analyzing KPO's Kalman gain dynamics under fixed noise parameters (Q = 1e-6, V = 1), showing that the Kalman gain \\( K_t \\) is deterministic and depends only on token position. Paper [5] discusses the relationship between steady-state Kalman filter gain and noise variances, and paper [24] provides closed-form solutions for time-varying systems, which could indirectly relate to deterministic gain behavior under fixed parameters. However, neither explicitly analyzes the gain dynamics in the specific way described here. Paper [8] discusses constant-gain filters but does not analyze the deterministic dependence on token position. Thus, no prior paper matches this mechanism.\n\n#### Evaluation:\nThe evaluation facet demonstrates that the scheduled EMA with \\( \\alpha_t = K_t \\) is mathematically equivalent to the Kalman filter, with MSE < 1e-14. Paper [1] compares EMA and Kalman filters, but it does not use the same mathematical equivalence approach or validation setup. Paper [27] studies EMA dynamics but does not establish equivalence to Kalman filters. Paper [11] provides MSE analysis for fixed trajectories but does not validate equivalence between EMA and Kalman filters. Therefore, no prior paper matches this evaluation design.\n\n#### Domain:\nThe domain is RL for LLM reasoning (RLVR) and policy optimization. None of the prior papers explicitly address RLVR or policy optimization for LLM reasoning. While papers like [19] and [23] discuss policy optimization and filtering in other contexts (e.g., H∞ control, traffic networks), these are distinct application areas. Thus, no prior paper matches this domain.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = NONE  ",
+      "stage2": "- **FACET: purpose** | **FINAL: COVERED-BY 1** | reason: Paper [1] discusses the relationship between EMA and Kalman filter, including parameter selection challenges, which aligns with revealing that KPO's Kalman filter follows a fixed schedule. Quote: \"Exponential Moving Average filter (EMA) serves as a powerful yet exceptionally simple filter... selecting so-called Alpha parameter in EMA is not a straightforward task.\"\n  \n- **FACET: mechanism** | **FINAL: COVERED-BY 5** | reason: Paper [5] explicitly connects Kalman gain determinism to fixed noise parameters, which matches the analysis of KPO's Kalman gain dynamics. Quote: \"Values of the noise covariance matrices have direct effects upon the Kalman filter gain, and therefore affect the final result, of estimation.\"\n\n- **FACET: evaluation** | **FINAL: COVERED-BY 11** | reason: Paper [11] provides MSE analysis of Kalman filter performance under deterministic conditions, which aligns with the equivalence claim for scheduled EMA and Kalman filter. Quote: \"We present analytical expressions for predicting the mean square error (MSE) performance of the Kalman filter (KF)... when applied to fixed, non-random state trajectories.\"\n\n- **FACET: domain** | **FINAL: NONE** | reason: No prior paper explicitly addresses RL for LLM reasoning or policy optimization. Other works focus on Kalman filter applications in unrelated domains."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": null
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "domain"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Reveals that KPO's supposedly adaptive Kalman filter actually follows a fixed schedule.**\n\nThe purpose is to demonstrate that a specific algorithm (KPO) marketed as adaptive is actually deterministic/fixed. I need to find a prior paper that establishes the same empirical relationship: that a supposedly adaptive Kalman-based method reduces to a fixed/deterministic schedule when noise parameters are fixed. Paper [1] discusses the similarity between EMA and Kalman filter, but doesn't reveal that an \"adaptive\" method is secretly fixed. Paper [5] discusses how noise covariance values affect Kalman gain but doesn't reveal a specific algorithm's adaptive claim is false. Paper [12] discusses Kalman gain and noise covariance selection but doesn't expose a fixed-schedule deception. None of the prior papers specifically establish the relationship \"this supposedly adaptive Kalman filter is actually a fixed schedule\" — they discuss Kalman-EMA equivalence or gain properties in general signal processing contexts, not in the context of exposing a specific RL/LLM algorithm's adaptive claims as illusory.\n\n**MECHANISM: Analysis of Kalman gain dynamics showing K_t is deterministic with fixed Q=1e-6, V=1, depending only on token position.**\n\nPaper [1] explicitly discusses the equivalence between EMA and Kalman filter, noting that with fixed noise parameters the Kalman gain becomes a deterministic sequence. Paper [5] discusses how fixed noise covariance matrices lead to deterministic Kalman gains. Paper [12] discusses Kalman gain behavior under fixed noise parameters. Paper [1] is most directly relevant — it analyzes how fixed noise parameters in a Kalman filter produce a deterministic gain sequence equivalent to EMA with a specific alpha. This is the same primitive: fixed noise parameters → deterministic K_t → equivalent to scheduled EMA.\n\n**EVALUATION: Scheduled EMA with alpha_t = K_t is mathematically equivalent to Kalman filter (MSE < 1e-14).**\n\nPaper [1] directly evaluates the performance similarity between EMA and Kalman filter, which is the same evaluation design — computing equivalence/similarity between EMA and Kalman filter outputs. The MSE < 1e-14 threshold is a specific instantiation of the same \"measure numerical equivalence between EMA and Kalman filter\" design used in [1].\n\n**DOMAIN: RL for LLM reasoning (RLVR) / policy optimization.**\n\nNone of the prior papers operate in the domain of RL for LLM reasoning or policy optimization for language models. All prior papers are in signal processing, control systems, neural interfaces, or traffic prediction. This is a genuinely new application area not covered by any prior paper.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 1\nVERDICT evaluation = 1\nVERDICT domain = NONE",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper reveals that a supposedly adaptive Kalman filter actually follows a fixed schedule — the closest papers (e.g., [6], [17]) discuss fixed/steady-state gains as a deliberate design choice, not as an unmasking of a hidden fixed schedule in a method claiming adaptivity.\n\nFACET: domain | FINAL: NONE | reason: No prior paper operates in the domain of RL for LLM reasoning (RLVR) / policy optimization; all prior papers concern signal processing, control systems, neural interfaces, or classical filtering — none involve language model training or reinforcement learning for reasoning tasks."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 24
+      },
+      "mechanism": {
+       "covered_by": 24
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": null
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "domain"
+     ],
+     "raw": {
+      "stage1": "**purpose:** COVERED. The core finding is that a Kalman filter with fixed noise parameters results in a deterministic, pre-computable gain schedule. This is a known property of Kalman filters, and paper [24] establishes this principle by presenting a \"method for derivation of closed-form solutions for the ... Kalman filter gains,\" which implies the gain schedule is deterministic and can be computed offline.\n\n**mechanism:** COVERED. The mechanism is the mathematical analysis of the Kalman filter's gain dynamics, which are governed by the Riccati equation. This is the standard analytical method in the field, and paper [24] uses this exact mechanism to derive its \"closed-form solution for the differential Riccati matrix equation.\"\n\n**evaluation:** COVERED. The evaluation design demonstrates the equivalence between a Kalman filter and an Exponential Moving Average (EMA) filter. Paper [1] is explicitly titled \"On the Performance Similarity Between Exponential Moving Average and Discrete Linear Kalman Filter,\" and therefore uses the same evaluation design of comparing these two filter types.\n\n**domain:** NONE. The contribution is in the domain of Reinforcement Learning for Large Language Model reasoning (RLVR) and policy optimization. None of the prior papers operate in this application area; they are from classical signal processing, control theory, or general deep learning optimization, and do not address reinforcement learning, language models, or reasoning tasks.\n\nVERDICT purpose = 24\nVERDICT mechanism = 24\nVERDICT evaluation = 1\nVERDICT domain = NONE",
+      "stage2": "FACET: domain | FINAL: NONE | reason: After a thorough re-scan, no prior paper discusses the application domain of Reinforcement Learning for Large Language Model reasoning (RLVR) or policy optimization for multi-step generative tasks. The papers are focused on Kalman filters, control theory for linear systems, and general deep learning optimization, none of which constitute the specific domain of using RL to improve the reasoning capabilities of LLMs."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     2,
+     7
+    ],
+    "mechanism": [
+     2
+    ],
+    "evaluation": [
+     2,
+     14
+    ],
+    "domain": [
+     11,
+     24
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 11
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to remove the complexity of covariance state tracking and adaptive gain computation from Kalman Policy Optimization (KPO). None of the prior papers explicitly address this specific objective. While several papers discuss simplifications or optimizations of Kalman filtering (e.g., [10], [25]), they focus on steady-state gain optimization, thresholding, or empirical simplifications for specific applications, rather than eliminating covariance tracking and adaptive gain computation in the context of policy optimization. Papers like [24] and [11] discuss stability improvements in RL for LLM reasoning but do not target the removal of covariance tracking machinery.\n\n**Conclusion:** No prior paper shares this purpose.\n\n---\n\n### Mechanism\nThe mechanism replaces KPO's Kalman filtering of token-level importance sampling ratios with a scheduled exponential moving average (EMA) using alpha_t = K_t. Several prior papers ([1], [2], [3], [5], [15], [17], [21]) discuss the use of exponential moving averages (EMA) in conjunction with Kalman filters or as standalone mechanisms. For example, [3] uses EMA to estimate process noise covariance in an adaptive extended Kalman filter, and [2] explores the performance similarity between EMA and discrete Kalman filters. These papers demonstrate the equivalence or integration of EMA with Kalman filtering, which matches the underlying primitive of replacing Kalman filtering with EMA.\n\n**Conclusion:** Mechanism is covered by prior papers, particularly [2] and [3].\n\n---\n\n### Evaluation\nThe evaluation demonstrates mathematical equivalence to the Kalman filter (MSE < 1e-14) while eliminating covariance tracking machinery. Papers like [2], [3], [14], and [25] evaluate Kalman filters and EMA-based methods using similar mathematical equivalence metrics, such as error minimization or steady-state performance. For instance, [2] compares EMA and Kalman filters in terms of performance similarity, and [25] evaluates steady-state Kalman filtering with thresholding optimal gain. These evaluations use comparable designs to validate equivalence or performance improvements, even if applied to different systems or benchmarks.\n\n**Conclusion:** Evaluation design is covered by prior papers, particularly [2] and [25].\n\n---\n\n### Domain\nThe domain is reinforcement learning for large language model reasoning (RLVR) and policy optimization. Papers [6], [11], [23], [24], and [29] all address policy optimization or reinforcement learning in various contexts, including token-level importance sampling ([24]) and entropy-based policy optimization ([11]). While none of these papers specifically target EMA-KPO, they operate within the same general application area of RL for LLM reasoning and policy optimization.\n\n**Conclusion:** Domain is covered by prior papers, particularly [11] and [24].\n\n---\n\n### Verdicts\nVERDICT purpose = NONE  \nVERDICT mechanism = 2  \nVERDICT evaluation = 2  \nVERDICT domain = 11  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses removing the complexity of covariance state tracking and adaptive gain computation from KPO, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 24
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Removes the complexity of covariance state tracking and adaptive gain computation from KPO.**\n\nThe purpose is to simplify a Kalman filter-based policy optimization method by eliminating covariance tracking machinery. Paper [24] is the direct predecessor — it introduces KPO (Online Causal Kalman Filtering for Stable and Effective Policy Optimization) for LLM policy optimization. The contribution's purpose is explicitly to simplify [24]'s method. No other paper pursues the objective of \"simplify Kalman-based policy optimization by removing covariance tracking.\" Papers [7], [8], [25] discuss steady-state/simplified Kalman gains but in signal processing contexts, not policy optimization. The purpose here is specifically about reducing complexity of KPO — which is a derivative purpose relative to [24], but [24] introduces KPO rather than simplifying it. However, the purpose \"eliminate covariance tracking from a Kalman filter by replacing it with EMA\" is partially addressed by papers like [2] and [3] which study EMA-Kalman equivalences to simplify computation. Paper [2] explicitly studies \"Performance Similarity Between Exponential Moving Average and Discrete Linear Kalman Filter\" with the goal of using EMA as a simpler substitute. This is substantively equivalent at the problem-class level.\n\n**MECHANISM: EMA-KPO replaces KPO's Kalman filtering of token-level IS ratios with a scheduled EMA using alpha_t = K_t.**\n\nThe core primitive is: replace a Kalman filter's recursive covariance-based gain with a scheduled EMA where the smoothing parameter equals the Kalman gain. Paper [2] explicitly analyzes \"Performance Similarity Between Exponential Moving Average and Discrete Linear Kalman Filter\" and discusses setting alpha to match Kalman gain behavior. Paper [3] uses EMA to estimate noise covariance within a Kalman filter. Paper [26] shows Kalman filter predictions decay exponentially (connecting EMA and Kalman). Paper [24] introduces the Kalman filtering of IS ratios in LLM policy optimization. None of these papers specifically replace Kalman filtering of IS ratios with a scheduled EMA where alpha_t = K_t (the Kalman gain schedule). However, paper [2] covers the primitive of \"EMA with alpha set to match Kalman gain is equivalent to Kalman filter\" — which is exactly the mechanism here. The application domain differs (signal filtering vs. LLM policy optimization) but the primitive is the same.\n\n**EVALUATION: Achieves mathematical equivalence to the Kalman filter (MSE < 1e-14) while eliminating covariance tracking machinery.**\n\nThe evaluation design is a mathematical equivalence proof/verification via MSE computation between two algorithms. Paper [2] uses a similar evaluation design — comparing EMA and Kalman filter performance similarity numerically. Paper [14] also compares Kalman filter and moving average via error metrics. The design of \"compute MSE between EMA output and Kalman filter output to demonstrate equivalence\" is used in [2] which studies \"Performance Similarity Between Exponential Moving Average and Discrete Linear Kalman Filter.\" This is the same evaluation design (numerical equivalence verification via error metric).\n\n**DOMAIN: RL for LLM reasoning (RLVR) / policy optimization.**\n\nPaper [24] explicitly operates in \"Reinforcement learning for large language models\" and policy optimization. Paper [11] (ESPO) also operates in RL for LLM post-training/reasoning. Papers [23], [29], [28], [31] operate in policy optimization/RL more broadly. The domain is clearly covered by [24] and [11].\n\nVERDICT purpose = 2\nVERDICT mechanism = 2\nVERDICT evaluation = 2\nVERDICT domain = 24",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 24
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to simplify a Kalman filter-based method (KPO) by removing the complexity of online covariance tracking and adaptive gain computation. This objective, at the problem-class level of simplifying or increasing the efficiency of Kalman filters, is covered by prior work. For example, [25] proposes a \"steady-state kalman filtering method... reducing the filtering algorithm computation\" for devices with limited capacity, and [7] proposes a method to \"schedule the steady gain for EKF\" in order to \"save throughput\".\n\n**mechanism**: The core mechanism is replacing a Kalman filter with a scheduled exponential moving average (EMA) by setting the EMA parameter `alpha_t` equal to the Kalman gain `K_t`. The underlying primitive—the equivalence or similarity between an EMA and a Kalman filter—is not new. [2] is a paper titled \"On the Performance Similarity Between Exponential Moving Average and Discrete Linear Kalman Filter,\" which directly investigates the technical relationship that this contribution leverages. Furthermore, [4] proposes a \"quality control method of exponentially weighted moving average based on Kalman filter,\" which represents the same primitive of a Kalman-informed EMA.\n\n**evaluation**: The evaluation design consists of demonstrating that the proposed simplified method is mathematically equivalent to the original, more complex method by showing a very low Mean Squared Error (MSE) between their outputs. This design is covered. [2] analyzes the \"Performance Similarity Between Exponential Moving Average and Discrete Linear Kalman Filter,\" which would necessarily involve a direct numerical comparison of their outputs. Similarly, [14] performs a \"Comparative Simulation of Kalman Filter and Moving Average\" and compares them based on their \"average error,\" which is the same evaluation design.\n\n**domain**: The application domain is reinforcement learning for large language models (LLMs), specifically for policy optimization in reasoning tasks (RLVR). This domain is covered by prior work. [24] introduces the KPO method that the contribution simplifies and explicitly addresses \"Reinforcement learning for large language models\" to stabilize \"policy optimization at scale.\" [11] also works on \"Policy Optimization\" for \"large language models (LLMs), particularly for complex reasoning tasks.\"\n\nVERDICT purpose = 7\nVERDICT mechanism = 2\nVERDICT evaluation = 14\nVERDICT domain = 24",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     8,
+     10
+    ],
+    "evaluation": [
+     1,
+     3,
+     4,
+     7
+    ],
+    "domain": [
+     1,
+     3,
+     4,
+     5,
+     7
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": [
+        1,
+        3,
+        4
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        3,
+        4,
+        5
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to validate that the simplification preserves KPO's performance and stability. None of the prior papers explicitly report or establish this specific empirical relationship — i.e., that EMA-KPO achieves equivalent performance and stability to KPO-clipped while avoiding entropy collapse. While several papers discuss related topics (e.g., [8] analyzes entropy dynamics in RL, [10] discusses EMA in optimization, and [18] explores PPO-Clip's stability), none of them validate this specific relationship between EMA-KPO and KPO-clipped.\n\n### Mechanism\nThe mechanism involves an empirical comparison of EMA-KPO against KPO-clipped on mathematical reasoning benchmarks. Paper [10] discusses the use of model EMA in optimization and clipped Adam, which is conceptually similar to the mechanism here. Additionally, papers like [18] and [8] analyze clipping mechanisms in policy optimization, which overlaps with the technical primitive of clipping in KPO. Thus, the mechanism is covered by prior work.\n\n### Evaluation\nThe evaluation design involves comparing performance metrics (e.g., accuracy percentages) on mathematical reasoning benchmarks like AIME'24 and MATH-500, while also assessing training stability and entropy collapse. Papers [1], [3], and [4] all use mathematical reasoning benchmarks to evaluate LLMs, and [2] specifically probes stability and robustness in mathematical reasoning tasks. These prior works share the same evaluation design (benchmarking mathematical reasoning tasks with performance metrics and stability analysis), even if the specific benchmarks or models differ. Therefore, the evaluation is covered.\n\n### Domain\nThe domain is mathematical reasoning benchmarks and LLM training. Papers [1], [3], [4], and [5] all work in the same general application area of mathematical reasoning tasks for LLMs. While the specific benchmarks or sub-problems may differ, the domain is clearly covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 10  \nVERDICT evaluation = 1, 3, 4  \nVERDICT domain = 1, 3, 4, 5  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly validates that the simplification preserves KPO's performance and stability, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Validates that the simplification preserves KPO's performance and stability.**\n\nThe purpose is to empirically validate that a simplified variant (EMA-KPO) matches or exceeds the original KPO method in performance while maintaining training stability. This is a specific claim about a specific relationship: simplification → preserved performance + stability in KPO. No prior paper establishes this same empirical relationship (same variables: EMA-KPO vs KPO-clipped, same direction: simplification preserves performance). Papers like [8] (CE-GPPO) analyze entropy dynamics and clipping in RL for LLMs, and [7] discusses GRPO-based training stability, but neither reports the specific relationship between EMA-based simplification and KPO performance preservation. The closest thematically is [8] which analyzes entropy collapse in GRPO variants, but it doesn't establish the EMA-KPO vs KPO equivalence relationship.\n\n**MECHANISM: Empirical comparison of EMA-KPO against KPO-clipped on mathematical reasoning benchmarks.**\n\nThe mechanism is an empirical ablation/comparison between two variants of a policy optimization method on math benchmarks. This is a standard controlled comparison design. Papers [7] and [8] both perform empirical comparisons of RL variants (GRPO-based methods) on reasoning tasks. Paper [8] specifically compares policy optimization variants analyzing entropy dynamics. This is a generic \"compare variant A vs variant B on benchmark\" design, which appears throughout the prior work.\n\n**EVALUATION: Identical 12.29% on AIME'24 and +1.45pp on MATH-500 versus KPO, while preserving training stability and avoiding entropy collapse.**\n\nThe evaluation uses AIME'24 and MATH-500 benchmarks with accuracy metrics, plus training stability monitoring. MATH-500 and AIME are standard mathematical reasoning benchmarks used in prior work. Papers [1], [4], [5], [7] all use mathematical reasoning benchmarks (MATH-500 family). Paper [7] explicitly uses GRPO-based training with math benchmarks and evaluates training stability. The evaluation design (accuracy on MATH-500/AIME-family benchmarks + stability monitoring) is covered by the existing literature's use of these benchmark families.\n\n**DOMAIN: Mathematical reasoning benchmarks / LLM training.**\n\nMultiple prior papers operate in the domain of mathematical reasoning with LLMs and LLM training via RL. Papers [1], [2], [3], [4], [5], [6], [7], [8] all work in mathematical reasoning for LLMs. Paper [7] specifically covers RL-based LLM training for mathematical reasoning. This domain is thoroughly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 8\nVERDICT evaluation = 7\nVERDICT domain = 7",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper validates that a specific simplification (removing old policy from KPO's ratio computation) preserves both performance and stability of KPO specifically; the closest papers analyze PPO-clip convergence or trust region stability but none share the same objective of validating a simplification to KPO's formulation."
+     }
+    }
+   }
+  }
+ ]
+}

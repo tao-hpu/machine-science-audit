@@ -1,0 +1,291 @@
+{
+ "paper_id": "FA0151",
+ "title": "MidPC LoRA: Intermediate SVD Slices for Continual Learning with Low-Rank Adaptation",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     5
+    ],
+    "mechanism": null,
+    "evaluation": [
+     2,
+     18
+    ],
+    "domain": [
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "**Purpose:**  \nThe purpose of improving the stability-plasticity trade-off in LoRA for continual learning is explicitly addressed in [5] (\"Addressing the Stability-Plasticity Dilemma\") and [7] (\"LoRA-Based Continual Learning with Constraints on Critical Parameter Changes\"). Both papers focus on balancing stability (preservation of prior knowledge) and plasticity (adaptation to new tasks) in LoRA-based continual learning setups, which matches the stated objective of the contribution.  \n\n**Mechanism:**  \nThe mechanism of initializing LoRA adapters from intermediate singular components of the pretrained weight SVD is not covered by any prior paper. [1] (MiLoRA) uses minor singular components, and [12] (PiSSA) uses principal singular components, but neither explores the middle singular components as a distinct initialization strategy. This specific spectral region choice is novel.  \n\n**Evaluation:**  \nThe evaluation design uses the FOREVER Standard CL benchmark, which is a named benchmark family for continual learning. This benchmark family is used in [2] (\"Merge before Forget\") and [11] (\"PLAN\"), both of which validate continual learning methods on FOREVER. The metric semantics (overall performance and backward transfer) are standard in continual learning and appear in prior works like [5] and [18]. Thus, the evaluation design is covered.  \n\n**Domain:**  \nThe domain of continual learning and parameter-efficient fine-tuning of LLMs is addressed in multiple prior papers, including [2], [5], [7], [11], and [12]. These papers all operate in the same general application area of continual learning with LoRA-based methods for large language models.  \n\n**Verdict Lines:**  \nVERDICT purpose = 5  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 2  \nVERDICT domain = 2  ",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper explicitly describes initializing LoRA adapters from intermediate singular components of the pretrained weight SVD, as opposed to top or bottom components, without architectural changes or replay buffers."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 18
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Improve the stability-plasticity trade-off of LoRA in continual learning by choosing a better spectral region for adapter initialization.**\n\nPaper [5] explicitly addresses \"the stability-plasticity dilemma\" in lifelong learning with PEFT. Paper [1] (MiLoRA) addresses LoRA initialization from SVD components to avoid interfering with \"well-learned subspace.\" Paper [12] (PiSSA) addresses LoRA initialization from principal singular components. However, the specific purpose of *choosing a spectral region for initialization to improve stability-plasticity in continual learning* is most directly covered by [5] (stability-plasticity dilemma + PEFT) and [1] (SVD-based initialization to preserve pretrained knowledge). Paper [4] also addresses \"continual performance\" in PEFT-CL. The combination is covered: [5] covers stability-plasticity + PEFT/LL, and [1] covers SVD-region selection for LoRA initialization to protect pretrained subspace.\n\n**MECHANISM: MidPC initializes LoRA adapters from intermediate singular components of pretrained weight SVD (not top/PiSSA, not bottom/MiLoRA).**\n\nPaper [12] (PiSSA) initializes from top (principal) singular components. Paper [1] (MiLoRA) initializes from bottom (minor) singular components. The contribution explicitly positions itself between these two — using *middle* singular components. No prior paper describes initializing from the *intermediate/middle* spectral region of the SVD. Papers [12] and [1] together define the top and bottom ends, but neither covers the middle. Paper [19] uses SVD for continual learning compression but not for LoRA adapter initialization from middle components. This specific primitive — selecting middle singular components for LoRA initialization — is not present in any prior paper.\n\n**EVALUATION: FOREVER Standard CL benchmark with Qwen3-0.6B, measuring overall performance and backward transfer.**\n\nPaper [18] explicitly introduces and uses backward transfer as a metric in continual learning. The FOREVER benchmark is a specific named benchmark. No prior paper among those listed uses the FOREVER benchmark. However, the evaluation *design* — using a standard CL benchmark with overall accuracy and backward transfer metrics — is a well-established design. Paper [18] uses backward transfer metrics. Paper [24] uses standard CL benchmarks with transfer metrics. The design (CL benchmark + backward transfer metric) is covered by [18] and [24], even though the specific benchmark instance (FOREVER) differs.\n\n**DOMAIN: Continual learning / parameter-efficient fine-tuning of LLMs.**\n\nMultiple papers work in this exact area: [1] (PEFT of LLMs), [2] (LoRA continual learning for LLMs), [4] (PEFT-CL), [5] (lifelong learning + PEFT), [11] (LoRA-based CL). This domain is clearly covered.\n\nVERDICT purpose = 5\nVERDICT mechanism = NONE\nVERDICT evaluation = 18\nVERDICT domain = 2",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper initializes LoRA adapters from *middle/intermediate* singular components of pretrained weight SVD. PiSSA [12] uses top (principal) components, MiLoRA [1] uses bottom (minor) components, and no other paper describes selecting intermediate singular components for LoRA initialization — this specific selection criterion is not present under any alternative terminology in the prior works."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     23,
+     25
+    ],
+    "mechanism": [
+     9,
+     16,
+     23
+    ],
+    "evaluation": [
+     6,
+     9,
+     16,
+     25
+    ],
+    "domain": [
+     6,
+     9,
+     16,
+     25
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 23
+      },
+      "mechanism": {
+       "covered_by": [
+        9,
+        16,
+        23
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        6,
+        16,
+        25
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        6,
+        9,
+        16,
+        25
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to establish MidPC as the best-performing SVD-based initialization for reducing forgetting in continual learning. Paper [9] discusses specialized LoRA initialization to alleviate catastrophic forgetting, which is conceptually similar but does not specifically establish MidPC as the best-performing SVD-based initialization. Paper [16] introduces PiSSA, which also uses SVD-based initialization for parameter-efficient fine-tuning, but it does not focus on reducing forgetting as the primary goal. Paper [23] introduces SILoR, another SVD-based initialization for low-rank adaptation, but its focus is on computational efficiency rather than reducing forgetting. None of the prior papers explicitly establish MidPC as the best-performing SVD-based initialization for reducing forgetting.\n\n### Mechanism\nThe mechanism involves benchmarking MidPC against PiSSA and MiLoRA on forgetting and backward-transfer metrics. Paper [16] introduces PiSSA, which is a parameter-efficient fine-tuning method using SVD-based initialization, and Paper [9] discusses LoRA initialization methods to mitigate forgetting. Paper [23] introduces SILoR, another SVD-based initialization for low-rank adaptation. These papers describe mechanisms that are substantively equivalent to the mechanism in the contribution, as they all involve SVD-based initialization methods for parameter-efficient fine-tuning and address forgetting or related metrics.\n\n### Evaluation\nThe evaluation design involves comparing forgetting and backward-transfer metrics across MidPC, PiSSA, and MiLoRA. Paper [6] evaluates continual learning methods using backward knowledge transfer metrics, which is substantively equivalent to the evaluation design in the contribution. Paper [16] evaluates PiSSA using forgetting metrics, which also matches the evaluation design. Paper [25] conducts an empirical study on forgetting in low-rank decomposition-based fine-tuning, which includes similar metrics and evaluation designs. Thus, the evaluation design is covered by prior work.\n\n### Domain\nThe domain of the contribution is continual learning of large language models (LLMs). Papers [6], [9], [16], and [25] all address continual learning in the context of large language models or parameter-efficient fine-tuning methods for LLMs. Therefore, the domain is covered.\n\n---\n\n**VERDICT purpose = NONE**  \n**VERDICT mechanism = 9, 16, 23**  \n**VERDICT evaluation = 6, 16, 25**  \n**VERDICT domain = 6, 9, 16, 25**  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 23 | reason: Paper [23] explicitly discusses \"SVD-Based Initialization for Low-Rank Adaptation\" and positions it as a method to mitigate forgetting, aligning with the objective of establishing MidPC as the best-performing SVD-based initialization for reducing forgetting. Quoted phrase: \"We propose SILoR, an SVD-based initialization method for low-rank adaptation, which significantly reduces catastrophic forgetting in continual learning scenarios.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 25
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**Purpose:** The contribution's purpose is to establish MidPC as the best-performing SVD-based initialization for reducing forgetting in continual learning of LLMs. Paper [9] (\"Put the Space of LoRA Initialization to the Extreme to Preserve Pre-trained Knowledge\") directly addresses comparing SVD-based LoRA initialization approaches for reducing catastrophic forgetting, and paper [25] (\"On Catastrophic Forgetting in Low-Rank Decomposition-Based Parameter-Efficient Fine-Tuning\") empirically studies how different low-rank decomposition parameterizations affect forgetting. However, neither paper specifically establishes MidPC as the best-performing variant — they study the general relationship between SVD-based initialization and forgetting. Paper [25] is the closest, as it presents an empirical study showing forgetting is influenced by the geometry/parameterization of the update subspace, which is the same empirical relationship being claimed here (SVD initialization choice → forgetting level). This is substantively equivalent at the problem-class level.\n\n**Mechanism:** The mechanism is benchmarking MidPC against PiSSA and MiLoRA on forgetting/backward-transfer metrics. Paper [9] explicitly compares SVD-based LoRA initialization methods (including PiSSA and MiLoRA) for catastrophic forgetting. Paper [25] also benchmarks multiple low-rank decomposition methods against each other on forgetting metrics. Paper [16] introduces PiSSA. The controlled comparison of SVD-based initialization variants on forgetting metrics is present in [9] and [25].\n\n**Evaluation:** The evaluation design uses forgetting/backward-transfer metrics to compare PEFT initialization methods in a sequential fine-tuning setup. Paper [6] (\"Beyond Not-Forgetting: Continual Learning with Backward Knowledge Transfer\") explicitly uses backward transfer metrics in continual learning evaluation. Paper [9] uses forgetting metrics to compare LoRA initialization methods. Paper [25] uses forgetting metrics across sequential tasks. The evaluation design (measuring forgetting/backward transfer across sequential tasks for PEFT methods) is covered by [9] and [25].\n\n**Domain:** The domain is continual learning of LLMs. Paper [9] operates in continual learning of LLMs with LoRA-based PEFT. Paper [25] also operates in sequential/continual learning of large pretrained models with low-rank adaptation. Paper [15] addresses continual learning with LoRA-based PEFT. This domain is clearly covered.\n\nVERDICT purpose = 25\nVERDICT mechanism = 9\nVERDICT evaluation = 9\nVERDICT domain = 9",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     9,
+     12,
+     17,
+     24
+    ],
+    "evaluation": [
+     9,
+     15,
+     17,
+     24
+    ],
+    "domain": [
+     4,
+     15,
+     17,
+     24
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 17
+      },
+      "evaluation": {
+       "covered_by": 15
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to explain why intermediate slices help and confirm the effect is genuinely spectral rather than an artifact of conditioning. None of the prior papers explicitly report or establish the same empirical relationship between intermediate slices, spectral effects, and conditioning artifacts. While several papers (e.g., [4], [5], [6], [15], [16], [24]) discuss LoRA initialization, spectral phenomena, or performance-forgetting trade-offs, none directly address the specific relationship between intermediate slices and spectral effects. Thus, the purpose is **uncovered**.\n\n#### Mechanism:\nThe contribution uses spectral analysis of subspace alignment and spectral imbalance, along with learning-rate-matching experiments that control for conditioning differences. Papers such as [9] and [24] discuss subspace alignment and spectral phenomena, but they do not combine these with learning-rate-matching experiments to control for conditioning differences. Similarly, [17] explores spectral growth in LoRA-style matrix factorization but does not address subspace alignment or spectral imbalance in the same way. Thus, the mechanism is **uncovered**.\n\n#### Evaluation:\nThe evaluation design involves validating subspace alignment stability and spectral imbalance effects, retaining 91.9% of the advantage over MiLoRA after controlling for conditioning. Papers such as [15], [16], and [24] use similar evaluation designs, including ablation analyses, spectral studies, and comparisons of LoRA variants. While the specific benchmark instance and metrics differ, the evaluation design (e.g., ablation and stability analysis) is substantively equivalent. Thus, the evaluation is **covered**.\n\n#### Domain:\nThe contribution operates in the domain of spectral analysis of LoRA initialization. Papers such as [4], [5], [6], [15], [16], and [24] all work within the general application area of LoRA initialization and spectral phenomena in parameter-efficient fine-tuning. Although the specific sub-problem (intermediate slices and spectral effects) is new, the domain itself is not. Thus, the domain is **covered**.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 15  \nVERDICT domain = 4  ",
+      "stage2": "1. **FACET: purpose** | **FINAL: NONE** | reason: No prior paper explicitly explains why intermediate slices help and confirms the effect is genuinely spectral rather than an artifact of conditioning. No equivalent objective found under different terminology or framing.  \n2. **FACET: mechanism** | **FINAL: COVERED-BY 17** | reason: Paper [17] discusses \"singular values of the LoRA product show near-uniform growth,\" which aligns with spectral analysis of subspace alignment and spectral imbalance. Additionally, learning-rate-matching experiments are indirectly addressed through spectral gradient descent dynamics."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 15
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Explain why intermediate slices help and confirm the effect is genuinely spectral rather than an artifact of conditioning.**\n\nThe purpose is to establish a causal/mechanistic explanation for why intermediate principal components (intermediate singular value slices) outperform top or bottom slices in LoRA fine-tuning, specifically ruling out conditioning as a confound. Paper [15] (\"Least but not Last: Fine-tuning Intermediate Principal Components\") directly addresses performance-forgetting trade-offs of intermediate principal components in LoRA, and appears to be the source paper itself or closely related work. However, the purpose here is specifically to *explain why* intermediate slices help via spectral analysis and rule out conditioning artifacts — this is a diagnostic/explanatory purpose about the mechanism behind the finding. Paper [15] presents \"comprehensive analysis of performance-forgetting trade-offs\" but the specific purpose of confirming the effect is spectral (not conditioning) is a distinct empirical relationship. No prior paper establishes the same relationship: \"intermediate slices help because of spectral properties, not conditioning.\" Paper [24] studies spectral properties of LoRA but focuses on reweighting singular values post-training, not explaining why intermediate initialization slices help. None of the prior papers report the same empirical relationship (intermediate slice advantage = spectral, not conditioning artifact).\n\n**MECHANISM: Spectral analysis of subspace alignment and spectral imbalance, plus learning-rate-matching experiments that control for conditioning differences.**\n\nThe mechanism combines: (1) spectral analysis of subspace alignment, (2) spectral imbalance measurement, and (3) controlled experiments matching learning rates to isolate conditioning effects. Paper [15] performs analysis of LoRA initialization slices and likely uses spectral tools. Paper [24] (\"Spectral Surgery\") performs \"geometric and empirical study\" of LoRA spectra, finding that \"task effects concentrate in a small subset of singular directions\" — this involves spectral analysis of LoRA subspaces. Paper [17] analyzes \"spectral phenomenon under Muon in LoRA fine-tuning\" including singular value growth. However, the specific combination of subspace alignment measurement + spectral imbalance + learning-rate-matching controlled experiments as a unified diagnostic protocol does not appear in any prior paper. The learning-rate-matching experiment to control for conditioning is a specific controlled experimental design not seen elsewhere. This combination is not covered.\n\n**EVALUATION: MidPC maintains stable subspace alignment with moderate spectral imbalance; 91.9% of the advantage over MiLoRA is retained after controlling for conditioning.**\n\nThe evaluation design involves: measuring subspace alignment metrics, spectral imbalance metrics, and a controlled ablation (learning-rate matching) that quantifies how much of a performance gap remains after controlling for a confound. Paper [15] evaluates LoRA initialization methods and compares performance gaps. Paper [24] uses geometric/spectral metrics to evaluate LoRA. The specific design of \"control for conditioning via learning-rate matching, then measure retained advantage percentage\" is a specific controlled ablation protocol. However, generic controlled ablation/substitution experiments appear broadly. The specific metric of \"% advantage retained after controlling for confound\" is a standard statistical reasoning pattern. But no prior paper uses this exact evaluation design (subspace alignment + spectral imbalance + conditioning-controlled ablation) in this context. The evaluation design is genuinely new as a combined protocol — no prior paper uses this specific combination to validate this specific claim.\n\n**DOMAIN: Spectral analysis of LoRA initialization.**\n\nThe domain is LoRA fine-tuning / parameter-efficient fine-tuning of large language models, specifically initialization strategies. Papers [4], [5], [6], [11], [15], [16], [20], [24] all work in LoRA initialization or LoRA spectral analysis. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 15",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper asks why intermediate slices help and whether the effect is spectral rather than a conditioning artifact; [15] studies performance-forgetting trade-offs of intermediate PCs but does not frame the purpose as disentangling spectral vs. conditioning explanations.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper combines subspace alignment tracking, spectral imbalance measurement, and learning-rate-matching experiments to control for conditioning differences; [24] analyzes LoRA spectra post-hoc but does not perform conditioning-controlled ablations, and no other paper matches this combination.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports the specific finding that MidPC maintains stable subspace alignment with moderate spectral imbalance, nor quantifies that 91.9% of the advantage over MiLoRA survives conditioning control; no quoted passage from any listed paper contains an equivalent claim."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        9,
+        12,
+        17,
+        24
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        9,
+        17,
+        24
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        17,
+        24
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe contribution's purpose is to explain an observed effect (\"why intermediate slices help\") by testing a specific hypothesis: that the cause is \"genuinely spectral rather than an artifact of conditioning.\" This involves disentangling two potential causal factors. None of the provided prior papers share this specific explanatory goal. While papers like [17] and [24] analyze spectral properties of LoRA, and [12] discusses matrix factor balancing (related to conditioning), they do not frame their purpose as an empirical test to distinguish between a spectral cause and a conditioning artifact for a separate, observed phenomenon.\n\n**MECHANISM**\nThe mechanism combines several analysis primitives. \"Spectral analysis\" of low-rank updates is a core element of [17] (\"singular values of the LoRA product show near-uniform grow\") and [24] (\"trained LoRA updates often exhibit an inefficient spectrum\"). The analysis of \"subspace alignment\" is a central technique in [9] (\"Ablation analyses show that both the subspace alignment and weighting are critical\"). The idea of controlling for conditioning is related to the analysis in [12], which studies \"Balancing-Free Gradient Descent for Asymmetric Low-Rank Matrix Sensing\" and the effects of balancing the scale of matrix factors. The constituent technical primitives are therefore present in prior work.\n\n**EVALUATION**\nThe evaluation design relies on measuring \"subspace alignment\" and \"spectral imbalance\" within a controlled experiment. Using subspace alignment as a metric or object of analysis is present in [9] (\"we develop a method to weight contributions from subspace alignment\"). Using metrics derived from spectral analysis is the core of the evaluation in [17] and [24]. The overall protocol is a controlled experiment designed to isolate a variable, which is a standard validation framework similar in kind to the \"Ablation analyses\" performed in [9]. The evaluation design is therefore constructed from existing metric families and protocols.\n\n**DOMAIN**\nThe contribution operates in the domain of \"Spectral analysis of LoRA initialization.\" This general application area is covered by multiple prior papers. Specifically, [17] analyzes the \"spectral phenomenon under Muon in LoRA fine-tuning,\" and [24] conducts a \"geometric and empirical study\" of the spectrum of trained LoRA updates. Other papers like [4], [5], [6], and [11] also work directly on the problem of LoRA initialization.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 9, 12, 17, 24\nVERDICT evaluation = 9, 17, 24\nVERDICT domain = 17, 24",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the specific objective of explaining why using intermediate spectral components is beneficial, and explicitly testing whether this benefit is a genuine spectral effect versus an artifact of improved matrix conditioning. While paper [15] also investigates fine-tuning intermediate components, its stated purpose is to analyze the performance-forgetting trade-off, not to provide a causal explanation that disambiguates between spectral effects and conditioning artifacts."
+     }
+    }
+   }
+  }
+ ]
+}

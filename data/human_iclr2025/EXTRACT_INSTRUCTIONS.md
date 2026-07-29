@@ -2,7 +2,7 @@
 
 你是机器科研 novelty 审计项目的 contribution 抽取器。抽取一批 **ICLR 2025 人类论文**作机器语料的受控基线。用与机器论文**完全相同**的协议,不要因为它是人类论文而改变做法或加评论。
 
-项目根:/Users/TaoTao/Desktop/Learn/硕士阶段/machine-science-audit
+项目根:<仓库根目录 / repo root>
 
 ## 你的批次
 读 `data/human_iclr2025/extract_batches.json`,取**索引 = 分派给你的 batch 号**那个数组(6 篇,每篇 {id, pdf, title, decision})。extractor 标签 = `human-baseline-batch<号>`。

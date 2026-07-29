@@ -1,0 +1,314 @@
+{
+ "paper_id": "kN6MFmKUSK",
+ "title": "PolaFormer: Polarity-aware Linear Attention for Vision Transformers",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": [
+     4,
+     14
+    ],
+    "domain": [
+     4,
+     6,
+     14
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to address the issue of linear attention losing expressive and discriminative power due to the non-negativity constraint on feature maps, which discards negative query-key interactions. None of the prior papers explicitly identify or aim to solve this specific problem. Papers like [4], [7], [14], and [16] discuss linear attention mechanisms and their limitations, but they focus on computational efficiency, approximation errors, or performance degradation relative to softmax attention, not the loss of expressiveness due to discarded negative interactions.\n\n**VERDICT purpose = NONE**\n\n---\n\n### Mechanism\nThe mechanism introduces polarity-aware linear attention, explicitly modeling query-key interactions by splitting them into same-sign (positive-positive/negative-negative) and opposite-sign (positive-negative/negative-positive) streams, processing value vectors along the channel dimension without adding learnable parameters, and scaling the output with learnable polarity-aware matrices. Paper [12] proposes rethinking query-key pairwise interactions in vision transformers, but it excludes query-key interactions entirely (key-only attention) rather than modeling polarity-aware streams. Paper [13] refines query-key interactions in attention maps but does not decompose them by polarity. No prior paper explicitly introduces polarity-aware modeling of query-key interactions as described here.\n\n**VERDICT mechanism = NONE**\n\n---\n\n### Evaluation\nThe evaluation qualitatively validates the method by showing more faithful reconstruction of softmax attention weights, lower entropy in attention maps, and closer alignment to softmax attention (visualized in Figure 1). Papers [4], [7], [14], and [16] evaluate linear attention mechanisms against softmax attention, often using similar qualitative metrics like entropy or reconstruction fidelity. For example, [16] analyzes why softmax attention outperforms linear attention, using entropy and fidelity metrics. These evaluation designs are substantively equivalent to the current contribution's qualitative validation setup.\n\n**VERDICT evaluation = 4**\n\n---\n\n### Domain\nThe contribution operates in computer vision, specifically efficient Vision Transformers. Papers [4], [5], [6], [7], [12], [13], and [14] all address efficient attention mechanisms or Vision Transformers in computer vision tasks. While the specific sub-problem (addressing polarity-aware query-key interactions) is new, the general application area of efficient Vision Transformers is well-covered.\n\n**VERDICT domain = 4**\n\n---\n\n### Final Verdicts\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 4  \nVERDICT domain = 4  ",
+      "stage2": "1. **FACET: purpose** | **FINAL: NONE** | reason: No prior paper explicitly addresses the problem of query-key interaction loss due to non-negativity constraints in linear attention, leading to reduced expressiveness and discriminative power. No equivalent objective found under different terminology or framing.\n\n2. **FACET: mechanism** | **FINAL: NONE** | reason: No prior paper explicitly proposes polarity-aware linear attention with separate modeling of same-sign and opposite-sign query-key interactions, channel-wise value vector splitting, and learnable polarity-aware scaling matrices. No equivalent mechanism found under different terminology or domain vocabulary."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 16
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 14
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\n\nThe contribution aims to solve the problem that linear attention's non-negativity constraint on feature maps discards negative query-key interactions, reducing expressiveness and discriminability.\n\n- Paper [14] (FLatten Transformer) explicitly addresses \"significant performance degradation\" in linear attention due to mapping functions, and discusses how current linear attention approaches lose expressiveness. It mentions the focused function to improve discriminability.\n- Paper [16] \"Why Softmax Attention Outperforms Linear Attention\" directly analyzes why linear attention underperforms softmax attention, identifying the loss of negative interactions as a key issue: \"linear attention provides an O(n) alternative by approximating the softmax, but it often suffers notable accuracy losses.\"\n- Paper [4] (cosFormer) addresses approximation errors in kernel-based linear attention causing performance variance.\n\nPaper [16] is the closest — it identifies the gap between softmax and linear attention and theoretically accounts for the discrepancy, which is the same problem class. Paper [14] also targets improving linear attention expressiveness. However, neither paper's *purpose* is specifically \"recover negative query-key interactions lost due to non-negativity constraints\" — [16] analyzes *why* the gap exists but doesn't propose to fix it via polarity-aware decomposition. [14] proposes a focused function but the purpose is general performance improvement, not specifically addressing sign-discarding. The purpose here is specifically about the non-negativity constraint discarding negative interactions — [16] covers this at the problem-class level (\"linear attention loses accuracy due to approximation errors including sign information loss\").\n\nPaper [16] substantively covers this purpose at the problem-class level.\n\n## Mechanism\n\nThe mechanism is: split query-key products by sign polarity into same-sign (++/--) and opposite-sign (+−/−+) streams; split value channels accordingly; recombine with learnable sign-aware scaling matrices (G^s, G^o), no extra learnable parameters in the split itself.\n\n- Paper [14] (FLatten Transformer) uses a \"focused function\" to improve linear attention but doesn't decompose by sign polarity.\n- Paper [16] analyzes the problem theoretically but proposes no such mechanism.\n- Paper [4] (cosFormer) uses cosine-based reweighting to approximate softmax but doesn't split by sign.\n- Paper [7] uses probabilistic modeling for linear attention unification — no sign decomposition.\n- Papers [22], [23] deal with indefinite kernels (handling negative kernel values in SVMs/logistic regression). Paper [23] specifically handles indefinite kernel matrices by treating them as noisy observations and computing proxy kernels. Paper [22] extends logistic regression to indefinite kernels. These handle negative kernel values but through entirely different mechanisms (convex relaxation, not stream decomposition).\n\nNo prior paper describes the specific primitive of splitting query-key interactions by sign polarity into two streams and processing them separately with channel-split values and sign-aware scaling matrices.\n\n## Evaluation\n\nThe evaluation design includes: qualitative visualization comparing reconstructed attention maps to softmax attention (Figure 1), attention map entropy comparison, and closeness-to-softmax metrics.\n\n- Paper [14] (FLatten Transformer) uses attention map visualization and comparison to softmax attention as part of its evaluation — \"we visualize the attention maps\" and compare linear vs. softmax attention quality.\n- Paper [16] analyzes attention weight distributions and compares linear vs. softmax attention patterns theoretically and empirically.\n- Paper [4] (cosFormer) includes attention visualization comparing to softmax.\n\nPaper [14] uses attention map visualization and entropy-like analysis to compare linear attention to softmax — this is the same evaluation design (attention map visualization + comparison to softmax as ground truth).\n\n## Domain\n\nThe contribution is in computer vision / efficient Vision Transformers.\n\n- Papers [14], [4], [5], [6], [13], [12] all work in efficient Vision Transformers / linear attention for vision tasks. This domain is clearly covered.\n\n---\n\nVERDICT purpose = 16\nVERDICT mechanism = NONE\nVERDICT evaluation = 14\nVERDICT domain = 14",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes splitting query-key pairs by sign polarity into same-sign and opposite-sign streams, channel-splitting value vectors for the two interaction types without extra learnable parameters, and applying learnable sign-aware scaling matrices (G^s, G^o) on the concatenated output. cosFormer [4] uses cosine-based reweighting and FLatten [14] uses focused functions, but neither decomposes interactions by arithmetic sign polarity in this manner."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe contribution's purpose is to solve the performance degradation in linear attention that arises because non-negative feature map constraints cause negative query-key interactions to be discarded. No prior paper explicitly states this as its objective. While paper [16] analyzes the performance gap between softmax and linear attention and may identify a similar underlying cause, its purpose is explanatory (\"develops a unified theoretical account of that discrepancy\"), not constructive (to solve the problem). Therefore, the purpose of *solving* this specific, identified problem is not covered.\n\n**MECHANISM**\nThe core mechanism is a \"polarity-aware\" attention that explicitly splits query-key interactions into two streams based on their sign (same-sign vs. different-sign) and processes them separately. This architectural primitive of creating parallel processing paths based on the sign of an intermediate dot-product is not described in any of the prior papers. While papers like [22] and [23] work with indefinite kernels which can have negative values, their mechanism involves modifying the optimization problem to handle non-convexity, not creating explicit, sign-based computational streams.\n\n**EVALUATION**\nThe evaluation design involves comparing the proposed attention mechanism's output (attention maps) to those of standard softmax attention, using qualitative visualizations and quantitative metrics like entropy to demonstrate fidelity. This is a standard evaluation design for any work proposing an approximation to softmax attention. Papers such as [4], [14], and [16] all propose or analyze linear attention as an approximation of softmax, and comparing the approximation's behavior to the original is a fundamental part of their evaluation design.\n\n**DOMAIN**\nThe contribution is applied to the domain of efficient Vision Transformers for computer vision tasks. This general application area is explicitly addressed by numerous prior papers. For example, [6] is a \"Survey on Efficient Vision Transformers\", [5] proposes a \"Fast Vision Transformer\", and [14] proposes a \"Vision Transformer using Focused Linear Attention\".\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 4\nVERDICT domain = 6",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper identifies the problem with linear attention as being the non-negative feature map constraint discarding negative query-key interactions. While paper [16] analyzes the performance gap and papers like [22, 23] discuss indefinite kernels in other domains, none frame the purpose as solving this specific issue of lost expressiveness due to sign-based information loss in linear attention.\nFACET: mechanism | FINAL: NONE | reason: No prior paper proposes a mechanism that explicitly splits query-key interactions by sign into \"same-sign\" and \"opposite-sign\" streams for separate modeling. The described implementation—splitting the value vector along the channel dimension to handle these two streams and then using learnable matrices to scale the outputs—is a highly specific architecture not found in any of the provided abstracts."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     2
+    ],
+    "mechanism": [
+     2,
+     9,
+     18
+    ],
+    "evaluation": [
+     11
+    ],
+    "domain": [
+     3,
+     5,
+     7,
+     10,
+     18
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": [
+        3,
+        5,
+        7,
+        10,
+        18
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to restore the \"spikeness\" of linear attention distributions, enabling the model to distinguish strong and weak query-key responses. This objective is not explicitly covered by any prior paper. While papers like [2], [11], and [18] discuss linear attention mechanisms and their performance relative to softmax attention, none explicitly aim to restore spikeness or address entropy reduction for query-key response separability.\n\n### Mechanism\nThe mechanism involves theoretical analysis proving that a class of elementwise functions (with positive first and second derivatives) can reduce the entropy of attention distributions, followed by the use of a learnable power function for rescaling. Paper [4] explores alternatives to the softmax function, including entropy-related modifications, but does not propose or analyze the specific class of functions described here. Paper [9] studies ReLU and softmax in Transformers, including their entropy effects, but does not generalize to the proposed theoretical framework or learnable power functions. Paper [19] discusses entropy maximization but in a different context (Renyi entropy for charged particle dynamics). None of the prior papers substantively match the mechanism.\n\n### Evaluation\nThe evaluation combines qualitative and theoretical validation: proving the entropy-reduction property of the proposed functions, explaining why ReLU/ELU increase entropy, and showing that the power function retains softmax's spikeness while separating strong/weak attention signals. Paper [9] conducts theoretical studies on ReLU and softmax but does not use the same evaluation design (entropy reduction proofs or spikeness analysis). Paper [11] provides a theoretical account of softmax vs. linear attention but does not evaluate entropy reduction or spikeness retention. No prior paper uses the same evaluation design.\n\n### Domain\nThe domain is computer vision and attention mechanism theory. Papers [3], [5], [7], [10], and [18] all work in computer vision and attention mechanisms, covering this domain. While the specific focus on spikeness restoration is new, the general application area is not.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [3, 5, 7, 10, 18]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses recovering spikeness to distinguish strong/weak query-key responses.  \n\nFACET: mechanism | FINAL: COVERED-BY 9 | reason: \"ReLU/Softmax equivalence explained via entropy analysis\" aligns with theoretical proof of entropy reduction via element-wise functions.  \n\nFACET: evaluation | FINAL: COVERED-BY 11 | reason: \"Unified theoretical account of softmax vs. linear attention discrepancy\" provides entropy-based explanation and spikeness retention analysis.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 18
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 18
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose: Recover \"spikeness\" in linear attention so the model can distinguish strong vs. weak query-key responses\n\nThe closest papers are [11] \"Why Softmax Attention Outperforms Linear Attention\" which explicitly analyzes \"the discrepancy\" between softmax and linear attention and why linear attention \"suffers notable accuracy losses,\" and [18] \"FLatten Transformer\" which addresses \"significant performance degradation\" in linear attention. Paper [2] \"Hedgehog & Porcupine\" explicitly pursues \"softmax mimicry\" for linear attention — recovering the peaked/concentrated distribution property of softmax. Paper [2] states linear attentions aim to \"recover task performance\" by mimicking softmax behavior, which is substantively equivalent to recovering spikeness/concentration in attention distributions.\n\nPaper [11] also directly addresses why softmax outperforms linear attention through theoretical analysis of concentration properties.\n\n## Mechanism: Theoretical analysis proving a class of element-wise functions (positive first and second derivatives) reduces attention entropy; learnable power function for channel-wise rescaling\n\nPaper [11] provides theoretical analysis of why softmax attention outperforms linear attention, touching on concentration/entropy properties. Paper [18] \"FLatten Transformer\" introduces a \"focused function\" with specific mathematical properties to sharpen linear attention — this is directly equivalent: they analyze what mathematical properties a mapping function needs to produce peaked attention, and apply a specific nonlinearity. Paper [18] explicitly discusses using a \"focused function\" that concentrates attention weights, which is the same primitive as using a function with positive derivatives to reduce entropy and sharpen attention. Paper [2] also uses theoretical analysis to design kernel features that mimic softmax's peaked behavior.\n\nPaper [9] \"A Study on ReLU and Softmax in Transformer\" explicitly studies why ReLU and Softmax behave differently in attention, which partially covers the analysis of why ReLU raises entropy. Paper [18] is the strongest match for the mechanism of using a specially designed element-wise function to sharpen linear attention.\n\n## Evaluation: Qualitative + theoretical: proving the function class reduces entropy, explaining why ReLU/ELU raise entropy; power function preserves softmax spikeness\n\nThis is primarily a theoretical/analytical evaluation design. Paper [11] uses theoretical analysis to explain softmax vs. linear attention discrepancy. Paper [18] also uses theoretical justification for their focused function design. Paper [9] conducts theoretical and empirical studies comparing ReLU and Softmax behaviors. The evaluation design here (theoretical proof + qualitative analysis of entropy properties) is used in [11] and [18] as well.\n\n## Domain: Computer vision / attention mechanism theory\n\nPapers [3], [10], [18], [22] all work in computer vision with attention mechanisms. Paper [18] specifically addresses vision transformers with linear attention. This domain is clearly covered.\n\nVERDICT purpose = 2\nVERDICT mechanism = 18\nVERDICT evaluation = 11\nVERDICT domain = 18",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "*   **purpose**: The objective is to restore the \"spikeness\" that linear attention loses compared to softmax, allowing it to better distinguish strong and weak signals. This is substantively equivalent to the purpose of paper [2], which aims to create \"Expressive Linear Attentions with Softmax Mimicry\" to close the performance gap caused by linear attention's deficiencies. Paper [11] also identifies this exact problem (\"Why Softmax Attention Outperforms Linear Attention\"), establishing the objective as a known goal in the field.\n\n*   **mechanism**: The core mechanism is applying an element-wise power function to rescale attention scores, making the exponent learnable. Paper [2] uses polynomial kernels to mimic softmax, which means its similarity function is `sim(q,k) = (<q,k> + c)^d`. This is a direct application of a power function to the dot-product scores, making it substantively equivalent to the contribution's mechanism, even if the exponent is fixed rather than learnable.\n\n*   **evaluation**: The evaluation is a theoretical analysis showing how a class of functions affects the entropy of the attention distribution. This evaluation *design* — a theoretical/analytical study of the properties of core components within attention mechanisms — is not new. Paper [11] provides a \"unified theoretical account\" of the differences between softmax and linear attention, and paper [9] conducts \"extensive studies on ReLU and Softmax\" within Transformers, both employing the same design of analytical evaluation.\n\n*   **domain**: The contribution is in the domain of computer vision and attention mechanism theory. This area is explicitly addressed by numerous prior papers. For example, paper [3] is a survey titled \"Attention mechanisms in computer vision,\" and paper [1] works on \"Visual Attention.\"\n\nVERDICT purpose = 2\nVERDICT mechanism = 2\nVERDICT evaluation = 11\nVERDICT domain = 3",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     17,
+     21
+    ],
+    "mechanism": [
+     3,
+     19,
+     27
+    ],
+    "evaluation": [
+     3,
+     9
+    ],
+    "domain": [
+     3
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 19
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to validate PolaFormer as a model that balances expressiveness and efficiency across multiple visual tasks and long-sequence benchmarks. No prior paper explicitly establishes this empirical relationship for PolaFormer or a substantively equivalent model. While papers like [3], [5], [6], [7], [9], and [19] discuss efficiency improvements in Vision Transformers (ViTs), they do not validate the same empirical relationship of balancing expressiveness and efficiency across the same breadth of tasks and benchmarks. Thus, the purpose is **not covered**.\n\n### Mechanism\nThe contribution replaces the polar-sensitive attention module into various ViT backbones (DeiT, PVT, PVTv2, Swin) and evaluates its performance. Papers such as [3], [5], [6], [7], [9], [19], and [21] propose alternative attention mechanisms or modules for ViTs, including linear attention, additive attention, and decorrelated attention heads. These mechanisms aim to improve efficiency or scalability, but none specifically use a polar-sensitive attention module or an equivalent primitive. Therefore, the mechanism is **not covered**.\n\n### Evaluation\nThe evaluation design involves benchmarking PolaFormer across ImageNet-1K classification, COCO detection/instance segmentation, ADE20K semantic segmentation, and Long Range Arena (LRA) tasks, reporting performance improvements and SOTA results. Papers like [3], [5], [6], [7], [9], [15], [17], [18], and [19] use similar evaluation designs, including benchmarking ViTs on ImageNet, COCO, ADE20K, and other standard datasets. The use of these benchmark families and metrics is substantively equivalent, even though the specific results and models differ. Thus, the evaluation design is **covered**.\n\n### Domain\nThe contribution operates in the domain of computer vision, specifically multi-task evaluation across classification, detection, segmentation, and long-sequence benchmarks. Papers such as [3], [5], [6], [7], [9], [15], [17], [18], and [19] also address computer vision tasks within these areas. While the specific datasets and tasks may vary, the general application area is the same. Therefore, the domain is **covered**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 3  \nVERDICT domain = 3  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly validates a model's expressiveness and efficiency across both diverse visual tasks and long-sequence benchmarks.  \n\nFACET: mechanism | FINAL: COVERED-BY 19 | reason: \"To improve efficiency, recent Vision Transformers adopt local self-attention mechanisms, where self-attention is computed within local windows,\" aligns with replacing modules in ViT backbones for evaluation across benchmarks."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 17
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: 验证 PolaFormer 在多种视觉任务与长序列基准上兼顾表达力与效率**\n\nThe purpose is to demonstrate that a polarity-aware attention module achieves both expressiveness and efficiency across multiple vision tasks and long-sequence benchmarks. Paper [17] (\"Which Transformer to Favor: A Comparative Analysis of Efficiency in Vision Transformers\") explicitly pursues the same objective: benchmarking vision transformers for efficiency across multiple tasks. Paper [3] (SOFT) also validates a new attention mechanism across vision tasks for expressiveness+efficiency. However, the specific relationship being established — that *polarity-aware* attention achieves this balance — is the novel claim. But at the problem-class level, \"show that our efficient attention variant is competitive/superior across vision and long-sequence benchmarks\" is the same objective as [3], [17], and others. Paper [17] directly addresses \"comparing efficiency in vision transformers\" across benchmarks. This is COVERED.\n\n**MECHANISM: 替换极性感知注意力模块进 DeiT/PVT/PVTv2/Swin 等骨干**\n\nThe mechanism is a drop-in substitution of a new attention module into existing ViT backbones (DeiT, PVT, Swin) and evaluating across tasks. Paper [3] (SOFT) replaces softmax attention with a new module in ViT backbones. Paper [9] (ViTALiTy) plugs a new attention approximation into ViT architectures. Paper [17] performs substitution of attention mechanisms into standard backbones. The \"plug-in replacement of attention into standard ViT backbones\" primitive is well-covered by [3], [9], [17], and others. This is COVERED.\n\n**EVALUATION: ImageNet分类、COCO检测/分割、ADE20K语义分割、LRA基准**\n\nThe evaluation design uses: ImageNet-1K classification, COCO detection/instance segmentation, ADE20K semantic segmentation, and Long Range Arena (LRA). Paper [3] (SOFT) uses ImageNet classification, COCO detection, ADE20K segmentation, and LRA — essentially the identical evaluation suite. Paper [17] also benchmarks across ImageNet and multiple vision tasks. The evaluation design is directly matched by [3]. This is COVERED.\n\n**DOMAIN: 计算机视觉 / 多任务评估**\n\nThe domain is computer vision with multi-task evaluation. Papers [3], [4], [6], [7], [9], [15], [17], [19] all operate in computer vision with multi-task evaluation setups. This is clearly COVERED by numerous papers, especially [3] and [17].\n\nVERDICT purpose = 17\nVERDICT mechanism = 3\nVERDICT evaluation = 3\nVERDICT domain = 3",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 21
+      },
+      "mechanism": {
+       "covered_by": 27
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution is a finding that a specific mechanism, PolaFormer, balances expressiveness and efficiency. Per the finding-specific rule, this is covered only if a prior paper establishes the *same* empirical relationship. No prior paper could report a finding about PolaFormer, so this specific relationship is new.\n\n**mechanism**: The core technical primitive is \"polarity-aware attention\". This appears to be a direct application of the principle of \"kernel polarization\" from paper [27], which proposes to \"selecting the kernel parameter values that polarize the data in the associated feature space\" as a way to improve kernel methods. Applying this known primitive to an attention kernel is not novel at the primitive level.\n\n**evaluation**: The evaluation design consists of benchmarking a new Vision Transformer component on a suite of standard vision and long-sequence tasks (ImageNet, COCO, ADE20K, LRA). This multi-benchmark validation strategy is a standard design, used by prior works like [9] which evaluates on \"ImageNet-1K, COCO, and ADE20K\" and [3] which also uses \"ImageNet, COCO, and ADE20K\".\n\n**domain**: The application area is computer vision, specifically evaluating efficient Vision Transformer architectures on multiple tasks. This is the explicit domain of numerous prior papers, including [3] which discusses \"Vision transformers (ViTs) ... for various visual recognition tasks\" and [6] which proposes a \"Fast Vision Transformer\".\n\nVERDICT purpose = NONE\nVERDICT mechanism = 27\nVERDICT evaluation = 9\nVERDICT domain = 3",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY [21] | reason: The objective is the same: to demonstrate that a proposed efficient (linear) attention model achieves high performance (expressiveness) on both a vision task and a long-sequence benchmark. The prior paper's abstract states: \"We show that Hedgehog achieves state-of-the-art performance among linear attentions on the Long Range Arena benchmark and ImageNet classification.\" This matches the target facet's goal of verifying a balance of expressiveness and efficiency across vision tasks and long-sequence benchmarks."
+     }
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,275 @@
+{
+ "paper_id": "NJUzUq2OIi",
+ "title": "Efficient Full-Context Retrieval for Long Documents",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     3,
+     28
+    ],
+    "evaluation": [
+     4,
+     17
+    ],
+    "domain": [
+     4,
+     5,
+     8,
+     15
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": [
+        4,
+        5,
+        15
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to enable efficient sentence-level retrieval for long-document QA without the chunking of RAG (which loses global context) or the quadratic cost of transformer full-context processing. Paper [4] discusses Sparse RAG, which aims to reduce computation costs in retrieval-augmented generation by encoding retrieved documents in parallel, but it does not address sentence-level retrieval or the specific problem of avoiding chunking while maintaining global context. Paper [3] introduces Mamba Retriever for dense retrieval, focusing on balancing efficiency and effectiveness, but it does not explicitly target sentence-level retrieval for long-document QA or the avoidance of chunking. No prior paper explicitly shares the same objective at the problem-class level.\n\n### Mechanism\nThe mechanism adapts the Mamba-2 state-space model into a fine-grained sentence-level retriever by removing the LM head, adding a classification head, and labeling the last token of each sentence for relevance to a prepended query, processing the entire document in linear time using all preceding context. Paper [3] introduces Mamba Retriever for dense retrieval, which utilizes Mamba state-space models for efficient retrieval, but it does not describe fine-grained sentence-level retrieval or the specific adaptation steps (removing the LM head, adding a classification head, labeling last tokens). Paper [12] and [31] describe Mamba state-space models for linear-time sequence modeling, but neither applies this mechanism to sentence-level retrieval or adapts the model in the described manner. Thus, no prior paper contains a substantively equivalent mechanism.\n\n### Evaluation\nThe evaluation setup involves outperforming state-of-the-art embedding models across 41 long-document QA benchmarks, achieving close performance to GPT-4o full-context processing on documents >256k tokens while using ~160x fewer tokens. Paper [5] introduces RAG-QA Arena, a dataset for evaluating domain robustness in long-form retrieval-augmented QA, but it does not use the same evaluation design (41 benchmarks, FLOPS comparison, token efficiency). Paper [15] proposes a novel long-context benchmark for multi-doc QA, but it diverges from the described evaluation design. Paper [17] introduces BABILong for evaluating long-document processing, but its focus is on distributed fact extraction rather than the specific evaluation metrics and benchmarks used here. No prior paper matches the evaluation design.\n\n### Domain\nThe domain is long-document question answering and RAG retrieval. Paper [4] addresses retrieval-augmented generation (RAG) and its computational challenges, which falls within the same general application area. Paper [5] evaluates RAG-QA systems, and paper [15] benchmarks long-context LLMs for multi-doc QA, both of which are part of the long-document QA/RAG retrieval domain. Thus, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [4], [5], [15]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses efficient sentence-level retrieval for long-document QA without chunking or quadratic transformer costs.  \nFACET: mechanism | FINAL: COVERED-BY 3 | reason: \"Mamba Retriever: Utilizing Mamba for Effective and Efficient Dense Retrieval\" describes adapting Mamba for dense retrieval, including modifications for relevance classification.  \nFACET: evaluation | FINAL: NONE | reason: No prior paper evaluates against 41 long-document QA benchmarks or compares performance to GPT-4o with similar metrics.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "**Purpose:** The contribution aims to enable efficient sentence-level retrieval for long-document QA without chunking (RAG) or quadratic cost (transformers). Paper [3] (\"Mamba Retriever: Utilizing Mamba for Effective and Efficient Dense Retrieval\") explicitly addresses balancing efficiency and effectiveness in dense retrieval using Mamba, and mentions the quadratic complexity problem of Transformer-based DR models. However, [3] focuses on passage-level dense retrieval (encoding queries and passages into embedding space), not sentence-level retrieval within a single long document while preserving global context. Paper [10] addresses long document retrieval with fine-grained distillation. Paper [4] (Sparse RAG) addresses cutting computation costs in RAG by sparse context selection. None of these precisely target the combination of: (1) sentence-level granularity within a long document, (2) avoiding chunking to preserve global context, and (3) linear-time processing. The closest is [3] which shares the efficiency+effectiveness purpose for retrieval with Mamba, but targets standard dense retrieval (passage retrieval from corpus), not intra-document sentence-level retrieval for long-doc QA. The purpose is sufficiently distinct — the specific gap of \"sentence-level retrieval within a long document without chunking\" is not covered by any prior paper at the problem-class level.\n\n**Mechanism:** The mechanism is: take Mamba-2 SSM, remove LM head, add classification head, label last token of each sentence for relevance to a prepended query, process entire document in linear time. Paper [3] adapts Mamba as a dense retriever by using it as an encoder for query/passage embeddings — this is a different primitive (bi-encoder embedding matching vs. per-sentence token classification within a single document pass). Paper [12] introduces Mamba SSM itself. Paper [28] uses RNN-based sequence classification to label sentences for extractive summarization — this is structurally similar (sequence model + classification head + sentence-level labels), but uses RNN not SSM/Mamba, and doesn't prepend a query or process a full long document. Paper [30] (\"Zero-Shot Sequence Labeling\") trains a sentence classifier and infers token-level labels — related but different primitive. The specific combination of: Mamba-2 backbone + classification head replacing LM head + last-token-per-sentence labeling + query prepended to full document is not found in prior work. Paper [3] uses Mamba as an encoder for embedding-based retrieval, not as a sequence labeler over sentences within a document. This mechanism appears genuinely novel.\n\n**Evaluation:** The contribution evaluates on 41 long-document Q&A benchmarks (Table 1), comparing against embedding models and measuring FLOP efficiency and token compression. Paper [15] (\"Leave No Document Behind\") introduces a long-context multi-doc QA benchmark. Paper [17] (\"BABILong\") introduces a benchmark for long-document processing and evaluates GPT-4 and RAG. Paper [22] (Gemini 1.5) evaluates long-context models across many benchmarks. The evaluation design — comparing retrieval/compression methods on long-document QA benchmarks using accuracy + efficiency metrics — is used in papers [4], [17], [22]. Specifically, [4] (Sparse RAG) evaluates on QA benchmarks with efficiency comparisons (latency/FLOPs). The design of \"evaluate on long-doc QA benchmarks + compare efficiency (FLOPs/tokens)\" is covered by [4] and [17]. The \"LLM-as-judge\" or \"conformal risk\" designs are not used here, but the benchmark-family + efficiency metric design is standard and appears in prior work.\n\n**Domain:** Long-document question answering and RAG retrieval is clearly covered by multiple prior papers: [4], [5], [6], [7], [8], [9], [15], [17], [18], [24] all work in long-document QA and/or RAG retrieval.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 4\nVERDICT domain = 8",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper targets the specific combination of avoiding RAG chunking's loss of global context AND avoiding transformer quadratic cost for long-document sentence-level retrieval. Paper [3] (Mamba Retriever) uses Mamba for dense retrieval but operates on passages/documents in standard IR, not sentence-level retrieval within a single long document to preserve global context. Paper [4] (Sparse RAG) addresses RAG latency but still uses chunking. No paper matches this exact objective.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes adapting Mamba-2 specifically as a sentence-level relevance classifier by removing the LM head, adding a classification head, prepending a query, and labeling the last token of each sentence for relevance while processing the full document in linear time. Paper [3] uses Mamba as a dense retrieval encoder for passage embeddings, which is a fundamentally different architecture and granularity. No equivalent mechanism exists in any prior paper."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 28
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: COVERED by [3]. The contribution's purpose is to enable efficient retrieval for long documents using a state-space model to avoid the quadratic cost of transformers, which is the same objective as [3]'s \"Utilizing Mamba for Effective and Efficient Dense Retrieval\" to address the computational complexity of Transformer-based models.\n\nmechanism: COVERED by [28]. The contribution's mechanism is to adapt a sequence model (Mamba) to perform sentence-level relevance classification, which is the same primitive as in [28], which uses an \"RNN-based Sequence Classification\" model to \"classify whether an article's sentence belongs to the corresponding extractive summary or not.\"\n\nevaluation: COVERED by [17]. The evaluation design is a standard comparison of a new method against SOTA models on long-document QA benchmarks, measuring performance and efficiency; this design is used in [17], which evaluates its method against \"GPT-4 and RAG\" on a long-document QA task.\n\ndomain: COVERED by [5]. The contribution's domain is \"Long-document question answering / RAG retrieval,\" which is the same general application area as [5], \"Evaluating Domain Robustness for Long-form Retrieval Augmented Question Answering.\"\n\nVERDICT purpose = 3\nVERDICT mechanism = 28\nVERDICT evaluation = 17\nVERDICT domain = 5",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": [
+     16,
+     21
+    ],
+    "domain": [
+     3,
+     16
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 21
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to produce training data with sentence-level relevance labels that teach retrievers to leverage long-range document connections, addressing the lack of such labels for long documents. None of the prior papers explicitly address this purpose. While several papers discuss synthetic data generation for retrieval (e.g., [3], [5], [21], [27]), they do not focus on creating sentence-level relevance labels specifically designed to teach retrievers to handle long-range document connections. For example, [21] focuses on zero-shot neural passage retrieval using synthetic question generation, but it does not address the specific problem of long-range document connections or sentence-level relevance labeling. Similarly, [27] introduces noisy self-training with synthetic queries but does not target the specific purpose of teaching retrievers to leverage long-range connections.\n\n### Mechanism\nThe mechanism involves a novel link-based synthetic data generation approach where an LLM discovers real connections between document chunks and transforms them into coherent questions requiring information from distinct parts of the document, labeling relevant sentences. This mechanism is not covered by prior work. Papers like [21], [16], and [27] discuss synthetic question generation, but they do not employ a link-based strategy that explicitly identifies and leverages connections between document chunks to generate questions requiring multi-chunk reasoning. For instance, [21] generates synthetic questions for zero-shot passage retrieval but does not involve linking document chunks or labeling sentences. Similarly, [16] generates synthetic queries but focuses on external knowledge rather than intra-document connections.\n\n### Evaluation\nThe evaluation involves training 130M Mamba retrievers on 500k synthetic questions under identical conditions and comparing the link-based strategy against chunk-based and pair-based baselines. This evaluation design is covered by prior work. Papers like [21], [27], and [23] evaluate synthetic data generation methods by training retrieval models on synthetic data and comparing performance against baselines. For example, [21] trains neural passage retrievers on synthetic questions and compares their performance to other methods. Similarly, [27] evaluates a noisy self-training framework by training neural retrievers on synthetic queries and comparing results. The specific dataset, model, and baselines differ, but the evaluation design (training on synthetic data and comparing against baselines) is equivalent.\n\n### Domain\nThe domain is synthetic data generation for retrieval. This domain is well-covered by prior work, including [3], [5], [21], and [27]. For example, [3] discusses synthetic test collections for retrieval evaluation, [5] investigates synthetic document generation for training rankers, and [21] focuses on synthetic question generation for passage retrieval. While the specific instance of generating sentence-level relevance labels for long documents is new, the broader domain of synthetic data generation for retrieval is not.\n\n---\n\n**VERDICT purpose = NONE**  \n**VERDICT mechanism = NONE**  \n**VERDICT evaluation = 21**  \n**VERDICT domain = 3**  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses producing training data with sentence-level relevance labels for retrievers to leverage long-range document connections in the absence of such labels.  \n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes a mechanism where an LLM discovers real connections between document chunks and transforms them into coherent questions requiring information from distinct parts of the document, labeling relevant sentences."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": 16
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Produce training data with sentence-level relevance labels that teach retrievers to leverage long-range document connections, since long documents lack such labels.**\n\nThe purpose is specifically about generating synthetic training data to help retrievers handle long-range dependencies within documents, with sentence-level relevance labels. Paper [16] (\"Query Generation with External Knowledge for Dense Retrieval\") addresses generating synthetic queries from documents to train dense retrievers, noting that \"synthetic queries do not generally ask for implicit information.\" Paper [21] (\"Zero-shot Neural Passage Retrieval via Synthetic Question Generation\") generates synthetic questions for passage retrieval training. Paper [27] (\"Noisy Self-Training with Synthetic Queries for Dense Retrieval\") generates synthetic queries for dense retrieval training. However, none of these specifically target the problem of long-range document connections or sentence-level relevance labeling across distant parts of a document. Paper [11] (\"Distant Supervision in BERT-based Adhoc Document Retrieval\") addresses labeling sentences within documents for retrieval but uses distant supervision rather than LLM-based synthetic generation, and doesn't focus on long-range connections. The specific objective — generating labels that capture cross-chunk, long-range dependencies within a document — is not covered by any prior paper at the problem-class level. The closest papers ([16], [21]) target zero-shot/low-resource retrieval training generally, not the specific gap of long-range intra-document connections.\n\n**PURPOSE verdict: NONE** — no prior paper pursues the same objective of generating sentence-level relevance labels specifically to teach retrievers long-range document connections.\n\n---\n\n**MECHANISM: LLM discovers real connections between chunks in a document (from initial chunk + surrounding context) and transforms them into coherent questions requiring information from distinct parts, labeling relevant sentences.**\n\nPaper [25] (\"Multi-hop Question Generation with Graph Convolutional Network\") generates questions requiring reasoning over multiple scattered evidence from different paragraphs. Paper [22] (\"Efficient Multi-hop Question Generation\") generates questions from complex input contexts requiring multi-hop reasoning. Paper [28] (\"Few-Shot Data Synthesis for Open Domain Multi-Hop Question Answering\") uses LLMs to synthesize multi-hop questions by connecting information across documents. Paper [34] (\"CQG: A Simple and Effective Controlled Generation Framework for Multi-hop Question Generation\") generates questions requiring reasoning over multiple pieces of information. However, these multi-hop QG papers generate questions across multiple documents or passages, not by discovering intra-document links between chunks and using an LLM to identify real connections. Paper [16] uses external knowledge to generate queries that ask for implicit information. The specific primitive — using an LLM to identify real semantic links between chunks within a single document and then generating questions that require both chunks — is not directly covered. The multi-hop QG papers use graph structures or answer-span-based approaches, not link-discovery from document structure. This is a genuinely distinct primitive.\n\n**MECHANISM verdict: NONE** — while multi-hop QG exists, the specific primitive of LLM-based link discovery between intra-document chunks to generate cross-chunk questions with sentence-level labels is not covered.\n\n---\n\n**EVALUATION: Training 130M Mamba retrievers on 500k synthetic questions under identical conditions, comparing link-based vs chunk-based vs pair-based baselines (Table 4).**\n\nThe evaluation design is: train a retriever on synthetic data generated by different strategies, compare strategies under identical conditions on standard retrieval benchmarks. This design — comparing synthetic data generation strategies by training a retriever and measuring retrieval performance — is used in papers [16], [21], [27], and [32]. Paper [16] compares synthetic query generation methods by training dense retrievers. Paper [21] trains neural retrievers on synthetic questions and evaluates on retrieval benchmarks. Paper [27] compares noisy self-training with synthetic queries. The design of \"train retriever on synthetic data, compare generation strategies, measure retrieval performance\" is clearly covered. The use of Mamba architecture and 500k questions are parameter changes, not design changes.\n\n**EVALUATION verdict: Paper 16, 21, 27** — the design of comparing synthetic data generation strategies by training retrievers under identical conditions is well-established.\n\n---\n\n**DOMAIN: Synthetic data generation for retrieval.**\n\nPapers [3], [16], [21], [27], [31] all operate in the domain of synthetic data generation for information retrieval/dense retrieval. This is clearly covered.\n\n**DOMAIN verdict: Paper 3, 16, 21, 27** — synthetic data generation for retrieval is an established area.\n\n---\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 16\nVERDICT domain = 16",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the specific objective of generating sentence-level relevance labels to teach retrievers to exploit long-range document connections within long documents. Papers like [21] and [16] generate synthetic queries for dense retrieval training but target passage-level relevance in standard-length documents, not sentence-level labels for long-range intra-document connections. No quoted phrase from any prior paper matches this objective.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes an LLM-driven process that (1) identifies real semantic connections between chunks within a single long document using surrounding context, then (2) transforms those connections into questions requiring information from distinct parts of that document, while (3) labeling relevant sentences. Paper [25] does multi-hop QG across paragraphs but uses GCN over pre-linked evidence, not LLM-discovered intra-document links. Paper [28] synthesizes multi-hop QA data but from few-shot examples across documents, not from link discovery within one document. No quoted phrase from any prior paper matches this mechanism."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     8,
+     16
+    ],
+    "evaluation": [
+     8,
+     10,
+     14,
+     20
+    ],
+    "domain": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": [
+        10,
+        14,
+        20
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to validate that the link-based synthetic data method is responsible for the retriever's ability to capture long-range dependencies. None of the prior papers explicitly report or establish the same empirical relationship between link-based synthetic data generation and long-range dependency handling in retrievers. While some papers discuss synthetic data generation (e.g., [13], [16], [24]) or long-range dependency handling ([20], [22]), none validate this specific causal link.\n\n### Mechanism\nThe mechanism involves a controlled comparison training identical 130M retrievers on synthetic data from three strategies (chunk-based, pair-based, link-based) generated from the same documents. Paper [13] discusses synthetic data generation using imitation training but does not describe controlled comparisons across multiple synthetic data strategies. Paper [16] explores synthetic data generation for multilingual dense retrieval but does not involve controlled comparisons of different synthetic strategies. No prior paper matches the exact mechanism of controlled comparison across synthetic data strategies.\n\n### Evaluation\nThe evaluation design involves downstream retrieval performance comparison (Table 4) and qualitative case studies showing cross-sentence contextual relationships. Paper [10] uses downstream question answering performance to inform retrieval data augmentation, which matches the evaluation design of downstream retrieval validation. Paper [20] evaluates long-range dependency handling using multi-step key retrieval tasks, which is conceptually similar but focuses on code generation models rather than retrievers. Paper [14] applies LLM-as-a-Judge for filtering synthetic dialog queries, which aligns with qualitative case studies as an evaluation design. Thus, the evaluation design is covered by prior work.\n\n### Domain\nThe domain is long-document question answering and retrieval-augmented generation (RAG) retrieval. Papers [1], [2], [3], [4], and [5] all address RAG retrieval and its applications, including open-domain question answering. While this contribution targets long-document question answering specifically, the general application area of RAG retrieval is well-covered by prior work.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 10, 14, 20  \nVERDICT domain = 1, 2, 3, 4, 5  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly validates that the link-based synthetic data method is responsible for the retriever's ability to capture long-range dependencies.  \nFACET: mechanism | FINAL: COVERED-BY 8 | reason: \"We train an unsupervised dense retriever, Anchor-DR, with a contrastive learning task that matches the anchor text and the linked document.\" This involves controlled comparison of retrievers trained on link-based synthetic data.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 16
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Validate that the link-based synthetic data method is responsible for the retriever's ability to capture long-range dependencies.**\n\nThis purpose is about establishing a causal/ablative relationship between a specific synthetic data generation strategy (link-based) and a retriever's ability to capture long-range dependencies. None of the prior papers report or establish this same empirical relationship — same variables (link-based vs. chunk/pair-based synthetic data strategies) and direction of effect (link-based → long-range dependency capture). Paper [8] uses anchor text (hyperlinks) for unsupervised dense retrieval training, which is related but its purpose is to train a retriever, not to validate which synthetic data strategy causes long-range dependency capture. No prior paper establishes this specific relationship.\n\n**MECHANISM: Controlled comparison training identical 130M retrievers on synthetic data from three strategies (chunk-based, pair-based, link-based) generated from the same documents.**\n\nThis is a controlled ablation/substitution experiment — train the same model on different data generation strategies and compare downstream performance. This is a standard ablation design (swap a data generation component, measure retrieval accuracy). Paper [8] compares anchor-based vs. other retrieval training approaches. Paper [16] compares synthetic data generation strategies for multilingual retrieval. Paper [24] compares synthetic query generation approaches. These all use the same generic design: controlled comparison of data generation strategies on the same model. This is a standard controlled ablation design that appears broadly across prior work (e.g., [16], [24]).\n\n**EVALUATION: Link-based generation yields best downstream retrieval (Table 4); qualitative case studies show Mamba retriever captures cross-sentence contextual relationships that NV-Embed-v2-7B misses.**\n\nThe evaluation design involves: (1) downstream retrieval benchmark comparison across training strategies, and (2) qualitative case studies comparing model outputs. Downstream retrieval evaluation is used in [8], [16], [19], [24] among others. Qualitative case studies comparing retriever outputs appear in various retrieval papers. The benchmark family (downstream QA/retrieval metrics) is standard. However, the specific combination — comparing synthetic data strategies on downstream retrieval AND qualitative cross-sentence dependency case studies — the qualitative case study component comparing a small model vs. a large model on cross-sentence dependencies is somewhat specific. But the evaluation design (downstream retrieval metrics + qualitative analysis) is standard and appears in papers like [8] and [16].\n\n**DOMAIN: Long-document question answering / RAG retrieval.**\n\nPapers [1], [2], [3], [4], [5] all work in RAG and question answering. Paper [3] explicitly covers RAG for knowledge-intensive tasks. Paper [5] covers RAG for open-domain QA. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 16\nVERDICT evaluation = 8\nVERDICT domain = 3",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper contains the same objective — validating that a link-based synthetic data method is specifically responsible for a retriever's ability to capture long-range dependencies. Paper [8] (Anchor-DR) uses web anchors/links for unsupervised dense retrieval training but does not conduct an ablation or validation isolating the link-based data generation as the cause of long-range dependency capture. No other paper matches this specific empirical validation objective even under different terminology."
+     }
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,314 @@
+{
+ "paper_id": "OVxmpus9NA",
+ "title": "Progressive Mixed-Precision Decoding for Efficient LLM Inference",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     14
+    ],
+    "evaluation": [
+     5,
+     9,
+     22
+    ],
+    "domain": [
+     5,
+     9
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to address the problem of ultra-low precision quantization methods applying uniform precision across prefill and decoding phases, ignoring their differing error tolerances and arithmetic intensities, which leads to significant accuracy degradation at extremely low bit-widths.  \n- **Paper [5]** discusses the distinct computational characteristics of prefill and decode phases in LLM inference but focuses on pipeline parallelism and batching inefficiencies rather than precision allocation.  \n- **Paper [27]** addresses low bit-width quantization challenges but does not explicitly consider phase-specific error tolerances or arithmetic intensities.  \n- **Paper [26]** introduces dynamic precision scaling for energy-efficient computations but does not address phase-specific precision allocation in LLM inference.  \n- No prior paper explicitly addresses the same problem of phase-aware precision allocation for prefill and decoding phases in LLM inference.  \n\n**Verdict:** NONE.\n\n---\n\n#### Mechanism:\nThe mechanism involves phase-aware precision allocation: using high precision for prefill to ensure generation quality and low precision for decoding to improve throughput, achieving extremely low average bit-width for mobile-level LLMs.  \n- **Paper [5]** introduces chunked prefills and piggybacking decodes for efficient LLM inference but does not propose phase-specific precision allocation.  \n- **Paper [1]**, **[4]**, **[6]**, **[7]**, **[8]**, **[11]**, **[13]**, **[16]**, **[21]**, and **[22]** all discuss mixed-precision quantization, but their mechanisms focus on layer-wise or group-wise bit-width allocation rather than phase-specific allocation for LLM inference.  \n- **Paper [26]** introduces dynamic precision scaling but applies it to MAC units in DNN accelerators, not phase-specific precision allocation for LLM inference.  \n- No prior paper proposes the same mechanism of phase-aware precision allocation for prefill and decoding phases in LLM inference.  \n\n**Verdict:** NONE.\n\n---\n\n#### Evaluation:\nThe evaluation involves qualitative experiments showing improvements in Fibonacci numerical reasoning, French-to-English instruction following, and creative poetry tasks using Vicuna-7B with 3-bit prefill + 2-bit decoding compared to uniform 2-bit quantization. Additionally, throughput improvements are measured on NPU hardware.  \n- **Paper [5]** evaluates LLM inference efficiency using batching and pipeline parallelism but does not use the same evaluation design (e.g., Vicuna-7B, specific tasks, or NPU throughput comparison).  \n- **Paper [12]** evaluates low-bit quantization for LLM serving but focuses on batching throughput improvements rather than phase-specific precision allocation.  \n- **Paper [25]** evaluates efficient LLM prefilling on mobile NPUs but does not use the same evaluation design or tasks.  \n- No prior paper uses the same evaluation design (specific tasks, Vicuna-7B, NPU throughput comparison).  \n\n**Verdict:** NONE.\n\n---\n\n#### Domain:\nThe domain is LLM inference acceleration and weight quantization for edge/mobile deployment.  \n- **Paper [5]**, **[12]**, **[25]**, and **[9]** all work in the domain of LLM inference acceleration and quantization for edge/mobile deployment.  \n- While the specific sub-problem (phase-aware precision allocation) is new, the general application area (LLM inference acceleration and quantization for edge/mobile deployment) is covered.  \n\n**Verdict:** [5].\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [5]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper addresses the specific empirical relationship of phase-aware precision allocation targeting prefill and decoding stages with differing error tolerance and arithmetic intensity.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper proposes phase-aware precision allocation explicitly leveraging prefill with high precision and decoding with low precision for mobile-level LLMs to achieve ultra-low average bit-width.\n\nFACET: evaluation | FINAL: COVERED-BY 5 | reason: \"Large Language Model (LLM) inference consists of two distinct phases - prefill phase which processes the input prompt and decode phase which generates output tokens autoregressively.\" This paper evaluates prefill and decode phases in LLM inference, aligning with the evaluation claim."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## PURPOSE\n\nThe contribution's purpose is: solve the problem that existing quantization methods apply **uniform precision across prefill and decoding phases**, ignoring their different error tolerances and arithmetic intensities, causing accuracy collapse at ultra-low bits.\n\nScanning prior papers:\n- Papers [1,2,4,6,7,8,11,13,20,21,22] address mixed-precision quantization to avoid uniform bit-width causing accuracy degradation — but they assign different bits to **layers/channels**, not to **inference phases (prefill vs. decoding)**.\n- Paper [5] (SARATHI) distinguishes prefill and decode phases for scheduling/batching efficiency, but not for quantization precision allocation.\n- Paper [25] addresses efficient LLM prefilling on NPU, but not phase-differentiated quantization.\n- Paper [14] discusses dynamic precision scaling for \"temporal changes in algorithmic noise tolerance\" — this is conceptually close (adapting precision to varying tolerance over time/execution), but it's about hardware power efficiency in general computation, not LLM inference phases.\n- Paper [26] discusses dynamic precision scaling in MAC units for DNNs, but again not LLM phase-aware.\n\nNo prior paper specifically targets the objective of **differentiating quantization precision between prefill and decoding phases** of LLM inference based on their different error tolerances. The closest are phase-scheduling papers [5,25] and mixed-precision papers [1,8,21], but none combine both dimensions into this specific purpose.\n\n**PURPOSE = NONE**\n\n## MECHANISM\n\nThe mechanism is: **phase-aware precision allocation** — assign higher precision to prefill (compute-bound, quality-critical) and lower precision to decoding (memory-bound, more error-tolerant) to achieve ultra-low average bits for mobile LLMs.\n\n- Mixed-precision papers [1,2,4,6,7,8,11,13,20,21,22] allocate different bits to different **layers**, not to different **inference phases**.\n- Paper [14] \"dynamic precision scaling... tailoring arithmetic precision adaptively to temporal changes in algorithmic noise tolerance\" — this is the same primitive: adapt precision based on varying tolerance at different execution stages. The contribution's mechanism is essentially this, applied to LLM prefill vs. decode phases.\n- Paper [26] \"Dynamic Precision Scaling (DPS)... dynamically adjusting the precision of MAC operations\" — similar dynamic precision concept but at MAC-unit level for DNNs, not phase-level for LLMs.\n- Paper [27] \"multiple phase adaptations\" in quantization — the word \"phase\" appears but refers to training phases (adaptation phases), not inference phases.\n\nPaper [14] covers the underlying primitive: \"dynamic precision scaling... tailoring arithmetic precision adaptively to temporal changes in algorithmic noise tolerance throughout the execution.\" The contribution's mechanism is a specific instantiation of this — different execution stages (prefill/decode) have different noise tolerance, so assign different precision. This is substantively equivalent at the primitive level.\n\n**MECHANISM = 14**\n\n## EVALUATION\n\nThe evaluation has two parts:\n1. Qualitative motivation experiments: comparing 3-bit prefill + 2-bit decoding vs. full 2-bit on specific tasks (Fibonacci reasoning, translation, poetry) on Vicuna-7B.\n2. Throughput benchmarking on NPU: 3.8-8.0x vs fp16, up to 1.54x vs uniform quantization.\n\n- LLM-as-judge or task-based qualitative evaluation of quantized LLMs appears in papers like [12] (Atom evaluates LLM serving quality), [21] (SliM-LLM evaluates on language tasks), [9] (T-MAC evaluates on edge deployment benchmarks).\n- Throughput/speedup benchmarking on hardware for quantized LLMs is used in [9] (T-MAC: CPU edge deployment speedup), [12] (Atom: throughput), [25] (NPU prefilling latency).\n- The specific qualitative task comparison design (same model, different precision configs, on reasoning/translation/creative tasks) resembles standard LLM benchmark evaluation used across [12,21,9].\n- NPU throughput measurement appears in [25] (mllm-NPU measures prefilling on NPU).\n\nThe evaluation design (task-based quality comparison + hardware throughput measurement for quantized LLMs) is covered by prior papers [9,12,25] using the same evaluation design framework.\n\n**EVALUATION = 9, 12, 25**\n\n## DOMAIN\n\nThe domain is: LLM inference acceleration / weight quantization for edge/mobile deployment.\n\n- Paper [9] (T-MAC): \"deployment of Large Language Models (LLMs) on edge devices... Weight quantization\" — directly matches.\n- Paper [12] (Atom): \"LLM quantization techniques\" for serving.\n- Paper [21] (SliM-LLM): \"mixed-precision quantization for Large Language Models.\"\n- Paper [25]: \"on-device LLM prefilling acceleration using on-chip Neural Processing Units (NPUs)\" — mobile/edge LLM deployment.\n- Paper [22]: \"on-Device Deployment\" with mixed precision quantization.\n\n**DOMAIN = 9, 12, 21, 25**\n\n---\n\nVERDICT purpose = NONE\nVERDICT mechanism = 14\nVERDICT evaluation = 9\nVERDICT domain = 9",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper addresses the specific objective of solving accuracy degradation at ultra-low bit by differentiating quantization precision between the prefill and decoding phases based on their distinct fault tolerance and arithmetic intensity. Papers [5] and [25] discuss prefill/decode distinctions but not for mixed-precision quantization purposes; mixed-precision quantization papers [1][4][8][11][21] assign different bits to layers/groups but never distinguish prefill vs. decoding stages as the axis of differentiation."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 14
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 22
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "For each facet, I will first state which prior paper(s) contain a substantively equivalent element and quote the relevant text.\n\n**purpose**: The contribution's purpose is to solve the problem of uniform quantization being suboptimal for LLMs by assigning different precisions to the prefill and decoding phases, which have different error tolerances. This is a specific instance of the more general objective of adapting computational precision to the changing needs of an algorithm over time. This general purpose is explicitly stated in paper [14], which advocates for \"tailoring arithmetic precision adaptively to temporal changes in algorithmic noise tolerance throughout the execution.\"\n\n**mechanism**: The core mechanism is \"phase-aware precision allocation\": using higher precision for the prefill phase and lower precision for the decoding phase. This is a direct application of the technical primitive described in paper [14] as \"dynamic precision scaling,\" which is the idea of adaptively changing precision during execution. Paper [26] also describes the same primitive at the hardware level, proposing \"Dynamic Precision Scaling (DPS) in Multiply-Accumulate (MAC) units to enhance energy efficiency and computational flexibility.\"\n\n**evaluation**: The evaluation design consists of qualitative comparisons on generative tasks and quantitative throughput measurements on target hardware (NPU) against baselines like full-precision and uniform quantization. This is a standard evaluation protocol for on-device model compression and acceleration. For example, paper [22] uses the same design: it \"deploys the graph on the embedded device (Galaxy S23), and d) measures the accuracy and on-device performance.\"\n\n**domain**: The application area is LLM inference acceleration and weight quantization, specifically for edge or mobile deployment. This domain is well-established and is the explicit focus of numerous prior papers. For instance, paper [9] focuses on \"Low-Bit LLM Deployment on Edge,\" and paper [25] addresses \"Efficient LLM Prefilling with Mobile NPU.\"\n\nVERDICT purpose = 14\nVERDICT mechanism = 14\nVERDICT evaluation = 22\nVERDICT domain = 9",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     18,
+     21
+    ],
+    "mechanism": [
+     1,
+     21
+    ],
+    "evaluation": [
+     1,
+     16,
+     18
+    ],
+    "domain": [
+     16
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 16
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to alleviate memory bottlenecks during the decoding phase and improve hardware performance under memory-constrained conditions. Papers [6], [9], [12], [13], [14], and [19] address memory bottlenecks and throughput optimization during decoding, but they focus on specific decoding algorithms (e.g., Viterbi, LDPC, Polar codes) or speculative decoding techniques rather than progressive mixed-precision quantization for LLM inference. None of the prior papers explicitly target the same objective of improving memory-constrained hardware performance during LLM decoding through progressive quantization. Therefore, the purpose is **not covered**.\n\n### Mechanism\nThe mechanism involves Progressive Mixed-Precision Decoding (PMPD), which progressively reduces weight quantization precision during token generation based on the observation that later tokens tolerate approximation better than earlier ones. Papers [1], [2], [3], [4], [5], [7], [8], [10], [20], [21], [22], and [27] discuss mixed-precision quantization techniques, constrained optimization, and adaptive bit-width allocation. Specifically, [1], [3], and [22] propose progressive or adaptive bit-width allocation strategies, which are substantively equivalent to the PMPD mechanism. While the contribution applies this mechanism to LLM decoding, the underlying primitive of progressive mixed-precision quantization is already covered. Therefore, the mechanism is **covered**.\n\n### Evaluation\nThe evaluation involves benchmarking PMPD on multiple LLMs (Vicuna-7B, MobileLLaMA-1.4B, StableLM Zephyr-3B, Phi-1.5) across multiple tasks, measuring GPU linear layer speedup (1.40–12.20x over fp16) and NPU throughput (3.8–8.0x over fp16) while maintaining output quality. Papers [1], [2], [3], [4], [5], [7], [8], [10], [20], and [22] evaluate mixed-precision quantization methods using similar designs, such as throughput and accuracy trade-offs, on various models and tasks. Although the specific benchmarks and hardware differ, the evaluation design (e.g., measuring speedup and quality retention across tasks and hardware) is substantively equivalent. Therefore, the evaluation is **covered**.\n\n### Domain\nThe domain is LLM inference acceleration through progressive quantization during decoding. Papers [16], [18], [19], and [20] address LLM inference acceleration, quantization, or speculative decoding, which are all part of the same general application area. While the contribution targets a specific sub-problem (progressive quantization during decoding), this is a narrower instance within the broader domain of LLM inference acceleration. Therefore, the domain is **covered**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 1  \nVERDICT evaluation = 1  \nVERDICT domain = 16  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses the objective of \"进一步缓解 decoding 阶段的内存受限瓶颈,提升访存受限阶段的硬件性能\" under any terminology, framing, or domain vocabulary."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 18
+      },
+      "mechanism": {
+       "covered_by": 21
+      },
+      "evaluation": {
+       "covered_by": 18
+      },
+      "domain": {
+       "covered_by": 16
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## PURPOSE: Alleviate memory-bandwidth bottleneck during LLM decoding to improve hardware utilization\n\nLooking for papers that target the same objective: reducing memory-bandwidth constraints during LLM autoregressive decoding.\n\n- [16] QUICK: \"efficient inference of quantized Large Language Models\" targeting memory-bandwidth issues in LLM inference — close but focuses on kernel optimization, not the decoding bottleneck specifically.\n- [18] LLM-PQ: \"Serving LLM on Heterogeneous Clusters with Phase-Aware Partition and Adaptive Quantization\" — targets LLM serving efficiency including the decoding phase with adaptive quantization. This paper explicitly addresses the memory-bound decoding phase with quantization.\n- [20] QTIP: \"Since LLM inference is usually memory-bound, PTQ methods can improve inference throughput\" — same objective of addressing memory-bound LLM inference via quantization.\n- [19] Speculative decoding for MLLMs: \"suffers from memory bandwidth bottleneck\" — same problem class but different mechanism.\n\nPapers [18] and [20] both target the memory-bandwidth bottleneck in LLM inference via quantization. This purpose is COVERED.\n\n## MECHANISM: Progressive Mixed-Precision Decoding — progressively lower quantization precision as generation advances, based on observation that later tokens tolerate more approximation; formalized as constrained optimization minimizing average bit-width\n\nLooking for: (1) the observation that later-generated tokens are more tolerant of approximation, and (2) progressively changing precision during generation as a constrained optimization.\n\n- [21] \"Toward Dynamic Precision Scaling\": \"dynamic precision scaling to improve power efficiency by tailoring arithmetic precision adaptively to temporal changes in algorithmic noise tolerance throughout the execution.\" This is very close — adapting precision over time based on noise tolerance. However, it's about general computation, not specifically LLM token generation order sensitivity.\n- [22] AdaBits: adaptive bit-widths but across deployment scenarios, not within a single generation sequence.\n- [18] LLM-PQ: \"Phase-Aware Partition and Adaptive Quantization\" — adapts quantization between prefill and decoding phases, but not progressively within the decoding sequence itself.\n- [1] Progressive bit-width allocation but for training multiple compression rates simultaneously, not for sequential token generation.\n- [3] Constrained optimization for mixed-precision quantization, but not the progressive/temporal aspect during decoding.\n\nThe specific mechanism — progressively lowering precision *within* a single generation sequence based on positional sensitivity of tokens, formalized as constrained optimization — is not clearly covered. [21] touches on dynamic precision scaling based on noise tolerance over time, which is the closest primitive. The key insight (later tokens in autoregressive generation tolerate lower precision) combined with the constrained optimization formulation during decoding is not substantively equivalent to [21]'s general dynamic precision scaling concept.\n\nHowever, [21] explicitly states \"tailoring arithmetic precision adaptively to temporal changes in algorithmic noise tolerance\" — this IS the same primitive: adapt precision over time based on tolerance. The application to LLM token generation is a domain difference. I'll mark this COVERED by [21].\n\n## EVALUATION: Multi-model (Vicuna-7B, MobileLLaMA, StableLM, Phi-1.5), multi-task benchmarks, speedup vs fp16 and uniform quantization baselines, quality preservation metrics on GPU/NPU\n\n- [16] QUICK evaluates speedup over existing quantized LLM kernels on multiple models — same design (throughput benchmarking of quantized LLM inference).\n- [18] LLM-PQ evaluates on multiple LLMs with throughput and quality metrics — same evaluation design.\n- [20] QTIP evaluates PTQ on LLMs with perplexity and downstream task benchmarks — same design.\n\nThe evaluation design (benchmark LLM inference speed vs fp16 baseline + quality metrics on standard NLP tasks) is covered by [16], [18], [20].\n\n## DOMAIN: LLM inference acceleration / progressive quantization decoding\n\n- [16], [18], [20] all work in LLM inference acceleration. This is clearly COVERED.\n\nVERDICT purpose = 18\nVERDICT mechanism = 21\nVERDICT evaluation = 18\nVERDICT domain = 16",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 21
+      },
+      "mechanism": {
+       "covered_by": 21
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": 16
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: COVERED by [21], which proposes improving hardware efficiency by \"tailoring arithmetic precision adaptively to temporal changes in algorithmic noise tolerance throughout the execution,\" the same high-level objective as improving performance by adapting precision during decoding.\n\nmechanism: COVERED by [21], which introduces the core primitive of \"dynamic precision scaling\" that adapts precision based on \"temporal changes in algorithmic noise tolerance throughout the execution.\" The contribution's method of progressively lowering precision as tokens are generated is a specific application of this general mechanism.\n\nevaluation: COVERED by [16], which uses the same evaluation design of measuring speedup and throughput improvements for an LLM optimization technique against standard baselines (\"demonstrate up to 1.91x speedup over existing kernels... and up to 1.94x throughput\").\n\ndomain: COVERED by [16], [18], and [20], which all operate in the same general application area of LLM inference acceleration and efficiency. For example, [16] focuses on \"efficient LLM inference\".\n\nVERDICT purpose = 21\nVERDICT mechanism = 21\nVERDICT evaluation = 16\nVERDICT domain = 16",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     13
+    ],
+    "mechanism": [
+     9,
+     15,
+     25
+    ],
+    "evaluation": [
+     8,
+     11,
+     15
+    ],
+    "domain": [
+     8,
+     11
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": [
+        15,
+        25
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        8,
+        11,
+        15
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        8,
+        11
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to enable flexible deployment of progressive precision reduction decisions across diverse scenarios with varying data availability and generation quality constraints. None of the prior papers explicitly address this purpose. While some papers (e.g., [8], [11], [13], [15], [25]) discuss mixed-precision or adaptive quantization, their focus is on optimizing resource usage or performance in specific contexts (e.g., hardware efficiency, inference speed) rather than achieving flexibility across diverse deployment scenarios with varying constraints. No prior paper explicitly targets the same objective of balancing data availability and generation quality constraints in a flexible, scenario-adaptive manner.\n\n**VERDICT purpose = NONE**\n\n---\n\n### Mechanism\nThe mechanism involves designing two complementary precision-switching schedulers: a high-performance, task-specific static (prompt-agnostic) scheduler and a flexible, task-agnostic learning-based scheduler, which dynamically drive precision reduction in a task-adaptive or prompt-adaptive manner. Paper [11] discusses scheduling for mixed-precision models on precision-scalable NPUs, but it focuses on hardware-level scheduling to reduce under-utilization, not on task- or prompt-adaptive precision switching. Paper [15] introduces data-dependent dynamic inference with adaptive quantization schemes, which aligns with the task-adaptive aspect of the mechanism. Paper [25] proposes runtime bit-width selection for mixed-precision networks, which is conceptually similar to the dynamic precision-switching aspect of the mechanism. Together, [15] and [25] cover the core primitives of task-adaptive and dynamic precision switching.\n\n**VERDICT mechanism = 15, 25**\n\n---\n\n### Evaluation\nThe evaluation involves qualitative analysis of the two schedulers across deployment scenarios with varying data availability and quality requirements, integrated into end-to-end acceleration benchmarks (4 models, multi-language tasks). Papers [8], [11], and [15] all use evaluation designs that involve testing mixed-precision or adaptive quantization methods across multiple models or tasks. For example, [8] evaluates mixed-precision quantization in batched inference settings, [11] evaluates scheduling algorithms for precision-scalable NPUs, and [15] evaluates adaptive quantization schemes across data samples. These prior works use similar evaluation designs (multi-model/task benchmarks) to validate claims about precision-switching or quantization, even if the specific benchmarks differ.\n\n**VERDICT evaluation = 8, 11, 15**\n\n---\n\n### Domain\nThe domain is LLM inference acceleration and precision-switching scheduling. Paper [8] explicitly addresses LLM inference acceleration with mixed-precision quantization, and paper [11] discusses scheduling for mixed-precision models, which is relevant to precision-switching scheduling. While other papers (e.g., [15], [25]) discuss mixed-precision or adaptive quantization in general, they do not explicitly target LLM inference acceleration. Thus, [8] and [11] cover the domain.\n\n**VERDICT domain = 8, 11**\n\n---\n\n### Final Verdicts\nVERDICT purpose = NONE  \nVERDICT mechanism = 15, 25  \nVERDICT evaluation = 8, 11, 15  \nVERDICT domain = 8, 11  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 13 | reason: \"Deep neural networks with adaptive configurations have gained increasing attention due to the instant and flexible deployment of these models on platforms with different resource budgets.\" This aligns with the objective of flexible deployment under varying constraints."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 15
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## PURPOSE\nThe purpose is: enable progressive precision-reduction decisions to be flexibly deployed across diverse scenarios with different data availability and generation quality constraints — specifically by providing two complementary schedulers (one static/task-adaptive, one learned/task-agnostic) to cover different deployment needs.\n\nLooking for prior work that pursues the same objective: flexible deployment of precision-switching decisions across scenarios with varying data/quality constraints.\n\n- [13] AdaBits: \"enabling adaptive bit-widths... instant and flexible deployment of these models on platforms with different resource budgets\" — this is about flexible deployment of adaptive bit-width models, but focuses on training, not scheduling for deployment scenarios with data availability constraints.\n- [15] Arbitrary Bit-width Network: \"feed different data samples with varying quantization schemes to achieve a data-dependent dynamic inference\" — close, but the purpose is sample-adaptive inference, not covering diverse deployment scenarios with different data availability.\n- [25] Bit-Mixer: \"little flexibility if the characteristics of the device... change during runtime\" — addresses runtime flexibility of bit-width selection, but focuses on device characteristics, not data availability vs. quality constraints.\n- [18] On-demand Edge Inference Scheduling: \"accuracy and deadline guarantee for repetitive tasks\" with \"tasks' diversity in quality of service\" — addresses scheduling with quality constraints but in edge inference context.\n\nNone of these specifically target the dual-scheduler design goal of covering scenarios with *different data availability* (task-specific vs. task-agnostic) as the core purpose. The closest is [25] and [15], but neither frames the purpose as \"two complementary schedulers for different deployment scenarios based on data availability.\" This purpose appears NONE.\n\n## MECHANISM\nThe mechanism is: two complementary precision-switching schedulers — one static/prompt-agnostic (task-adaptive), one learned/task-agnostic (prompt-adaptive) — that dynamically drive when to reduce precision during LLM generation.\n\n- [15] Arbitrary Bit-width Network: proposes layer-wise dynamic quantization with data-dependent inference, using a policy to select bit-widths per sample. This is a learned scheduler for precision switching, but only one type.\n- [19] DNQ: uses policy gradient to train an agent to learn bit-width per layer — a learned scheduler for precision decisions.\n- [25] Bit-Mixer: runtime bit-width selection without retraining — static-like flexibility.\n- [13] AdaBits: adaptive bit-widths with direct adaptation and progressive training.\n- [28] SEE: scheduling early exit decisions — a scheduler for inference quality decisions, analogous to precision switching scheduling.\n- [18] On-demand Edge Inference Scheduling: scheduler for DNN inference quality with accuracy/deadline guarantees.\n\nThe key novelty in the mechanism is the *pairing* of two complementary schedulers (one static/task-specific, one learned/task-agnostic) for LLM token-level precision switching. While [15] and [19] have learned schedulers, and [25] has static flexibility, none explicitly design *two complementary scheduler types* covering different data-availability regimes. However, the underlying primitives (static scheduler + learned scheduler for precision decisions) are individually covered by [15], [19], [25]. The combination as a design pattern isn't clearly covered. But judging at the primitive level: static precision scheduling exists in [25], learned precision scheduling in [15]/[19]. The pairing concept is the contribution, but each primitive is covered. I'll note [15] and [25] as covering the individual primitives.\n\n## EVALUATION\nThe evaluation design: qualitative scenario coverage analysis + end-to-end speedup benchmarking across 4 models and multilingual tasks.\n\n- [8] MARLIN: end-to-end LLM inference speedup evaluation across models — same design family (end-to-end LLM inference benchmarking with speedup metrics).\n- [15]: evaluation on multiple models with accuracy/efficiency metrics.\n- [13]: evaluation across platforms with accuracy-efficiency tradeoffs.\n\nEnd-to-end speedup benchmarking for LLM inference is covered by [8]. The qualitative scenario analysis is a generic experimental move. Overall, [8] covers the evaluation design.\n\n## DOMAIN\nThe domain is LLM inference acceleration / precision-switching scheduling.\n\n- [8] MARLIN: explicitly \"inference on Large Language Models (LLMs)... model weight quantization... efficient GPU deployment\" — same domain.\n- [15], [19], [25]: neural network quantization for inference acceleration — same general area.\n\n[8] clearly covers this domain.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 15\nVERDICT evaluation = 8\nVERDICT domain = 8",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of enabling progressive precision-reduction decisions to flexibly deploy across diverse scenarios with varying data availability and generation quality constraints. Papers like [13] AdaBits and [25] Bit-Mixer address adaptive bit-widths but target fixed deployment platforms with resource budgets, not flexible deployment across scenarios defined by data availability and generation quality constraints. No quoted phrase from any prior paper matches this specific objective even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The objective is to enable flexible deployment of progressive precision reduction in diverse scenarios with varying constraints. Paper [13] has a substantively equivalent purpose, aiming for \"instant and flexible deployment of these models on platforms with different resource budgets\" by using \"adaptive bit-widths.\"\n\n**mechanism**: The mechanism is a hybrid of two complementary schedulers: a static, task-specific one and a flexible, learned one. The concept of a learned scheduler for precision/performance is covered by papers like [15] (\"data-dependent dynamic inference\") and [10] (\"Reinforcement Learning for Decision Making in Quality-Aware... Scheduling\"). The core primitive of a hybrid control system combining deterministic and adaptive/random switching is present in [9] (\"Model predictive control for switching... systems with random and deterministic switching\").\n\n**evaluation**: The evaluation design consists of a qualitative analysis of applicability and a standard end-to-end acceleration benchmark measuring speedup versus quality. This benchmark design is standard in the field of model acceleration and is used in prior work like [8], which evaluates \"speedups... with low accuracy impact\" for LLM inference.\n\n**domain**: The application area is LLM inference acceleration via precision switching. Paper [8] operates in the exact same domain, explicitly addressing \"Mixed-Precision Auto-Regressive Parallel Inference on Large Language Models.\"\n\nVERDICT purpose = 13\nVERDICT mechanism = 9\nVERDICT evaluation = 8\nVERDICT domain = 8",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

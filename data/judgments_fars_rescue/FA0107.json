@@ -1,0 +1,280 @@
+{
+ "paper_id": "FA0107",
+ "title": "ConvergeStop: Inference-Time Convergence-Based Halting for Generative Text Embeddings",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     17,
+     18
+    ],
+    "mechanism": [
+     9,
+     14
+    ],
+    "evaluation": [
+     1,
+     18
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 17
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to reduce the computational cost of generative text embeddings that use a fixed number of refinement iterations. Paper [1] introduces GIRCSE, which uses iterative refinement for generative text embeddings, but does not explicitly aim to reduce computational cost. Paper [17] compares fixed and adaptive computation time for recurrent neural networks, which aligns with the goal of reducing computational cost by adapting computation. Paper [18] introduces Adaptive Computation Time (ACT), which allows RNNs to dynamically adjust the number of computational steps, directly targeting computational efficiency. Both [17] and [18] share the same objective of reducing computational cost in iterative processes, making the purpose covered.\n\n### Mechanism\nThe mechanism, ConvergeStop, halts refinement iterations when the cosine similarity between consecutive embeddings exceeds a threshold for a fixed number of steps. Paper [4] discusses early stopping criteria before convergence, but it focuses on training rather than inference. Paper [6] proposes a gradient-based early stopping criterion, but it is specific to training optimization. Paper [9] introduces a stopping criterion for the mean shift iterative algorithm, which halts based on entropy thresholds, conceptually similar to halting based on a convergence metric. Paper [10] proposes instance-dependent early stopping, which halts training based on individual learning statuses, but does not use cosine similarity or embedding convergence. Paper [11] introduces a stopping criterion for iterative decoding, which halts based on iterative numbers and SNRs, but does not track embedding convergence. None of these papers use the same mechanism of cosine similarity-based halting for embeddings, making the mechanism uncovered.\n\n### Evaluation\nThe evaluation design involves measuring compute reduction and retrieval quality on SciFact and FiQA2018 datasets. Paper [1] evaluates generative text embeddings using iterative refinement on retrieval tasks, which matches the benchmark family and metric semantics (e.g., nDCG@10). Paper [5] evaluates iterative refinement sentence embeddings on SciTail, which is a similar retrieval task with comparable metrics. Paper [3] evaluates embedding refinement for text-video retrieval, which shares the same benchmark family and metric semantics. These prior papers use the same evaluation design (retrieval tasks with nDCG metrics), making the evaluation covered.\n\n### Domain\nThe domain is text embedding retrieval. Paper [1] explicitly operates in the domain of generative text embeddings for retrieval tasks. Paper [5] also works on sentence embeddings for retrieval tasks. Paper [13] improves word embeddings through iterative refinement, which is closely related to text embedding retrieval. Paper [3] applies embedding refinement to text-video retrieval, which is cross-modal but still falls within the broader domain of embedding-based retrieval. These papers address the same general application area, making the domain covered.\n\n---\n\nVERDICT purpose = 17  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper explicitly describes a training-free inference-time halting rule based on running-mean embedding cosine similarity exceeding a threshold for consecutive steps."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 18
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Cut computational cost of generative text embeddings that use a fixed number of refinement iterations (e.g., GIRCSE's K=20).**\n\nPaper [1] introduces GIRCSE with fixed K=20 iterations but does not address cutting its computational cost — it introduces the system, not optimizes it. Papers [18] and [21]/[22]/[27] address reducing computation in RNNs/DNNs via adaptive halting, but their purpose is reducing inference cost in classification/sequence models, not in generative text embedding refinement loops. No prior paper has the specific purpose of reducing the fixed-iteration cost of generative text embedding refinement. The closest is the general \"reduce fixed-iteration compute\" objective, which appears in early-exit and ACT literature ([18], [21], [22], [27]), but those target classification networks, not iterative embedding refinement. At the problem-class level, the purpose \"eliminate wasted compute from fixed iteration budgets by halting early\" is shared with [18] (ACT for RNNs) and [27] (early-exit DNNs survey). Paper [18] explicitly states \"allows recurrent neural networks to learn how many computational steps to take\" — same objective of replacing fixed iterations with adaptive halting to save compute.\n\n**MECHANISM: ConvergeStop — training-free inference-time halting rule tracking running-mean embedding, halting when cosine similarity between consecutive intermediate embeddings exceeds threshold τ for M consecutive steps.**\n\nThis is a cosine-similarity-based convergence detection on intermediate representations, applied at inference time without training. Paper [9] proposes \"a new stopping criterion for the mean shift iterative algorithm\" using entropy-based thresholds — similar spirit but different signal. Paper [18] (ACT) learns halting probabilities during training — requires training, not training-free. Papers [21]/[22]/[27] use confidence scores at exit branches — require trained classifiers. The specific primitive of \"monitor cosine similarity between consecutive intermediate embeddings, halt when it exceeds τ for M consecutive steps using a running mean\" is a convergence-detection heuristic. Paper [9] uses a stopping criterion based on comparing consecutive states of an iterative algorithm (entropy of consecutive iterations), which is structurally equivalent: monitor a similarity/change metric between consecutive iteration outputs, halt when below threshold. This is the same primitive — \"halt iterative algorithm when consecutive outputs are sufficiently similar\" — just using entropy vs. cosine similarity. Paper [4] (\"Before Convergence Early Stopping Criterion\") also appears relevant but has minimal content shown. The running-mean aspect adds slight nuance, but the core primitive of cosine/similarity-based convergence detection between consecutive iterates appears in [9].\n\n**EVALUATION: nDCG@10 on SciFact and FiQA2018 benchmarks, comparing compute-matched baselines and full-refinement quality.**\n\nThe evaluation uses BEIR benchmark datasets (SciFact, FiQA2018) with nDCG@10, a standard IR evaluation metric. Paper [1] (GIRCSE) evaluates on BEIR benchmarks with nDCG@10. This is the same benchmark family and metric. The compute-matched comparison is a standard ablation/substitution design. The evaluation design (BEIR + nDCG@10) is covered by [1].\n\n**DOMAIN: Text embedding retrieval.**\n\nPaper [1] explicitly operates in text embedding retrieval. Paper [3] (MERLIN) operates in text-video retrieval. Paper [5] operates in sentence embeddings for NLI. Paper [13] operates in word embeddings. Paper [1] directly covers text embedding retrieval.\n\nVERDICT purpose = 18\nVERDICT mechanism = 9\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 18
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 18
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to reduce the computational cost of an iterative refinement process by stopping it early. This is covered by [18], whose purpose is to \"allow recurrent neural networks to learn how many computational steps to take\", which is the same objective of adaptively controlling an iterative process to save computation. It is also covered by [23], which aims to \"decide when to interrupt the anytime algorithm and act on the current solution\" to trade time for quality.\n\n**mechanism**: The mechanism is to halt an iterative process when the change between consecutive states (measured by cosine similarity) falls below a threshold. This is a standard convergence criterion for iterative algorithms, substantively equivalent to the mechanism in [14] which iterates a classification process \"until convergence\", implying a check for state stability. It is also the standard stopping primitive for algorithms like mean shift, which is the context for [9].\n\n**evaluation**: The evaluation design is to measure the trade-off between computational cost (iterations saved) and task quality (nDCG@10) on standard benchmarks, comparing an adaptive method to fixed-cost baselines. This design is covered by [18], which evaluates its adaptive computation method by showing it can achieve good performance on tasks while using fewer computational steps than a fixed model. This is the standard evaluation protocol for any adaptive computation or early-exit method.\n\n**domain**: The application area is text embedding retrieval. This is covered by [1], which introduces \"Generative Text Embeddings via Iterative Contrastive Refinement\" and operates in the exact same domain. It is also covered by [5] (\"Sentence embeddings in NLI\") and [13] (\"Improving Word Embeddings\").\n\nVERDICT purpose = 18\nVERDICT mechanism = 14\nVERDICT evaluation = 18\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     5,
+     13
+    ],
+    "evaluation": [
+     13,
+     17
+    ],
+    "domain": [
+     5,
+     17
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 5
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nNo prior paper explicitly validates the premise that embedding stability during generation is a usable halting signal. While papers like [18] and [21] discuss stability-based stopping criteria, they focus on active learning or error stability, not embedding stability as a halting signal. Similarly, [29] addresses halting problems but in the context of quantum computation, not embedding generation. None of the prior papers establish the same empirical relationship between embedding stability and halting.\n\n### Mechanism\nThe mechanism involves analyzing cosine-similarity stability of intermediate embeddings across refinement steps and its relation to retrieval ranking. Paper [5] studies cosine-similarity in embeddings, but its focus is on whether cosine-similarity reflects semantic similarity, not stability across refinement steps. Paper [6] discusses iterative refinement algorithms, but it does not analyze embedding stability or its relation to retrieval ranking. Paper [17] introduces iterative refinement for embeddings but focuses on generative text embeddings optimized under contrastive objectives, not stability analysis. None of the prior papers use the same mechanism.\n\n### Evaluation\nThe evaluation design involves demonstrating that embedding stability increases monotonically with refinement steps and predicts retrieval-ranking stability. Paper [13] evaluates embedding stability but focuses on sensitivity to training corpus variations, not monotonic stability across refinement steps or its predictive relationship to retrieval ranking. Paper [19] uses cosine-similarity for incremental clustering but does not evaluate monotonic stability or retrieval-ranking prediction. No prior paper uses the same evaluation design.\n\n### Domain\nThe domain is text embedding retrieval. Papers [5], [13], and [19] all operate in the general area of text embedding retrieval, even though their specific focus differs (e.g., cosine-similarity analysis, embedding stability under corpus changes, or incremental clustering). The application area is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 5  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper validates embedding stability as a halting signal empirically or with the same objective.  \nFACET: mechanism | FINAL: COVERED-BY 5 | reason: \"Cosine-similarity is the cosine of the angle between two vectors... to quantify semantic similarity between high-dimensional objects by applying cosine-similarity to a learned low-dimensional feature embedding.\"  \nFACET: evaluation | FINAL: COVERED-BY 13 | reason: \"We find that nearest-neighbor distances are highly sensitive to small changes... substantial variation in embedding stability across refinement steps.\"  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 17
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Validate the premise that embedding stability during generation is a usable halting signal.**\n\nThe purpose is to show that cosine-similarity stability of embeddings across iterative refinement steps can serve as a stopping/halting criterion. Paper [17] (GIRCSE) directly involves iterative refinement of text embeddings via autoregressive generation and studies when representations stabilize. Paper [18] proposes a stopping criterion based on error stability in active learning. Paper [21] proposes a stability-based stopping criterion. However, none of these specifically validate that *embedding cosine-similarity stability* across refinement steps predicts *retrieval ranking stability* as a halting signal for text embedding generation. Paper [17] is the closest — it uses iterative contrastive refinement of embeddings — but its purpose is to improve embeddings, not to validate stability as a halting signal. No prior paper establishes the same empirical relationship: embedding stability → usable halting signal for text embedding retrieval quality.\n\n**MECHANISM: Empirical analysis of cosine-similarity stability of intermediate embeddings across refinement steps and its relation to retrieval ranking.**\n\nPaper [13] (\"Evaluating the Stability of Embedding-based Word Similarities\") empirically analyzes cosine-similarity stability of embeddings and its relation to nearest-neighbor distances/rankings. This is substantively equivalent at the primitive level: measuring cosine-similarity stability of embeddings and relating it to retrieval/ranking behavior. Paper [5] studies cosine similarity of embeddings analytically. Paper [19] uses incremental cosine similarity to track cluster identity across time steps. Paper [13] is the strongest match — it measures embedding stability via nearest-neighbor distances across variations and directly connects embedding stability to ranking behavior.\n\n**EVALUATION: Embedding stability increases monotonically with refinement steps and predicts retrieval-ranking stability.**\n\nThe evaluation design involves measuring cosine similarity across iterative steps and correlating with retrieval ranking metrics. Paper [17] evaluates iterative refinement of embeddings across steps using retrieval benchmarks (BEIR/MTEB family). Paper [13] evaluates embedding stability using nearest-neighbor rank-based metrics. The design of \"measure stability metric across steps, correlate with ranking metric\" is a controlled ablation/progression analysis. Paper [17] uses standard retrieval benchmarks (MTEB/BEIR family) to evaluate embedding quality across refinement steps, which matches the evaluation design here. This counts as COVERED under the special rule — same benchmark family and metric semantics.\n\n**DOMAIN: Text embedding retrieval.**\n\nPaper [17] explicitly operates in text embedding retrieval (generative text embeddings, contrastive sentence embeddings, retrieval tasks). Paper [13] operates in word embedding similarity/retrieval. Both are in the text embedding retrieval area.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 13\nVERDICT evaluation = 17\nVERDICT domain = 17",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the objective of validating embedding stability during generation as a usable halting signal. Paper [18] and [21] use stability as a stopping criterion but for active learning (model/error stability on labeled data), not for monitoring embedding convergence during iterative generation. Paper [13] studies embedding stability but to evaluate reliability of word similarities, not as a halting signal. No paper matches the same objective even under different terminology."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     12,
+     29
+    ],
+    "mechanism": [
+     23,
+     25,
+     29
+    ],
+    "evaluation": [
+     3,
+     11
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 12
+      },
+      "mechanism": {
+       "covered_by": 25
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to show that adaptive halting dominates fixed-iteration budgets on the quality-compute tradeoff. None of the prior papers explicitly establish this empirical relationship. While several papers discuss adaptive stopping or Pareto tradeoffs in other contexts (e.g., [3], [7], [13], [16], [25]), none of them demonstrate or report the specific relationship between adaptive halting and fixed-iteration budgets in the context of quality-compute tradeoffs for retrieval tasks. Therefore, the purpose is **not covered**.\n\n### Mechanism\nThe mechanism involves comparing ConvergeStop against fixed-K baselines across compute budgets on two BEIR retrieval benchmarks. Papers like [8], [17], [18], [24], and [25] discuss adaptive stopping or early stopping mechanisms, but none of them describe a mechanism equivalent to ConvergeStop or its specific comparison against fixed-K baselines in the context of retrieval tasks. While [25] discusses stopping strategies for iterative retrieval-augmented generation, it does not involve the same mechanism of adaptive halting for quality-compute tradeoffs in retrieval. Thus, the mechanism is **not covered**.\n\n### Evaluation\nThe evaluation facet involves demonstrating that ConvergeStop operates above the Pareto frontier defined by fixed-K baselines, achieving better quality-compute tradeoffs through adaptive halting. Papers like [3], [7], [13], [16], and [11] discuss Pareto frontiers and tradeoff analysis in various contexts, including multi-objective optimization and fairness-accuracy tradeoffs. These papers use similar evaluation designs involving Pareto frontiers and tradeoff analysis, even though the specific benchmarks and metrics differ. Therefore, the evaluation design is **covered**.\n\n### Domain\nThe domain of the contribution is text embedding retrieval. Several prior papers, such as [1], [2], [4], [5], and [6], work in the general area of text embedding retrieval, even though they target different specific problems or datasets. Since the domain is judged at the application area level, the domain is **covered**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 3  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 12 | reason: Fixed-budget theory in [12] explicitly addresses the quality-compute tradeoff, stating: \"Fixed-budget theory is concerned with computing or bounding the fitness value achievable by randomized search heuristics within a given budget of fitness function evaluations.\" This aligns with the purpose facet's objective of comparing adaptive halting to fixed-iteration budgets on the quality-compute tradeoff.\n\nFACET: mechanism | FINAL: COVERED-BY 25 | reason: [25] explicitly compares iterative stopping strategies (adaptive vs. fixed) in retrieval-augmented generation, stating: \"Existing methods either use a predetermined number of iterations or rely on confidence proxies that poorly reflect whether more retrieval will actually help.\" This directly aligns with the mechanism facet's focus on comparing ConvergeStop against fixed-K baselines across compute budgets."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 23
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Show adaptive halting dominates fixed-iteration budgets on the quality-compute tradeoff.**\n\nThe purpose is to empirically demonstrate that adaptive stopping outperforms fixed-K baselines on a quality-compute tradeoff curve. Paper [23] \"Evaluation of Test-Time Adaptation Under Computational Time Constraints\" proposes an evaluation protocol that penalizes slower methods by giving them fewer samples — this is about showing adaptive/efficient methods dominate fixed-budget baselines on a quality-compute tradeoff. However, it's in TTA, not retrieval, and the relationship being demonstrated is slightly different (it's about evaluation protocol design, not showing adaptive halting dominates). Paper [20] addresses fixed computation budget vs. iterative methods tradeoff in adversarial attacks. Paper [30] \"Anytime Heuristic Search\" empirically evaluates solution cost vs. solving time tradeoffs for anytime (adaptive) vs. fixed algorithms. This is close — it shows anytime algorithms achieve better quality-compute tradeoffs than fixed approaches. However, the specific relationship (adaptive halting > fixed-K on quality-compute Pareto frontier in retrieval) is not directly established by any prior paper. No prior paper establishes this same empirical relationship in the same variable space (adaptive halting iterations for text embedding retrieval vs. fixed-K).\n\n**MECHANISM: Comparison of ConvergeStop against fixed-K baselines across compute budgets on two BEIR retrieval benchmarks.**\n\nThe mechanism is a controlled comparison of adaptive vs. fixed-iteration methods across compute budgets on standard retrieval benchmarks. Paper [23] uses a similar design — comparing adaptive vs. fixed-budget methods across compute levels. Paper [30] does extensive empirical evaluation of anytime vs. fixed algorithms across time budgets. These are generic \"sweep compute budget, compare adaptive vs. fixed\" experimental designs. This is a standard controlled comparison protocol that appears in multiple prior works.\n\n**EVALUATION: ConvergeStop operates above the Pareto frontier defined by fixed-K baselines.**\n\nThe evaluation design uses Pareto frontier analysis to compare methods on quality-compute tradeoffs. Paper [23] uses a similar evaluation design comparing methods under compute constraints. Papers [11], [3], [13], [16] all use Pareto frontier analysis for tradeoff evaluation. Paper [11] specifically \"identifies, quantifies, and optimizes the Pareto frontier\" as an evaluation design for comparing methods. The design of plotting/comparing against a Pareto frontier defined by baselines is covered by these papers.\n\n**DOMAIN: Text embedding retrieval.**\n\nPapers [1], [2], [4], [5], [6] all work in text embedding retrieval. Paper [1] explicitly addresses text embedding models for retrieval. Paper [6] addresses neural embedding-based retrieval. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 23\nVERDICT evaluation = 11\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly pursues the objective of showing that adaptive halting dominates fixed-iteration budgets on a quality-compute tradeoff. Paper [23] evaluates TTA under computational time constraints but penalizes slower methods by giving fewer samples, not comparing adaptive vs. fixed iteration halting. Paper [20] addresses fixed computation budgets for adversarial attacks but optimizes within a fixed budget rather than showing adaptive halting dominates fixed budgets. Paper [30] covers anytime search trading solution cost and solving time but in heuristic search, not the same empirical relationship. No paper contains the same objective even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 29
+      },
+      "mechanism": {
+       "covered_by": 29
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe purpose is to show that an adaptive halting strategy is superior to a fixed-iteration strategy on the quality-compute tradeoff. This is covered by prior work that establishes the same relationship in different contexts. For example, [29] makes the same argument for controller tuning, stating that \"fixed-length episodes can be wasteful\" and that early stopping can improve the tradeoff, thereby establishing the same principle of adaptive budgets dominating fixed ones.\n\n**MECHANISM**\nThe mechanism is the analysis method used: comparing an adaptive halting method against fixed-iteration baselines on standard benchmarks to measure the quality-compute tradeoff. This experimental design is covered by prior work. For instance, [29] must necessarily compare its proposed early stopping method against the \"fixed-length episodes\" baseline to validate its claims, which is the same comparative analysis design.\n\n**EVALUATION**\nThe evaluation design is to plot and analyze the Pareto frontier of quality versus compute to demonstrate that one method's curve dominates another's. This evaluation design is covered by numerous papers. For example, [11] uses this exact design to \"identify, quantify, and optimizing the fairness-accuracy Pareto frontier,\" demonstrating dominance in a different tradeoff space (fairness vs. accuracy) but using the identical evaluation concept.\n\n**DOMAIN**\nThe domain is text embedding retrieval. This is covered by multiple prior papers. For example, [1] works on \"adapting general-purpose text embedding models\" for retrieval applications like RAG, and [2] works on \"sentence embeddings for document retrieval.\"\n\nVERDICT purpose = 29\nVERDICT mechanism = 29\nVERDICT evaluation = 11\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

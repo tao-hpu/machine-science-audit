@@ -1,0 +1,251 @@
+{
+ "paper_id": "YGoFl5KKFc",
+ "title": "Locking Down the Finetuned LLMs Safety",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     6
+    ],
+    "mechanism": [
+     23,
+     24
+    ],
+    "evaluation": [
+     6,
+     12
+    ],
+    "domain": [
+     6
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 23
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to address the vulnerability of LLM safety alignment during the fine-tuning stage, where even a small number of toxic examples can compromise the model's safety.  \n- **Paper [6]** explicitly discusses the Fine-tuning-based Jailbreak Attack (FJAttack), which compromises LLM safety during fine-tuning with a few harmful examples. This aligns with the same problem-class level: addressing safety risks introduced during fine-tuning.  \n- **Paper [1]** also highlights vulnerabilities in LLM safety alignment but focuses on poisoned training data rather than fine-tuning. While related, it does not directly address the fine-tuning-specific risk described in the contribution.  \nThus, **Paper [6]** contains a substantively equivalent purpose.\n\n#### Mechanism:\nThe contribution proposes SafetyLock, which uses safety probes to identify attention heads most associated with harmfulness, determines a safety direction for each head, and injects intervention vectors during inference to steer activations toward harmlessness. It also enhances robustness and transferability by searching across multi-token dimensions.  \n- **Paper [23]** introduces Non-Linear Inference Time Intervention (NL-ITI), which identifies attention heads containing truthful information and biases activations during inference using multi-token probing and intervention. This mechanism is substantively equivalent: both manipulate attention head activations during inference using multi-token probing and intervention vectors.  \n- **Paper [24]** describes Inference-Time Intervention (ITI), which shifts model activations during inference by steering directions across attention heads. While ITI lacks the multi-token robustness enhancement, its core mechanism of steering activations during inference is equivalent.  \n- **Paper [26]** introduces Contrastive Activation Addition (CAA), which computes steering vectors from activation differences and applies them during inference. While CAA uses contrastive examples to compute steering vectors, its mechanism of modifying activations during inference is substantively equivalent.  \nThus, **Papers [23], [24], and [26]** all contain substantively equivalent mechanisms.\n\n#### Evaluation:\nThe contribution evaluates its method by measuring harmful instruction response rates (ASR) and attack success rates (DeepInception ASR) before and after applying SafetyLock, using standard metrics like ASR reduction and inference efficiency.  \n- **Paper [12]** conducts a large-scale evaluation of jailbreak attacks using ASR and other metrics, establishing a taxonomy and performing ablation studies. The evaluation design (ASR measurement and ablation) matches the contribution's evaluation design.  \n- **Paper [17]** proposes a benchmark for evaluating jailbreak attacks, focusing on ASR and attack success rates. This matches the contribution's evaluation design.  \n- **Paper [23]** evaluates NL-ITI using benchmarks and metrics like ASR reduction, which aligns with the contribution's evaluation design.  \nThus, **Papers [12], [17], and [23]** contain substantively equivalent evaluation designs.\n\n#### Domain:\nThe contribution operates in the domain of LLM fine-tuning safety and alignment.  \n- **Paper [6]** explicitly addresses safety risks during LLM fine-tuning, targeting the same application area.  \n- **Paper [4]** discusses test-time safety alignment of LLMs, which overlaps with the broader domain of LLM safety and alignment but does not focus on fine-tuning.  \n- **Paper [5]** addresses jailbreak attacks in LLMs, which is part of the broader LLM safety domain but not specific to fine-tuning.  \nThus, **Paper [6]** contains a substantively equivalent domain.\n\n---\n\n### Verdicts:\nVERDICT purpose = 6  \nVERDICT mechanism = 23  \nVERDICT evaluation = 12  \nVERDICT domain = 6  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 24
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\n\nThe purpose is: solving the problem that existing safety alignment cannot resist fine-tuning stage safety risks — just 10 toxic sentences can make a model comply with harmful instructions.\n\n- Paper [6] \"Mitigating Fine-tuning based Jailbreak Attack with Backdoor Enhanced Safety Alignment\" directly addresses the same problem: \"the model's safety has been significantly compromised by fine-tuning users' uploaded examples contain just a few harmful examples.\" This is substantively equivalent — same objective of defending against fine-tuning-based jailbreaks with minimal toxic examples.\n- Paper [4] \"Safety Arithmetic\" also addresses safety alignment across fine-tuned models (SFT models), but is broader.\n\nPaper [6] is the clearest match for this specific purpose.\n\n## Mechanism\n\nThe mechanism is: using safety probes to locate attention heads most correlated with harmfulness, determining a \"safety direction\" per head, injecting intervention vectors at inference time to push activations toward harmlessness, with multi-token dimension search for robustness/transferability.\n\n- Paper [24] \"Inference-Time Intervention (ITI)\" introduces shifting model activations during inference \"following a set of directions across a limited number of attention heads\" — this is the core primitive: probe attention heads, find directions, inject at inference time.\n- Paper [23] \"Non-Linear ITI (NL-ITI)\" extends ITI with \"non-linear multi-token probing and multi-token intervention\" — directly matching the multi-token dimension search aspect.\n- Paper [26] \"Contrastive Activation Addition (CAA)\" computes steering vectors and adds them during inference, but operates on residual stream rather than specific attention heads.\n- Paper [4] \"Safety Arithmetic\" uses \"steering parameters and activations\" at test time for safety, also training-free.\n- Paper [10] \"SCANS\" extracts \"refusal steering vectors within the activation space\" for safety purposes.\n\nPapers [24] and [23] together cover the core mechanism: probe attention heads for a target property, find directions, intervene at inference time with multi-token probing. The safety-specific application of this primitive is in [4] and [10].\n\n## Evaluation\n\nThe evaluation design involves: measuring Attack Success Rate (ASR) reduction on harmful instruction datasets and jailbreak attacks (like DeepInception), plus efficiency metrics (latency, memory).\n\n- Paper [6] evaluates fine-tuning jailbreak defense using harmful response rates/ASR metrics.\n- Paper [4] evaluates safety alignment using ASR-style metrics across scenarios.\n- Paper [5] \"SafeDecoding\" evaluates jailbreak defense using ASR metrics.\n- Paper [10] \"SCANS\" evaluates using safety benchmarks and ASR-style metrics.\n- Paper [12] \"JailbreakRadar\" conducts comprehensive measurement of jailbreak attacks with ASR metrics.\n\nThe evaluation design (ASR measurement on harmful instruction benchmarks, jailbreak attack success rates) is well-covered by multiple prior papers, particularly [6], [4], [5].\n\n## Domain\n\nThe domain is: LLM fine-tuning safety / alignment.\n\n- Paper [6] explicitly works in LLM fine-tuning safety (LMaaS setting, fine-tuning jailbreak attacks).\n- Paper [4] works in LLM safety alignment.\n- Paper [5], [10], [11], [14] all work in LLM safety/alignment domain.\n\nThis domain is clearly covered by multiple papers.\n\nVERDICT purpose = 6\nVERDICT mechanism = 24\nVERDICT evaluation = 6\nVERDICT domain = 6",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     4
+    ],
+    "mechanism": [
+     8,
+     27
+    ],
+    "evaluation": [
+     3,
+     8,
+     22
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to enable safety interventions to be extracted once from a base model and distributed across multiple fine-tuned variants, avoiding repeated searches for safety patterns. Paper [1] discusses safety risks associated with fine-tuning aligned LLMs but does not propose a method to extract and distribute safety interventions across variants. Paper [3] introduces \"Antidote,\" which defends against harmful fine-tuning but does not address the extraction and distribution of safety interventions. Paper [6] explores bias mitigation effects in fine-tuning but focuses on transferability of bias reduction rather than safety intervention extraction and distribution. None of the prior papers explicitly address the same objective.\n\n### Mechanism\nThe contribution's mechanism involves extracting safety bias directions (Meta-SafetyLock) from a base model's activations and universally applying them to fine-tuned models based on the finding that fine-tuned models retain similar safety-related activation representations. Paper [8] introduces \"Contrastive Activation Addition\" (CAA), which computes steering vectors from residual stream activations to modify model behavior during inference. Paper [23] explores extracting latent steering vectors from pretrained models for controllable text generation. Both papers involve extracting activation-based steering vectors and applying them universally, which is substantively equivalent to the mechanism described in the contribution.\n\n### Evaluation\nThe evaluation involves efficient transfer of safety alignment across models (e.g., Llama-3-8B/70B Instruct, Mistral-Large-2 123B) with deployment metrics (<0.01 seconds, no GPU) and task performance metrics (response rate drop from 99.4% to 98.1%). Paper [8] evaluates steering vectors on Llama-2 models, focusing on activation-based modifications and their effects on model behavior. Paper [22] rigorously investigates the generalization and reliability of steering vectors across tasks and distributions. Both papers use similar evaluation designs (activation-based steering applied across models and tasks), making the evaluation facet covered.\n\n### Domain\nThe contribution operates in the domain of transferable safety alignment for large language models (LLMs). Paper [1] addresses safety alignment risks in fine-tuned LLMs, and Paper [3] proposes defenses against harmful fine-tuning attacks. Paper [8] and Paper [22] focus on steering vectors for modifying LLM behavior, which includes safety-related applications. All these papers operate in the general domain of LLM safety alignment, making the domain facet covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 8  \nVERDICT evaluation = 8  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 4 | reason: Task Prompt Vectors (2024-08-02) explicitly addresses the objective of avoiding repeated training for new tasks by enabling efficient transfer through multi-task soft-prompt transfer, which aligns with the purpose of extracting and distributing safety interventions across multiple fine-tuned variants without redundant searches. Quoted phrase: \"current soft-prompt-based methods often sacrifice multi-task modularity, requiring the training process to be fully or partially repeated for each newly added task.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 27
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\n\nThe purpose is: extract safety interventions once from a base model and distribute them to multiple fine-tuned variants, avoiding repeated safety pattern searches.\n\nThis is about **transferable safety alignment** — specifically, one-time extraction + batch deployment to fine-tuned variants. Paper [1] addresses safety being compromised by fine-tuning but doesn't pursue transferable safety fixes. Paper [3] (Antidote) proposes post-fine-tuning safety alignment but applies it per-model, not as a one-time extraction for batch distribution. Paper [6] studies transferability of bias mitigation effects across tasks, which is thematically related but focuses on whether bias mitigation transfers (a finding), not on designing a one-time extractable safety intervention for distribution. No prior paper specifically pursues the objective of \"extract once, deploy to many fine-tuned variants\" for safety alignment.\n\n**NONE** — no prior paper covers this specific objective at the problem-class level.\n\n## Mechanism\n\nThe mechanism is: identify safety-related activation directions in the original model (based on the finding that fine-tuned models preserve similar safety-related activations), extract \"safety bias directions,\" and apply them universally to fine-tuned variants.\n\nPaper [27] (Representation Engineering) extracts population-level representations/directions from models to monitor and manipulate high-level cognitive phenomena including safety-related behaviors. Paper [8] (CAA) computes steering vectors by averaging activation differences between positive/negative examples and applies them during inference. Paper [23] extracts latent steering vectors from pretrained language models without fine-tuning. Paper [2] uses steering vectors for safety-alignment red-teaming.\n\nThe core primitive — extract activation-space directions encoding a behavioral property (safety) from a model and apply them to steer behavior — is clearly present in [27], [8], and [23]. The cross-model transfer aspect (applying directions extracted from one model to fine-tuned variants) is a specific application, but the underlying primitive of \"extract safety-related activation directions and apply them\" is substantively equivalent to [27] and [8].\n\n**Paper [27]** (and [8], [23]) cover this mechanism.\n\n## Evaluation\n\nThe evaluation design: test on Llama-3-8B/70B Instruct and Mistral-Large-2 123B for safety transfer efficiency; measure deployment time (<0.01s, no GPU); evaluate utility on eight general tasks via response rate metrics.\n\nPapers [1], [3], [7] evaluate safety alignment on Llama/similar models using safety benchmarks and utility metrics. Paper [3] specifically evaluates post-fine-tuning safety with utility preservation. The design of \"evaluate safety intervention on large LLMs + measure utility degradation on general tasks\" is present in [3] and [1]. The specific deployment-efficiency metric is somewhat novel, but the overall evaluation design (safety + utility on standard LLM benchmarks) is covered.\n\n**Paper [3]** covers this evaluation design (safety alignment evaluation + utility preservation on general tasks).\n\n## Domain\n\nThe domain is: transferable safety alignment for fine-tuned LLMs.\n\nPapers [1], [3], [7], [14] all work in the domain of LLM safety alignment. Paper [1] specifically addresses safety in fine-tuned LLMs. Paper [3] addresses post-fine-tuning safety alignment. This is clearly within the existing application area of LLM safety alignment.\n\n**Paper [1]** and **[3]** cover this domain.\n\n---\n\nVERDICT purpose = NONE\nVERDICT mechanism = 27\nVERDICT evaluation = 3\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper describes the objective of extracting safety interventions once from a base model for batch distribution to multiple fine-tuned variants to avoid repeated safety pattern searches. Paper [16] (Task Arithmetic) and [25] deal with task vector transfer but their purpose is performance editing/multi-task combination, not one-time safety extraction for downstream fine-tuned variant distribution. No paper matches the same objective even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 22
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The objective is to create a safety intervention that can be extracted once from a base model and then efficiently distributed to multiple fine-tuned variants, avoiding repetitive safety alignment work. While prior work like [1] identifies that fine-tuning compromises safety and [6] investigates the non-transferability of bias mitigation, none of them frame the objective as creating a one-to-many, portable, and reusable safety module. This specific goal of a distributable safety package appears to be new.\n\n**mechanism**: The technical approach is to extract \"safety bias directions\" from a base model's activations and add them to the activations of fine-tuned models to steer their behavior. This is substantively equivalent to the mechanism in [8], which introduces \"Contrastive Activation Addition (CAA)\" to compute \"'steering vectors' by averaging the difference in residual stream activations between pairs of positive and negative examples\" and adding them during inference to control behavior. Both are the same primitive of steering a model via adding a direction vector to its internal activations.\n\n**evaluation**: The evaluation design consists of demonstrating transferability across different models (Llama, Mistral), measuring the impact on general-purpose task performance (utility), and measuring computational efficiency. This is a standard design for validating an alignment or defense method. Specifically, [22] uses the same evaluation design by \"rigorously investigate[ing] these properties [reliability and generalisation]\" for the same class of mechanism (\"steering vectors\"), which covers the core design of testing how the mechanism performs in- and out-of-distribution.\n\n**domain**: The application area is transferable safety alignment for large language models, particularly in the context of fine-tuning. This is a well-established domain. For example, [1] directly addresses the problem of how \"Fine-tuning Aligned Language Models Compromises Safety\", and [3] proposes a \"Post-fine-tuning Safety Alignment for Large Language Models\". The contribution operates within this same general application area.\n\nVERDICT purpose = NONE\nVERDICT mechanism = [8]\nVERDICT evaluation = [22]\nVERDICT domain = [1]",
+      "stage2": "FACET: purpose: 让安全干预可从基座模型一次性提取、批量分发到多个微调变体，避免重复搜索安全模式 | FINAL: COVERED-BY [4] | reason: The objective of creating a transferable component to avoid repeated work for each new application is explicitly stated in prior work. Paper [4] aims to solve the problem where \"the training process to be fully or partially repeated for each newly added task.\" This is the same objective of efficiency via a \"create once, apply many\" model, just applied to task prompts instead of safety interventions."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     2,
+     15
+    ],
+    "evaluation": [
+     5
+    ],
+    "domain": [
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 15
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to validate the robustness and efficiency advantages of SafetyLock across varying risk levels, attack types, model scales, and data sizes. Paper [2] (\"Bag of Tricks\") and paper [4] (\"AutoJailbreak\") both address robustness and efficiency in the context of jailbreak attacks on LLMs, but neither explicitly validates a defense across such diverse factors. Paper [8] (\"Robust Prompt Optimization\") evaluates defenses against jailbreak attacks but does not focus on multi-factor robustness validation. Paper [15] (\"JailbreakRadar\") conducts large-scale evaluations of jailbreak attacks but does not validate defenses. No prior paper establishes the same empirical relationship across these specific dimensions.\n\n### Mechanism\nThe contribution compares multiple training-time and inference-time defenses (DPO, SFT-mixing, Self-Reminder, ICD, PPL) and evaluates them against various attack methods (AutoDAN, DeepInception, GCG, PAIR, XSTest) and combinations, while performing ablation studies on training set size and intervention strength (α). Paper [8] (\"Robust Prompt Optimization\") proposes an optimization-based defense and evaluates it against adversarial attacks, but does not compare such a wide range of defenses or attack combinations. Paper [15] (\"JailbreakRadar\") conducts ablation studies on jailbreak attacks but does not evaluate defenses in this manner. Paper [9] (\"LLM Defenses Are Not Robust\") evaluates defenses but focuses on multi-turn human jailbreaks rather than systematic ablation across training and intervention parameters. No prior paper employs this exact mechanism.\n\n### Evaluation\nThe contribution uses AdvBench to measure attack success rate (ASR), training time, GPU memory usage, and robustness under high attack volume. Paper [5] (\"JailbreakBench\") introduces a robustness benchmark for jailbreak attacks, which overlaps with the evaluation design here. Paper [15] (\"JailbreakRadar\") also conducts large-scale evaluations of jailbreak attacks, including ASR and ablation studies. Paper [8] (\"Robust Prompt Optimization\") evaluates defenses using similar metrics (e.g., ASR) but does not use AdvBench specifically. The evaluation design is covered by prior work, as the metrics and benchmarking approach are substantively equivalent.\n\n### Domain\nThe contribution operates in the domain of jailbreak/adversarial attack defenses for large language models (LLMs). Papers [2], [4], [5], [8], [9], [15], and [17] all address jailbreak attacks and defenses in LLMs, making this domain well-covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 5  \nVERDICT domain = 2  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly verifies robustness and efficiency across risk levels, attack types, model scales, and data volumes.  \nFACET: mechanism | FINAL: COVERED-BY 15 | reason: \"We conduct comprehensive measurement and ablation studies\" aligns with evaluating defenses and ablation on training set scale and intervention intensity.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: 验证 SafetyLock 在不同风险等级、攻击类型、模型规模与数据量下的鲁棒性和效率优势**\n\nThe purpose is to empirically demonstrate that a specific defense (SafetyLock) is robust across multiple attack types, scales, and data conditions, AND is computationally efficient compared to baselines. Paper [2] \"Bag of Tricks: Benchmarking of Jailbreak Attacks on LLMs\" benchmarks jailbreak attacks across diverse factors. Paper [15] \"JailbreakRadar\" conducts comprehensive measurement of jailbreak attacks. Paper [9] \"LLM Defenses Are Not Robust to Multi-Turn Human Jailbreaks Yet\" evaluates robustness of defenses. However, none of these specifically establish the relationship \"this defense achieves superior robustness AND efficiency simultaneously across attack types/scales/data sizes\" — they benchmark attacks or evaluate defense robustness but don't focus on the combined robustness+efficiency claim for a specific defense mechanism. Paper [4] \"AutoJailbreak\" analyzes both attacks and defenses systematically. None of these papers report the same empirical relationship (robustness+efficiency of a specific activation-based defense across these exact variables).\n\n**MECHANISM: 对比 DPO/SFT-mixing/Self-Reminder/ICD/PPL 等训练时与推理时防御，评测 AutoDAN/DeepInception/GCG/PAIR/XSTest 及组合攻击，并做训练集规模与干预强度 α 的消融**\n\nThe mechanism involves comparing multiple defense baselines (DPO, SFT-mixing, Self-Reminder, ICD, PPL) against multiple attack types (AutoDAN, GCG, PAIR, DeepInception, XSTest) with ablations on training size and intervention strength. Paper [2] \"Bag of Tricks\" benchmarks jailbreak attacks with diverse key factors and ablation studies. Paper [15] \"JailbreakRadar\" collects 17 representative jailbreak attacks and conducts ablation studies. Paper [5] \"JailbreakBench\" evaluates attacks with standardized protocols. Paper [4] \"AutoJailbreak\" analyzes both attacks and defenses. The design of \"compare multiple defenses against multiple attacks + ablation on hyperparameters\" is a standard evaluation protocol covered by [2] and [15].\n\n**EVALUATION: AdvBench ASR 0.19% 超过所有基线；训练 0.01s、0 GB GPU（DPO 需 7622s/45.12GB）；1 万有害样本下仍仅 3.46% ASR**\n\nThe evaluation uses AdvBench with ASR as the metric, which is a named benchmark family used in papers [2], [5], [8], [9], [15]. The metric semantics (ASR on AdvBench) and the comparison framework (defense vs. multiple attack baselines) are covered by these papers. Paper [5] \"JailbreakBench\" explicitly standardizes ASR evaluation. Paper [2] uses AdvBench-style evaluation with ASR metrics.\n\n**DOMAIN: 越狱/对抗攻击防御**\n\nMultiple papers work in the jailbreak/adversarial attack defense domain for LLMs: [2], [4], [5], [8], [9], [12], [15], [17]. This is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 2\nVERDICT evaluation = 5\nVERDICT domain = 2",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of validating a specific mechanism (SafetyLock) across multiple risk levels, attack types, model scales, and data quantities for robustness and efficiency advantages. Papers like [2], [5], [15] benchmark jailbreak attacks broadly but do not validate a single defense mechanism's robustness and efficiency across these combined dimensions. No quoted phrase from any prior paper matches this same objective."
+     }
+    }
+   }
+  }
+ ]
+}

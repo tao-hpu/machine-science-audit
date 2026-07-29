@@ -1,0 +1,261 @@
+{
+ "paper_id": "FA0195",
+ "title": "Exponential Integrator for Diagonal-Decay Delta Attention: A Negative Result on Length Extrapolation",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "covered",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     1
+    ],
+    "mechanism": [
+     1
+    ],
+    "evaluation": [
+     1
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": 1
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to replace Euler discretization in diagonal-decay delta attention to avoid discarding key-norm information via L2 normalization. Paper [1] explicitly discusses replacing Euler discretization in delta-rule linear attention with an exact closed-form flow derived from continuous-time dynamics, which aligns with the same objective of improving the discretization method to preserve key information. The focus on avoiding loss of information in the discretization process is substantively equivalent.\n\n### Mechanism\nThe mechanism derives an exact exponential-integrator coefficient for the rank-1 delta-rule substep from continuous-time dynamics, ensuring bounded coefficients with implicit contraction when key norms are large. Paper [1] introduces an exact-flow formulation for delta-rule linear attention, exploiting the rank-1 structure of the dynamics matrix to derive a closed-form update. This matches the mechanism at the primitive level: both contributions derive exact coefficients for delta-rule updates from continuous-time dynamics using rank-1 structures. Paper [9] also discusses exponential integrators and their construction for stiff problems, but it does not specifically address rank-1 delta-rule substeps or bounded coefficients tied to key norms, making it less directly equivalent.\n\n### Evaluation\nThe evaluation facet involves the closed-form coefficient alpha_t = (1 - exp(-beta_t ||k_t||^2))/||k_t||^2, which stays bounded as key norms grow. Paper [1] evaluates its exact-flow formulation by deriving closed-form updates and analyzing their behavior under large key norms, which is substantively equivalent to the evaluation design here. Paper [9] discusses exponential integrators but does not evaluate bounded coefficients in the same manner, focusing instead on general stiff problems. No other paper explicitly evaluates bounded coefficients derived from rank-1 delta-rule updates.\n\n### Domain\nThe domain is linear/delta-rule attention mechanisms. Paper [1] operates in the same domain, specifically addressing delta-rule linear attention mechanisms. No other paper explicitly targets this domain; papers like [9] and [20] focus on exponential integrators for stiff ODEs or PDEs, which are outside the scope of attention mechanisms.\n\n---\n\nVERDICT purpose = 1  \nVERDICT mechanism = 1  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": 1
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE:**\nThe purpose is to replace Euler discretization in diagonal-decay delta attention to avoid discarding key-norm information via L2 normalization. Paper [1] explicitly states: \"We show that the delta-rule update can be interpreted as an explicit Euler discretization of an underlying continuous-time system. EFLA replaces this first-order update with the exact closed-form flow.\" This is substantively equivalent — same objective of replacing Euler discretization in delta-rule linear attention with an exact solution from continuous-time dynamics. The purpose is directly covered.\n\n**MECHANISM:**\nThe mechanism is deriving an exact exponential-integrator coefficient for the rank-1 delta-rule substep from continuous-time dynamics, giving bounded coefficients with implicit contraction when key norms are large. Paper [1] states it \"exploits the rank-1 structure of the dynamics matrix\" so \"both the matrix exponential and the input integral collapse to a simple update.\" This is the same primitive: exploit rank-1 structure of the delta-rule dynamics to derive an exact closed-form exponential integrator coefficient. The mechanism is directly covered by [1].\n\n**EVALUATION:**\nThe evaluation facet here is described as a closed-form coefficient expression (alpha_t = (1 - exp(-beta_t ||k_t||^2))/||k_t||^2) and its boundedness property as key norms grow. This is essentially a mathematical/analytical result rather than an empirical evaluation design. However, framing it as an \"evaluation\" facet — the validation approach of showing boundedness of coefficients analytically and comparing behavior as key norms grow — is a standard mathematical analysis. Paper [1] would also validate its exact-flow formulation analytically. No prior paper presents this specific coefficient formula, but the evaluation design (analytical boundedness analysis of attention coefficients) is a standard mathematical verification approach. Paper [1] covers the same analytical validation design for the same type of contribution.\n\n**DOMAIN:**\nThe domain is linear/delta-rule attention mechanisms. Paper [1] explicitly works in \"delta-rule linear attention,\" which is exactly the same domain. This is directly covered.\n\nVERDICT purpose = 1\nVERDICT mechanism = 1\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": [
+     2,
+     6
+    ],
+    "domain": [
+     7,
+     9,
+     18
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to show that the integrator removes the need for L2 normalization while remaining numerically stable. No prior paper explicitly establishes this empirical relationship between removing L2 normalization and numerical stability in attention mechanisms. Papers like [15], [28], and [29] discuss removing normalization layers in neural networks, but they do not address the specific relationship between L2 normalization and numerical stability in the context of exponential-integrator delta attention. Thus, the purpose is **NONE**.\n\n### Mechanism\nThe mechanism involves training the exponential-integrator delta attention without L2 normalization on keys and queries across three synthetic long-context tasks. Papers [6], [10], [11], [17], [19], [22], and [33] discuss exponential integrators for various applications, including stiff ODEs, PDEs, and Hamiltonian systems. However, none of these papers train exponential-integrator delta attention specifically or address the removal of L2 normalization in this context. While exponential integrators are covered broadly, the specific mechanism of training delta attention without L2 normalization is **NONE**.\n\n### Evaluation\nThe evaluation demonstrates numerical stability with 0 NaN/divergence failures across 27 experimental runs. Papers [6], [10], [11], [17], [19], [22], and [33] use exponential integrators and validate stability in various numerical setups, including stiff ODEs, PDEs, and Hamiltonian systems. These papers employ standard stability validation protocols, such as tracking divergence or numerical errors, which match the evaluation design here. Therefore, the evaluation is **COVERED**.\n\n### Domain\nThe domain is numerical stability of attention training. Papers [7], [9], [12], [13], and [35] address attention mechanisms, including linear attention and stability considerations. While none of these papers specifically target exponential-integrator delta attention or the removal of L2 normalization, they operate within the broader domain of attention mechanism stability. Thus, the domain is **COVERED**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 6  \nVERDICT domain = 7  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly or equivalently demonstrates removing the need for L2 normalization while maintaining numerical stability.  \nFACET: mechanism | FINAL: COVERED-BY 9 | reason: \"Kimi Delta Attention (KDA)... enabling more effective use of limited finite-state RNN memory\" aligns with training delta attention mechanisms without explicit normalization."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Show the integrator removes the need for L2 normalization while remaining numerically stable.**\n\nThe purpose is specifically about demonstrating that an exponential-integrator delta attention mechanism eliminates the need for L2 normalization on keys/queries while maintaining numerical stability. Papers [29] (Fixup: residual learning without normalization) and [28] (training deep neural networks without batch normalization) address removing normalization from neural networks, but their purpose is about initialization/training stability in feedforward/residual networks, not about an integrator mechanism replacing normalization in attention. Paper [16] addresses normalization-free SNNs via lateral inhibition. None of these papers establish the same relationship: \"exponential integrator removes need for L2 normalization in attention while remaining numerically stable.\" The specific claim — that an integrator subsumes the role of L2 normalization in attention — is not covered by any prior paper.\n\n**MECHANISM: Train exponential-integrator delta attention without L2 normalization on three synthetic long-context tasks (Palindrome, MQAR, Stack).**\n\nThe mechanism involves training a specific attention variant (exponential-integrator delta attention) without L2 normalization on synthetic tasks. Paper [9] (Kimi Linear / Kimi Delta Attention) involves delta attention and linear attention training. Paper [12] (Gated Linear Attention) involves training linear attention variants. However, none of these papers specifically train an exponential-integrator delta attention *without* L2 normalization as the experimental primitive. The synthetic tasks (Palindrome, MQAR, Stack) are used in linear attention literature, but the specific mechanism of ablating L2 normalization in the context of an exponential integrator is not covered.\n\n**EVALUATION: Numerically stable: 0 NaN/divergence failures across 27 experimental runs.**\n\nThis evaluation design — counting NaN/divergence failures across experimental runs as a stability metric — is a straightforward empirical stability check. Papers [2] (stable training of BNNs) and [22] (stiff neural ODEs with exponential integration) discuss training stability empirically, but neither uses this specific protocol of counting NaN/divergence failures across a fixed set of runs as the primary evaluation design. This appears to be a simple counting protocol, but no prior paper uses this exact design as a named benchmark or protocol family. However, counting training failures (NaN/divergence) is a generic experimental move used broadly in training stability literature. No prior paper uses a named benchmark or protocol family matching this design specifically.\n\n**DOMAIN: Numerical stability of attention training.**\n\nThe domain is numerical stability of attention mechanism training. Papers [9] and [12] work on linear/delta attention training, which is the same general application area. Paper [9] explicitly discusses hardware-efficient training of linear attention variants. This falls within the domain of attention mechanism training/stability.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 9",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper addresses the specific objective of showing that an exponential integrator eliminates the need for L2 normalization on keys/queries while maintaining numerical stability; papers on normalization-free training (e.g., [16], [28], [29]) concern different architectures and do not involve exponential integrators or delta attention mechanisms.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper trains an exponential-integrator delta attention variant without L2 normalization on the specific synthetic tasks (Palindrome, MQAR, Stack); [9] introduces Kimi Delta Attention but does not remove L2 normalization or use these evaluation tasks, and no other paper combines these specific elements.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports a zero NaN/divergence failure count across experimental runs as a named stability metric for a linear/delta attention model; stability results in prior works (e.g., [3], [5]) concern theoretical convergence criteria, not empirical run-failure counts of this form."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 29
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 18
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "**purpose**: COVERED. The purpose is to demonstrate that a specific mechanism (an integrator) allows for stable training without a normalization step (L2 norm). This is substantively equivalent to the purpose of [29], which is to show that its proposed mechanism (Fixup initialization) enables \"Residual Learning Without Normalization,\" closing the same conceptual gap of reliance on normalization for stability.\n\n**mechanism**: NONE. The mechanism is the specific technical primitive \"exponential-integrator delta attention.\" While components like \"delta attention\" (likely related to Kimi Delta Attention in [9]) and \"exponential integrators\" (a general technique appearing in [22] and others) exist in prior work, no single paper appears to describe or use the combined primitive \"exponential-integrator delta attention,\" which is the object of the contribution's finding.\n\n**evaluation**: COVERED. The evaluation design is to assess numerical stability by counting the number of training runs that fail due to divergence or NaNs. This is a standard and fundamental protocol for any work claiming to achieve or improve \"stable training,\" such as [2], which aims for \"stable training of binary neural networks\" and must implicitly (or explicitly) verify that training runs complete without failure.\n\n**domain**: COVERED. The domain is \"numerical stability of attention training.\" This is a specific sub-problem within the general, well-established application area of \"numerical stability of neural networks.\" Prior papers like [18] (\"Stable Recurrent Models\") and [2] (\"stable training of binary neural networks\") already operate in this general domain, making the contribution's domain a new instance within an existing area, not a genuinely new area.\n\nVERDICT purpose = 29\nVERDICT mechanism = NONE\nVERDICT evaluation = 2\nVERDICT domain = 18",
+      "stage2": "FACET: mechanism: Train the exponential-integrator delta attention without L2 normalization on keys and queries on three synthetic long-context tasks (Palindrome, MQAR, Stack). | FINAL: NONE | reason: No single prior paper describes this specific mechanism. While paper [9] introduces a \"Kimi Delta Attention\" model, there is no evidence it is trained without L2 normalization, nor that it is evaluated on this specific trio of synthetic tasks. Papers on training without normalization (e.g., [29]) apply to different architectures (ResNets), and papers on exponential integrators (e.g., [22]) apply them to different problems (Neural ODEs), not attention. The unique combination of the specific model, the specific training modification (no L2 norm), and the specific evaluation context is not found in any prior work."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     8,
+     18
+    ],
+    "evaluation": [
+     5,
+     11,
+     17
+    ],
+    "domain": [
+     5,
+     8,
+     11
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        8,
+        18
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        5,
+        11
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        5,
+        8,
+        11
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to test whether reducing discretization error improves length extrapolation. Paper [18] discusses discretization error quantification in ODE models but does not establish or test the relationship between discretization error and length extrapolation. Paper [8] interprets delta-rule attention as Euler discretization but does not test the impact of discretization error on extrapolation. No prior paper explicitly reports or establishes the same empirical relationship between discretization error and length extrapolation. Thus, the purpose is **NONE**.\n\n### Mechanism\nThe contribution compares the exponential integrator against the Euler/L2-normalized baseline for length extrapolation, with ablation of integrator vs. L2-normalization removal. Paper [8] introduces Exact Flow Linear Attention, replacing Euler discretization with exact closed-form flow in delta-rule attention, which is substantively equivalent to the mechanism of testing alternative integrators for extrapolation. Paper [18] quantifies discretization error in ODE models, which aligns with the mechanism of analyzing discretization effects. Both papers contain substantively equivalent mechanisms. Thus, the mechanism is **COVERED**.\n\n### Evaluation\nThe evaluation design involves measuring extrapolation accuracy on Palindrome and Stack tasks at 4x extrapolation, with negative results showing no accuracy gain. Paper [11] evaluates length extrapolation in attention mechanisms using diagnostic tasks, which matches the evaluation design of testing extrapolation accuracy on algorithmic tasks. Paper [5] also evaluates length generalization using diagnostic tasks, aligning with the same evaluation design. Thus, the evaluation is **COVERED**.\n\n### Domain\nThe contribution operates in the domain of length extrapolation in delta-rule attention. Paper [8] explicitly addresses delta-rule attention and its extrapolation behavior, and Paper [11] focuses on length extrapolation in attention mechanisms, which includes delta-rule attention as a subdomain. Paper [5] also addresses length generalization in seq2seq networks, which overlaps with the broader domain of length extrapolation in attention mechanisms. Thus, the domain is **COVERED**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 8, 18  \nVERDICT evaluation = 5, 11  \nVERDICT domain = 5, 8, 11  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly tests whether reducing discretization error improves length extrapolation, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**PURPOSE: Test whether reducing discretization error improves length extrapolation.**\n\nThe purpose is specifically to test whether discretization error is the bottleneck for length extrapolation in delta-rule attention. Paper [8] (EFLA) is directly relevant — it introduces an exact-flow formulation of delta-rule linear attention, explicitly motivated by the idea that the Euler discretization error in the delta-rule update is a problem worth solving. However, paper [8] proposes a solution; it doesn't test whether discretization error is the *bottleneck* for length extrapolation specifically. Paper [17] studies length generalization in recurrent models empirically, but focuses on \"unexplored states hypothesis,\" not discretization error. No prior paper reports the same empirical relationship: \"discretization error reduction does/does not improve length extrapolation.\" This is a negative finding about a specific causal claim not previously tested.\n\n**MECHANISM: Compare exponential integrator vs. Euler/L2-normalized baseline at length extrapolation, plus ablation of integrator vs. L2-normalization removal.**\n\nPaper [8] introduces the exponential integrator (exact flow) for delta-rule attention and compares it against the Euler baseline — this is the same technical comparison. The ablation design (controlled comparison of integrator vs. baseline, with component removal) is a standard controlled ablation. Paper [17] also performs ablations on recurrent model components for length generalization. The core mechanism — comparing an exponential integrator against an Euler discretization baseline — is directly present in [8], which explicitly frames the delta-rule as Euler discretization and proposes the exact-flow alternative.\n\n**EVALUATION: Negative result on Palindrome and Stack benchmarks at 4x extrapolation.**\n\nThe evaluation design uses algorithmic/synthetic benchmarks (Palindrome, Stack) to measure length extrapolation at multiples of training length. Paper [17] uses similar synthetic algorithmic tasks to evaluate length generalization in recurrent models. Paper [5] and [9] also use algorithmic tasks for length generalization evaluation. The design (synthetic algorithmic benchmarks + extrapolation ratio metric) is covered by [17] and [5]. The specific negative result is the finding, not the design.\n\n**DOMAIN: Length extrapolation in delta-rule attention.**\n\nPaper [8] works directly on delta-rule linear attention. Paper [16] also works on delta-rule/Gated Delta Networks. Paper [17] studies length generalization in recurrent models including linear attention. The domain of length extrapolation in linear/delta-rule attention is covered by [8], [16], and [17].\n\nVERDICT purpose = NONE\nVERDICT mechanism = 8\nVERDICT evaluation = 17\nVERDICT domain = 8",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper tests whether reducing discretization error specifically improves length extrapolation. Paper [8] (EFLA) addresses discretization error in linear attention but does not frame its purpose as testing whether that reduction improves length extrapolation. Paper [17] addresses length generalization in recurrent models but does not connect it to discretization error reduction. No paper combines both elements under any terminology."
+     }
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,319 @@
+{
+ "paper_id": "DF5TVzpTW0",
+ "title": "Detecting and Perturbing Privacy-Sensitive Neurons to Defend Embedding Inversion Attacks",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     8,
+     30
+    ],
+    "mechanism": [
+     21,
+     24
+    ],
+    "evaluation": [
+     4,
+     5,
+     7,
+     8,
+     10,
+     19
+    ],
+    "domain": [
+     7,
+     8,
+     11,
+     20
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 21
+      },
+      "evaluation": {
+       "covered_by": [
+        4,
+        5,
+        10,
+        19
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        7,
+        8,
+        20,
+        11
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to protect text embeddings against inversion attacks while minimizing damage to non-sensitive information, unlike prior methods that add noise to all embedding dimensions and degrade downstream utility. Papers [7], [8], and [20] address text embedding inversion attacks, but none propose a defense mechanism that specifically minimizes damage to non-sensitive information while targeting privacy-sensitive neurons. These prior works focus on identifying vulnerabilities or reconstructing text embeddings rather than defending embeddings in a utility-preserving manner. Thus, the purpose is **not covered**.\n\n### Mechanism\nThe mechanism, DPPN (Defense through Perturbing Privacy Neurons), involves a differentiable neuron mask learning framework that identifies privacy-sensitive neurons and applies one-sided Laplace noise to those neurons. Papers [2], [3], [4], [5], [10], [16], and [19] discuss noise injection or perturbation techniques for privacy preservation in neural networks, including differential privacy mechanisms and neuron-level perturbations. For example, [4] introduces a neuron noise-injection technique for privacy preservation, and [19] discusses pruning as a form of noise injection to achieve differential privacy. While these papers use noise injection or perturbation, none propose a differentiable neuron mask learning framework or one-sided Laplace noise targeting privacy-sensitive neurons. Thus, the mechanism is **not covered**.\n\n### Evaluation\nThe evaluation design involves learning a binary neuron mask via differentiable relaxation and validating perturbation effects through downstream experiments. Papers [4], [5], [10], and [19] use similar evaluation designs, such as validating privacy-preserving methods through downstream utility experiments. For example, [10] applies calibrated noise to embeddings and evaluates its impact on utility, and [19] validates pruning-based privacy mechanisms through experimental results. These prior works use comparable evaluation designs, even though the specific object (DPPN) differs. Thus, the evaluation is **covered**.\n\n### Domain\nThe domain is privacy-preserving NLP/text embedding security. Papers [7], [8], [20], and [11] address privacy risks and security concerns in text embeddings, including inversion attacks and defenses. For example, [7] explores privacy risks in text embeddings, and [8] focuses on embedding inversion security for multilingual models. These papers operate in the same general application area of privacy-preserving NLP and text embedding security. Thus, the domain is **covered**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 4, 5, 10, 19  \nVERDICT domain = 7, 8, 20, 11  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses protecting text embeddings against inversion attacks while minimizing damage to non-sensitive information, with a focus on avoiding degradation of downstream utility.  \nFACET: mechanism | FINAL: COVERED-BY 21 | reason: \"Identifying important neurons for final predictions\" in [21] aligns with identifying privacy-sensitive neurons, and the neuron-level attribution mechanism conceptually overlaps with the proposed neuron mask learning framework."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\n\nThe contribution's purpose is to protect text embeddings against inversion attacks while minimizing damage to non-sensitive information — specifically targeting selective protection (only sensitive dimensions) rather than uniform noise addition.\n\nPapers [7], [8], [11] address embedding inversion attacks on text embeddings. Paper [8] explicitly discusses \"defence mechanisms\" for text embeddings against inversion. Paper [10] addresses \"privacy- and utility-preserving textual analysis\" with the explicit goal of balancing privacy and utility in text representations. Paper [30] addresses \"concept erasure\" — removing specific attributes from distributed representations while preserving others, which is structurally the same objective: selectively suppress sensitive information while preserving utility. However, [30] is about erasure from representations generally, not specifically about inversion attack defense. Papers [7] and [8] are closest — they address the same problem class (defending text embeddings against inversion while maintaining utility). Paper [8] explicitly mentions defense mechanisms for text embeddings.\n\n## Mechanism\n\nThe mechanism is: (1) identify top-k privacy-sensitive neurons via a differentiable binary mask learning framework, then (2) inject one-sided directional (negative) Laplace noise only on those identified neurons.\n\nPaper [2] proposes \"adaptively inject noise into features based on the contribution of each to the output\" — this is adaptive/selective noise injection, but it's isotropic and not directional. Paper [19] uses pruning (zeroing neurons) as equivalent to DP noise, but doesn't use a learned mask for selective perturbation. Paper [4] injects noise into specific neurons for privacy. Paper [23] proposes per-neuron DP mechanisms. None of these combine: (a) differentiable mask learning to identify privacy-sensitive neurons + (b) one-sided directional (negative) Laplace noise specifically on those neurons. The directional (one-sided, negative) noise component is distinct from standard Laplace/Gaussian DP noise. Paper [2] is the closest with adaptive noise per neuron contribution, but lacks the differentiable mask learning and directional perturbation. No prior paper covers this specific combination.\n\n## Evaluation\n\nThe contribution is validated by downstream NLP task experiments (utility preservation) and inversion attack resistance metrics — standard evaluation designs in privacy-preserving NLP. Papers [7], [8], [10], [11] all evaluate text embedding privacy methods using inversion attack success rates and downstream task performance metrics. This is the same evaluation design (attack success rate + downstream utility benchmark), just applied to a different method. Paper [8] explicitly uses this design for multilingual embedding defense evaluation.\n\n## Domain\n\nThe domain is privacy-preserving NLP / text embedding security. Papers [7], [8], [10], [11] all operate in exactly this domain — privacy-preserving NLP with text embeddings. This is clearly covered.\n\n---\n\nVERDICT purpose = 8\nVERDICT mechanism = NONE\nVERDICT evaluation = 8\nVERDICT domain = 7",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes the specific combination of (1) differentiable neuron mask learning to identify top-k privacy-sensitive neurons associated with a target sensitive token, plus (2) a neuron-suppressing perturbation function injecting one-sided directional (negative) Laplace noise exclusively on those selected neurons. Paper [2] adaptively injects noise based on neuron contribution but uses isotropic noise on all neurons, not a learned sparse mask with directional negative Laplace noise. Paper [19] links pruning to DP noise but does not identify privacy-sensitive neurons via a differentiable mask nor apply directional noise. No other paper contains this combination even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 30
+      },
+      "mechanism": {
+       "covered_by": 24
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The objective to selectively protect sensitive information in embeddings to preserve utility on non-sensitive information is covered. Paper [30] has the purpose to \"remove an attribute from distributed representations,\" which is the same problem class as removing a sensitive token. The motivation to improve the privacy-utility tradeoff over methods that add uniform noise is also explicitly stated in papers like [3] and [16].\n\n**mechanism**: The core mechanism of identifying important neurons and then selectively perturbing them is covered. The primitive of identifying neurons that encode specific facts or concepts is established in [31] (\"identify the neurons that express the fact\") and [21]. The primitive of learning a mask to selectively alter information for privacy is present in [24], which proposes an \"adversarial method that masks out task-irrelevant information\".\n\n**evaluation**: The evaluation design, which measures the trade-off between downstream task utility and privacy (measured by the success of an inversion attack), is the standard protocol for this problem. The inversion attack protocols themselves are established by prior work like [7] and [20], and the overall design of balancing utility and privacy is fundamental to prior defense papers like [10].\n\n**domain**: The application area of privacy and security for text embeddings is covered. Multiple prior papers, including [7] (\"privacy risks associated with text embeddings\"), [8] (\"Text Embedding Inversion Security\"), and [20] (\"Private Text Reconstruction via Model Inversion Attacks\"), operate in this exact domain.\n\nVERDICT purpose = 30\nVERDICT mechanism = 24\nVERDICT evaluation = 7\nVERDICT domain = 7",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     4,
+     9
+    ],
+    "evaluation": [
+     9
+    ],
+    "domain": [
+     9,
+     10,
+     16
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to demonstrate that selective privacy-neuron perturbation yields a superior privacy-utility trade-off compared to baseline all-dimension noise methods across diverse datasets and attack models. None of the prior papers explicitly establish this specific empirical relationship. While several papers (e.g., [2], [4], [5], [9], [13]) discuss privacy-utility trade-offs in differential privacy or privacy-preserving deep learning, they do not report or demonstrate the same empirical finding that selective privacy-neuron perturbation outperforms all-dimension noise methods. For example, [4] introduces a neuron noise-injection technique but does not compare selective perturbation against all-dimension noise methods or establish the same trade-off improvement.\n\n### Mechanism\nThe mechanism involves empirical evaluation across six datasets and multiple perturbation levels, comparing DPPN against LapMech (Laplace) and PurMech (Purkayastha) baselines, against three attack models (MLC, GEIA, Vec2text), and on real-world sensitive datasets. Paper [4] introduces a neuron noise-injection technique for privacy-preserving deep neural networks, which is substantively equivalent to the selective privacy-neuron perturbation mechanism described here. Both approaches involve perturbing specific neurons to achieve privacy preservation, even though the exact implementation details differ. The mechanism is therefore covered by [4].\n\n### Evaluation\nThe evaluation design measures relative privacy leakage reduction and downstream utility improvement across multiple datasets, embedding models, and attack models. Papers such as [9] and [13] use similar evaluation designs to quantify privacy leakage and utility trade-offs in privacy-preserving deep learning. For instance, [9] evaluates privacy-preserving mechanisms against reconstruction, tracing, and membership attacks, while [13] measures privacy leakage and utility degradation in gradient embedding perturbation. These prior papers employ comparable evaluation designs (e.g., privacy leakage metrics, utility comparisons across baselines) even if applied to different datasets, models, or attack types. Thus, the evaluation design is covered.\n\n### Domain\nThe domain is privacy-preserving NLP evaluation. Papers such as [9], [10], [16], and [20] address privacy-preserving methods or privacy leakage in NLP or text embeddings, which is substantively equivalent to the application area here. For example, [9] investigates privacy-preserving deep learning mechanisms against privacy attacks in NLP, and [20] explores privacy risks in text embeddings. While the specific datasets or sub-problems differ, the general domain of privacy-preserving NLP is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 4  \nVERDICT evaluation = 9  \nVERDICT domain = 9  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly demonstrates selective privacy-neuron perturbation yielding superior privacy-utility trade-off compared to all-dimension noise methods across diverse datasets and attack models."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 16
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Demonstrate that selective privacy-neuron perturbation yields a superior privacy-utility trade-off than baseline all-dimension noise methods across diverse datasets and attack models.**\n\nThe purpose is to show that *selective* (neuron-targeted) perturbation beats *all-dimension* noise baselines on the privacy-utility trade-off. Paper [4] (\"A Neuron Noise-Injection Technique for Privacy Preserving Deep Neural Networks\") explicitly addresses neuron-level noise injection for privacy-utility trade-off in DNNs. Paper [9] (\"Rethinking Privacy Preserving Deep Learning\") proposes quantitatively measuring the trade-off between model accuracy and privacy losses. Paper [5] (\"Deep Learning With Data Privacy via Residual Perturbation\") also targets privacy-utility trade-off improvement. However, none of these specifically demonstrate that *selective* neuron perturbation (targeting privacy-specific neurons) outperforms all-dimension noise in the text embedding/NLP context. Paper [4] is the closest — it injects noise into neurons for privacy preservation and discusses the accuracy-privacy trade-off, which is substantively equivalent to the purpose of showing selective neuron perturbation achieves better privacy-utility trade-off than baseline noise methods.\n\n**MECHANISM: Empirical evaluation across six datasets and multiple perturbation levels, comparing DPPN against LapMech (Laplace) and PurMech (Purkayastha) baselines, against three attack models (MLC, GEIA, Vec2text), and on real-world sensitive datasets.**\n\nThe mechanism here is the empirical comparison protocol: selective privacy-neuron perturbation vs. Laplace/Purkayastha baselines, evaluated against multiple attack models. Paper [9] uses multiple privacy attacks (reconstruction, tracing, membership) to evaluate PPDL mechanisms and measures accuracy-privacy trade-offs. Paper [3] uses an attack-based evaluation method for differentially private learning. Paper [2] (\"Attack-Aware Noise Calibration\") calibrates noise against attack risk and compares mechanisms. The multi-attack, multi-baseline comparison design is present in [9] and [3], though the specific attacks differ. Paper [10] (\"IDT: Dual-Task Adversarial Attacks\") evaluates NLP privacy protection against attribute inference and reconstruction attacks with multiple baselines, which is close to the mechanism here.\n\n**EVALUATION: Reduces relative privacy leakage by 5%-78% while improving downstream utility by 14%-40% vs baselines; consistent across embedding models.**\n\nThe evaluation design uses privacy leakage metrics (attack accuracy) and downstream utility metrics compared across baselines and models — this is a standard privacy-utility trade-off evaluation design. Paper [9] explicitly proposes \"quantitatively measure the trade-off between model accuracy and privacy losses incurred by reconstruction, tracing and membership attacks.\" Paper [16] (\"Information Leakage in Embedding Models\") evaluates privacy leakage in embeddings. Paper [20] evaluates embedding inversion attacks across various models. The evaluation design (attack success rate + downstream utility across multiple models/datasets) is covered by [9] and [10].\n\n**DOMAIN: Privacy-preserving NLP evaluation.**\n\nPapers [10], [16], [20] all work in privacy-preserving NLP / text embedding privacy. Paper [16] explicitly studies information leakage in embedding models (NLP). Paper [10] addresses NLP privacy protection. This domain is clearly covered.\n\nVERDICT purpose = 4\nVERDICT mechanism = 9\nVERDICT evaluation = 9\nVERDICT domain = 16",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 10
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to demonstrate a specific empirical relationship: that selectively perturbing \"privacy neurons\" yields a better privacy-utility trade-off than perturbing all dimensions. While many prior papers aim to improve the privacy-utility trade-off ([2], [5], [13]), the rule for a \"finding\" requires a prior paper to establish the *same* relationship with the *same* variables. None of the provided abstracts report a finding that compares selective *neuron* perturbation against all-dimension perturbation to show its superiority. Paper [19]'s adaptive budget is conceptually similar but operates on a different variable (time/iterations, not space/neurons), so it does not establish the same empirical relationship.\n\n**mechanism**: The mechanism used to generate the finding is a comparative empirical study. This involves implementing a proposed privacy method, comparing it against standard baselines (like Laplace noise) on multiple datasets, and evaluating performance using attack models for the privacy axis and task-specific metrics for the utility axis. This \"bake-off\" protocol is a standard analysis design in the field. Paper [9] explicitly describes this design: \"quantitatively measure the trade-off between model accuracy and privacy losses incurred by reconstruction, tracing and membership attacks.\"\n\n**evaluation**: The evaluation design involves measuring privacy leakage (via attack success rates, e.g., attribute inference) and downstream utility, then comparing these values to establish a superior trade-off for a new method versus baselines. This evaluation framework is not new. Paper [9] directly proposes this design by measuring \"the trade-off between model accuracy and privacy losses\" using various attacks. Similarly, paper [3] proposes an \"Attack-Based Evaluation Method,\" and paper [12] quantifies leakage \"through three inference attacks,\" both of which are core components of the contribution's evaluation design.\n\n**domain**: The domain is privacy-preserving evaluation in Natural Language Processing (NLP). Several prior papers operate in this exact area. Paper [10] focuses on privacy risks in \"Natural language processing (NLP) models\" and mentions various attacks. Paper [20] investigates \"Privacy Risks in Text Embeddings,\" and paper [16] analyzes \"Information Leakage in Embedding Models,\" both of which are central topics in privacy for modern NLP.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 9\nVERDICT evaluation = 9\nVERDICT domain = 10",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the objective of demonstrating that a *selective* perturbation of *privacy-neurons* is superior to all-dimension noise methods. Paper [13] has a similar objective but for a different mechanism (gradient subspace perturbation, not neuron perturbation). Paper [4] discusses neuron noise injection but does not mention a *selective* approach based on identifying privacy-sensitive neurons, nor is its stated purpose to demonstrate superiority over all-dimension baselines. The specific combination of selectivity, targeting neurons, and demonstrating superiority over baselines is not present."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": [
+     7,
+     14,
+     18
+    ],
+    "domain": [
+     2,
+     14
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose:\nThe contribution aims to demonstrate that black-box privacy-neuron detection approximates an idealized white-box detector and works against real-world privacy threats. Paper [2] introduces a method for pinpointing privacy-sensitive neurons in LLMs, which aligns with the purpose of understanding privacy risks in neural networks. However, [2] does not explicitly compare black-box and white-box detection methods or establish their equivalence. Paper [14] proposes a framework for detecting and editing privacy neurons, but it does not address the specific relationship between black-box and white-box detectors. No prior paper explicitly establishes the same empirical relationship between black-box and white-box privacy-neuron detection.\n\n### Mechanism:\nThe contribution uses ablation/comparison of DPPN (black-box), DPPN-Oracle (white-box), and DPPN-Rand (random) neuron detection, along with overlap-ratio analysis and tests on specific datasets. Paper [2] employs learnable binary weight masks to identify privacy neurons, which is conceptually similar to neuron localization but does not involve the same ablation/comparison protocol. Paper [14] introduces a method for detecting and editing privacy neurons, partially inspired by knowledge neurons, but does not use the same ablation/comparison mechanism or overlap-ratio analysis. No prior paper employs the exact mechanism described in the contribution.\n\n### Evaluation:\nThe evaluation design involves comparing black-box and white-box detectors in terms of leakage difference, downstream performance, and neuron overlap accuracy. Paper [18] evaluates attribution methods using white-box LSTMs, which involves a similar comparison framework between black-box and white-box models. Paper [7] compares the effectiveness of black-box and white-box testing, which aligns with the general evaluation design of contrasting black-box and white-box methods. These prior papers use comparable evaluation designs, even though the specific datasets and metrics differ.\n\n### Domain:\nThe contribution operates in the domain of privacy-preserving NLP, specifically focusing on medical/PII data. Papers [2], [3], [4], [6], [8], and [14] all address privacy-preserving NLP, including privacy risks in LLMs and methods for mitigating them. Although the specific datasets and sub-problems differ, the general domain of privacy-preserving NLP is well-covered by prior work.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 7  \nVERDICT domain = 2  ",
+      "stage2": "1. **FACET: purpose | FINAL: COVERED-BY 2 | reason: Paper [2] explicitly introduces a method for detecting privacy neurons in LLMs and addresses the objective of approximating an idealized white-box detector to mitigate real-world privacy risks. Quote: \"To bridge this gap, we introduce a pioneering method for pinpointing PII-sensitive neurons (privacy neurons) within LLMs.\"**\n\n2. **FACET: mechanism | FINAL: NONE | reason: No prior paper explicitly describes the specific combination of ablation/comparison of DPPN (black-box) vs DPPN-Oracle (white-box) vs DPPN-Rand (random) neuron detection, overlap-ratio analysis, and tests on PII-Masking 300K and MIMIC-III clinical notes. No equivalent mechanism was found under different terminology or framing.**"
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 14
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "**Purpose:** The contribution's purpose is to show that a black-box privacy-neuron detector approximates an idealized white-box (oracle) detector and works against real-world privacy threats. Paper [2] (\"Learnable Privacy Neurons Localization in Language Models\") and Paper [14] (\"DEPN: Detecting and Editing Privacy Neurons in Pretrained Language Models\") both address privacy neuron detection in LLMs, but neither establishes the specific empirical relationship that a black-box detector approximates a white-box oracle — they introduce detection methods without this comparative oracle-approximation finding. No prior paper reports the same variables-and-direction relationship (black-box ≈ white-box oracle for privacy neurons).\n\n**Mechanism:** The mechanism is an ablation/comparison of black-box vs. white-box vs. random neuron detection, with overlap-ratio analysis. Paper [2] introduces learnable binary masks for privacy neuron localization (white-box), and Paper [14] introduces a gradient-based privacy neuron detection method. Neither performs a three-way comparison (black-box vs. oracle vs. random) with overlap-ratio analysis as the analytical primitive. Paper [18] evaluates attribution methods using white-box vs. black-box LSTMs, but in an interpretability (not privacy neuron) context. The specific three-way ablation design with overlap-ratio analysis for privacy neurons is not present in any prior paper.\n\n**Evaluation:** The evaluation design uses standard controlled ablation/comparison across conditions (black-box vs. white-box vs. random), measuring leakage metrics and downstream task performance — a standard multi-condition comparison design. Paper [2] and [14] use similar evaluation designs (comparing neuron detection methods on privacy leakage benchmarks). The use of PII-Masking 300K and MIMIC-III as benchmark families for privacy-preserving NLP evaluation also appears in the broader privacy NLP literature (Papers [3], [14]). The evaluation design (multi-condition ablation with leakage and downstream metrics) is a standard design present in prior work.\n\n**Domain:** The domain is privacy-preserving NLP with medical/PII data. Papers [2], [3], [4], [6], [11], and [14] all work in privacy-preserving NLP. Paper [14] specifically addresses privacy neurons in pretrained language models. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 14\nVERDICT domain = 14",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of demonstrating that a black-box privacy-neuron detector approximates an idealized white-box oracle detector and validates it against real-world privacy threats; [14] (DEPN) detects privacy neurons but never frames its purpose as approximating a white-box oracle, and no other paper addresses this specific claim.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper contains an ablation comparing a black-box vs. white-box oracle vs. random neuron detection scheme with overlap-ratio analysis on PII-Masking 300K or MIMIC-III clinical notes; [14] (DEPN) and [2] (Learnable Privacy Neurons) involve privacy neuron detection but neither performs this three-way comparison nor uses these specific datasets or the overlap-ratio metric."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 18
+      },
+      "evaluation": {
+       "covered_by": 18
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to establish a specific empirical relationship: that a black-box method for detecting privacy neurons closely approximates a white-box oracle for the same task. No prior paper reports or establishes this same relationship. While several papers ([5], [7], [12]) compare black-box and white-box entities, they do so for different purposes (model transfer, software testing efficiency, attack transfer) and do not establish the approximation quality of a black-box *analysis method* relative to its white-box counterpart.\n\n**mechanism**: The core mechanism is a comparative analysis of a black-box method against a white-box (oracle) method and a random baseline to validate the black-box approach. This analysis design is not new. For example, [18] \"proposes a framework in which interpretability methods are evaluated using manually constructed networks, which we call white-box networks,\" which is the same design primitive of using a white-box oracle to validate another method.\n\n**evaluation**: The evaluation design involves a quantitative comparison between a black-box method, a white-box oracle, and a random baseline, using metrics like performance difference and top-k overlap. This evaluation design is covered by prior work. [18] uses this design to \"evaluate five methods for producing attribution heatmaps by applying them to white-box LSTM classifiers,\" which is substantively the same evaluation protocol.\n\n**domain**: The contribution operates in the domain of privacy-preserving NLP, specifically concerning PII and medical data. This is a well-established domain. For instance, [2] focuses on \"pinpointing PII-sensitive neurons (privacy neurons) within LLMs,\" and [3] is a systematic review of \"deep learning methods for privacy-preserving natural language processing.\"\n\nVERDICT purpose = NONE\nVERDICT mechanism = 18\nVERDICT evaluation = 18\nVERDICT domain = 2",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the specific objective of validating a black-box neuron-level detection method by showing it approximates a white-box oracle for the same task, specifically in the context of privacy, and also demonstrating its efficacy against real-world privacy threats. While some papers compare black-box and white-box methods (e.g., for attacks [12] or creating surrogates [5]), or propose white-box privacy neuron detection [2, 14], none share the target paper's specific validation-centric purpose."
+     }
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,283 @@
+{
+ "paper_id": "FA0039",
+ "title": "Prefix-Ratio GRPO: Improving Gradient Quality for Reinforcement Learning with Verifiable Rewards",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     3
+    ],
+    "mechanism": [
+     3,
+     25
+    ],
+    "evaluation": [
+     10,
+     13
+    ],
+    "domain": [
+     1,
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose:\nThe contribution's purpose is to correct for staleness in distributed RL for LLMs by accounting for sequential dependencies that per-token importance sampling ignores. Paper [13] discusses variance issues in asynchronous RL due to stale rollouts and proposes variance-controlled off-policy RL for LLMs, which addresses staleness but does not explicitly account for sequential dependencies ignored by token-level importance sampling. Paper [15] introduces staleness-aware proximal policy approximation for asynchronous RL but focuses on decoupling off-policy correction from policy update constraints rather than addressing sequential dependencies. No prior paper explicitly targets the same problem-class level objective of correcting sequential dependencies in importance sampling for staleness mitigation.\n\n### Mechanism:\nThe mechanism, Prefix-Ratio GRPO, modifies GRPO importance ratios with a prefix-aware ratio that downweights tokens following unlikely prefixes. Paper [3] introduces prefix importance ratio stabilization for policy optimization, which similarly adjusts importance sampling ratios to account for prefix-level discrepancies. This mechanism is substantively equivalent, as both approaches modify importance sampling ratios to stabilize policy optimization by addressing prefix-level issues.\n\n### Evaluation:\nThe evaluation uses AIME24 at staleness S = 11 to measure avg@64 performance. Paper [10] introduces ReasonBENCH, a benchmark suite for LLM reasoning stability, which includes metrics for evaluating reasoning performance under varying conditions. While the specific benchmark instance (AIME24) differs, the evaluation design — benchmarking reasoning performance under specific conditions — is substantively equivalent. Paper [13] also evaluates variance-controlled off-policy RL for LLMs under asynchronous settings, using similar statistical frameworks to validate staleness mitigation. These prior papers cover the evaluation design.\n\n### Domain:\nThe domain is distributed RL with verifiable rewards for LLM reasoning. Paper [1] explicitly addresses RLVR methods for LLM reasoning, and Paper [2] applies GRPO to fine-tune LLMs using reinforcement learning from human feedback. Both papers operate in the same general application area of distributed RL for LLM reasoning, even if the specific sub-problems or datasets differ.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 3  \nVERDICT evaluation = 10  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses correcting for staleness in distributed RL for LLMs by accounting for sequential dependencies that per-token importance sampling ignores, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Corrects for staleness in distributed RL for LLMs by accounting for sequential dependencies that per-token importance sampling ignores.**\n\nPaper [3] (\"A Step Back: Prefix Importance Ratio Stabilizes Policy Optimization\") directly addresses the same objective: \"rollouts are typically generated in an off-policy manner using an older sampling policy... To correct the resulting discrepancy... most existing RL objectives rely on a token-level importance sampling ratio\" — and proposes a prefix-aware correction. Paper [13] (\"Stable Asynchrony\") also targets staleness in asynchronous LLM RL: \"stale rollouts produce heavy-tailed importance weights.\" Paper [15] (\"A-3PO\") addresses \"high data staleness under the asynchronous RL setting.\" Paper [2] (\"TIC-GRPO\") analyzes GRPO's token-level IS and its failure to track the current policy. The closest match is [3], which explicitly targets the sequential-dependency gap in per-token IS for LLM RL staleness correction.\n\n---\n\n**MECHANISM: Prefix-Ratio GRPO uses rho-tilde_t = (min_{k<t} rho_k) * rho_t — a prefix-minimum-based multiplicative downweighting of tokens following a bad prefix.**\n\nPaper [3] (\"A Step Back: Prefix Importance Ratio Stabilizes Policy Optimization\") introduces a \"prefix importance ratio\" that explicitly accounts for prefix-level discrepancy in policy optimization — the abstract states \"prefix importance ratio\" as the core primitive for stabilizing off-policy LLM RL. This is substantively equivalent: both use a prefix-aware multiplicative correction to the per-token IS ratio to account for sequential dependencies. The specific formula (min vs. product) may differ, but the underlying primitive — modifying token-level IS ratios by incorporating prefix history — is the same. Paper [2] also modifies GRPO's IS ratios based on policy drift analysis, though less specifically prefix-aware.\n\n---\n\n**EVALUATION: AIME24 at staleness S=11, avg@64 metric, comparing Prefix-Ratio GRPO vs. vanilla GRPO.**\n\nPaper [13] evaluates on math reasoning benchmarks (including AIME-style) under controlled staleness conditions comparing GRPO variants. Paper [15] similarly evaluates asynchronous RL methods on math reasoning benchmarks with staleness as a variable. Paper [2] evaluates GRPO variants on math reasoning benchmarks. The evaluation design — comparing GRPO variants on math reasoning benchmarks (AIME family) under staleness conditions using pass@k or avg@k metrics — is used in [13] and [15]. AIME24 is a named benchmark within the AIME family used across these papers, and avg@k/pass@k are standard metrics in this space. This design is covered.\n\n---\n\n**DOMAIN: Distributed RL with verifiable rewards / LLM reasoning.**\n\nPapers [2], [3], [13], [15] all operate in distributed/asynchronous RL for LLM post-training with verifiable rewards on reasoning tasks. This domain is clearly covered.\n\n---\n\nVERDICT purpose = 3\nVERDICT mechanism = 3\nVERDICT evaluation = 13\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 25
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The objective is to correct for issues arising from staleness in distributed RL for LLMs, specifically by addressing the failure of standard per-token importance sampling to account for sequential dependencies. This exact purpose is covered by [3], which aims to \"stabilize policy optimization\" by moving beyond a \"token-level importance sampling ratio\" to a \"Prefix Importance Ratio\" to correct for the discrepancy from off-policy generation. The same general problem of staleness in asynchronous RL for LLMs is also the explicit target of [13] and [15].\n\n**mechanism**: The proposed mechanism modifies the importance ratio at time `t` by multiplying it with the minimum ratio observed in the prefix, `min_{k<t} rho_k`. This is an instance of a general statistical primitive known as sequential shrinkage, where an estimate is adjusted based on the history of prior estimates. This primitive is introduced and analyzed in [25] (\"Sequential Shrinkage Estimation\"), which develops estimators that are shrunk based on sequential sampling schemes.\n\n**evaluation**: The evaluation design consists of comparing the proposed method against a baseline (vanilla GRPO) on a named LLM reasoning benchmark (AIME24) and reporting a standard metric (avg@64). This design—evaluating LLM reasoning systems by comparing scores on a benchmark—is a standard protocol, the very existence and properties of which are the subject of [10], which introduces \"ReasonBench, a benchmark suite recording\" performance of such systems.\n\n**domain**: The application area is distributed reinforcement learning for large language model reasoning, using verifiable rewards. This domain is explicitly addressed by multiple prior papers. For instance, [1] introduces a method for LLMs using \"Reinforcement Learning with Verifiable Rewards (RLVR) methods\" to improve their \"reasoning capabilities.\"\n\nVERDICT purpose = 3\nVERDICT mechanism = 25\nVERDICT evaluation = 10\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     3,
+     12
+    ],
+    "mechanism": [
+     2,
+     12
+    ],
+    "evaluation": [
+     5,
+     12
+    ],
+    "domain": [
+     7,
+     12
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution demonstrates performance gains under high staleness against standard baselines. Paper [6] (\"Gap Aware Mitigation of Gradient Staleness\") explicitly addresses gradient staleness in distributed training and proposes methods to mitigate its impact on convergence, which aligns with the same problem-class level objective of improving performance under staleness. Paper [3] (\"Learning with Staleness\") also focuses on the challenges posed by staleness in distributed machine learning, aiming to address the performance degradation caused by delayed updates. Both papers share the same purpose of improving performance under staleness conditions.\n\n### Mechanism\nThe contribution uses a benchmark comparison of Prefix-Ratio GRPO against vanilla GRPO and tight-clip GRPO under distributed training staleness. Paper [2] (\"GIPO: Gaussian Importance Sampling Policy Optimization\") introduces a policy optimization method that replaces hard clipping with a log-ratio-based approach, which is conceptually similar to the mechanism of modifying the clipping strategy for policy optimization under staleness. Paper [16] (\"CE-GPPO: Coordinating Entropy via Gradient-Preserving Clipping Policy Optimization\") also modifies the clipping mechanism in PPO to preserve gradient signals, addressing similar optimization challenges. Both papers involve substantively equivalent mechanisms for improving policy optimization under staleness.\n\n### Evaluation\nThe evaluation design involves measuring performance gains on AIME24 at staleness S = 11 using metrics like avg@64. Paper [5] (\"Deep Reinforcement Learning That Matters\") discusses the importance of reproducible evaluation setups in deep RL, including standard benchmark comparisons and metrics for performance validation. Paper [19] (\"Align and Filter: Improving Performance in Asynchronous On-Policy RL\") evaluates asynchronous RL methods under distributed training conditions, using benchmark comparisons and metrics to validate performance improvements. Both papers employ substantively equivalent evaluation designs (benchmark comparison under distributed/asynchronous RL conditions), even though the specific benchmark instance (AIME24) differs.\n\n### Domain\nThe contribution operates in the domain of mathematical reasoning benchmarks and LLM RL training. Paper [7] (\"TROLL: Trust Regions improve Reinforcement Learning for Large Language Models\") explicitly addresses RL-based fine-tuning of large language models (LLMs), which is the same general application area. Paper [16] (\"CE-GPPO: Coordinating Entropy via Gradient-Preserving Clipping Policy Optimization\") also focuses on RL optimization for LLMs in complex reasoning tasks, aligning with the same domain. Both papers cover the domain facet.\n\n---\n\nVERDICT purpose = 3  \nVERDICT mechanism = 2  \nVERDICT evaluation = 5  \nVERDICT domain = 7  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 12
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 12
+      },
+      "single_paper_covers_all": 12
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Demonstrates performance gains under high staleness against standard baselines.**\n\nThe purpose is to show that a specific method (Prefix-Ratio GRPO) outperforms baselines (vanilla GRPO, tight-clip GRPO) specifically under high staleness conditions in distributed LLM RL training. Paper [12] (GAC) explicitly studies \"naively applying asynchrony to policy-gradient updates\" and demonstrates performance improvements of their method under asynchronous/staleness conditions for LLMs. Paper [19] (Align and Filter) also demonstrates performance gains under policy lag/staleness conditions against baselines. Both papers share the same empirical relationship: method X outperforms baselines under distributed training staleness. Paper [3] (Learning with Staleness) also demonstrates performance under staleness but in general ML settings. The closest match is [12] and [19], which both demonstrate performance gains under staleness for LLM RL training specifically.\n\n**MECHANISM: Benchmark comparison of Prefix-Ratio GRPO against vanilla GRPO and tight-clip GRPO under distributed training staleness.**\n\nThe mechanism here is a controlled benchmark comparison of policy gradient variants under varying staleness levels. Paper [12] performs \"systematic empirical\" comparison of RL methods under asynchronous/staleness conditions. Paper [19] similarly compares policy lag mitigation methods against baselines. Paper [5] (Deep RL That Matters) establishes the design of benchmark comparisons of RL algorithms. The analysis design (compare variants under staleness) appears in [12] and [19].\n\n**EVALUATION: AIME24 at staleness S=11, avg@64 metric.**\n\nThe evaluation uses AIME24 (a mathematical reasoning benchmark) with avg@64 metric for LLM RL training. Paper [12] evaluates on mathematical reasoning benchmarks (AIME-type) for LLM RL. Paper [19] also evaluates on mathematical reasoning benchmarks. The benchmark family (AIME/math reasoning) and metric design (pass@k or avg@k) appear in both [12] and [19]. The evaluation design (mathematical reasoning benchmark + pass/avg metric for LLM RL) is covered.\n\n**DOMAIN: Mathematical reasoning benchmarks / LLM RL training.**\n\nPapers [12] and [19] both operate in LLM RL training with mathematical reasoning benchmarks. Paper [4], [7], [16], [17] also work in LLM post-training with RL. The domain is clearly covered by multiple papers.\n\nVERDICT purpose = 12\nVERDICT mechanism = 12\nVERDICT evaluation = 12\nVERDICT domain = 12",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     19,
+     33
+    ],
+    "evaluation": [
+     19,
+     33
+    ],
+    "domain": [
+     1,
+     6,
+     17,
+     19
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 19
+      },
+      "evaluation": {
+       "covered_by": 19
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        6,
+        19,
+        17
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to verify that the dampening mechanism is selective rather than uniformly suppressive. None of the prior papers explicitly report or establish the same empirical relationship — the selectivity of dampening bad-prefix versus good-prefix tokens. While some papers discuss gradient-related mechanisms (e.g., [1], [6], [17], [19]), none of them focus on selectivity in the context of prefix-aware dampening or token-specific suppression. Therefore, no prior paper covers this purpose.\n\n### Mechanism\nThe mechanism involves selectivity analysis measuring the fraction of bad-prefix versus good-prefix tokens dampened by the prefix-aware ratio. Papers such as [19] and [17] discuss token-specific gradient adjustments or mechanisms for stabilizing reinforcement learning, but they do not employ a prefix-aware ratio or analyze selectivity in the same way. Similarly, [26] addresses rare token embeddings but does not involve prefix-aware dampening. No prior paper uses this specific mechanism.\n\n### Evaluation\nThe evaluation achieves a 4.42x selectivity ratio, dampening 99.4% of bad-prefix tokens while only dampening 22.6% of good-prefix tokens. Papers such as [19] and [17] discuss evaluation setups related to token-specific adjustments, but none use the same evaluation design — a selectivity ratio comparing dampening effects on bad-prefix versus good-prefix tokens. This evaluation design appears to be novel.\n\n### Domain\nThe domain is LLM RL training and gradient analysis. Papers such as [1], [6], [19], and [17] all operate in the general area of reinforcement learning and gradient analysis for large language models or neural networks. While the specific sub-problem of prefix-aware dampening is new, the broader domain of LLM RL training and gradient analysis is covered by these prior works.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [1, 6, 19, 17]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper verifies selective dampening empirically; none matches the same objective.  \nFACET: mechanism | FINAL: COVERED-BY 19 | reason: \"Silencing rare spurious tokens\" aligns with selective dampening analysis using token ratios.  \nFACET: evaluation | FINAL: COVERED-BY 19 | reason: \"Around 0.01% spurious tokens dampened\" matches selectivity ratio claim with quantified dampening.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 33
+      },
+      "domain": {
+       "covered_by": 19
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Verifies that the dampening mechanism is selective rather than uniformly suppressive.**\n\nThe purpose is to demonstrate that a gradient dampening mechanism differentially affects \"bad-prefix\" tokens versus \"good-prefix\" tokens — i.e., it is targeted rather than blanket suppression. Paper [19] (STAPO) is about stabilizing RL for LLMs by silencing rare spurious tokens, and it explicitly analyzes whether its token-silencing mechanism is selective (targeting spurious tokens rather than all tokens). Paper [26] discusses adaptive gradient gating for rare token embeddings, analyzing selectivity of gradient effects. However, neither paper establishes the same empirical relationship: \"dampening is selective between bad-prefix vs. good-prefix tokens\" in the context of prefix-aware ratio mechanisms. Paper [19] comes closest but focuses on spurious vs. non-spurious tokens, not bad-prefix vs. good-prefix. No prior paper reports the same directional relationship between prefix type and dampening selectivity.\n\n**MECHANISM: Selectivity analysis measuring the fraction of bad-prefix versus good-prefix tokens dampened by the prefix-aware ratio.**\n\nThis involves computing what fraction of tokens in each category (bad-prefix, good-prefix) fall below a dampening threshold, then computing a selectivity ratio. Paper [19] analyzes token-level gradient suppression and measures which tokens are affected. Paper [33] discusses sensitivity and specificity as metrics. The generic analytical move (measure fraction of two groups affected by a threshold) is a standard binary classification-style analysis, but no prior paper applies this specific design to prefix-aware gradient ratios in LLM RL training. However, as a design-level primitive, measuring \"fraction of group A vs. group B affected by a filter\" is a standard selectivity/specificity analysis seen broadly. Paper [33] covers sensitivity/specificity measurement as an evaluation design.\n\n**EVALUATION: Achieves a 4.42x selectivity ratio, dampening 99.4% of bad-prefix tokens while only dampening 22.6% of good-prefix tokens.**\n\nThe evaluation design here is measuring a selectivity ratio (true positive rate vs. false positive rate of dampening across two token groups). This is structurally equivalent to sensitivity/specificity analysis, which appears in [33] and [9]. The design of computing differential coverage rates across two groups and forming a ratio is a standard statistical evaluation framework covered by these papers.\n\n**DOMAIN: LLM RL training / gradient analysis.**\n\nPaper [19] explicitly operates in LLM RL training with gradient/token-level analysis. Paper [6] covers gradient analysis in deep RL. The domain of LLM RL training and gradient analysis is clearly covered by [19].\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 33\nVERDICT domain = 19",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper verifies that a dampening mechanism is selective rather than uniformly suppressive; [19] (STAPO) identifies spurious tokens and silences them but does not verify selectivity by contrasting bad-prefix vs. good-prefix dampening rates as a validation goal.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper measures the fraction of bad-prefix versus good-prefix tokens dampened by a prefix-aware ratio as a selectivity analysis; [19] targets spurious tokens by a different criterion and does not compute or report such a comparative fraction under any equivalent framing."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 24
+      },
+      "mechanism": {
+       "covered_by": 33
+      },
+      "evaluation": {
+       "covered_by": 33
+      },
+      "domain": {
+       "covered_by": 19
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "PURPOSE: The contribution's purpose is to verify that a mechanism is selective in its application. This is substantively equivalent to the purpose of paper [24], which aims to establish that \"Transformers Provably Learn Sparse Token Selection,\" verifying the selective nature of the transformer architecture itself.\n\nMECHANISM: The analysis method involves defining two classes of items (good-prefix vs. bad-prefix tokens) and measuring the differential rate at which a mechanism acts upon them. This is a standard selectivity analysis, equivalent to the design used in [33] which performs a \"meta-analysis on sensitivity and specificity outcomes,\" the canonical method for measuring selective performance.\n\nEVALUATION: The evaluation design consists of calculating the fraction of items affected in two distinct groups and computing their ratio to quantify selectivity. This design is explicitly used in [33], which evaluates diagnostic performance by calculating \"sensitivity and specificity outcomes,\" the same underlying metrics.\n\nDOMAIN: The contribution is in the domain of LLM reinforcement learning and gradient analysis. This area is covered by [19], which focuses on \"Stabilizing Reinforcement Learning for LLMs by Silencing Rare Spurious Tokens,\" operating in the exact same application area.\n\nVERDICT purpose = 24\nVERDICT mechanism = 33\nVERDICT evaluation = 33\nVERDICT domain = 19",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

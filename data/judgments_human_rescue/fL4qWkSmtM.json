@@ -1,0 +1,224 @@
+{
+ "paper_id": "fL4qWkSmtM",
+ "title": "What is Wrong with Perplexity for Long-context Language Modeling?",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1
+    ],
+    "mechanism": [
+     8
+    ],
+    "evaluation": [
+     1,
+     5
+    ],
+    "domain": [
+     1,
+     5
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose:\nThe contribution's purpose is to explain why perplexity (PPL) fails to reflect LLMs' long-context abilities. Paper [1] explicitly states, \"we find that there is no correlation between PPL and LLMs' long-text understanding ability. Besides, PPL may only reflect the model's ability to model local information instead of catching long-range dependency.\" This matches the purpose of identifying the limitations of PPL in evaluating long-context abilities. Paper [3] also critiques perplexity and synthetic tasks as insufficient for evaluating long-context abilities but does not directly explain *why* PPL fails, focusing instead on introducing a benchmark. Therefore, [1] is the closest match.\n\n### Mechanism:\nThe mechanism involves fine-grained analysis of individual tokens and introducing Long-Short Difference (LSD), a causal intervention on context length (log-prob under long vs. truncated short context) to identify 'key tokens' that gain from long context. Paper [8] explores \"which kinds of words benefit more from long contexts in language models\" by analyzing token-level changes in performance, which is substantively equivalent to identifying key tokens that gain from long context. However, [8] does not use the LSD causal intervention method, making the mechanism novel. No other paper introduces a causal intervention like LSD.\n\n### Evaluation:\nThe evaluation design correlates PPL on answer tokens with LongEval accuracy and uses LSD-based key-token identification to match LongEval answer tokens with high accuracy. Paper [5] introduces L-Eval, a standardized evaluation for long-context LLMs, and Paper [9] discusses LongBench and Ada-LEval benchmarks, which are similar in design to LongEval. These benchmarks focus on QA and summarization tasks, which align with the evaluation design here. While the specific correlation and matching experiments are new, the evaluation design (benchmark family and metric semantics) is covered by [5] and [9].\n\n### Domain:\nThe domain is long-context LLM evaluation. Papers [5], [9], [10], [12], and [18] all work in the same general application area of evaluating long-context LLMs, even though they target different benchmarks, datasets, or sub-problems. Therefore, the domain is covered.\n\n---\n\nVERDICT purpose = 1  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 5  \nVERDICT domain = 5  ",
+      "stage2": "FACET: mechanism | FINAL: COVERED-BY 8 | reason: Paper [8] explicitly analyzes \"which kinds of words benefit more from long contexts in language models,\" which aligns with the fine-grained analysis of token roles and their gains from long contexts. Specifically, it states: *\"we aim to explore which kinds of words benefit more from long contexts in language models by analyzing the changes in log-probabilities under different context lengths.\"* This satisfies the same empirical relationship as the proposed mechanism facet."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Explain why perplexity (PPL) fails to reflect LLMs' long-context abilities.**\n\nPaper [1] is directly titled \"Can Perplexity Reflect Large Language Model's Ability in Long Text Understanding?\" and explicitly states \"we find that there is no correlation between PPL and LLMs' long-text understanding ability\" and \"PPL may only reflect the model's ability to model local information instead of catching long-range dependency.\" This is substantively equivalent — same objective of explaining why PPL fails for long-context evaluation. Paper [8] also analyzes which tokens benefit from long contexts in language modeling, which is related but more about characterizing token types than explaining PPL's failure.\n\n**MECHANISM: Fine-grained token-level analysis; Long-Short Difference (LSD) as causal intervention comparing log-prob under long vs. truncated short context to identify 'key tokens'.**\n\nPaper [8] is titled \"What Kinds of Tokens Benefit from Distant Text? An Analysis on Long Context Language Modeling\" and explicitly analyzes \"changes\" in token-level probabilities when context length varies — comparing model behavior under long vs. short contexts to identify which tokens benefit from distant information. This is substantively the same primitive: compute per-token log-prob difference between long and truncated context to identify tokens that gain from long context. The \"LSD\" name is new but the underlying causal intervention design (long context vs. short/truncated context, token-level log-prob comparison) is covered by [8]. Paper [17] (ProLong) also assigns long-dependency scores to training samples based on similar principles, but [8] is the closer match.\n\n**EVALUATION: PPL on answer tokens correlates with LongEval accuracy; PPL on non-answer tokens does not; LSD-based key-token identification matches LongEval answer tokens with 98.2% accuracy.**\n\nThe evaluation design involves: (1) correlation analysis between PPL-based metrics and benchmark accuracy (LongEval), and (2) token-identification accuracy against a ground-truth benchmark. Paper [1] uses correlation analysis between PPL and long-text understanding benchmark performance — same design of correlating PPL with task accuracy. Paper [8] also evaluates token-level analysis against downstream tasks. The correlation-between-PPL-and-benchmark-accuracy design is present in [1]. However, the specific design of splitting tokens into answer vs. non-answer and measuring differential correlation, plus the key-token identification accuracy metric, appears genuinely new as an evaluation protocol. But the broader design of \"correlate PPL with benchmark performance\" is in [1]. The 98.2% key-token matching is a new metric, but the correlation analysis design is covered by [1].\n\n**DOMAIN: Long-context LLM evaluation.**\n\nPapers [1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12], [17], [18] all operate in the domain of long-context LLM evaluation/training. This is clearly covered.\n\nVERDICT purpose = 1\nVERDICT mechanism = 8\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": [
+     7,
+     18
+    ],
+    "domain": [
+     1,
+     7
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to provide a reliable, unsupervised metric for evaluating LLMs' long-context capabilities on natural corpora. Paper [7] (LongBench) discusses benchmarks tailored for evaluating long-context understanding but does not propose an unsupervised metric. Paper [1] (L-Eval) aims to standardize evaluation for long-context LLMs but focuses on benchmarks rather than metrics. Paper [8] (Perplexed) introduces a library for exploring perplexity but does not specifically address long-context evaluation. None of the prior papers explicitly aim to provide an unsupervised metric for evaluating long-context capabilities.\n\n### Mechanism\nThe mechanism, LongPPL, computes perplexity averaged only over LSD-selected key tokens. Paper [24] (Selective Preference Optimization) discusses token-level selection strategies for alignment but does not use perplexity or focus on long-context evaluation. Paper [9] (Example Perplexity) introduces a method to measure example perplexity but does not involve LSD-selected tokens or long-context evaluation. Paper [15] (Text vectorization via transformer-based language models and n-gram perplexities) discusses perplexity but does not propose token selection strategies or long-context evaluation. None of the prior papers describe a substantively equivalent mechanism.\n\n### Evaluation\nThe evaluation demonstrates that LongPPL strongly correlates with benchmark scores across diverse LLMs and long-context benchmarks. Paper [7] (LongBench) uses similar benchmarks and metrics to evaluate long-context understanding, including correlation with benchmark scores. Paper [1] (L-Eval) also evaluates long-context LLMs using standardized benchmarks. Paper [12] (Ada-LEval) evaluates long-context LLMs with length-adaptable benchmarks, which is substantively equivalent in design. The evaluation design is covered by these prior papers.\n\n### Domain\nThe domain is long-context LLM evaluation. Papers [1] (L-Eval), [7] (LongBench), [12] (Ada-LEval), [13] (BAMBOO), and others explicitly focus on evaluating long-context capabilities of LLMs. This application area is well-covered by prior work.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 7  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly provides an unsupervised metric for evaluating LLMs' long-context capabilities on natural corpora.  \nFACET: mechanism | FINAL: NONE | reason: No prior paper describes computing perplexity averaged only over LSD-selected key tokens."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 18
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Provide a reliable, unsupervised metric for evaluating LLMs' long-context capabilities on natural corpora.**\n\nThe purpose is to create an unsupervised (reference-free) metric that reliably measures long-context capability. Papers [1], [2], [3], [7], [12], [13], [14] all evaluate long-context LLMs, but they do so via supervised benchmarks (QA tasks, summarization, etc.) — not unsupervised metrics. Paper [18] investigates whether perplexity correlates with downstream performance (speech recognition WER), which is structurally similar: \"find a metric that is easily calculated but better predicts [downstream] performance.\" However, [18] is about speech LM evaluation, not long-context LLM evaluation, and the gap being closed is different (standard PPL vs. long-context capability). Paper [25] proposes evaluating LMs beyond perplexity by checking statistical tendencies, but the purpose is general LM evaluation, not long-context capability specifically. No prior paper specifically targets the gap: \"standard PPL fails to capture long-context capability; we need an unsupervised metric that does.\" This purpose is not substantively covered.\n\n**MECHANISM: LongPPL — compute perplexity averaged only over LSD-selected key tokens.**\n\nThe core primitive is: select a subset of \"key\" tokens (those that depend on long-range context, identified via a long-short dependency score) and compute perplexity only over those tokens. Paper [3] (ProLong) proposes a long-dependency score to filter training samples — it identifies tokens/samples with strong long-range dependencies. However, ProLong uses this for data selection/filtering during training, not for computing a perplexity metric. The underlying primitive of \"identify tokens with high long-range dependency and focus computation on them\" is shared. Paper [16] uses token-level perplexity measures selectively. Paper [15] notes that single unlikely tokens dominate perplexity and suggests n-gram perplexity variants. Paper [24] (SePO) selects key tokens for preference optimization. None of these combine: (a) long-short dependency scoring to identify key tokens + (b) computing perplexity restricted to those tokens as an evaluation metric. The specific combination is not covered, but the closest is [3] for the dependency-scoring primitive. The mechanism of \"compute perplexity only over selected key tokens identified by long-range dependency\" is not substantively equivalent to any prior paper's primitive.\n\n**EVALUATION: Pearson correlation between LongPPL and long-context benchmark scores across diverse LLMs.**\n\nThe evaluation design is: compute a metric across multiple LLMs, then measure Pearson correlation with scores on named long-context benchmarks (LongBench, GovReport). Paper [18] explicitly investigates correlation between perplexity and downstream task performance (WER). Paper [22] investigates whether perplexity predicts fine-tuning performance, measuring correlation between intrinsic metrics and downstream scores. Paper [2] compares long-context evaluation approaches across models. The design of \"measure correlation between an intrinsic metric (perplexity variant) and downstream benchmark scores across multiple models\" is covered by [18] and [22] — same evaluation design (correlation of intrinsic metric vs. downstream performance), just different benchmarks/domains.\n\n**DOMAIN: Long-context LLM evaluation.**\n\nPapers [1], [2], [3], [7], [12], [13], [14], [6], [20] all work in long-context LLM evaluation. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 18\nVERDICT domain = 7",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: All prior papers evaluate long-context LLMs via task-based benchmarks (QA, summarization, etc.) or supervised metrics. None proposes an *unsupervised* perplexity-based metric specifically designed as a reliable evaluation of long-context capability on natural corpora. The closest candidates (L-Eval [1], LongBench [7], ∞Bench [14], etc.) are supervised benchmark frameworks, not unsupervised metrics; no paper quotes match \"unsupervised metric for evaluating long-context capabilities on natural corpora.\"\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper computes perplexity averaged exclusively over a subset of key tokens selected by a long-range dependency scoring method. Paper [17] uses perplexity for data pruning, [16] uses token-level perplexity for adversarial detection, and [15] discusses token-level probability distributions, but none describes averaging perplexity only over LSD-selected (or equivalently named) key tokens as an evaluation metric. No matching quote found."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     18
+    ],
+    "evaluation": [
+     3
+    ],
+    "domain": [
+     3
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 18
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to improve long-context fine-tuning by prioritizing tokens that gain the most from long context. None of the prior papers explicitly focus on this specific objective. While [3] discusses long-context alignment and [10] and [13] address fine-tuning challenges for LLMs, their purposes are distinct. [3] focuses on instruction fine-tuning for long-context alignment, while [10] and [13] aim to preserve general in-context learning ability during fine-tuning, not specifically to prioritize tokens based on their utility in long-context scenarios. Therefore, no prior paper shares the same purpose.\n\n### Mechanism\nThe mechanism, LongCE loss, involves a re-weighting strategy that upweights key tokens, estimated by the model itself, alternating between estimating and optimizing key tokens. This mechanism is not covered by any prior paper. While [18], [21], and [27] discuss reweighting strategies, they focus on different objectives, such as handling noisy data, hard example mining, or intra-class hard example mining, and do not involve the specific plug-and-play reweighting strategy based on alternating between estimating and optimizing key tokens. Thus, the mechanism is not covered.\n\n### Evaluation\nThe evaluation demonstrates consistent improvements over conventional cross-entropy loss across multiple LLMs and benchmarks, with a maximum accuracy gain of 22% on LongEval. The evaluation design is covered by [3], which also evaluates long-context fine-tuning methods across multiple benchmarks and LLMs. Although the specific benchmarks and models differ, the evaluation design (comparing performance across multiple benchmarks and LLMs) is equivalent. Therefore, the evaluation is covered.\n\n### Domain\nThe domain is long-context LLM training. This domain is covered by multiple prior papers, including [1], [2], [3], [4], [5], and [10], all of which address long-context LLM training in various capacities. While the specific sub-problems and datasets differ, the general application area is the same. Therefore, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 3  \nVERDICT domain = 3  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses improving long-context fine-tuning by prioritizing tokens that gain most from long context, even under different terminology or framing.  \nFACET: mechanism | FINAL: COVERED-BY 18 | reason: \"example reweighting algorithms\" in [18] aligns with the re-weighting strategy of LongCE, involving reweighting based on model-estimated importance."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 18
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Improve long-context fine-tuning by prioritizing tokens that gain most from long context.**\n\nPaper [3] (LongAlign) addresses long-context alignment/fine-tuning and introduces strategies for training on long sequences, but its purpose is general long-context alignment, not specifically prioritizing tokens that benefit most from long context. Paper [23] (TLDR) reweights tokens to reduce repetition in NLG, not to prioritize long-context-dependent tokens. No prior paper specifically targets the objective of \"identifying and upweighting tokens whose prediction most benefits from long context during fine-tuning.\" The closest is [3], which improves long-context fine-tuning, but its purpose is about data/batching strategies, not token-level prioritization based on long-context gain. This purpose is not substantively covered.\n\n**MECHANISM: LongCE loss — a re-weighting strategy that upweights key tokens estimated by the model itself, alternating between estimating and optimizing key tokens.**\n\nPaper [18] (Learning to Reweight Examples) uses a model-based meta-learning approach to reweight training examples, alternating between estimating weights and optimizing — this is structurally similar but operates at the example level, not token level, and not for long-context. Paper [23] (TLDR) performs token-level loss reweighting to reduce repetition. Paper [25] (Self-Paced Curriculum Learning) and [24] alternate between weight estimation and optimization. Paper [20] (Space-alternating generalized EM) introduces alternating estimation/optimization. The combination of (a) token-level cross-entropy reweighting + (b) model-self-estimated key tokens + (c) alternating estimation/optimization is partially covered: [18] covers model-self-estimated reweighting with alternating steps; [23] covers token-level loss reweighting. The core primitive — \"use the model itself to estimate which tokens to upweight, alternating between estimation and optimization\" — is substantively present in [18], which uses the model's own gradient signal to reweight, alternating meta-update and training steps. This is the same underlying primitive applied at token level.\n\n**EVALUATION: Improvements over CE across multiple LLMs and benchmarks, with accuracy gain on LongEval.**\n\nPaper [3] (LongAlign) evaluates long-context fine-tuning methods across multiple LLMs and benchmarks including LongEval. The evaluation design — comparing fine-tuning strategies across multiple LLMs on long-context benchmarks including LongEval — is substantively the same design as used in [3]. LongEval is specifically mentioned in [3] as an evaluation benchmark.\n\n**DOMAIN: Long-context LLM training.**\n\nPaper [3] (LongAlign) explicitly operates in long-context LLM fine-tuning/training. Papers [1], [2], [4], [5] also work in the long-context LLM area. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 18\nVERDICT evaluation = 3\nVERDICT domain = 3",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the objective of improving long-context fine-tuning by prioritizing tokens that gain most from long context. LongAlign (paper 3) addresses long-context fine-tuning but focuses on data diversity, packing, and sorted batching strategies — not on identifying and upweighting tokens whose loss is specifically reduced by access to long context. No other paper contains an equivalent objective even under different terminology."
+     }
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,391 @@
+{
+ "paper_id": "FA0213",
+ "title": "Overlap-Refresh: Decoupling Window Shifts from Full KV Refresh in Diffusion Language Models",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     8
+    ],
+    "evaluation": [
+     8
+    ],
+    "domain": [
+     1,
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to diagnose inefficiency in Window-Diffusion's phase-boundary handling. Paper [2] discusses inefficiencies in Window-Diffusion, specifically focusing on redundant computation during inference due to full-sequence attention. While it does not explicitly diagnose phase-boundary handling, it identifies structural inefficiencies in Window-Diffusion's inference process, which overlaps conceptually with diagnosing inefficiencies. Therefore, purpose is covered by [2].\n\n### Mechanism\nThe contribution identifies that Window-Diffusion couples window shifts with full KV refresh via a single `refresh_cycle` parameter and analyzes naive refresh reduction. Paper [8] studies adaptive KV cache recomputation in diffusion LLMs, focusing on minimizing redundant KV refreshes. While [8] does not explicitly mention coupling window shifts with KV refresh or the `refresh_cycle` parameter, its mechanism of reducing KV refresh redundancy is substantively equivalent to analyzing naive refresh reduction. Mechanism is covered by [8].\n\n### Evaluation\nThe contribution evaluates naive refresh reduction by showing its degradation of generation quality and speed. Paper [8] evaluates KV refresh strategies in diffusion LLMs using metrics like decoding latency and prediction accuracy, which align with the evaluation design of measuring generation quality and speed. Although the specific object differs, the evaluation design is substantively equivalent. Evaluation is covered by [8].\n\n### Domain\nThe contribution operates in the domain of diffusion language model inference. Papers [1], [2], [3], [5], [8], and [9] all address diffusion language model inference, making the domain clearly covered.\n\n---\n\nVERDICT purpose = 2  \nVERDICT mechanism = 8  \nVERDICT evaluation = 8  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Diagnose the inefficiency in Window-Diffusion's phase-boundary handling.**\n\nThe purpose is to identify a specific inefficiency in Window-Diffusion's design — specifically how it handles phase boundaries. Paper [2] IS Window-Diffusion itself, describing the system being critiqued. No prior paper diagnoses an inefficiency *in* Window-Diffusion's phase-boundary handling, since that would require Window-Diffusion to already exist and be analyzed. Paper [8] studies KV cache recomputation inefficiency in diffusion LLMs generally, but does not diagnose Window-Diffusion's specific phase-boundary coupling problem. No prior paper establishes the same empirical relationship (inefficiency in Window-Diffusion's phase-boundary handling).\n\n**MECHANISM: Identify that Window-Diffusion couples window shifts with full KV refresh via a single refresh_cycle parameter, and analyze naive refresh reduction.**\n\nThis mechanism involves analyzing a specific parameter coupling in Window-Diffusion [2]. Paper [2] introduces the refresh_cycle parameter but does not analyze its inefficiency or the coupling problem. Paper [8] analyzes KV cache recomputation strategies in diffusion LLMs but does not analyze the specific refresh_cycle coupling in Window-Diffusion. No prior paper performs this specific analysis of the refresh_cycle parameter coupling.\n\n**EVALUATION: Show that naive refresh reduction degrades both generation quality and speed.**\n\nThe evaluation design involves measuring generation quality and speed under reduced refresh rates — essentially an ablation/substitution experiment on a parameter. Paper [8] evaluates KV cache recomputation strategies measuring both accuracy and latency in diffusion LLMs, which is the same evaluation design (quality + speed metrics on diffusion LLM inference). Paper [5] also evaluates KV caching strategies measuring quality and speed in diffusion LLMs. These use the same evaluation design (benchmark quality metrics + speed/latency measurement) applied to the same domain. This is a standard ablation measuring quality and speed under parameter variation, and papers [5] and [8] use the same design framework.\n\n**DOMAIN: Diffusion language model inference.**\n\nPapers [2], [3], [4], [5], [8], [9] all operate in diffusion language model inference. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 8\nVERDICT domain = 2",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper diagnoses inefficiency specifically in Window-Diffusion's phase-boundary handling; [2] introduces Window-Diffusion but does not self-diagnose this inefficiency, and no other paper addresses this construct at all.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper identifies or analyzes the coupling of window shifts with full KV refresh via a single refresh_cycle parameter in Window-Diffusion; this is a specific architectural detail of [2] that no other paper examines or critiques, even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose:** The contribution's purpose is to diagnose a specific inefficiency in the Window-Diffusion algorithm, namely related to its handling of phase boundaries. This is a finding about a specific empirical relationship between an algorithmic design choice and a performance bottleneck. No prior paper investigates or reports this specific inefficiency in Window-Diffusion. While paper [8] discusses general inefficiencies in DLM KV caching, it does not diagnose this particular problem in this particular algorithm.\n\n**mechanism:** The mechanism is the analysis method used to arrive at the finding: identifying a coupled parameter (`refresh_cycle` controlling both window shifts and KV refresh) and then analyzing the effect of naively decoupling them (reducing refresh). This analysis design—identifying a specific algorithmic source of inefficiency through inspection and simple ablation—is a standard performance analysis technique. For example, paper [8] uses a similar analysis design when it observes that \"KV states changing little across most steps\" to identify redundancy.\n\n**evaluation:** The evaluation design consists of showing that a naive change (reducing the refresh rate) negatively impacts both generation quality and speed. This is a standard trade-off analysis, where an efficiency-related parameter is varied and its effects on performance (quality) and cost (speed) are measured. Paper [8] explicitly aims to \"maximize prediction accuracy while minimizing decoding latency,\" so its evaluation design must also measure this trade-off between quality and speed.\n\n**domain:** The application area is diffusion language model inference. This domain is explicitly addressed by numerous prior papers. For instance, paper [1] is titled \"Diffusion Language Model Inference with Monte Carlo Tree Search,\" and papers [2], [3], [4], [5], and [8] also operate within this exact domain.\n\nVERDICT purpose = NONE\nVERDICT mechanism = [8]\nVERDICT evaluation = [8]\nVERDICT domain = [1]",
+      "stage2": "FACET: purpose: Diagnose the inefficiency in Window-Diffusion's phase-boundary handling. | FINAL: NONE | reason: No prior paper has the objective of analyzing or diagnosing a performance inefficiency specifically within the phase-boundary mechanism of a windowed diffusion model. The prior work either proposes new methods to solve general inefficiencies (e.g., [2], [5], [8]) or analyzes problems in unrelated domains like hardware caches or web caching."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     5
+    ],
+    "mechanism": null,
+    "evaluation": [
+     5,
+     13
+    ],
+    "domain": [
+     1,
+     13
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to \"enable efficient scheduling without sacrificing generation quality.\" This aligns with the general goal of improving scheduling efficiency while maintaining performance. Paper [5] (\"SageSched: Efficient LLM Scheduling Confronting Demand Uncertainty and Hybridity\") explicitly addresses efficient scheduling for LLM inference workloads, focusing on balancing compute and memory demands while maintaining performance. Similarly, paper [22] (\"Optimal Scheduling Algorithms for LLM Inference: Theory and Practice\") discusses strategies for efficient scheduling in LLM inference systems, aiming to optimize throughput and latency. Both papers share the same high-level objective of efficient scheduling without compromising quality.\n\n**VERDICT purpose = 5**\n\n---\n\n### Mechanism\nThe mechanism proposed is \"Overlap-Refresh,\" which decouples window shift frequency from KV refresh frequency using two independent scheduling parameters (shift_interval and refresh_interval). This mechanism introduces a novel decoupling of scheduling parameters for KV cache management in diffusion language models. While several prior works address scheduling and KV cache management, none propose a mechanism equivalent to Overlap-Refresh. For example, paper [18] (\"dKV-Cache: The Cache for Diffusion Language Models\") introduces a KV-cache-like mechanism for diffusion language models but does not involve decoupling window shift and KV refresh frequencies. Similarly, paper [24] (\"Continuum: Efficient and Robust Multi-Turn LLM Agent Scheduling with KV Cache Time-to-Live\") focuses on KV cache management for multi-turn LLM workloads but does not propose a mechanism equivalent to Overlap-Refresh. No prior paper explicitly describes a mechanism that decouples window shift and KV refresh frequencies.\n\n**VERDICT mechanism = NONE**\n\n---\n\n### Evaluation\nThe evaluation involves presenting the contribution as a decoupled scheduler and validating it via downstream throughput/quality results. This evaluation design is standard in scheduling and efficiency research, where throughput and quality are common metrics. Paper [5] (\"SageSched\") evaluates scheduling efficiency using throughput and performance metrics, and paper [22] (\"Optimal Scheduling Algorithms for LLM Inference\") also uses similar evaluation designs to validate scheduling strategies. These prior works demonstrate the use of the same evaluation design, even if applied to different scheduling mechanisms or specific benchmarks.\n\n**VERDICT evaluation = 5**\n\n---\n\n### Domain\nThe domain is \"diffusion language model inference.\" Several prior papers explicitly address diffusion language models, including [1] (\"Accelerating Diffusion Language Model Inference via Efficient KV Caching and Guided Diffusion\"), [4] (\"Sequential Diffusion Language Models\"), [10] (\"How Efficient Are Diffusion Language Models? A Critical Examination of Efficiency Evaluation Practices\"), [13] (\"Orchestrating Dual-Boundaries: An Arithmetic Intensity Inspired Acceleration Framework for Diffusion Language Models\"), and [18] (\"dKV-Cache: The Cache for Diffusion Language Models\"). These papers establish that diffusion language model inference is a well-studied domain.\n\n**VERDICT domain = 1**  \n\n---\n\n### Final Verdicts\nVERDICT purpose = 5  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 5  \nVERDICT domain = 1  ",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper explicitly describes the decoupling of window shift frequency from KV refresh frequency via independent scheduling parameters (shift_interval and refresh_interval)."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 13
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Enable efficient scheduling without sacrificing generation quality.**\n\nThe purpose is to improve inference efficiency (throughput) while maintaining generation quality in diffusion language models. Papers [1], [10], [13], and [18] all address the same objective: accelerating diffusion language model inference while preserving quality. Paper [13] specifically states it addresses \"inference efficiency\" and \"KV caching\" for dLLMs. Paper [18] addresses \"slow inference\" in DLMs. Paper [1] addresses \"slow inference\" in diffusion language models. All share the same problem-class objective: efficient DLM inference without quality loss.\n\n**MECHANISM: Overlap-Refresh — decoupling window shift frequency from KV refresh frequency via two independent scheduling parameters.**\n\nThe core primitive is decoupling two frequencies (shift_interval and refresh_interval) that were previously coupled. Paper [13] is the closest match — it discusses \"periodic cache refreshes\" and decoupling prefill/decode phases in dLLMs, and introduces scheduling around KV cache refresh. Paper [18] (dKV-Cache) introduces a delayed KV-Cache mechanism with scheduling of when to refresh the cache. However, the specific primitive of having *two independent interval parameters* (shift_interval vs. refresh_interval) that are decoupled from each other is not clearly present in any prior paper. Paper [13] discusses arithmetic intensity-inspired scheduling but doesn't explicitly decouple window shift from refresh as two independent parameters. No prior paper presents this exact two-parameter decoupling primitive for sliding window + KV refresh scheduling.\n\n**EVALUATION: Validated via downstream throughput/quality results.**\n\nThroughput and quality metrics for DLM inference are used in [1], [10], [13], [18]. Paper [10] explicitly performs \"empirical benchmarking\" of DLM efficiency with throughput and quality metrics. Paper [13] validates via throughput/quality results on diffusion language models. This evaluation design (throughput + quality benchmarking for DLM inference) is clearly covered by prior work.\n\n**DOMAIN: Diffusion language model inference.**\n\nPapers [1], [10], [13], [18] all operate in diffusion language model inference. This domain is clearly covered.\n\nVERDICT purpose = 1\nVERDICT mechanism = NONE\nVERDICT evaluation = 13\nVERDICT domain = 13",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper proposes decoupling window shift frequency from KV refresh frequency via two independent scheduling parameters (shift_interval and refresh_interval) or any equivalent construct under different terminology. Paper [13] discusses KV caching with periodic cache refreshes for diffusion LLMs and [18] proposes delayed KV-Cache, but neither introduces dual independent scheduling parameters that decouple these two frequencies. No other paper contains a quoted equivalent."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     7,
+     23
+    ],
+    "mechanism": [
+     7,
+     23,
+     31
+    ],
+    "evaluation": [
+     2,
+     5,
+     7
+    ],
+    "domain": [
+     2,
+     26
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 23
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to \"cheaply update the KV cache at shift-only boundaries.\" This objective is not explicitly addressed in any prior paper. While several papers (e.g., [2], [5], [7], [8], [9], [13]) discuss improving the efficiency of KV cache operations, they focus on different aspects such as quantization ([2]), partial recomputation ([5]), prefix reuse ([7]), multi-tenant reuse ([8]), task-adaptive window selection ([9]), or context-independent caching ([13]). None of these papers specifically target the problem of efficiently updating the KV cache at shift-only boundaries, which is a distinct purpose.\n\n### Mechanism\nThe mechanism introduced is \"delta-prefill,\" which computes KV only for newly entered tokens while reusing cached KV for overlap tokens, reducing the cost to \\(O(|N| \\times C)\\) compared to \\(O(C^2)\\) for a full refresh. This mechanism is a form of incremental computation, where only the changes (newly entered tokens) are processed while reusing prior results (cached KV for overlap tokens). Papers [22] and [23] discuss incremental computation as a general concept, and [22] specifically mentions \"parallel and incremental computation\" as a unified approach. However, neither paper applies this concept to KV cache updates or sliding-window scenarios. Paper [19] discusses \"delta prefetchers\" for memory access patterns, but this is in the context of hardware prefetching for L1D caches, not KV cache updates. None of the prior papers describe a mechanism substantively equivalent to delta-prefill for KV cache updates in sliding-window scenarios.\n\n### Evaluation\nThe evaluation involves runtime analysis showing that delta-prefill is 3.3x cheaper than a full refresh. Papers [2], [5], [7], [8], and [9] all evaluate runtime performance improvements for KV cache optimizations in LLMs, using similar runtime analysis designs. For example, [5] evaluates the runtime benefits of partial recomputation, and [7] evaluates the speedup from reusing precomputed KV caches. These evaluations share the same design: measuring runtime improvements of a proposed KV cache optimization. While the specific benchmarks and setups differ, the evaluation design is covered by prior work.\n\n### Domain\nThe domain is \"KV-cache computation for sliding-window diffusion.\" While no prior paper explicitly addresses sliding-window diffusion, the broader domain of KV-cache computation is well-covered by papers such as [2], [5], [7], [8], and [9], which focus on KV-cache optimizations for LLM inference. Sliding-window diffusion is a specific instance of KV-cache computation, not a genuinely new application area. Therefore, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 2  \nVERDICT domain = 2  ",
+      "stage2": "1. **FACET: purpose** | **FINAL: NONE** | reason: No prior paper explicitly addresses the objective of cheaply updating the KV cache specifically at shift-only boundaries. No equivalent objective was found under different terminology, framing, or domain vocabulary.\n\n2. **FACET: mechanism** | **FINAL: COVERED-BY 23** | reason: Incremental computation in [23] (\"Incremental computation aims to compute more efficiently on changed input by reusing previously computed results\") aligns with the mechanism of delta-prefill, which computes KV only for newly entered tokens while reusing cached KV for overlap tokens."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 26
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Cheaply update the KV cache at shift-only boundaries.**\n\nThe purpose is to reduce the cost of KV cache updates when a sliding window shifts (i.e., only new tokens enter, old tokens leave). Paper [7] (CacheBlend) aims to \"speed up the prefill of long LLM inputs\" by reusing KV cache when context is reused. Paper [5] (KVPR) addresses \"partial recomputation\" of KV cache to reduce cost. Paper [8] (KVShare) targets \"selective recomputation\" for KV cache reuse. Paper [13] (KV Packet) addresses \"recomputation-free context-independent KV caching.\" However, none of these specifically target the \"shift-only boundary\" scenario in a sliding window — the purpose is specifically about the incremental update cost at sliding window transitions. Paper [7] is closest (partial recomputation of KV for reused tokens), and paper [5] also does partial recomputation. The objective \"compute KV only for newly entered tokens, reuse cached KV for overlap\" is substantively equivalent to CacheBlend's and KVPR's purpose of selective/partial KV recomputation to avoid full recompute. Paper [7] explicitly: \"selectively recomputing a subset of tokens\" and paper [5] \"partial recomputation.\" These cover the same objective at the problem-class level.\n\n**MECHANISM: Delta-prefill — compute KV only for newly entered tokens, reuse cached KV for overlap tokens, giving O(|N|×C) vs O(C²) for full refresh.**\n\nThe core primitive is: given a shifted window with overlap, only compute KV for the new (non-overlapping) tokens and reuse cached KV for the rest. Paper [7] (CacheBlend): \"selectively recomputing a subset of tokens\" for KV cache reuse when context shifts. Paper [5] (KVPR): \"partial recomputation\" of KV cache. Paper [8] (KVShare): \"selective recomputation\" for overlapping contexts. Paper [13] (KV Packet): avoids recomputation by making KV context-independent. The mechanism in [7] is most similar — compute KV only for a subset of tokens (the new ones) and reuse the rest. This is substantively the same primitive: partial/selective KV recomputation for overlapping token sequences. Paper [7] explicitly describes reusing precomputed KV cache for overlapping tokens and only recomputing for the non-overlapping portion.\n\n**EVALUATION: Runtime analysis confirms delta-prefill is 3.3x cheaper than full refresh.**\n\nThe evaluation design is a runtime/computational cost comparison between the proposed method and a full-recompute baseline, expressed as a speedup ratio. Paper [7] performs runtime comparisons showing speedup over full prefill. Paper [5] also does runtime/latency analysis comparing partial recomputation to full recomputation. Paper [13] similarly compares FLOPs and TTFT. These all use the same evaluation design: measure wall-clock time or FLOPs of the proposed partial-recompute method vs. full recompute baseline and report a speedup factor. This design is covered by [7] and [5].\n\n**DOMAIN: KV-cache computation for sliding-window diffusion.**\n\nThe domain is diffusion models with sliding-window KV cache. Paper [26] (Fast Sampling Through Reuse of Attention Maps in Diffusion Models) works in diffusion models and reuses attention maps for efficiency — this is the same general application area (KV/attention cache optimization in diffusion models). Paper [31] (Mistral 7B) uses sliding window attention in LLMs, not diffusion. Paper [2] (SKVQ) uses sliding-window KV cache but for LLMs. Paper [26] is in diffusion models and deals with reusing attention computations, covering the domain of KV-cache/attention optimization in diffusion models.\n\nVERDICT purpose = 7\nVERDICT mechanism = 7\nVERDICT evaluation = 7\nVERDICT domain = 26",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 23
+      },
+      "mechanism": {
+       "covered_by": 31
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 26
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: COVERED. The objective of cheaply updating a cache by avoiding full recomputation on changed inputs is the core goal of incremental computation, as defined in [23]: \"Incremental computation aims to compute more efficiently on changed input by reusing previously computed results.\" This same objective is explicitly pursued for KV caches in papers like [5], which proposes \"I/O-Aware KV Cache Partial Recomputation.\"\n\nmechanism: COVERED. The mechanism of computing KV states only for new tokens in a sliding window while reusing the cached states for overlapping tokens is the definition of sliding window attention. This is used in [31] which \"leverages... sliding window attention (SWA) to effectively handle sequences of arbitrary length with a reduced inference cost.\"\n\nevaluation: COVERED. The evaluation design consists of a direct runtime comparison of the proposed method against a \"full refresh\" baseline to demonstrate a speedup. This is a standard performance evaluation protocol used in nearly any paper proposing an efficiency optimization, such as [5] which evaluates its \"KV Cache Partial Recomputation\" method.\n\ndomain: COVERED. The application area is efficient inference for transformer-based diffusion models via attention mechanism optimization. Paper [26] operates in the exact same domain, proposing a method for \"Fast Sampling Through The Reuse Of Attention Maps In Diffusion Models.\"\n\nVERDICT purpose = 23\nVERDICT mechanism = 31\nVERDICT evaluation = 5\nVERDICT domain = 26",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     13,
+     19,
+     20
+    ],
+    "mechanism": [
+     6,
+     7,
+     34
+    ],
+    "evaluation": [
+     7,
+     11,
+     13
+    ],
+    "domain": [
+     7,
+     21
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        1,
+        19
+       ]
+      },
+      "mechanism": {
+       "covered_by": [
+        6,
+        34
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        7,
+        11
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        7,
+        21
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to demonstrate end-to-end throughput gains at near-baseline quality. Paper [1] (\"Speed-Accuracy Tradeoff\") discusses the tradeoff between speed and accuracy, which aligns with the objective of improving throughput while maintaining quality. Paper [19] (\"High-Throughput and Flexible Fully-Parallel Turbo Decoder for Variable Code Lengths\") also addresses throughput improvements while preserving decoding quality, albeit in a different context. Both papers share the same problem-class level objective of balancing speed and quality.\n\n### Mechanism\nThe mechanism evaluates Overlap-Refresh on MBPP code generation against the Window-Diffusion baseline. Paper [6] (\"Adaptive Decoding Algorithm With Variable Sliding Window for Double SC-LDPC Coding System\") introduces a window extension algorithm to mitigate error propagation in sliding window decoding, which shares the underlying primitive of adapting window-based mechanisms for improved performance. Paper [34] (\"SWAA: Sliding Window Attention Adaptation for Efficient and Quality Preserving Long Context Processing\") also adapts sliding window attention mechanisms to preserve quality while improving efficiency, which is substantively equivalent to the mechanism described here.\n\n### Evaluation\nThe evaluation reports a 6.0% throughput improvement while preserving quality within 0.6 percentage points. Paper [7] (\"Prompt, Assert, Repeat\") uses the MBPP benchmark for code generation evaluation, which matches the benchmark family used here. Paper [11] (\"ContractEval\") also evaluates code generation quality using assertion-based metrics, which aligns with the validation framework of preserving functional correctness. Both papers reuse the same evaluation design (benchmark family and metric semantics), making this facet covered.\n\n### Domain\nThe domain is code generation, specifically using the MBPP benchmark. Paper [7] (\"Prompt, Assert, Repeat\") explicitly works in the code generation domain using MBPP, and Paper [21] (\"ConvCodeWorld\") also addresses code generation in interactive settings. Both papers operate in the same general application area, making the domain covered.\n\n---\n\nVERDICT purpose = 1, 19  \nVERDICT mechanism = 6, 34  \nVERDICT evaluation = 7, 11  \nVERDICT domain = 7, 21  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Demonstrate end-to-end throughput gains at near-baseline quality.**\n\nThis purpose is about showing a speed-quality tradeoff where throughput improves while quality is preserved. Paper [1] is titled \"Speed-Accuracy Tradeoff\" which directly addresses demonstrating throughput/speed gains relative to quality/accuracy. Papers [13], [14], [16], [20], [25] all demonstrate inference speedup while preserving generation quality for language models. For example, [13] \"Blockwise Parallel Decoding\" proposes methods to improve generation speed while maintaining quality, and [16] \"Exploring and Improving Drafts in Blockwise Parallel Decoding\" explicitly measures speed improvements against quality baselines. Paper [25] \"Accelerating Diffusion LLMs via Adaptive Parallel Decoding\" also demonstrates throughput gains while preserving quality. The purpose of demonstrating end-to-end throughput gains at near-baseline quality is clearly covered by multiple prior papers.\n\n**MECHANISM: Evaluate Overlap-Refresh on MBPP code generation against the Window-Diffusion baseline.**\n\nThe mechanism here is the \"Overlap-Refresh\" approach evaluated against a \"Window-Diffusion\" baseline. This involves overlapping window-based diffusion decoding with a refresh strategy. Paper [20] \"DepCap: Adaptive Block-Wise Parallel Decoding for Efficient Diffusion LM Inference\" uses block-wise diffusion decoding with adaptive scheduling. Paper [33] \"LoSA: Locality Aware Sparse Attention for Block-Wise Diffusion Language Models\" addresses block-wise diffusion with overlap-aware attention. Paper [25] uses adaptive parallel decoding for diffusion LLMs. However, the specific \"Overlap-Refresh\" primitive — overlapping window regions and refreshing them during diffusion LM decoding — is most closely related to [20] and [33], which both deal with block-wise diffusion decoding with overlap/locality considerations. None of these papers describe the exact \"overlap-refresh\" primitive as a mechanism for diffusion LM decoding windows. Paper [20] comes closest with adaptive block-wise parallel decoding for diffusion LMs. This appears to be a genuinely new mechanism not covered by prior work.\n\n**EVALUATION: 6.0% throughput improvement (8.59 vs 8.10 tokens/sec) while preserving quality within 0.6 percentage points (54.4% vs 55.0% Pass@1).**\n\nThe evaluation design here involves measuring tokens/sec throughput alongside Pass@1 on MBPP. Paper [7] \"Prompt, Assert, Repeat\" evaluates LLMs on MBPP using Pass@k metrics. Paper [13] measures inference speedup (tokens/sec or similar) against quality metrics. Paper [16] measures blockwise parallel decoding speedup against quality. Paper [25] measures throughput vs. quality tradeoff for diffusion LLMs. The evaluation design — measuring throughput (tokens/sec) alongside Pass@1 on a code benchmark — is a standard design used in [13], [16], [25] (throughput + quality metric). The MBPP benchmark specifically appears in [7]. The combination of throughput measurement + Pass@1 quality preservation is covered by the general design in [13]/[16]/[25].\n\n**DOMAIN: Code generation (MBPP).**\n\nPaper [7] explicitly uses MBPP for code generation evaluation. Paper [11] also addresses code generation benchmarks. Paper [17], [18], [21], [26] all work in code generation with LLMs. The domain of code generation is clearly covered by multiple prior papers.\n\nVERDICT purpose = 13\nVERDICT mechanism = NONE\nVERDICT evaluation = 13\nVERDICT domain = 7",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper evaluates an \"Overlap-Refresh\" method against a \"Window-Diffusion\" baseline on MBPP code generation; paper [20] (DepCap) and [25] (APD) discuss block-wise diffusion decoding comparisons but neither names \"Overlap-Refresh\" or \"Window-Diffusion\" as specific compared systems, and no paper quotes any phrase establishing this specific experimental comparison."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 20
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to demonstrate a specific instance of the classic speed-accuracy tradeoff, showing throughput gains at near-baseline quality. This general objective is covered by prior work, such as [1], which is explicitly titled \"Speed-Accuracy Tradeoff\", and [20], which states its goal is to \"balance generation quality and decoding speed.\"\n\n**mechanism**: The mechanism is the analysis method used to generate the finding: a controlled comparison of a proposed method (\"Overlap-Refresh\") against a baseline (\"Window-Diffusion\") on a standard benchmark. This is a standard experimental design covered by prior work, for instance [7], which compares two methods (\"plain prompts\" vs. \"assertionaugmented prompts\") on the same benchmark.\n\n**evaluation**: The evaluation design uses an execution-based code generation benchmark (MBPP) and measures performance with throughput (tokens/sec) and functional correctness (Pass@1). This design is covered by prior work; [7] uses the exact same benchmark (\"Using the Mostly Basic Python Problems (MBPP) benchmark\"), and [11] explicitly refers to the standard metric family for this task (\"high pass@k scores\").\n\n**domain**: The application area is code generation. This domain is covered by numerous prior papers. For example, [7] addresses \"Quality Assurance Strategy for Code-Generating LLMs,\" and [18] focuses on \"Enhancing Code Generation with a Long-Term Perspective.\"\n\nVERDICT purpose = 20\nVERDICT mechanism = 7\nVERDICT evaluation = 7\nVERDICT domain = 7",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

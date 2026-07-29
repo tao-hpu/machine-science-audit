@@ -1,0 +1,339 @@
+{
+ "paper_id": "6qUUgw9bAZ",
+ "title": "Learning How Hard to Think: Input-Adaptive Allocation of LM Computation",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     6,
+     15,
+     17,
+     23,
+     26
+    ],
+    "mechanism": null,
+    "evaluation": [
+     13,
+     19,
+     29
+    ],
+    "domain": [
+     8,
+     17,
+     24
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        6,
+        17,
+        23
+       ]
+      },
+      "mechanism": {
+       "covered_by": [
+        12,
+        15,
+        21,
+        33
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        13,
+        19,
+        29
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        8,
+        17,
+        24
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to estimate, a priori, how much a given query would benefit from more inference-time computation, enabling adaptive allocation of compute resources. Paper [23] (\"Optimal Resource Allocation for Serverless Queries\") addresses optimizing resource allocation for analytical workloads, including predicting resource needs for queries, which is substantively equivalent at the problem-class level. Similarly, paper [6] (\"Optimizing resource allocation for approximate real-time query processing\") discusses resource allocation for approximate query evaluation, which aligns with the purpose of adaptive compute allocation. Paper [17] (\"Model Selection for Latency-Critical Inference Serving\") also addresses resource allocation for inference queries, explicitly considering query load and inter-arrival patterns, which overlaps with the goal of optimizing compute allocation.\n\n### Mechanism\nThe contribution proposes training a lightweight \"difficulty model\" to predict the distribution of rewards or marginal improvement in response quality per additional unit of compute, using probes on pre-trained LM hidden representations or LoRA fine-tuning. Paper [12] (\"Back to the roots: a probabilistic framework for query-performance prediction\") introduces a probabilistic framework for query-performance prediction, which involves estimating query effectiveness without relevance judgments, using predictive models. Paper [15] (\"Estimating the query difficulty for information retrieval\") also discusses methods for predicting query difficulty, which is conceptually similar to the proposed mechanism of predicting marginal improvement. Paper [21] (\"Problem-Solving Guide: Predicting the Algorithm Tags and Difficulty for Competitive Programming Problems\") describes predicting problem difficulty using machine learning models, which aligns with the idea of difficulty modeling. Paper [33] (\"Comparing Fixed and Adaptive Computation Time for Recurrent Neural Networks\") discusses adaptive computation time for RNNs, which is conceptually similar to the idea of allocating compute based on predicted difficulty.\n\n### Evaluation\nThe evaluation involves difficulty probes on frozen LM hidden states predicting marginal reward, validated with dedicated metrics and requiring a training set of >3K queries. Paper [13] (\"A case for improved evaluation of query difficulty prediction\") evaluates query difficulty prediction using correlation coefficients, which is a standard evaluation design for prediction tasks. Paper [19] (\"Is Query Performance Prediction With Multiple Query Variations Harder Than Topic Performance Prediction?\") uses a generalized evaluation framework for query performance prediction, which matches the design-level equivalence. Paper [29] (\"Query Performance Prediction using Passage Information\") evaluates query performance prediction using empirical benchmarks, which aligns with the evaluation design of validating prediction models.\n\n### Domain\nThe domain is LLM inference-time compute allocation. Paper [8] (\"Accelerating LLM Inference with Staged Speculative Decoding\") addresses LLM inference optimization, which falls within the same general application area. Paper [24] (\"Recursive Speculative Decoding: Accelerating LLM Inference via Sampling Without Replacement\") also focuses on accelerating LLM inference, which is substantively equivalent in domain. Paper [17] (\"Model Selection for Latency-Critical Inference Serving\") discusses inference serving systems for machine learning models, including LLMs, which is within the same domain.\n\n---\n\nVERDICT purpose = 6, 17, 23  \nVERDICT mechanism = 12, 15, 21, 33  \nVERDICT evaluation = 13, 19, 29  \nVERDICT domain = 8, 17, 24  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 15
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## PURPOSE\n\nThe contribution's purpose is: **estimate a priori how much a given query would benefit from more inference-time computation, to allocate decoding compute where it helps most rather than uniformly.**\n\nThis is essentially \"predict query difficulty before processing to allocate compute adaptively.\" Let me check relevant papers:\n\n- Papers [12], [13], [15], [19], [22], [29] all deal with **Query Performance Prediction (QPP)** in information retrieval — estimating in advance how well a retrieval system will perform on a query. Paper [15] explicitly: \"it is desirable that IR systems will be able to identify 'difficult' queries in order to handle them properly.\" Paper [13]: \"Query difficulty prediction aims to identify, in advance, how well an information retrieval system will perform when faced with a particular search request.\"\n\nThe underlying objective is the same: predict query difficulty a priori to handle it differently. The IR QPP papers cover this purpose at the problem-class level (predict difficulty before processing to allocate resources/effort). Paper [26] (ACT) addresses adaptive computation but at the architecture level, not query-level prediction. Papers [14], [16], [17], [23] address inference serving/resource allocation but focus on latency/throughput, not difficulty-based compute allocation for quality improvement.\n\nQPP papers [13], [15] most directly match: predict in advance how hard a query is so the system can respond appropriately. This is substantively equivalent at the problem-class level.\n\n## MECHANISM\n\nThe contribution's mechanism: **train a lightweight 'difficulty model' as probes on frozen LM hidden representations (or LoRA fine-tuning) to predict reward distributions / marginal quality improvement per compute unit.**\n\n- Paper [2] \"Regularizing Hidden States Enables Learning Generalizable Reward Model for LLMs\" — uses LLM hidden states for reward modeling, regularizing them. This involves probing/using hidden representations for reward prediction, which is related but focused on reward generalization, not difficulty prediction.\n- Paper [7] \"Junk DNA Hypothesis\" — examines what pre-trained weights encode about task difficulty, finding small weights encode knowledge for \"difficult\" downstream tasks. This touches on LMs encoding difficulty information but is about pruning, not probing hidden states for difficulty prediction.\n- Paper [26] ACT — learns how much computation to apply, but via internal halting mechanism, not a separate probe on hidden states.\n- Paper [15], [12], [13] QPP papers use various features (query statistics, retrieval scores) but not LM hidden state probes.\n\nNo prior paper specifically uses probes on frozen LM hidden representations to predict marginal reward improvement per compute unit. The closest is [2] which uses hidden states for reward modeling, but the specific primitive of \"lightweight probe on frozen LM hidden states predicting difficulty/marginal compute benefit\" doesn't appear to be covered.\n\n## EVALUATION\n\nThe contribution's evaluation: **probes on frozen LM hidden states predict marginal reward; evaluated with dedicated metrics; evidence that LMs encode problem difficulty from pretraining.**\n\n- The evaluation design involves: (1) training linear/lightweight probes on hidden states and measuring predictive accuracy, (2) a training data size analysis (>3K queries threshold). \n- Paper [7] evaluates what LMs encode about task difficulty through pruning experiments — related but different design.\n- Paper [2] evaluates reward model generalization using standard benchmarks.\n- QPP papers [13], [15], [19] use correlation-based evaluation of difficulty predictors — this is a named evaluation design (correlation with actual performance) that partially matches the \"probe evaluation\" design.\n- Paper [13] specifically: \"The current standard evaluation methodology involves calculating a correlation coefficient, to indicate how strongly the predicted query difficulty is related with an actual system performance measure.\" This is a dedicated metric for evaluating difficulty predictors, which is substantively similar to evaluating how well difficulty probes predict marginal reward.\n\nThe evaluation design of \"measure how well a difficulty predictor correlates with actual performance\" is covered by QPP evaluation papers [13], [15].\n\n## DOMAIN\n\nThe contribution's domain: **LLM inference-time compute allocation.**\n\n- Papers [8], [24] deal with LLM inference acceleration (speculative decoding) — same general area of LLM inference.\n- Papers [14], [17] deal with inference serving systems for ML models.\n- Paper [26] deals with adaptive computation time for RNNs — inference-time compute allocation for neural networks.\n\nThe domain of LLM inference-time compute is covered by [8], [24], [14], [17]. Paper [26] covers adaptive inference compute more broadly.\n\nVERDICT purpose = 15\nVERDICT mechanism = NONE\nVERDICT evaluation = 13\nVERDICT domain = 8",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes training a lightweight 'difficulty model' (as probes or LoRA on a pre-trained LM's hidden representations) that predicts reward distributions or marginal quality improvement per additional compute unit to route inference-time compute. Paper [2] regularizes hidden states for reward models but does not predict difficulty or marginal compute returns. No other paper matches even under alternative terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 26
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The objective to \"estimate, a priori, how much a given query would benefit from more inference-time computation, so decoding compute can be allocated where it helps most\" is substantively equivalent to the purpose of prior work on adaptive computation. Specifically, [26] introduces an algorithm that \"allows recurrent neural networks to learn how many computational steps to take between receiving an input and emitting an output,\" which is the same goal of dynamically allocating computation based on input.\n\n**mechanism**: The mechanism is a lightweight model, implemented as a probe on a pre-trained model's hidden states, that is trained to predict the marginal improvement in quality per additional unit of compute. While prior work predicts \"difficulty\" or overall performance, and other work uses integrated architectural changes to halt computation (e.g., [26]), no prior paper appears to use a decoupled, lightweight model to specifically predict the *marginal utility curve* of additional computation by probing a frozen, pre-trained model.\n\n**evaluation**: The evaluation design consists of training a predictive model (the probe) and measuring its accuracy against a ground-truth metric (the actual marginal reward). This design is standard in the field of query performance prediction. For example, [13] describes the standard methodology as \"calculating a correlation coefficient, to indicate how strongly the predicted query difficulty is related with an actual system performance measure,\" which is the same evaluation design, just applied to a different predictor and target metric.\n\n**domain**: The application area of \"LLM inference-time compute allocation\" is covered by prior work on accelerating LLM inference. For instance, [8] proposes \"staged speculative decoding, to accelerate LLM inference,\" and [24] also works on \"Accelerating LLM Inference,\" placing them in the same general application domain.\n\nVERDICT purpose = 26\nVERDICT mechanism = NONE\nVERDICT evaluation = 13\nVERDICT domain = 8",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes the specific mechanism of training a lightweight model (as probes or LoRA on a pre-trained LM) to predict the marginal improvement in response quality per additional unit of compute. While papers like [26] (Adaptive Computation Time) address dynamic computation in RNNs, they do so by modifying the core network architecture with a learned halting mechanism, not by using auxiliary probes on a pre-trained model. Other papers ([6], [23]) model resource-vs-quality trade-offs in different domains (database queries) with different methods. None match the specified implementation."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     10,
+     18
+    ],
+    "mechanism": [
+     10,
+     14,
+     18
+    ],
+    "evaluation": [
+     14,
+     16,
+     18
+    ],
+    "domain": [
+     10,
+     14,
+     18
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        10,
+        18
+       ]
+      },
+      "mechanism": {
+       "covered_by": [
+        14,
+        18
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        14,
+        18
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        14,
+        18
+       ]
+      },
+      "single_paper_covers_all": 18
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to \"turn difficulty predictions into an allocation of a fixed compute budget across a collection of queries.\" This objective is about leveraging difficulty predictions to optimize compute allocation. Paper [10] (\"Coordinated Time Budget Assignment for Latency, Quality and Power Optimization in Web Search\") addresses a similar purpose: assigning time budgets per query to optimize latency, quality, and power consumption. While the specific optimization goals differ slightly, both papers share the overarching purpose of compute budget allocation based on query characteristics. Paper [18] (\"Budget-adaptive allocation rule for optimal computing budget allocation\") also aligns with this purpose, as it focuses on allocating a limited simulation budget intelligently to maximize performance. Both papers substantively overlap with the contribution's purpose.\n\n### Mechanism\nThe contribution's mechanism is \"an efficient allocation algorithm that uses difficulty-model predictions to distribute computation to individual queries, solvable online (exactly meeting the budget for a batch) or offline (fixed query->compute mapping satisfying constraints in expectation).\" Paper [18] (\"Budget-adaptive allocation rule for optimal computing budget allocation\") describes a similar mechanism: an optimal computing budget allocation rule that intelligently distributes resources to maximize performance. Paper [14] (\"Optimal Resource Allocation for Serverless Queries\") also discusses mechanisms for resource allocation per query, including predictive models to optimize allocation. Both papers substantively overlap with the mechanism described in the contribution.\n\n### Evaluation\nThe contribution evaluates its method by applying it in two decoding procedures across Math, Code, and Chat domains, showing adaptive best-of-k outperforms non-adaptive methods across compute budgets and demonstrating allocation shifts compute to the 'hard' bin as budget grows. Papers [18] (\"Budget-adaptive allocation rule for optimal computing budget allocation\") and [14] (\"Optimal Resource Allocation for Serverless Queries\") use similar evaluation designs, including performance comparisons across budget constraints and adaptive allocation setups. These papers validate their methods using comparable evaluation designs, even though the specific benchmarks and domains differ.\n\n### Domain\nThe contribution operates in the domain of \"LLM inference-time compute allocation.\" Paper [14] (\"Optimal Resource Allocation for Serverless Queries\") addresses resource allocation for analytical workloads in serverless systems, which overlaps with the general area of compute allocation for inference tasks. Paper [18] (\"Budget-adaptive allocation rule for optimal computing budget allocation\") also operates in the domain of compute budget allocation, albeit in simulation-based ranking and selection. Both papers substantively overlap with the domain of compute allocation, even though the specific application areas differ.\n\n---\n\n**VERDICT purpose = 10, 18**  \n**VERDICT mechanism = 14, 18**  \n**VERDICT evaluation = 14, 18**  \n**VERDICT domain = 14, 18**  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 10
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": null
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism",
+      "evaluation",
+      "domain"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Turn difficulty predictions into an allocation of a fixed compute budget across a collection of queries.**\n\nThe purpose is specifically about using difficulty predictions to allocate a fixed compute budget across queries at LLM inference time. Paper [10] (Cottage) addresses \"per query granularity\" time budget assignment for web search queries based on difficulty, which is substantively equivalent — using query difficulty to allocate compute budget per query. Paper [7] \"Thinking Ahead: Continual Computation Policies for Allocating Offline and Real-Time Resources\" also addresses allocating computation resources based on problem characteristics. Paper [18] addresses budget allocation for simulation with a fixed budget. However, the closest match is [10], which explicitly uses query difficulty predictions to assign time budgets per query to meet a fixed overall budget — same objective at the problem-class level.\n\n**MECHANISM: Efficient allocation algorithm using difficulty-model predictions, solvable online (exactly meeting budget for a batch) or offline (fixed query->compute mapping satisfying constraints in expectation).**\n\nThe mechanism involves using predicted difficulty scores to solve a budget allocation problem, with both online (exact) and offline (expectation) variants. Paper [10] uses difficulty predictors to assign time budgets in a coordinated framework. Paper [18] presents a budget-adaptive allocation rule for OCBA that allocates simulation budget based on predicted performance. Paper [7] discusses offline vs. real-time resource allocation policies. The online/offline duality with constraint satisfaction in expectation resembles [18]'s adaptive OCBA and [7]'s offline/real-time distinction. However, the specific mechanism of using an ML difficulty predictor to solve a knapsack-like allocation with online exact and offline expectation variants is not clearly covered by any single prior paper at the primitive level. Paper [10] is the closest but focuses on web search latency/quality tradeoffs rather than this specific algorithmic primitive.\n\n**EVALUATION: Adaptive best-of-k outperforms non-adaptive across compute budgets; allocation shifts compute to 'hard' bin as budget grows (Math, Code, Chat benchmarks).**\n\nThe evaluation design uses standard LLM benchmarks (Math, Code, Chat) with compute-budget sweep comparisons and adaptive vs. non-adaptive comparisons. This is a standard \"swap a component, measure accuracy across compute budgets\" design applied to LLM inference. No prior paper uses this specific named benchmark family or protocol for this purpose. The evaluation design of comparing adaptive vs. non-adaptive compute allocation across a budget sweep is a generic experimental shape. None of the prior papers use Math/Code/Chat LLM benchmarks or the specific \"compute budget sweep with adaptive allocation\" protocol.\n\n**DOMAIN: LLM inference-time compute allocation.**\n\nNone of the prior papers operate in the LLM inference-time compute allocation domain. Papers [10], [1], [3] deal with web search/distributed computing. Paper [16] deals with LLM fine-tuning (parameter budget), not inference-time compute. The domain of LLM inference-time scaling/compute allocation is not covered by any prior paper listed.\n\nVERDICT purpose = 10\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = NONE",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes an algorithm that uses difficulty-model predictions to route individual LLM queries to variable compute budgets, solvable in both online (exact budget meeting) and offline (expectation-satisfying fixed mapping) modes. Paper [7] (\"Thinking Ahead\") touches on offline/real-time resource allocation but is about continual computation policies in a different domain, with no quoted phrase establishing the same empirical relationship or algorithmic structure.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper evaluates adaptive best-of-k versus non-adaptive best-of-k across Math, Code, and Chat domains with compute-budget sweeps showing compute shifting to a 'hard' bin, nor contains any named design or claim equivalent to this. Paper [10] (Cottage) addresses per-query time budget in web search but does not quote anything matching adaptive sampling allocation across LLM task domains with difficulty-binned compute shift analysis.\n\nFACET: domain | FINAL: NONE | reason: No prior paper is situated in LLM inference-time compute allocation. The closest papers ([10] Cottage, [14] serverless queries) address database/web-search query resource allocation, not LLM inference-time scaling, and no quoted phrase establishes equivalence to this domain."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 10
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": 10
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to allocate a fixed compute budget across queries based on their predicted difficulty. This is substantively equivalent to the objective in [10], which aims at \"determining the time budget on a per query granularity\" for web search queries to manage trade-offs between latency, quality, and power, which is also a form of per-query compute allocation based on query properties.\n\n**mechanism**: The mechanism is an online/offline algorithm that uses predictions (of difficulty) to solve a resource allocation problem. This is a well-established technical primitive. Paper [10] employs a substantively equivalent mechanism: a \"coordinated time budget assignment framework... which employs two distinct distributed search latency and quality prediction models\" to allocate time budgets to queries.\n\n**evaluation**: The evaluation design consists of comparing the proposed adaptive allocation method to a non-adaptive baseline across a range of compute budgets. This is a standard design for validating resource allocation algorithms. For example, [16] proposes an \"Adaptive Budget Allocation\" method and argues against a baseline \"even distribution,\" which implies an evaluation that would compare the adaptive approach against the non-adaptive one to prove its benefit.\n\n**domain**: The domain is LLM inference-time compute allocation. While no prior paper specifically addresses LLMs, the general application area of per-query compute allocation in large-scale serving systems is covered. Paper [10] operates in this same general area, focusing on \"Web Search,\" which constitutes a different specific instance but falls under the same high-level domain of managing computational resources for individual queries at serving time.\n\nVERDICT purpose = 10\nVERDICT mechanism = 10\nVERDICT evaluation = 16\nVERDICT domain = 10",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     2,
+     16,
+     30
+    ],
+    "mechanism": [
+     4,
+     6,
+     8,
+     16
+    ],
+    "evaluation": [
+     2,
+     11,
+     15,
+     30
+    ],
+    "domain": [
+     2,
+     11,
+     15,
+     16,
+     30
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        2,
+        30
+       ]
+      },
+      "mechanism": {
+       "covered_by": [
+        4,
+        6,
+        8
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        2,
+        11,
+        15,
+        30
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        2,
+        11,
+        15,
+        16,
+        30
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to demonstrate that learned adaptive compute allocation yields real efficiency/quality gains across procedures and domains. Paper [2] (\"Scaling LLM Test-Time Compute Optimally can be More Effective than Scaling Model Parameters\") shares a substantively equivalent purpose, as it studies inference-time compute scaling to improve LLM outputs, focusing on efficiency and quality gains. Paper [30] (\"BabyBear: Cheap inference triage for expensive language models\") also aligns with this purpose, as it introduces cascading models for NLP tasks to minimize computational cost while maintaining accuracy, which inherently involves adaptive compute allocation for efficiency gains.\n\n### Mechanism\nThe mechanism involves instantiating adaptive compute allocation in two forms: adaptive best-of-k sampling and routing between expensive-capable and cheap-weak decoders/models. Paper [8] (\"The knowledge-gradient stopping rule for ranking and selection\") introduces a composite stopping/sampling rule that adapts sampling decisions based on efficiency, which is substantively equivalent to adaptive best-of-k sampling. Paper [4] (\"Mixture-of-Experts with Expert Choice Routing\") and Paper [6] (\"Efficient Routing in Sparse Mixture-of-Experts\") both describe adaptive routing strategies in Mixture-of-Experts models, which are substantively equivalent to the routing mechanism described in the contribution.\n\n### Evaluation\nThe evaluation design involves measuring compute reduction and quality improvements across benchmarks like Math, Code, and Chat, as well as routing efficiency between decoders. Paper [2] uses a similar evaluation design, focusing on inference-time compute scaling and its impact on performance across challenging prompts. Paper [30] evaluates cascading models for NLP tasks, measuring computational cost reduction and accuracy retention, which matches the evaluation design of compute efficiency and quality validation. Paper [11] (\"Decoding Speculative Decoding\") and Paper [15] (\"Accelerating LLM Inference with Staged Speculative Decoding\") also employ evaluation setups that measure compute efficiency and quality improvements in LLM inference, aligning with the contribution's evaluation design.\n\n### Domain\nThe domain is LLM inference-time compute allocation. Paper [2] explicitly addresses inference-time compute scaling for LLMs, making it substantively equivalent in domain. Paper [30] also operates in the domain of LLM inference efficiency, focusing on cascading models to reduce computational cost. Paper [11], Paper [15], and Paper [16] (\"Faster Cascades via Speculative Decoding\") all address LLM inference-time efficiency mechanisms, confirming domain coverage.\n\n---\n\nVERDICT purpose = 2, 30  \nVERDICT mechanism = 4, 6, 8  \nVERDICT evaluation = 2, 11, 15, 30  \nVERDICT domain = 2, 11, 15, 16, 30  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 16
+      },
+      "mechanism": {
+       "covered_by": 16
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## PURPOSE\n\nThe purpose is to demonstrate that learned adaptive compute allocation yields real efficiency/quality gains across procedures and domains — specifically showing that adaptively deciding *how much* compute to spend (number of samples, which model tier) improves efficiency/quality tradeoffs.\n\nPaper [2] studies \"scaling of inference-time computation in LLMs\" and asks \"if an LLM is allowed to use a fixed but non-trivial amount of inference-time compute, how much can it improve its performance\" — this is about fixed budgets, not adaptive allocation. However, it does touch on optimal allocation of test-time compute.\n\nPaper [16] \"Faster Cascades via Speculative Decoding\" explicitly studies cascades that \"invoke the larger model only for 'hard' inputs\" — this is adaptive routing between model tiers for efficiency. The purpose of demonstrating efficiency gains from adaptive model selection is substantively equivalent.\n\nPaper [30] \"BabyBear\" introduces cascading for NLP to \"minimize cost\" by \"exiting early when the least expensive model achieves sufficiently high-confidence prediction\" — same purpose of demonstrating efficiency gains from adaptive compute allocation across model tiers.\n\nPaper [2] also discusses \"scaling LLM test-time compute optimally\" which includes adaptive allocation strategies. The purpose of showing adaptive compute allocation yields gains is covered by [2] and [16]/[30].\n\n## MECHANISM\n\nThe mechanism involves two instantiations: (1) adaptive best-of-k (choosing number of samples before reranking), and (2) routing between expensive/cheap models.\n\nFor adaptive best-of-k: Paper [2] discusses best-of-N sampling and compute-optimal strategies at test time. The idea of adaptively choosing how many samples to generate before selection is related but [2] focuses more on fixed budgets with optimal allocation rather than learned adaptive stopping.\n\nFor routing between cheap/expensive models: Paper [16] uses \"a deferral rule that invokes the larger model only for 'hard' inputs\" — this is the same routing primitive. Paper [30] \"BabyBear\" cascades models, using cheap model first and deferring to expensive model — same primitive. Paper [18] \"LECO\" and [33] use early exit strategies — related but different (layer-level, not model-level routing).\n\nThe combination of adaptive best-of-k + model routing as learned policies is the mechanism. Paper [16] covers the routing primitive; paper [2] covers best-of-k sampling. Together these cover the mechanism.\n\n## EVALUATION\n\nThe evaluation design involves: measuring compute-quality tradeoffs (matching performance at reduced compute, or improving quality at fixed compute) on Math, Code, and Chat benchmarks using LLM pairs.\n\nPaper [2] evaluates \"scaling of inference-time computation\" on math benchmarks (MATH), measuring performance vs. compute tradeoffs — same evaluation design (compute-quality Pareto curves on math/reasoning benchmarks).\n\nPaper [16] evaluates cascades measuring quality vs. compute tradeoffs with model pairs — same design.\n\nPaper [30] evaluates cascading on NLP tasks measuring accuracy vs. cost — same design.\n\nThe evaluation design of measuring performance-compute tradeoffs on standard benchmarks with model pairs is covered by [2] and [16].\n\n## DOMAIN\n\nThe domain is LLM inference-time compute allocation. Paper [2] explicitly operates in this domain — \"scaling LLM test-time compute.\" Paper [16] operates in LLM inference efficiency. Paper [30] operates in LLM/NLP inference efficiency. This domain is clearly covered.\n\nVERDICT purpose = 16\nVERDICT mechanism = 16\nVERDICT evaluation = 2\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

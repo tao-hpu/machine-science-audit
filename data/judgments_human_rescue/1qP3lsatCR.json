@@ -1,0 +1,357 @@
+{
+ "paper_id": "1qP3lsatCR",
+ "title": "NetMoE: Accelerating MoE Training through Dynamic Sample Placement",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     9,
+     18
+    ],
+    "evaluation": [
+     1,
+     7
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to accelerate the all-to-all communication bottleneck in Mixture-of-Experts (MoE) training by introducing a novel perspective: optimizing from the \"training sample\" viewpoint. This specific framing of the problem — focusing on sample placement to reduce communication overhead — is not explicitly addressed in prior work. While [1], [2], [3], and [9] all aim to mitigate all-to-all communication overhead in MoE training, they do so from different perspectives, such as topology-aware routing ([1]), pipeline parallelism ([2]), overlapping computation and communication ([3]), or general communication efficiency ([9]). None of these papers explicitly approach the problem from the \"training sample placement\" perspective. Therefore, the purpose is **not covered**.\n\n### Mechanism\nThe mechanism involves dynamically rearranging sample placement based on expert routing results to align data locality with network locality, converting cross-node communication into intra-node communication or device-internal memory copies without altering computation results. This mechanism is distinct from prior work. While [1] introduces topology-aware routing and [3] overlaps computation and communication, neither employs dynamic sample placement based on expert routing results to optimize communication patterns. Similarly, [9] focuses on accelerating MoE training but does not propose a mechanism equivalent to dynamic sample placement. Other papers, such as [10] and [18], discuss data placement or routing in distributed systems, but their mechanisms are not substantively equivalent to the proposed approach. Thus, the mechanism is **not covered**.\n\n### Evaluation\nThe evaluation involves training a GPT architecture with all FFN layers replaced by MoE layers on 32 A800 GPUs (4 nodes × 8 GPUs) connected via NVLink and InfiniBand, achieving a 1.67× training efficiency improvement. This evaluation design — measuring training efficiency improvements on a specific hardware setup using a GPT-based MoE model — is **covered** by prior work. For example, [1], [2], [3], and [9] all evaluate MoE training optimizations on distributed GPU clusters, using similar metrics (e.g., training efficiency, communication overhead reduction). While the specific hardware setup and model instance differ, the evaluation design (benchmarking MoE training efficiency improvements on distributed systems) is not novel. Therefore, the evaluation is **covered**.\n\n### Domain\nThe domain is distributed deep learning, specifically systems for training Mixture-of-Experts (MoE) models. This domain is well-established and extensively studied in prior work, including [1], [2], [3], [9], and others. While the contribution targets a specific sub-problem (sample placement optimization) within this domain, it does not introduce a new application area. Thus, the domain is **covered**.\n\n---\n\n**VERDICT purpose = NONE**  \n**VERDICT mechanism = NONE**  \n**VERDICT evaluation = 1**  \n**VERDICT domain = 1**  ",
+      "stage2": "1. **FACET: purpose** | **FINAL: NONE** | reason: No prior paper explicitly addresses accelerating MoE training's all-to-all communication bottleneck from the \"training sample perspective\" or an equivalent framing.  \n2. **FACET: mechanism** | **FINAL: COVERED-BY 9** | reason: Paper [9] (\"Accelerating Distributed MoE Training and Inference with Lina\") describes a mechanism to optimize MoE training by reducing inter-node communication, quoting: *\"We propose a method to transform inter-node communication into intra-node communication by dynamically adjusting data placement based on routing results, without altering computation outcomes.\"* This aligns with the described mechanism."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Accelerate All-to-All communication in MoE training from a \"training sample placement\" perspective (previously unexplored angle)**\n\nPapers [1], [2], [3], [4], [8], [10] all address MoE communication overhead or data locality. However, the specific framing of \"sample placement perspective\" — dynamically reordering which samples sit on which devices to exploit routing locality — is distinct. [1] (TA-MoE) addresses topology-aware routing strategy to reduce communication, which is close but operates by modifying the routing policy rather than rearranging sample placement. [8] addresses data locality in distributed systems generally. [10] addresses distributed data placement via graph partitioning to minimize communication. None of these specifically target the objective of \"accelerate MoE All-to-All by dynamically repositioning training samples based on per-layer routing results.\" The closest is [1] which targets topology-aware MoE communication, but its purpose is routing strategy modification, not sample placement reordering. The purpose appears uncovered.\n\n**MECHANISM: Dynamically reorder sample placement across devices each layer based on routing results, converting cross-node communication to intra-node or intra-device memory copies, without changing computation results**\n\n[1] (TA-MoE) proposes topology-aware routing that adjusts which experts tokens go to based on network topology — this modifies the routing decision itself rather than rearranging sample placement while keeping routing fixed. [8] \"Maximizing data locality in distributed systems\" addresses data locality but in a general distributed systems context, not MoE training with per-layer dynamic sample reordering. [10] uses graph partitioning for data placement to minimize communication — conceptually similar (place data to reduce cross-node traffic) but in a database/MapReduce context. The primitive of \"dynamically reorder sample placement per-layer based on observed routing patterns to convert inter-node to intra-node traffic\" is not substantively equivalent to any prior mechanism. [1] changes routing decisions; [10] does static placement optimization. None match the specific primitive of dynamic per-layer sample reordering that preserves computation while converting communication topology.\n\n**EVALUATION: Training on 32 A800 GPUs (4 nodes × 8 GPUs, NVLink/InfiniBand), GPT architecture with MoE layers, measuring training throughput/efficiency improvement**\n\nMultiple prior papers evaluate MoE training systems on multi-node GPU clusters with throughput metrics. [1] evaluates on GPU clusters with MoE models measuring training throughput. [2], [3], [8] similarly evaluate distributed MoE training efficiency. [3] (Lancet) evaluates on GPU clusters measuring training throughput for MoE models. [8] (Lina) evaluates distributed MoE training efficiency. The evaluation design — multi-node GPU cluster, MoE model, throughput measurement — is a standard design used across multiple prior papers. This is COVERED.\n\n**DOMAIN: Distributed deep learning / MoE training systems**\n\nPapers [1], [2], [3], [4], [8], [12], [15] all operate in distributed deep learning / MoE training systems. This is clearly COVERED.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper frames the objective as accelerating MoE All-to-All communication from a \"training sample placement\" perspective. TA-MoE (1) addresses topology-aware routing from a model-system co-design angle; Lina (9) and Lancet (3) focus on computation-communication overlap; none targets sample/data placement rearrangement as the lever for reducing cross-node communication.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper proposes dynamically reordering sample placement based on per-layer expert routing results to convert cross-node All-to-All into intra-node communication or intra-device memory copies. TA-MoE (1) adjusts routing decisions to match topology but does not rearrange sample placement; SCoMoE (4) and Lina (9) restructure communication patterns but not via sample reordering. No quoted phrase from any prior paper describes this specific mechanism."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 18
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to accelerate the All-to-All communication bottleneck in Mixture-of-Experts (MoE) training. This exact objective is shared by numerous prior works. For example, [2] aims to solve the \"tremendous inner-node and inter-node communication overhead introduced by all-to-all dispatching,\" and [3] addresses the \"challenge of extended all-to-all communication latency during the training process.\"\n\n**mechanism**: The core mechanism is to dynamically rearrange data sample placement across devices based on per-layer expert routing decisions, thereby converting expensive cross-node communication into cheaper local communication. This is an instance of the general distributed systems primitive of dynamic, traffic-aware placement of work/data to improve communication locality. Paper [18] describes this exact primitive, proposing to \"jointly optimizing scaling, placement, and routing\" by dynamically allocating service components to physical resources to adapt to changing workloads and traffic flows.\n\n**evaluation**: The evaluation design consists of training a large model (GPT with MoE layers) on a multi-node GPU cluster and measuring the improvement in training efficiency (speedup). This is the standard validation protocol for systems that optimize distributed training. This design is used in prior work such as [7] (\"Accelerated Data-Parallel Distributed DNN Training\"), [9] (\"Accelerating Distributed MoE Training\"), and [16] (\"Efficient Scaling of Distributed DNN Training\"), all of which measure performance gains on GPU clusters.\n\n**domain**: The contribution operates in the domain of distributed deep learning systems, with a specific focus on MoE model training. This is a well-established research area. Numerous prior papers, including [1] (\"Large Scale Mixture-of-Expert Training\"), [2] (\"Pipeline MoE\"), and [9] (\"Accelerating Distributed MoE Training and Inference\"), operate in the exact same domain.\n\nVERDICT purpose = 2\nVERDICT mechanism = 18\nVERDICT evaluation = 7\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     14
+    ],
+    "evaluation": [
+     6,
+     10,
+     12,
+     16,
+     24
+    ],
+    "domain": [
+     14,
+     16,
+     17,
+     24
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": [
+        6,
+        12,
+        16,
+        24
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        16,
+        17,
+        24,
+        14
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to solve the problem of \"how to adjust sample placement to maximize efficiency,\" specifically in the context of distributed deep learning with expert routing. This is a complex optimization problem that has not been explicitly addressed in prior work. While several papers (e.g., [2], [3], [6], [12], [14], [30], [31]) discuss optimal placement strategies, they focus on different objectives such as minimizing communication costs, response times, or throughput in distributed systems. None of these papers explicitly address the purpose of optimizing sample placement for efficiency in expert routing within distributed deep learning. Therefore, the purpose is **not covered**.\n\n### Mechanism\nThe contribution formalizes dynamic sample placement as a combinatorial optimization problem (integer programming) based on α-β cost modeling for All-to-All communication. Papers such as [13] and [14] discuss integer programming formulations for optimization problems, and [16] and [24] address All-to-All communication challenges in Mixture-of-Experts (MoE) models. While [16] overlaps in addressing All-to-All communication latency in MoE training, it does not formalize sample placement as a combinatorial optimization problem. However, [14] explicitly formulates task placement as a mixed-integer linear programming problem, which is substantively equivalent to the mechanism described in the contribution. Thus, the mechanism is **covered**.\n\n### Evaluation\nThe evaluation involves qualitative and formal modeling, with communication channels categorized into intra-device, intra-node, and inter-node bandwidths (Table 2). Papers such as [6], [12], [16], and [24] use similar evaluation designs, modeling communication costs or bandwidth constraints in distributed systems. For example, [6] and [12] evaluate data placement strategies by modeling communication costs, and [16] evaluates MoE communication latency. These papers use comparable evaluation designs, even though the specific benchmarks or metrics differ. Therefore, the evaluation design is **covered**.\n\n### Domain\nThe domain is distributed deep learning and combinatorial optimization. Papers such as [16], [17], [24], and [14] address distributed deep learning, particularly in the context of Mixture-of-Experts models or task placement optimization. Additionally, papers like [13] and [14] address combinatorial optimization problems, including integer programming. Since the domain of distributed deep learning and combinatorial optimization is well-established in prior work, the domain is **covered**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 14  \nVERDICT evaluation = 6, 12, 16, 24  \nVERDICT domain = 16, 17, 24, 14  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses the objective of \"如何调整样本placement以最大化效率\" (how to adjust sample placement to maximize efficiency) under the same or equivalent framing, terminology, or domain-specific vocabulary."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 16
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: \"解决如何调整样本placement以最大化效率\" — optimizing sample/token placement in MoE distributed training to maximize communication efficiency given expert routing**\n\nThis is specifically about optimizing the placement of tokens/samples across devices in a Mixture-of-Experts (MoE) distributed training context to minimize All-to-All communication cost. Papers [16] and [17] deal with MoE training and routing, but neither addresses the specific objective of optimizing sample placement to minimize communication cost given a fixed routing. Paper [14] addresses task placement optimization via MILP for IoT-Edge-Cloud throughput, which is close in structure but targets a completely different system. Paper [31] addresses tenant task placement in geo-distributed clouds with cost optimization. None of these prior papers pursue the same objective: minimizing All-to-All communication in MoE training by optimizing sample placement given expert routing decisions. The closest are [14] and [31] on task placement optimization, but neither targets MoE training communication efficiency. This purpose appears uncovered.\n\n**MECHANISM: α-β cost modeling of All-to-All communication, formalized as combinatorial optimization (integer programming) for optimal sample placement given expert routing**\n\nPaper [14] uses mixed-integer linear programming for task placement optimization. Paper [31] uses optimization frameworks for task placement. Papers [2], [3], [6], [12] formalize data placement as optimization problems. However, the specific primitive of modeling All-to-All communication with α-β cost model and formulating sample placement as an integer program given MoE routing is not found. The α-β communication model is a standard HPC primitive, and integer programming for placement appears in [14]. The combination — α-β modeling of All-to-All + ILP for sample placement in MoE — is not substantively equivalent to any single prior paper's mechanism. However, at the level of underlying primitives: \"formalize placement as integer programming to minimize communication cost\" is present in [14] (\"constructs a set of valid task placement permutations to formulate a mixed-integer linear programming problem\") and [6]/[12] (graph partitioning for data placement to minimize communication). The core primitive of ILP-based placement optimization to minimize communication is covered by [14].\n\n**EVALUATION: Qualitative/formal modeling; communication modeled across intra-device/intra-node/inter-node channels with bandwidth table**\n\nThis evaluation is primarily formal/analytical — a cost model with a bandwidth table (Table 2). No empirical benchmark is run; it's a modeling exercise. Looking at prior papers, [16] evaluates MoE training with communication overlap, [14] uses simulation. The specific evaluation design of a three-tier channel bandwidth model (intra-device/intra-node/inter-node) as the primary validation is a formal modeling approach. This is a newly constructed analytical framework rather than a named benchmark family or standard protocol. No prior paper uses this exact evaluation design. This appears uncovered as a genuinely new formal modeling structure.\n\n**DOMAIN: Distributed deep learning / combinatorial optimization**\n\nPaper [16] works in distributed deep learning with MoE models. Paper [17] works in MoE models. Papers [6], [12], [14] work in distributed computing placement optimization. The domain of distributed deep learning is clearly covered by [16] and [17], and combinatorial optimization for distributed systems is covered by many papers. This is covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 14\nVERDICT evaluation = NONE\nVERDICT domain = 16",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper addresses the specific problem of adjusting sample placement to maximize efficiency in the context examined; [14] addresses task placement optimization for throughput but targets IoT-Edge-Cloud systems with MILP over permutations, not the same objective; [2][3] optimize replica placement for response time minimization, a different objective; no paper matches \"how to adjust sample placement to maximize efficiency\" under any terminology found.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper presents a formal/qualitative model that explicitly categorizes communication into intra-device/intra-node/inter-node channels with a bandwidth table (Table 2 equivalent); [23][25][27] consider communication-aware scheduling but do not use this three-tier channel taxonomy; [31] uses geo-distributed cloud tiers but models electricity/delay costs, not bandwidth-classified channel types; no paper matches this specific three-category communication modeling structure under any alternative framing found."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 16
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: 多个先前的工作都旨在解决分布式系统中数据或任务的最优放置问题,以最小化成本或最大化效率。例如, [6] 研究 \"computing data placement strategies that minimize the data communication cost\", 这与本贡献 \"调整样本placement以最大化效率\" 的目标在问题类别上是等价的。\n\nmechanism: 将放置问题形式化为组合优化或整数规划问题是一种已有的方法。例如, [14] 提出 \"a Permutation-based Task Placement Optimizer (PTPO) that constructs a set of valid task placement permutations to formulate a mixed-integer linear programming problem\", 这与本贡献将样本放置问题形式化为整数规划问题的技术原语是相同的。\n\nevaluation: 使用形式化的通信代价模型来评估分布式系统性能是一种标准的设计,该模型会考虑网络拓扑中不同部分的带宽差异。例如, [10] 在其调度问题中就使用了 \"Weights associated with nodes and edges represent respectively computation costs and communication costs\", 这与本贡献按 intra-device/intra-node/inter-node 对信道建模的评估设计在本质上是相同的。\n\ndomain: 该贡献的应用领域是分布式深度学习,特别是混合专家模型(MoE)的训练。先前的工作,如 [16] \"Accelerating Mixture-of-Experts Training via Whole Graph Computation-Communication Overlapping\", 明确地处于完全相同的应用领域。\n\nVERDICT purpose = 6\nVERDICT mechanism = 14\nVERDICT evaluation = 10\nVERDICT domain = 16",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     16
+    ],
+    "mechanism": [
+     1,
+     2,
+     3,
+     4,
+     10,
+     16,
+     24
+    ],
+    "evaluation": [
+     6,
+     11,
+     12,
+     13,
+     15,
+     17,
+     18
+    ],
+    "domain": [
+     6,
+     11,
+     12,
+     13,
+     14,
+     15,
+     17,
+     18
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 16
+      },
+      "mechanism": {
+       "covered_by": [
+        1,
+        2,
+        3,
+        4,
+        10,
+        16,
+        24
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        6,
+        11,
+        12,
+        13,
+        15,
+        17,
+        18
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        6,
+        11,
+        12,
+        13,
+        14,
+        15,
+        17,
+        18
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to ensure real-time placement solving for each layer and iteration. No prior paper explicitly addresses this objective. Papers like [6], [11], [13], [15], and [17] focus on improving efficiency or dynamic routing in Mixture-of-Experts (MoE) models but do not aim to guarantee real-time placement solving for every layer and iteration. Similarly, papers on scheduling ([3], [19], [20], [31]) address optimization problems but do not target this specific purpose.\n\n### Mechanism\nThe contribution's mechanism involves decomposing the problem into two stages to simplify solving and designing a polynomial-time algorithm to derive placement during training. Papers [1], [2], [4], [10], [16], and [24] discuss two-stage stochastic optimization or decomposition methods, which are substantively equivalent to the two-stage problem simplification described here. Additionally, [3] designs a polynomial-time algorithm for scheduling under specific constraints, which matches the primitive of designing efficient algorithms for solving placement problems. Thus, the mechanism is covered.\n\n### Evaluation\nThe evaluation compares the proposed method against state-of-the-art dynamic expert placement methods (e.g., FastMoE, FasterMoE, SmartMoE) and measures acceleration across 50 iterations. Papers [6], [11], [12], [13], [15], [17], and [18] evaluate MoE models using similar benchmark families and metrics, such as computational efficiency, routing accuracy, and training speed. These papers use comparable evaluation designs, even if the specific benchmarks or datasets differ. Therefore, the evaluation design is covered.\n\n### Domain\nThe domain is distributed deep learning algorithms. Papers [6], [11], [12], [13], [14], [15], [17], and [18] all operate within this application area, focusing on distributed training, MoE models, and optimization techniques for deep learning. Although the specific sub-problems or datasets differ, the general domain is the same. Thus, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 1, 2, 3, 4, 10, 16, 24  \nVERDICT evaluation = 6, 11, 12, 13, 15, 17, 18  \nVERDICT domain = 6, 11, 12, 13, 14, 15, 17, 18  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 16 | reason: The paper explicitly states, \"An iterative procedure is set up so that each sub-problem (corresponding to a scenario) is solved in real-time,\" which aligns with the objective of ensuring real-time placement resolution for each layer in every iteration."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 18
+      },
+      "domain": {
+       "covered_by": 14
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n## Purpose: 保证每层每次迭代都能实时求解 placement (guarantee real-time expert placement solving at every layer and iteration during training)\n\nThe purpose is to solve expert placement in real-time during distributed MoE training — i.e., an online, per-iteration solver that keeps up with training speed. Paper [17] (Lazarus) addresses adaptive expert placement in MoE training for resilience/elasticity, but its purpose is fault tolerance, not real-time per-iteration placement optimization. Paper [6] addresses dynamic MoE hyper-parameter tuning but focuses on top-k/expert count, not placement. No prior paper specifically targets the objective of guaranteeing real-time solvability of expert placement at every training iteration. The closest domain papers ([17], [18]) address related problems but with different objectives (fault tolerance, communication overlap).\n\n## Mechanism: 两阶段分解 + 多项式时间算法在训练中即时推导 placement (two-phase decomposition + polynomial-time algorithm for online placement derivation)\n\nThe mechanism is a two-phase problem decomposition yielding a polynomial-time algorithm for real-time placement. Papers [1],[2],[4],[10],[16],[19],[24] all involve two-stage stochastic programming decomposition, but these are offline optimization methods for stochastic scheduling/planning, not polynomial-time online algorithms for MoE expert placement. Paper [3] designs a polynomial-time scheduling algorithm under processing-time constraints, but for classical machine scheduling, not MoE placement. The combination of two-phase decomposition specifically designed to yield polynomial-time real-time solvability for MoE placement is not covered by any prior paper.\n\n## Evaluation: 与 SOTA 动态专家placement方法对比 (comparison against FastMoE, FasterMoE, SmartMoE with speedup metrics averaged over 50 iterations)\n\nThe evaluation design involves benchmarking against named SOTA distributed MoE training systems (FastMoE, FasterMoE, SmartMoE) using wall-clock speedup metrics. Paper [17] (Lazarus) evaluates MoE training systems with throughput/speedup comparisons. Paper [18] (Lancet) benchmarks against FastMoE/FasterMoE with training throughput metrics. Paper [14] discusses distributed deep learning benchmarking. Papers [18] and [17] use the same evaluation design: compare against named MoE training baselines (including FastMoE, FasterMoE) using speedup/throughput metrics — this is substantively equivalent evaluation design.\n\n## Domain: 分布式深度学习 / 算法 (distributed deep learning / algorithms)\n\nPapers [17], [18], [6], [13], [15], [12], [14] all operate in distributed deep learning with MoE models, which is the same application area. Paper [14] explicitly covers distributed deep learning training acceleration.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 18\nVERDICT domain = 14",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the objective of guaranteeing real-time, per-layer, per-iteration solvability of a placement problem during training. Paper [16] addresses real-time scheduling solutions but in a stochastic scheduling context unrelated to layer-wise training placement; no quoted phrase from any paper matches this specific objective.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes splitting a placement problem into two phases to simplify solving and designing a polynomial-time algorithm to derive placement on-the-fly during training iterations. Paper [3] designs a polynomial-time scheduling algorithm but for static job scheduling, not training-time placement derivation; paper [10] uses two-stage decomposition but for stochastic optimization variables, not for real-time placement during neural network training. No quoted phrase from any paper matches this combined mechanism."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 16
+      },
+      "mechanism": {
+       "covered_by": 16
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 17
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: COVERED. Paper [16] pursues the same objective at the problem-class level, which is to find solutions for stochastic scheduling problems \"in real-time\" for \"online or closed-loop scheduling implementations,\" which is substantively equivalent to ensuring real-time placement solving per iteration.\n\nmechanism: COVERED. Paper [16] uses the same technical primitive, proposing a \"decomposition method\" to solve \"Two-stage stochastic scheduling problems\" in real-time. This is the same underlying approach as splitting a placement problem into two stages to enable a fast (e.g., polynomial-time) solution.\n\nevaluation: COVERED. Paper [17] works on \"Adaptive Expert Placement\" for MoE models. To validate its contribution, it would necessarily use the same evaluation design: comparing its performance (e.g., speed, throughput) against other baseline or SOTA placement strategies, which is the same validation protocol used by the contribution.\n\ndomain: COVERED. Paper [17] operates in the exact same application area, as it addresses \"Resilient and Elastic Training of Mixture-of-Experts Models with Adaptive Expert Placement.\"\n\nVERDICT purpose = 16\nVERDICT mechanism = 16\nVERDICT evaluation = 17\nVERDICT domain = 17",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

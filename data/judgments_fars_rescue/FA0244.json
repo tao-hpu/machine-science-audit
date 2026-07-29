@@ -1,0 +1,319 @@
+{
+ "paper_id": "FA0244",
+ "title": "Range-Capped Sinkhorn for Reliable Manifold-Constrained Hyper-Connections",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     1,
+     11
+    ],
+    "evaluation": [
+     1,
+     25
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose:\nThe contribution's purpose is to diagnose why mHC's learnable routing matrices fail to learn. None of the prior papers explicitly diagnose this specific failure mode of mHC routing matrices. While [1] discusses mHC and its limitations, it does not address the specific issue of learnable routing matrices collapsing due to underflow or zero Jacobian. Similarly, [26] mentions router collapse in single-gated MoEs but does not analyze mHC or its specific failure mechanism. No prior paper establishes the same empirical relationship or failure diagnosis.\n\n### Mechanism:\nThe contribution analyzes the Sinkhorn projection under specific default settings (temperature tau=0.05, off-diagonal init -8) and demonstrates that the input log-range reaches 160, causing exp(-160) underflow to zero and collapsing the output to an exact permutation matrix with zero Jacobian. [13] discusses phase transitions in the Sinkhorn-Knopp algorithm but does not analyze underflow or the specific collapse mechanism described here. [6] analyzes convergence properties of Sinkhorn-Knopp with sparse cost matrices but does not address the underflow or zero Jacobian issue. [11] discusses underflow in mixed precision training but does not analyze Sinkhorn projections or routing matrices. No prior paper contains a substantively equivalent mechanism.\n\n### Evaluation:\nThe contribution evaluates the gradients of H_res under default settings, showing they are exactly 0.0 across all layers and training steps on a 48-layer GPT-2 model. This evaluation design involves measuring gradient values across layers and steps, which is a standard ablation-style analysis. Papers such as [1] and [26] evaluate mHC and MoE architectures but do not use the same evaluation design to measure gradient collapse across layers and steps. No prior paper uses this specific evaluation design.\n\n### Domain:\nThe contribution operates in the domain of deep learning architecture, specifically Sinkhorn-based routing in hyper-connections. [1] and [26] both address hyper-connections and routing mechanisms in deep learning architectures, which places them in the same general application area. Although this contribution targets a specific failure mode, the domain is covered by prior work in hyper-connections and routing.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly diagnoses why mHC's learnable routing matrices fail to learn, even under different terminology or framing.  \n\nFACET: mechanism | FINAL: COVERED-BY 11 | reason: \"Gradients can often experience severe underflow problems that hinder backpropagation and degrade model accuracy\" aligns with the underflow collapse described for Sinkhorn projection.  \n\nFACET: evaluation | FINAL: NONE | reason: No prior paper evaluates H_res gradients being exactly 0.0 across all layers and training steps in a 48-layer GPT-2 model, nor an equivalent claim.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": 1
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Diagnose why mHC's learnable routing matrices never actually learn.**\n\nThe purpose is to explain a specific failure mode: why the Sinkhorn-based routing in mHC produces zero gradients (matrices don't learn). Paper [1] is titled \"mHC-lite: You Don't Need 20 Sinkhorn-Knopp Iterations\" and explicitly states it \"identify two limitations\" of mHC's Sinkhorn-Knopp normalization. This is substantively the same diagnostic purpose — identifying why mHC's routing fails to learn properly. No other paper addresses this specific relationship (mHC + Sinkhorn → zero gradients).\n\n**MECHANISM: Analyze Sinkhorn projection under default settings showing numerical underflow (exp(-160)~10^-70) collapses output to identity permutation with zero Jacobian.**\n\nThe mechanism is a numerical analysis of the Sinkhorn operator showing that specific hyperparameter choices (tau=0.05, off-diagonal init -8) cause floating-point underflow, collapsing the matrix to a permutation with zero gradient. Paper [1] again is directly relevant — it identifies limitations of mHC's SK normalization. Paper [11] discusses gradient underflow in mixed precision training via loss scaling, but the primitive there is FP16 underflow in backprop, not Sinkhorn-specific collapse. Paper [1] appears to cover this same analytical primitive (diagnosing SK underflow in mHC). No other paper analyzes the specific Sinkhorn temperature/initialization interaction causing underflow to zero Jacobian.\n\n**EVALUATION: H_res gradients are exactly 0.0 across all layers and training steps on a 48-layer GPT-2 model.**\n\nThe evaluation design is: measure gradient magnitudes across layers and training steps on a specific transformer model. This is a gradient monitoring/diagnostic experiment. Paper [1] explicitly studies mHC's SK normalization limitations and likely performs similar gradient diagnostics. Paper [16] analyzes vanishing gradients in CNNs. The design of \"measure gradients across layers\" is a standard diagnostic used in papers [16], [24], [25]. However, the specific claim — that gradients are *exactly* 0.0 (not just small) due to numerical underflow in Sinkhorn — is the key finding. The evaluation design of checking gradient values across layers/steps on a transformer is a standard diagnostic protocol present in multiple papers.\n\n**DOMAIN: Deep learning architecture / Sinkhorn-based routing in hyper-connections.**\n\nPaper [1] explicitly operates in the domain of Hyper-Connections with Sinkhorn-Knopp normalization (mHC). Paper [2] uses Sinkhorn routing in MoE architectures. The domain of \"Sinkhorn-based routing in deep learning architectures\" is covered by [1] and [2].\n\nVERDICT purpose = 1\nVERDICT mechanism = 1\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 25
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "**purpose**: This is a finding that diagnoses a specific failure mode. No prior paper reports or establishes the same empirical relationship connecting the default numerical settings of a Sinkhorn projection to a complete failure to learn due to underflow. While related phenomena like \"router collapsing\" [26] or general vanishing gradients [24, 25] are discussed, they do not provide this specific causal diagnosis.\n\n**mechanism**: The mechanism is a specific numerical analysis tracing how default initializations in the Sinkhorn projection lead to a large log-range, causing an `exp()` operation to underflow to zero, which in turn collapses the output to a permutation matrix with a zero Jacobian. This specific analytical path is not present in prior work; for example, [11] analyzes gradient underflow in mixed-precision training, a different phenomenon than underflow in a forward-pass operator causing zero gradients.\n\n**evaluation**: The evaluation design consists of measuring the gradients of a specific model component during training to confirm they are zero. This is a standard diagnostic technique for optimization issues, used in prior work like [25] which analyzes how \"the norm of the back-propagated error gradient can grow or decay exponentially.\"\n\n**domain**: The domain is Sinkhorn-based routing mechanisms in deep learning architectures. This is explicitly covered by [1], which introduces \"Manifold-Constrained Hyper-Connections (mHC)\" using \"Sinkhorn--Knopp (SK) normalization,\" and [2], which discusses \"Selective Sinkhorn Routing for Improved Sparse Mixture of Experts.\"\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 25\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the objective of diagnosing why mHC's learnable routing matrices fail to learn. Paper [1] identifies limitations of mHC, but its title (\"You Don't Need 20 Sinkhorn-Knopp Iterations\") indicates its purpose is to improve efficiency, not to diagnose a fundamental pathology where the matrices do not learn at all.\nFACET: mechanism | FINAL: NONE | reason: No prior paper provides this specific numerical analysis. While papers discuss low-temperature limits of Sinkhorn (e.g., [5], [7]) or numerical underflow in general (e.g., [11]), none present the specific analytical chain connecting the default mHC parameters (tau=0.05, init -8) to a log-range of 160, the resulting `exp(-160)` underflow, the collapse to a permutation matrix, and the consequent zero Jacobian."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     2,
+     3
+    ],
+    "mechanism": null,
+    "evaluation": [
+     2,
+     6
+    ],
+    "domain": [
+     6
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to restore gradient flow so the mHC routing mechanism can learn. This objective aligns with addressing gradient-related issues in deep learning. Paper [3] discusses improving the vanishing gradient problem (VGP) through activation functions, which is conceptually similar but does not specifically target routing mechanisms. Paper [14] and [22] address gradient clipping to stabilize training, which indirectly relates to gradient flow restoration but does not explicitly focus on routing mechanisms. Paper [17] proposes gradient normalization to align scaling with natural evolution, which is closer to the purpose but still does not directly address routing mechanisms. None of the prior papers explicitly target restoring gradient flow for routing mechanisms like mHC.\n\n### Mechanism\nThe mechanism, Range-Capped Sinkhorn (RRCS), modifies the scaled logits by capping the input log-range before Sinkhorn iterations. Paper [6] discusses selective Sinkhorn routing for sparse mixture-of-experts models, which involves Sinkhorn-based routing but does not include the specific log-range capping mechanism. Paper [10] introduces implicit Sinkhorn differentiation for efficient training but does not modify the input log-range. Paper [15] and [23] discuss enhancements to Sinkhorn iterations, including sparse Newton methods and annealing schedules, but neither employs the log-range capping mechanism. Paper [19] provides a gradient descent perspective on Sinkhorn but does not involve log-range capping. None of the prior papers implement a substantively equivalent mechanism.\n\n### Evaluation\nThe evaluation design involves measuring gradient flow (H_res gradients), parameter drift, routing entropy, and validation loss on a 48-layer GPT-2 model. Paper [6] evaluates routing entropy and load-balancing loss in Sinkhorn-based routing, which overlaps with the evaluation design. Paper [10] evaluates Sinkhorn differentiation in deep learning frameworks, which involves similar metrics like validation loss but does not measure gradient flow or parameter drift. Paper [15] evaluates Sinkhorn convergence and bias plateau, which indirectly relates to routing entropy but does not cover the full evaluation design. Paper [23] evaluates annealed Sinkhorn convergence, which overlaps with routing entropy but does not include gradient flow or parameter drift. The evaluation design is partially covered by prior papers, particularly [6].\n\n### Domain\nThe domain is deep learning architecture with Sinkhorn-based routing in hyper-connections. Paper [6] explicitly addresses Sinkhorn-based routing in sparse mixture-of-experts models, which falls within the same general application area. Paper [10] and [15] also focus on Sinkhorn-based methods in deep learning, which aligns with the domain. Paper [23] discusses annealed Sinkhorn in optimal transport, which is relevant but less specific to deep learning architectures. Paper [19] provides a gradient descent perspective on Sinkhorn, which is applicable to deep learning. The domain is clearly covered by prior papers, particularly [6].\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 6  \nVERDICT domain = 6  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 3 | reason: Paper [3] discusses an activation function designed to address vanishing gradients, which aligns with the objective of restoring gradient flow for learning mechanisms. Quote: \"In this way, we can avoid the vanishing gradient situation when the input received by backpropagation is small.\"\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper explicitly describes a mechanism equivalent to Range-Capped Sinkhorn (RRCS) or a modification capping log-range before Sinkhorn iterations."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "**Purpose: Restore gradient flow so the mHC routing mechanism can learn.**\n\nThe purpose is specifically to fix a dead/zero-gradient problem in a Sinkhorn-based routing mechanism. Paper [6] (\"Selective Sinkhorn Routing for Improved Sparse Mixture of Experts\") addresses training issues in Sinkhorn-based MoE routing, but its purpose is improving load balancing and expert diversity, not restoring vanishing/zero gradients. Papers [2], [3], [14], [22], [24], [25] address gradient underflow, vanishing gradients, or gradient clipping in general deep learning contexts, but none target the specific objective of restoring gradient flow through a Sinkhorn routing operator. No prior paper has the same purpose of \"fix zero gradients specifically in a Sinkhorn routing mechanism so it can learn.\" The closest is [6] which works on Sinkhorn routing but pursues a different objective (load balancing, not gradient restoration). NONE of the papers share this specific purpose.\n\n**Mechanism: Range-Capped Sinkhorn (RRCS) — shift scaled logits so input log-range is capped at r_cap before Sinkhorn iterations.**\n\nThe mechanism is a logit-shifting/clamping operation applied before Sinkhorn iterations to prevent numerical collapse (exp of very negative values → 0). Paper [6] uses Sinkhorn routing but does not describe a range-capping pre-processing step. Papers [10], [11], [15], [19] discuss Sinkhorn algorithm variants and differentiation but none introduce a log-range cap on inputs. Paper [2] uses loss scaling to prevent gradient underflow in FP16, which is a different primitive (scaling the loss, not capping logit range). Paper [14] and [22] discuss gradient clipping, which clips gradient norms — a different primitive from capping the input range to a softmax/Sinkhorn operator. The mechanism of shifting logits to cap the log-range before Sinkhorn is not present in any prior paper.\n\n**Evaluation: Gradient magnitude, parameter drift, routing entropy, and validation loss measured on a 48-layer GPT-2.**\n\nThe evaluation design measures gradient flow restoration (gradient magnitudes going from 0 to nonzero), parameter drift, and routing entropy as proxies for learning, alongside validation loss. Paper [6] evaluates Sinkhorn routing in MoE transformers using validation loss and load-balancing metrics, which partially overlaps. However, the specific design of measuring gradient magnitudes and parameter drift as the primary signal for a routing fix, combined with routing entropy and validation loss parity, is not a named benchmark family or standard protocol found in prior work. The gradient-signal-then-standard-benchmark pattern is referenced in the special rule, but here the \"gradient signal\" measurement IS the primary result, not a precursor to a standard benchmark. No prior paper uses this specific evaluation design (gradient magnitude + parameter drift + routing entropy + validation loss parity as a combined protocol for validating a routing fix). This appears to be a newly constructed evaluation protocol. NONE.\n\n**Domain: Deep learning architecture / Sinkhorn-based routing in hyper-connections.**\n\nThe domain is deep learning architectures, specifically transformer-like models with Sinkhorn-based routing. Paper [6] works directly in Sinkhorn-based routing for sparse MoE transformers — the same general application area. Paper [20] also works on MoE routing in transformers. This is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 6",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the objective of restoring gradient flow specifically so a Sinkhorn-based routing mechanism (mHC) can learn; [1] masks gradients to localize computation, [6] addresses load-balancing in SMoE, and no other paper targets this same objective even under different terminology.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes capping the log-range of scaled logits before Sinkhorn iterations to guarantee a positive minimum exponent; [6] uses Sinkhorn routing but applies no such range-capping modification, and no other paper contains an equivalent one-line logit-shift for numerical stability in this sense.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports the specific empirical measurements of H_res gradient magnitude, parameter drift, and routing entropy rising from zero after a Sinkhorn modification on a 48-layer GPT-2, with validation loss held statistically indistinguishable; no equivalent experimental claim exists in any prior paper even under different framing."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "- **purpose**: The contribution's purpose is to restore gradient flow in a specific context (mHC routing) where it has vanished due to numerical underflow. This is a specific instance of the general problem of fixing vanishing gradients or underflow to enable learning. This general objective is explicitly covered by prior work, such as [2] which aims to \"mitigate underflow by enlarging the m[agnitude of gradients]\" to prevent them from \"hinder[ing] backpropagation\", and [3] which discusses an activation function to \"avoid the vanishing gradient situation\".\n\n- **mechanism**: The mechanism is to cap the range of the logit inputs to the Sinkhorn algorithm to a fixed value `r_cap` before the `exp()` operation, thus preventing underflow. While other papers address similar problems, they use different mechanisms: [2] uses loss scaling, [14] and [22] use gradient clipping (modifying gradients after computation, not forward-pass inputs), and standard log-space Sinkhorn implementations use shifting but not range-capping. None of the provided papers describe this specific primitive of capping the input range to an operator to ensure numerical stability in its exponential component.\n\n- **evaluation**: The evaluation design consists of applying the proposed change (RRCS) to a large model (GPT-2) and measuring its effect on internal state variables (gradients, entropy) and final performance (validation loss) to show a specific pathology is fixed without harming overall performance. This is a standard validation design for contributions that fix training instabilities, and is substantively equivalent to the design used in papers like [2] (\"Reducing Underflow... by Gradient Scaling\") or [3] (\"improve the vanishing gradient problem\"), which must also demonstrate their fix works internally without degrading model accuracy.\n\n- **domain**: The contribution is applied to \"Sinkhorn-based routing in hyper-connections\" within deep learning architectures. This application area is explicitly covered by prior work. For example, [6] works on \"Selective Sinkhorn Routing for Improved Sparse Mixture of Experts,\" which is the same specific application area of using Sinkhorn for routing information in large neural networks.\n\nVERDICT purpose = 2\nVERDICT mechanism = NONE\nVERDICT evaluation = 2\nVERDICT domain = 6",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: The mechanism is a specific numerical stability trick for the Sinkhorn algorithm: shifting the input logits to cap their log-range (`max-min`) before iterations to prevent underflow. A review of the papers finds related but distinct concepts like gradient clipping ([14], [22]), general gradient underflow prevention via loss scaling ([2]), and logit biasing for classification ([30]). No paper describes the specific mechanism of shifting logits to cap their range as an input-side preprocessing step for Sinkhorn."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     15,
+     23,
+     29
+    ],
+    "evaluation": [
+     15,
+     23,
+     29
+    ],
+    "domain": [
+     5,
+     6,
+     9
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        15,
+        23,
+        29
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        15,
+        23,
+        29
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        5,
+        6,
+        9
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to validate that adaptive range capping is necessary and does not degrade performance. This involves establishing an empirical relationship between adaptive range capping and its effects on gradient drift and validation loss preservation. None of the prior papers explicitly report or establish this specific relationship. While some papers (e.g., [15], [23], [29], [30]) discuss related topics like gradient scaling, temperature scaling, or softmax adjustments, they do not validate the necessity of adaptive range capping or its non-degradation of performance. Thus, no prior paper covers this purpose.\n\n#### Mechanism:\nThe mechanism involves comparing against a cap-init control (raising temperature to tau=0.267 to cut range 160->30) and conducting an r_cap sensitivity ablation. Papers [15] and [29] discuss temperature scaling and its impact on gradients and performance, which is conceptually similar to the cap-init control mechanism. Paper [23] discusses gradient clipping, which is related to sensitivity ablation as both aim to control gradient behavior. These mechanisms are substantively equivalent to the contribution's mechanism, as they involve controlling ranges or gradients to improve performance.\n\n#### Evaluation:\nThe evaluation design involves measuring gradient drift (e.g., negligible gradients for cap-init, meaningful drift for r_cap=2.0) and validation loss preservation across different caps. Papers [15], [23], and [29] use similar evaluation designs, such as measuring gradient behavior and loss preservation under different scaling or clipping conditions. These designs are substantively equivalent, as they validate claims about gradient behavior and loss under controlled conditions. Thus, the evaluation facet is covered.\n\n#### Domain:\nThe domain is deep learning architecture, specifically Sinkhorn-based routing in hyper-connections. Papers [5], [6], and [9] address hyper-connections and Sinkhorn-based routing, which are directly within the same application area. Although the contribution targets a specific sub-problem (adaptive range capping), the general domain of hyper-connections and Sinkhorn routing is already covered by these prior papers.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = 15, 23, 29  \nVERDICT evaluation = 15, 23, 29  \nVERDICT domain = 5, 6, 9  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly validates that adaptive range capping is necessary and does not degrade performance, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 15
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Validate that adaptive range capping is necessary and does not degrade performance.**\n\nThe purpose is to empirically demonstrate that a specific adaptive mechanism (range capping) is both necessary (ablation shows degradation without it) and harmless (validation loss preserved). Paper [17] \"Rethinking the Necessity of Adaptive Retrieval-Augmented Generation\" shares the meta-goal of validating necessity of an adaptive component, but the specific relationship being validated (adaptive range capping in Sinkhorn routing) is entirely different — different variables, different effect. No prior paper establishes or validates the same empirical relationship (adaptive range capping necessity in gradient-flow/routing contexts). None of the papers address this specific purpose.\n\n**MECHANISM: Compare against a cap-init control (raise temperature to τ=0.267 to cut range 160→30) and an r_cap sensitivity ablation.**\n\nThe mechanism is a controlled ablation comparing an initialization-only baseline vs. an adaptive mechanism, plus a sensitivity sweep over a hyperparameter. Paper [29] and [30] discuss temperature scaling in softmax, but not as a control condition for range capping. Paper [15] addresses gradient underflow in mixed precision training via scaling, which touches on the underflow phenomenon but not as an ablation design for range capping. The specific primitive — using a temperature-raised initialization as a control to isolate the effect of adaptive capping — does not appear in any prior paper. Generic ablation/sensitivity analysis shapes appear everywhere but no paper uses this specific control design for the same claim.\n\n**EVALUATION: Cap-init leaves gradients negligible (1.59×10^-15, exp(-30) underflows); only r_cap=2.0 produces meaningful drift; validation loss preserved.**\n\nThe evaluation design involves: (1) measuring gradient magnitudes to detect underflow, (2) sweeping a cap hyperparameter, (3) checking validation loss preservation. Paper [15] \"Reducing Underflow in Mixed Precision Training by Gradient Scaling\" explicitly measures gradient underflow and its effect on training — this is the same evaluation design primitive (measure gradient magnitude to detect underflow, validate training quality). Paper [21] also discusses floating-point underflow detection. The gradient-underflow measurement as a validation signal matches [15]'s design.\n\n**DOMAIN: Deep learning architecture / Sinkhorn-based routing in hyper-connections.**\n\nPapers [5] and [9] directly address hyper-connections and Sinkhorn-based routing in deep learning architectures. Paper [5] explicitly covers \"Sinkhorn iterations\" in hyper-connections, and paper [9] introduces hyper-connections. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 15\nVERDICT domain = 5",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper validates that adaptive range capping is necessary and does not degrade performance as a specific experimental objective. Paper [17] rethinks necessity of adaptive retrieval but is a completely different domain and objective; no paper addresses necessity validation of adaptive range capping in any equivalent framing.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes a cap-init control experiment (raising temperature to τ=0.267 to cut range 160→30) or an r_cap sensitivity ablation. These are specific experimental controls tied to a particular softmax-temperature/range-capping method not present in any prior paper, even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 15
+      },
+      "mechanism": {
+       "covered_by": 29
+      },
+      "evaluation": {
+       "covered_by": 15
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe purpose is to validate the necessity of adaptive range capping to solve a numerical issue (underflow) without degrading performance. Paper [15] has the same purpose at the problem-class level: it validates that its technique (loss scaling) is necessary to \"mitigate underflow\" in mixed-precision training, thereby preserving model accuracy. Both papers aim to show that a numerical stability intervention is both necessary and not harmful to performance.\n\n**MECHANISM**\nThe mechanism is an analysis protocol involving a control experiment using temperature scaling and a sensitivity ablation on the capping parameter. Using temperature scaling as an experimental variable is explored in [29] (\"Exploring the Impact of Temperature Scaling in Softmax\"). Performing a sensitivity analysis on a capping/clipping parameter is a standard protocol, for instance in work analyzing gradient clipping like [23].\n\n**EVALUATION**\nThe evaluation design involves measuring gradient magnitudes to diagnose underflow and measuring validation loss to ensure performance is preserved. This design is substantively equivalent to the one in [15], which also diagnoses underflow in gradients (\"gradients can often experience severe underflow problems\") and validates its solution by showing it restores training and preserves accuracy.\n\n**DOMAIN**\nThe domain is Sinkhorn-based routing in hyper-connections, a specific type of deep learning architecture. Paper [5] explicitly works in this exact domain, as it introduces \"Manifold-Constrained Hyper-Connections (mHC)\" which are constrained \"via Sinkhorn iterations\".\n\nVERDICT purpose = 15\nVERDICT mechanism = 29\nVERDICT evaluation = 15\nVERDICT domain = 5",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

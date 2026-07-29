@@ -1,0 +1,295 @@
+{
+ "paper_id": "FA0280",
+ "title": "Deep-Layer Attention Pruning for Vision-Language Models",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     5,
+     9
+    ],
+    "mechanism": null,
+    "evaluation": [
+     1,
+     6
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to prune visual tokens for efficient vision-language model (VLM) inference on spatially-sensitive tasks without requiring offline calibration. Several prior papers address visual token pruning for efficient VLM inference, but none explicitly focus on spatially-sensitive tasks without offline calibration. For example, [1], [2], [3], [5], and [6] all discuss token pruning for efficiency, but they do not explicitly target spatial sensitivity or the absence of offline calibration. [9] mentions attention debiasing but does not address spatial sensitivity as a primary objective. Therefore, no prior paper fully matches the purpose.\n\n### Mechanism\nThe mechanism involves extracting text-to-vision attention from a deeper LLM layer (layer 12 of 32 in InternVL2.5-8B) and applying Maximal Independent Set (MIS) selection directly without debiasing. MIS selection is a well-known graph-theoretic approach, and [25] discusses the statistical mechanics of maximal independent sets, while [18] and [28] discuss submodular optimization and pruning methods that could be related. However, none of these papers apply MIS directly to text-to-vision attention in VLMs, nor do they describe the specific combination of deeper-layer attention extraction and MIS selection without debiasing. Thus, the mechanism is not covered.\n\n### Evaluation\nThe evaluation uses RefCOCO/RefCOCO+/RefCOCOg benchmarks and grounding accuracy as the metric, comparing performance against D2Pruner. RefCOCO and its variants are standard benchmarks for visual grounding tasks, and grounding accuracy is a widely used metric in this domain. For example, [1], [2], [5], and [6] all use similar benchmarks and metrics for evaluating token pruning methods. While the specific comparison to D2Pruner is new, the evaluation design (benchmark family and metric semantics) is not novel. Therefore, the evaluation is covered.\n\n### Domain\nThe domain is vision-language model inference efficiency, specifically focusing on visual token pruning for grounding tasks. This domain is well-established in prior work, as evidenced by [1], [2], [3], [5], and [6], which all address visual token pruning for efficient VLM inference. While the specific focus on spatially-sensitive tasks is new, this is a sub-problem within the broader domain of VLM inference efficiency. Thus, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": "- **FACET: purpose** | **FINAL: COVERED-BY 5** | reason: OC-VTP explicitly states \"a direct and guaranteed approach to select the most representative vision tokens for high-efficiency yet accuracy-preserving VLM inference,\" which aligns with the purpose of pruning visual tokens for efficient VLM inference on spatially-sensitive tasks without offline calibration.  \n- **FACET: mechanism** | **FINAL: NONE** | reason: No prior paper explicitly describes extracting text-to-vision attention from a deeper LLM layer (e.g., layer 12 of 32) and applying Maximal Independent Set (MIS) selection directly without debiasing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## PURPOSE: Prune visual tokens for efficient VLM inference on spatially-sensitive tasks without offline calibration.\n\nPapers [1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11] all address visual token pruning for efficient VLM inference. Paper [9] specifically addresses \"Attention Debiasing for Token Pruning in Vision Language Models\" and discusses pruning for spatially-sensitive tasks. Paper [6] \"PosPrune\" addresses positional bias correction for efficient VLMs. The \"without offline calibration\" aspect is a training-free/calibration-free constraint — papers [4], [9] are training-free. The purpose of pruning visual tokens for efficient VLM inference is clearly covered by multiple papers, particularly [9] which also targets the same problem of attention-based pruning without requiring offline calibration steps.\n\n## MECHANISM: Extract text-to-vision attention from a deeper LLM layer (layer 12 of 32) instead of shallow layers, and apply Maximal Independent Set (MIS) selection directly with no debiasing.\n\nTwo sub-components: (1) using deeper LLM layers for attention-based token importance, and (2) MIS-based token selection.\n\nFor (1): Paper [2] (SwiftVLM) explicitly discusses \"layer-wise analysis\" revealing \"substantial discrepancies in visual token importance across layers\" and that tokens deemed unimportant at shallow layers may be important at deeper layers — this motivates using deeper layers. Paper [7] mentions \"LLM-informed selection of visual tokens.\" However, specifically extracting from a deeper layer (layer 12) rather than shallow layers as the key design choice is most directly addressed by [2].\n\nFor (2): MIS (Maximal Independent Set) selection for token pruning — papers [25], [29] discuss MIS mathematically but not for token pruning. Paper [5] (OC-VTP) uses object-centric selection. No prior paper applies MIS specifically to visual token selection. The combination of deeper-layer attention extraction + MIS selection without debiasing appears novel. Paper [9] explicitly uses debiasing (the contribution explicitly avoids this). The MIS primitive for token selection does not appear in any prior paper.\n\n## EVALUATION: RefCOCO/RefCOCO+/RefCOCOg grounding benchmarks with accuracy metrics, comparing against D2Pruner baseline.\n\nPaper [6] (PosPrune) evaluates on vision-language tasks including grounding benchmarks. Paper [9] evaluates token pruning methods on standard VLM benchmarks. The RefCOCO family is a named benchmark family used in VLM evaluation. Paper [6] specifically mentions grounding tasks. Multiple papers ([1], [2], [3], [5], [6], [9]) evaluate on standard VLM benchmark families with accuracy metrics, which is the same evaluation design (benchmark family + accuracy metric). The RefCOCO grounding benchmark family is used in prior VLM token pruning work (e.g., [6] addresses spatially-sensitive tasks).\n\n## DOMAIN: Vision-language model inference efficiency / visual token pruning for grounding.\n\nPapers [1]-[11] all operate in the VLM inference efficiency / visual token pruning domain. This is clearly covered.\n\n---\n\nVERDICT purpose = 9\nVERDICT mechanism = NONE\nVERDICT evaluation = 6\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes extracting text-to-vision attention specifically from a deeper LLM layer (e.g., layer 12 of 32) combined with MIS-based selection and no debiasing. Paper [6] (PosPrune) discusses positional bias correction (i.e., uses debiasing), paper [9] discusses attention debiasing, and paper [19] (CATP) uses cross-attention across layers but in a different architecture (BLIP-2 cross-attention, not self-attention at a specific deep LLM layer). None quote or describe the specific combination of mid-depth LLM layer attention extraction + MIS selection + no debiasing step."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     17
+    ],
+    "mechanism": [
+     8,
+     17
+    ],
+    "evaluation": [
+     1,
+     7,
+     8,
+     17
+    ],
+    "domain": [
+     1,
+     2,
+     5,
+     6,
+     8,
+     11
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 17
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": [
+        8,
+        17
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        2,
+        5,
+        6,
+        8,
+        11
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to remove the offline calibration requirement of prior debiasing methods. Paper [17] discusses calibration-free pruning for Mixture-of-Experts models, explicitly aiming to eliminate the dependency on calibration data for pruning decisions. This aligns with the same objective of removing offline calibration requirements, albeit in a different model type (MoE vs visual token pruning). Therefore, the purpose is **covered** by [17].\n\n### Mechanism\nThe contribution operates fully online using only the current input's deep-layer attention, avoiding the offline bias prior computed by D2Pruner. Paper [17] describes calibration-free pruning but does not use deep-layer attention as the mechanism; instead, it relies on routing or activation statistics. Paper [8] proposes HiPrune, which uses hierarchical attention patterns for training-free token pruning, but it does not explicitly operate fully online using only the current input's deep-layer attention. No prior paper matches the mechanism at the primitive level. Therefore, the mechanism is **uncovered**.\n\n### Evaluation\nThe contribution evaluates its method by matching/exceeding D2Pruner accuracy (66.32% vs 55.03%) without external calibration data. Paper [8] evaluates token pruning methods using accuracy metrics, and Paper [17] evaluates pruning methods by comparing performance metrics (e.g., task accuracy). Both papers use standard evaluation designs (accuracy comparison against baselines) that match the contribution's evaluation design. Therefore, the evaluation is **covered** by [8] and [17].\n\n### Domain\nThe contribution operates in the domain of vision-language model inference efficiency, specifically visual token pruning for grounding tasks. Papers [1], [2], [5], [6], [8], and [11] all address visual token pruning in vision-language models, including applications to grounding tasks. This establishes that the domain is **covered** by these prior papers.\n\n---\n\nVERDICT purpose = 17  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 8, 17  \nVERDICT domain = 1, 2, 5, 6, 8, 11  ",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper explicitly describes operating fully online using only the current input's deep-layer attention, avoiding offline bias prior computation, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 17
+      },
+      "mechanism": {
+       "covered_by": 17
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Remove the offline calibration requirement of prior debiasing methods.**\n\nPaper [17] (AIMER) is directly relevant: it addresses \"calibration-free task-agnostic MoE expert pruning\" and explicitly states \"Existing task-agnostic expert-pruning methods are typically calibration-dependent: they estimate expert importance from routing or activation statistics on a calibration set, making pruning decisions sensitive to calibration-data variation while introducing deployment friction.\" The objective — eliminating the offline calibration data requirement from a pruning method — is substantively equivalent, even though the host architecture differs (MoE LM vs. VLM visual tokens). Same gap being closed: remove dependency on offline calibration sets for pruning.\n\nPaper [5] (PosPrune) also discusses avoiding bias from offline data in visual token pruning context, mentioning positional bias correction, but its purpose is more about correcting positional bias rather than eliminating offline calibration requirements per se.\n\n**MECHANISM: Operate fully online using only the current input's deep-layer attention, avoiding offline bias prior computation.**\n\nPaper [17] (AIMER) proposes calibration-free pruning by using only the current input's routing/activation signals rather than a pre-collected calibration set — the same primitive of \"use only the current input's internal signals instead of offline-collected statistics.\" This is mechanistically equivalent at the primitive level.\n\nPaper [3] discusses using deep-layer attention signals for token pruning decisions, noting that deeper layers have specific properties. Paper [11] (HiPrune) also uses deep-layer attention for pruning decisions. However, neither specifically addresses the online vs. offline calibration distinction as the core mechanism.\n\nThe combination of \"online-only, current-input attention signals replacing offline calibration data\" is most directly matched by [17].\n\n**EVALUATION: Matches/exceeds D2Pruner accuracy (66.32% vs 55.03%) with no external calibration data.**\n\nThe evaluation design here is a standard accuracy comparison on a named benchmark (visual grounding accuracy, likely RefCOCO family) comparing against a baseline method. Paper [1] evaluates visual grounding performance of pruning methods with accuracy metrics. Paper [2] similarly evaluates VLM token pruning on visual grounding tasks with accuracy comparisons. The evaluation design — accuracy comparison against a baseline pruning method on visual grounding benchmarks — is covered by [1] and [2].\n\n**DOMAIN: Vision-language model inference efficiency / visual token pruning for grounding.**\n\nPapers [1], [2], [3], [5], [8], [11], [14] all operate in the domain of visual token pruning for VLMs/MLLMs. Papers [1] and [2] specifically address visual grounding within this domain. This is clearly covered.\n\nVERDICT purpose = 17\nVERDICT mechanism = 17\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 17
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The objective to remove an offline calibration data requirement for a model optimization method is covered by [17], which introduces \"AIMER: Calibration-Free Task-Agnostic MoE Expert Pruning\" to replace prior \"calibration-dependent\" methods that \"estimate expert importance from routing or activation statistics on a calibration set.\"\n\n**mechanism**: The technical approach of using deep-layer attention from the current input to make pruning decisions is covered by [8] and [11]. These papers propose HiPrune, a framework based on the observation that \"deep layers capture global contextual features\" and use this hierarchical attention pattern for token pruning.\n\n**evaluation**: The evaluation design, a direct comparison of a new pruning method against a prior baseline on accuracy metrics, is covered by [7]. Paper [7] uses \"empirical evaluations on the ImageNet dataset... demonstrating TNT's advantages over previous pruning,\" which is the same validation design.\n\n**domain**: The application area of visual token pruning for vision-language models, specifically considering the impact on visual grounding, is covered by [1] and [2]. Paper [1] focuses on \"recovering from drastic performance drops in visual grounding caused by pruning,\" and [2] notes that existing pruning methods \"suffer substantial degradation on visual grounding (VG) tasks.\"\n\nVERDICT purpose = 17\nVERDICT mechanism = 8\nVERDICT evaluation = 7\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     4,
+     13
+    ],
+    "mechanism": null,
+    "evaluation": [
+     4,
+     9
+    ],
+    "domain": [
+     1,
+     4
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to explain why prior ratio-based debiasing is unnecessary and harmful. Paper [4] discusses attention debiasing for token pruning in vision-language models, identifying systematic biases in attention mechanisms and their impact on pruning. While [4] focuses on positional bias correction, it does not explicitly address the harm caused by ratio-based debiasing methods or refute their necessity. Paper [6] analyzes position bias in transformers but does not critique ratio-based debiasing methods. No prior paper establishes the same empirical relationship or directly refutes the necessity of ratio-based debiasing.\n\n### Mechanism\nThe contribution uses a phase-0 diagnostic analysis measuring Spearman correlation between attention and token position across layers, combined with an ablation applying the ratio formula \\(A_{\\text{mid}} / (A_{\\text{shallow}} + \\epsilon)\\) at multiple layers. Paper [6] provides a graph-theoretic framework for analyzing position bias in multi-layer attention, which overlaps conceptually with measuring correlations between attention and position. However, [6] does not use Spearman correlation or the specific ratio formula applied across layers. Paper [4] discusses positional bias correction but does not employ the same diagnostic or ablation methods. No prior paper uses the exact mechanism described.\n\n### Evaluation\nThe evaluation design involves measuring position correlation (Spearman rho values) and assessing the degradation in accuracy caused by ratio debiasing. Paper [6] quantifies positional bias using graph-theoretic metrics, which is a different evaluation design. Paper [4] evaluates positional bias correction methods but does not use Spearman correlation or assess accuracy degradation due to ratio debiasing. Paper [10] evaluates debiasing methods in image classification but does not use the same metrics or validation framework. No prior paper matches the evaluation design.\n\n### Domain\nThe contribution operates in the domain of vision-language model inference efficiency, specifically visual token pruning for grounding. Papers [1], [2], [4], [5], and [7] all address token pruning or efficiency improvements in vision-language models, making the domain covered. While the specific sub-problem (refuting ratio-based debiasing) is new, the general application area is not.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 1  ",
+      "stage2": "- **FACET: purpose** | **FINAL: COVERED-BY 4** | reason: Paper [4] explicitly discusses attention bias in VLMs and its harmful effects, stating: \"attention in VLMs is systematically biased... manifesting as over-attention,\" which aligns with the claim that ratio-based debiasing is unnecessary and harmful.  \n- **FACET: mechanism** | **FINAL: NONE** | reason: No prior paper describes the specific combination of phase-0 diagnostic analysis (Spearman correlation) and ablation using the ratio formula across layers.  \n- **FACET: evaluation** | **FINAL: COVERED-BY 4** | reason: Paper [4] evaluates attention bias correction methods and reports degradation in performance, stating: \"pruning uninformative visual tokens... disproportionately favors tokens appearing later in the sequence,\" which aligns with the claim of degraded accuracy due to ratio debiasing.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Explain why prior ratio-based debiasing is unnecessary (and harmful).**\n\nThe purpose is to refute a specific debiasing hypothesis (shallow-layer-as-debiasing-prior) used in ratio-based attention debiasing for visual token pruning. Paper [4] \"Attention Debiasing for Token Pruning in Vision Language Models\" is the paper that proposes the ratio-based debiasing approach being critiqued — it introduces the attention bias correction. Paper [2] \"PosPrune\" also addresses positional bias correction in visual token pruning. However, the purpose here is specifically to *refute* the necessity of ratio-based debiasing, not to introduce it. No prior paper establishes the same empirical relationship (ratio debiasing is unnecessary/harmful). Paper [9] notes \"different LVLMs exhibit different correlations\" regarding positional bias, which partially questions universal debiasing, but doesn't specifically refute ratio-based debiasing as harmful. No prior paper's purpose matches \"demonstrate that ratio-based debiasing is unnecessary and harmful.\"\n\n**MECHANISM: Phase-0 diagnostic analysis measuring Spearman correlation between attention and token position across layers, plus ablation applying ratio formula at multiple layers.**\n\nPaper [4] analyzes attention bias in VLMs and proposes the ratio formula being critiqued. Paper [2] measures positional bias in attention. Paper [9] examines correlations between attention maps and positions across different LVLMs. Paper [6] provides theoretical analysis of position bias across layers. However, the specific combination of Spearman correlation measurement across layers as a diagnostic + ablation of the ratio formula at multiple layers is not described in any prior paper. The Spearman correlation diagnostic across layers as a specific analysis protocol doesn't appear explicitly. Paper [9] does examine attention-position correlations across models, which is close in spirit. No paper uses this exact diagnostic design.\n\n**EVALUATION: Position correlation uniformly weak (Spearman rho ~0.17); ratio debiasing degrades accuracy everywhere.**\n\nThe evaluation design involves: (1) measuring Spearman correlation between attention scores and token positions, and (2) ablation study measuring accuracy degradation from applying a formula at multiple layers. Paper [4] evaluates attention debiasing methods on VLM benchmarks. Paper [2] evaluates positional bias correction. The Spearman correlation measurement as a diagnostic metric for attention-position bias appears in spirit in papers [4] and [9], which analyze positional attention patterns. The ablation design (apply formula, measure accuracy) is a generic experimental move. However, using Spearman correlation specifically to validate/refute a positional bias claim is a named statistical metric appearing in prior work on bias analysis. Paper [9] explicitly examines correlations between attention and position across LVLMs. The evaluation design (correlation metric + accuracy ablation) is standard enough to be covered.\n\n**DOMAIN: Vision-language model inference efficiency / visual token pruning for grounding.**\n\nPapers [1], [2], [4], [5] all work in VLM visual token pruning for efficiency. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 9\nVERDICT domain = 4",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper argues that ratio-based debiasing is unnecessary and harmful; [2] (PosPrune) and [4] (Attention Debiasing) address positional bias correction but advocate for debiasing rather than arguing against it, and no quoted phrase from any paper makes the same claim that such correction is unneeded or counterproductive.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper contains a phase-0 Spearman correlation diagnostic between attention scores and token position across layers combined with an ablation applying a ratio formula A_mid/(A_shallow+eps) at multiple layers; [4] analyzes attention bias across layers but does not perform Spearman correlation diagnostics or ablate a mid/shallow ratio formula, and no other paper contains these specific procedural elements even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to establish the empirical finding that a specific \"ratio-based debiasing\" method is unnecessary and harmful. This is a refutation of a hypothesis. No prior paper is described as making this same empirical claim or reporting this specific relationship (i.e., that this class of debiasing methods degrades performance). Papers like [4], [8], and [21] identify biases and propose solutions, but they do not contain the finding that a ratio-based solution is harmful.\n\n**mechanism**: The mechanism is a combination of two standard analysis designs: (1) measuring the correlation between attention scores and token position, and (2) performing an ablation study by applying a formulaic intervention and measuring the impact on a downstream metric. Paper [9] mentions analyzing correlations (\"different LVLMs exhibit different correlations\"), and papers like [4] and [9] are based on the same experimental design of intervening on the model (e.g., \"propose to mitigate this issue by reordering visual tokens\") and evaluating the effect.\n\n**evaluation**: The evaluation design uses Spearman correlation and accuracy degradation as its core components. This is a standard validation framework for this type of analysis. Measuring the impact of a model intervention on a downstream task's accuracy is the fundamental evaluation design in papers like [4], which proposes a debiasing method and would have to evaluate its efficacy, and [9], which proposes mitigating hallucinations and must measure the outcome.\n\n**domain**: The domain is vision-language model efficiency, specifically concerning visual token pruning and attention analysis. This is explicitly the domain of several prior papers. For example, paper [1] is titled \"SVD-Based Vision Token Pruning for Efficient Vision-Language Models,\" and paper [4] is \"Attention Debiasing for Token Pruning in Vision Language Models.\"\n\nVERDICT purpose = NONE\nVERDICT mechanism = 9\nVERDICT evaluation = 4\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY [13] | reason: Paper [13] has the explicit purpose of demonstrating the failure of a class of ratio-based debiasing methods (Inverse Propensity Scoring in Counterfactual Learning to Rank), which is equivalent to explaining why they are unnecessary for a specific problem. Quote: \"...we prove that existing Counterfactual Learning to Rank (CLTR) methods do not remove this bias, including methods specifically designed to mitigate this type of bias.\""
+     }
+    }
+   }
+  }
+ ]
+}

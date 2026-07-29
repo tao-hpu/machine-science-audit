@@ -1,0 +1,253 @@
+{
+ "paper_id": "FA0008",
+ "title": "Confidence-Bounded Unit-Test Rewards for Reinforcement Learning from Verifiable Rewards",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     4,
+     8
+    ],
+    "mechanism": [
+     3,
+     6
+    ],
+    "evaluation": [
+     5,
+     10,
+     12
+    ],
+    "domain": [
+     5,
+     10
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 10
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to address the noisy pass-rate reward in RLVR for code generation when only a small number \\( m \\) of unit tests can be executed per rollout. This specific problem of noisy rewards in RLVR for code generation is not directly addressed in any prior paper. While [4] discusses noisy rewards in RL generally, it does not focus on RLVR or the specific issue of limited unit tests in code generation. Similarly, [10] and [12] discuss challenges in RLVR but do not explicitly address the problem of noisy pass-rate rewards due to limited unit tests. Therefore, no prior paper covers this purpose.\n\n### Mechanism\nThe mechanism involves using a Lower Confidence Bound (LCB) reward that models test outcomes as Bernoulli trials with a Beta prior and uses the delta-quantile of the Beta posterior as a conservative reward. This mechanism is a specific adaptation of confidence-bound-based methods to the RLVR setting. Papers such as [3], [9], and [20] discuss UCB-based methods and confidence bounds in bandit problems, including Bernoulli rewards, but they do not apply these methods to RLVR or code generation. [14] and [30] discuss pessimism in RL, but their approaches are not equivalent to the specific use of the Beta posterior's delta-quantile as a reward. Thus, the mechanism is not covered.\n\n### Evaluation\nThe evaluation uses GRPO training and evaluates on MBPP+ and HumanEval+ against pass-rate and other reward baselines. The evaluation design — training with GRPO and comparing against reward baselines on standard RLVR benchmarks — is covered by [10], which also uses GRPO and evaluates on RLVR benchmarks like HumanEval. While the specific benchmarks (MBPP+ and HumanEval+) may differ, the evaluation design is not novel.\n\n### Domain\nThe domain is RL for code generation, specifically RLVR. This domain is explicitly covered by [10], [12], and [19], which all focus on RLVR for code generation tasks. While the specific sub-problem (noisy pass-rate rewards with limited unit tests) may differ, the general application area of RLVR for code generation is not new.\n\n---\n\n**VERDICT purpose = NONE**  \n**VERDICT mechanism = NONE**  \n**VERDICT evaluation = 10**  \n**VERDICT domain = 10**  ",
+      "stage2": "1. **FACET: purpose | FINAL: COVERED-BY 8 | reason: Paper [8] explicitly addresses the challenge of limited feedback in reinforcement learning, focusing on the selection of samples to label under constrained feedback, which aligns with the objective of addressing noisy pass-rate rewards in RLVR when only a small number of unit tests can be executed per rollout. Quote: \"When reinforcement learning must proceed with limited feedback -- only a fraction of samples get rewards labeled -- a fundamental question arises: which samples should be labeled to maximize learning efficiency?\"**\n\n2. **FACET: mechanism | FINAL: COVERED-BY 3 | reason: Paper [3] discusses the KL-UCB algorithm, which uses confidence bounds derived from a posterior distribution to guide decision-making under uncertainty, specifically for Bernoulli rewards. This aligns with the mechanism of using a Beta posterior and delta-quantile for penalizing high-uncertainty solutions. Quote: \"In the special case of Bernoulli rewards, [KL-UCB] reaches the lower bound of Lai and Robbins... [and] constructs confidence bounds to explicitly account for uncertainty in reward estimates.\"**"
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Addresses noisy pass-rate reward in RLVR for code generation when only a small number m of unit tests can be executed per rollout.**\n\nThe purpose is specifically about handling reward noise/uncertainty arising from limited test execution in RLVR for code generation. Paper [4] addresses \"noisy RL problems with perturbed rewards\" but focuses on adversarial/sensor noise in general RL, not the specific problem of limited unit test sampling causing stochastic pass-rate estimates. Paper [8] addresses \"reinforcement learning under limited feedback\" where only a fraction of samples get rewards labeled — this is about which samples to label, not about noisy estimates from few tests. Paper [5] addresses RL for code generation but focuses on reasoning-process rewards, not noisy pass-rate estimation. Paper [11] addresses sparse rewards in CI testing (low failure rates), which is a different problem (sparsity vs. noise from limited test count). No prior paper specifically targets the problem of noisy pass-rate rewards due to limited unit test execution in RLVR. This purpose appears uncovered.\n\n**MECHANISM: LCB reward using Beta posterior over Bernoulli trials, taking delta-quantile as conservative reward penalizing high-uncertainty solutions.**\n\nThis is a Bayesian lower confidence bound: model test outcomes as Bernoulli, place Beta prior, compute posterior, use a low quantile (conservative estimate) as reward. Paper [3] (KL-UCB) uses Bernoulli rewards with confidence bounds but for bandit exploration (upper bound, not lower). Paper [7] (Thompson Sampling / posterior sampling) uses Beta-Bernoulli posterior sampling for bandits. Paper [1] uses bootstrapping for Bernoulli bandits. Paper [9] (lil' UCB) uses UCB for bandit arm identification. Paper [6] uses uncertainty-penalized rewards in RLHF with ensemble-based uncertainty, penalizing high-uncertainty solutions — this is conceptually similar (conservative reward under uncertainty) but uses ensemble diversity rather than Beta-Bernoulli posterior quantile. Paper [23] uses pessimistic MLE in RLHF. Paper [27] (CQL) uses conservative Q-learning with pessimism. The specific primitive — Beta posterior over Bernoulli test outcomes, using a low quantile as reward — is closest to Beta-Bernoulli Thompson Sampling (paper [7]) but inverted (lower quantile instead of sample). Paper [6] penalizes uncertainty in rewards but via ensembles, not Beta-Bernoulli. The exact mechanism (Beta-Bernoulli posterior + lower quantile as reward signal in RLVR) does not appear in any prior paper. However, the underlying primitive of \"use lower confidence bound from Beta-Bernoulli posterior\" is essentially the Bayesian LCB for Bernoulli bandits, which is implicit in papers [3] and [7]. Paper [3] explicitly discusses Bernoulli rewards and KL-based confidence bounds. The Beta-Bernoulli LCB as a reward shaping mechanism in RL training is not directly present. I'll mark this NONE as no paper uses this exact primitive as a reward signal in RL training.\n\n**EVALUATION: Trained with GRPO and evaluated on MBPP+ and HumanEval+ against pass-rate and other reward baselines.**\n\nGRPO is used in paper [12] (\"RLVR training with GRPO improves MATH-500 performance\"). HumanEval and MBPP are standard code generation benchmarks used in papers [5] and [10]. Paper [5] (ReCode) trains with RL and evaluates on code benchmarks. Paper [10] (Agent-RLVR) evaluates on software engineering tasks. The evaluation design — using GRPO as the RL algorithm and evaluating on HumanEval+/MBPP+ — uses the same benchmark family (HumanEval, MBPP) and same RL framework (GRPO) as papers [5] and [12]. Paper [5] explicitly evaluates on HumanEval and MBPP with RL training. This evaluation design is covered.\n\n**DOMAIN: RL for code generation (RLVR)**\n\nPapers [5], [10], and [17] all work in RL for code generation. Paper [5] is explicitly \"Reinforcing Code Generation.\" Paper [10] is \"Training Software Engineering Agents via... Rewards.\" Paper [17] is \"Improving HPC Code Generation... via Online Reinforcement Learning.\" This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 5\nVERDICT domain = 5",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper addresses the specific problem of noisy pass-rate rewards in RLVR for code generation arising from a limited number m of unit tests per rollout. Papers on noisy rewards (e.g., [4]) treat sensor/corruption noise in general RL, not the statistical sampling noise from finite test execution in code generation RLVR.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper combines Beta-Bernoulli posterior modeling of test outcomes with a delta-quantile (LCB) of that posterior as a conservative reward signal in the RLVR/code-generation context. Bandit papers ([1],[3],[7],[9],[20]) use UCB/Thompson sampling over arm rewards, not LCB over pass probabilities as a training reward. The pessimism papers ([14],[22],[27]) apply pessimism to Q-values or value functions, not to a Beta posterior over binary test pass rates."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to address learning from a noisy reward signal, specifically when the pass-rate in RLVR is estimated from a small sample of unit tests. This is an instance of the broader, well-known problem of learning with noisy, sparse, or otherwise unreliable rewards. This objective is covered by prior work, for example [4] which explicitly considers \"noisy RL problems with perturbed rewards\" where the \"observed reward channel is often subject to noise\", and [11] which aims to \"tackle the scarce rewards\" in a setting where positive signals are rare, leading to an unreliable reward.\n\n**mechanism**: The core mechanism is to create a conservative reward signal by using a pessimistic estimate of an underlying quantity (the true pass rate). Specifically, it uses the Lower Confidence Bound (LCB) of a Beta posterior distribution. This principle of using pessimistic or uncertainty-penalized estimates to guide learning in the face of uncertainty is a known primitive in reinforcement learning. For instance, [6] proposes \"Uncertainty-Penalized Reinforcement Learning\" to mitigate overoptimization, and [27] introduces \"Conservative Q-Learning\" which learns a Q-function that explicitly lower-bounds the true value function to handle distributional shift, a form of uncertainty.\n\n**evaluation**: The evaluation design consists of training an agent with a specific RL algorithm (GRPO) on standard code generation benchmarks (MBPP+, HumanEval+) and comparing the performance of the proposed reward function against baseline rewards. This experimental design is covered by prior work in the same domain. For example, [12] evaluates different reward signals in RLVR by training with the same algorithm (\"RLVR training with GRPO improves MATH-500 performance\") and measuring performance on a standard reasoning benchmark, which is the same evaluation design.\n\n**domain**: The contribution operates in the domain of \"RL for code generation (RLVR)\". This application area is explicitly addressed by several prior papers. For example, [5] proposes \"Reinforcing Code Generation with Reasoning-Process Rewards\", and [17] works on \"Improving HPC Code Generation Capability of LLMs via Online Reinforcement Learning\". These papers operate in the same general application area.\n\nVERDICT purpose = 4\nVERDICT mechanism = 6\nVERDICT evaluation = 12\nVERDICT domain = 5",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     2,
+     6
+    ],
+    "evaluation": [
+     1,
+     13
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution demonstrates that LCB rewards improve accuracy while halving verifier compute compared to simply running more tests. No prior paper explicitly establishes this empirical relationship between LCB rewards, accuracy improvement, and reduced compute. While papers like [1], [4], and [8] discuss verifier-based rewards and compute scaling, none report or establish the same relationship between LCB rewards and these specific effects. Thus, the purpose is **uncovered**.\n\n### Mechanism\nThe mechanism involves an empirical comparison of LCB with `m=5` tests against Pass-rate with `2m=10` tests and other baselines on code benchmarks. Papers [6], [16], and [19] discuss UCB-based methods and confidence bounds in bandit settings, which are substantively equivalent to the LCB mechanism used here. Specifically, [6] introduces an optimal exploration algorithm using UCB confidence bounds, and [16] refines UCB methods with variance-aware adjustments. These primitives match the underlying mechanism of leveraging confidence bounds for decision-making, even though the application domain differs. Thus, the mechanism is **covered**.\n\n### Evaluation\nThe evaluation design compares LCB (m=5) and Pass-rate (2m=10) on MBPP+ and HumanEval+ benchmarks, measuring Pass@1 accuracy. Papers [1], [4], [8], and [15] use similar evaluation designs involving Pass@K metrics and verifier-based comparisons for code generation tasks. For example, [8] analyzes test-time compute optimality using Pass@K metrics, and [4] evaluates multi-verifier setups with Pass@K accuracy. These prior works share the same evaluation design (Pass@K metrics and verifier-based comparisons), even if the specific benchmarks differ. Thus, the evaluation is **covered**.\n\n### Domain\nThe contribution operates in RL for code generation (RLVR). Papers [1], [4], [7], [8], [11], [13], and [15] all address RLVR or code generation tasks using reinforcement learning and verifier-based rewards. For instance, [1] formalizes RLVR with noisy verifiers, [7] surveys LLMs for code generation, and [8] focuses on reward model generalization for test-time reasoning in code tasks. These papers clearly establish RLVR as an existing domain. Thus, the domain is **covered**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 6  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly demonstrates that the LCB reward improves accuracy while halving verifier compute compared to simply running more tests, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Shows the LCB reward improves accuracy while halving verifier compute compared to simply running more tests.**\n\nThe purpose is to demonstrate that a specific reward formulation (LCB) achieves better accuracy-compute tradeoff than simply scaling up test count. Paper [1] addresses RLVR with noisy/imperfect verifiers and reward reliability, but its purpose is handling false positives/negatives, not demonstrating a compute-efficiency tradeoff. Paper [2] addresses scaling test-time compute and argues verification-based methods are superior, touching on compute efficiency. Paper [3] discusses test-time compute scaling with value functions. None of these papers specifically establish the relationship \"LCB reward achieves same/better accuracy at half the verifier compute vs. pass-rate with 2x tests.\" No prior paper reports this specific empirical relationship between LCB reward and verifier compute efficiency in RLVR training.\n\n**MECHANISM: Empirical comparison of LCB (m=5) vs. Pass-rate (2m=10) and other baselines on code benchmarks.**\n\nThis is a controlled ablation/substitution experiment comparing reward formulations under iso-compute conditions. Paper [1] compares reward formulations in RLVR settings. Paper [2] compares verifier-based vs. non-verifier methods empirically. Paper [3] compares RL variants empirically on benchmarks. The mechanism is a standard controlled comparison (swap reward signal, measure accuracy) — a generic experimental shape. However, the specific design of iso-compute comparison (m=5 vs. 2m=10) as a protocol doesn't appear explicitly in prior papers. That said, iso-compute comparisons are a standard experimental design used broadly. Papers [2] and [3] use similar empirical comparison designs for reward/verifier methods. This is a standard controlled comparison design covered by prior work.\n\n**EVALUATION: LCB (m=5) achieves best Pass@1 on MBPP+ and HumanEval+ benchmarks.**\n\nMBPP+ and HumanEval+ are named benchmark families used extensively in code generation evaluation. Paper [7] surveys LLMs for code generation and references these benchmarks. Paper [13] uses execution feedback/GRPO for code generation and evaluates on code benchmarks. Paper [11] evaluates on coding benchmarks including HumanEval. Pass@1 is a standard metric in code generation. The evaluation design (Pass@1 on HumanEval+/MBPP+) is clearly covered by prior work in the code generation space.\n\n**DOMAIN: RL for code generation (RLVR)**\n\nPaper [1] explicitly addresses RLVR (Reinforcement Learning with Verifiable Rewards) for code/reasoning. Paper [13] uses GRPO (an RL method) for code generation with execution feedback. Paper [7] covers LLMs for code generation broadly. The domain of RL for code generation is well-covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 2\nVERDICT evaluation = 13\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper contains the specific empirical claim that an LCB reward improves accuracy while halving verifier compute compared to running more tests; the closest papers (e.g., [3], [8]) address test-time compute efficiency but never make this specific accuracy-vs-compute tradeoff claim for an LCB reward signal."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     3
+    ],
+    "evaluation": [
+     3
+    ],
+    "domain": [
+     5
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to establish the practical reliability of the LCB reward for training. None of the prior papers explicitly establish or report the practical reliability of the LCB reward. While some papers discuss related topics, such as robustness of reward functions ([2], [11]) or hyperparameter sensitivity in RL ([3], [19]), none of them focus on the specific empirical relationship of LCB reward reliability. Therefore, no prior paper covers this purpose.\n\n### Mechanism\nThe mechanism involves sensitivity analysis over hyperparameters (delta, prior) and comparison of training dynamics across all tested reward functions. Paper [3] proposes a method for evaluating hyperparameter sensitivity in RL, which is substantively equivalent to the sensitivity analysis aspect of the mechanism. Additionally, paper [19] conducts a large-scale empirical analysis of hyperparameter sensitivity in RL, which also aligns with this mechanism. Both papers cover the mechanism of sensitivity analysis in RL, even though they do not focus on LCB rewards specifically.\n\n### Evaluation\nThe evaluation demonstrates that LCB is robust to hyperparameter choices (delta, prior) and exhibits the most stable training dynamics among all tested reward functions. Paper [3] proposes a general empirical method for evaluating hyperparameter sensitivity in RL, which matches the evaluation design of sensitivity analysis. Paper [11] compares learned reward functions by analyzing their dynamics, which aligns with the evaluation design of comparing training dynamics. Thus, the evaluation design is covered by these prior works.\n\n### Domain\nThe domain is RL for code generation (RLVR). Papers [5], [8], [10], [12], [13], [20], and [22] all address RL for code generation or RLVR, which is the same general application area. While the specific focus on LCB rewards may be new, the domain itself is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 3  \nVERDICT evaluation = 3  \nVERDICT domain = 5  ",
+      "stage2": "1. **FACET: purpose** | **FINAL: NONE** | **reason:** None of the prior papers explicitly establish the practical reliability of the LCB reward for training. While some papers discuss related topics such as reward shaping, hyperparameter optimization, or verifiable rewards, none explicitly address the objective of establishing the practical reliability of the LCB reward for training under the same empirical relationship or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Establishes the practical reliability of the LCB reward for training.**\n\nThe purpose is to demonstrate that a specific reward function (LCB) is practically reliable for RL training — showing it's robust to hyperparameter choices and has stable training dynamics. Paper [3] proposes a method for evaluating hyperparameter sensitivity in RL, and paper [19] conducts hyperparameter sensitivity analysis of RL in autonomous driving. However, neither paper's purpose is to establish the reliability of a specific reward function for code generation training. Paper [22] addresses reward design for RL in code generation, but focuses on dense vs. sparse rewards, not LCB reliability. Paper [21] addresses noisy/imperfect verifiers in RLVR. None of these papers share the same purpose of establishing practical reliability of an LCB-style reward specifically — the closest are [3] and [19] on RL hyperparameter sensitivity, but their purpose is characterizing hyperparameter sensitivity of RL algorithms generally, not validating a specific reward function's robustness. This purpose appears uncovered.\n\n**MECHANISM: Sensitivity analysis over hyperparameters (delta, prior) and comparison of training dynamics across all tested reward functions.**\n\nThe mechanism involves (1) sensitivity analysis over hyperparameters and (2) comparing training dynamics across reward functions. Paper [3] proposes \"a new empirical method\" for characterizing hyperparameter sensitivity in RL — this is the same analytical primitive of sensitivity analysis over hyperparameters. Paper [19] uses \"functional analysis of variance (fANOVA)\" to quantify hyperparameter sensitivity in RL. Paper [1] combines automated optimization of hyperparameters and reward shape. These papers use sensitivity analysis over hyperparameters as a standard analytical design, which matches the mechanism here at the design level.\n\n**EVALUATION: LCB is robust to hyperparameter choices and exhibits the most stable training dynamics.**\n\nThe evaluation design involves measuring robustness to hyperparameter variation and comparing training dynamics across reward functions. Paper [3] uses a sensitivity analysis evaluation design for RL hyperparameters. Paper [19] similarly evaluates hyperparameter sensitivity in RL. These share the same evaluation design (sensitivity analysis + comparison across configurations). The specific finding differs, but the evaluation design is the same.\n\n**DOMAIN: RL for code generation (RLVR).**\n\nPaper [5] (ReCode) addresses RL for code generation. Paper [22] addresses RL for code generation with reward design. Paper [17] addresses RL for HPC code generation. Paper [8] addresses RLVR for code review. The domain of RL for code generation is clearly covered by multiple prior papers.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 3\nVERDICT evaluation = 3\nVERDICT domain = 5",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper establishes the practical reliability of the LCB reward specifically for training purposes; the closest papers (e.g., [21] on noisy verifiers, [22] on dense verifiable rewards) address different objectives and none quotes anything equivalent to validating LCB reward reliability as a training signal."
+     }
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,318 @@
+{
+ "paper_id": "FA0385",
+ "title": "Compute-Matched Evaluation Reveals Task-Dependent Diffusion Planning Advantage",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     12
+    ],
+    "mechanism": [
+     12,
+     25
+    ],
+    "evaluation": [
+     3,
+     12
+    ],
+    "domain": [
+     3,
+     12
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 12
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 12
+      },
+      "single_paper_covers_all": 12
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to enable a fair comparison between diffusion and autoregressive language models by isolating the generation paradigm from inference budget. Paper [12] explicitly conducts a controlled comparison between autoregressive and masked diffusion language models, isolating the generation paradigm as the sole variable. This matches the purpose at the problem-class level, as both contributions aim to compare these paradigms under controlled conditions. Paper [3] also compares generation quality and diversity between discrete diffusion and autoregressive models, but its focus is on generation quality/diversity rather than isolating inference budget effects, so it does not fully match the purpose.\n\n### Mechanism\nThe mechanism involves a compute-matched evaluation protocol that calibrates autoregressive best-of-k sampling such that `k*t_AR` matches the diffusion model's wall-clock time per instance, using a held-out calibration set. Paper [8] discusses best-of-k sampling in the context of inference-time alignment but does not match the specific compute-matching protocol described here. Paper [12] uses identical compute budgets for both paradigms (autoregressive and masked diffusion) to isolate the generation paradigm, which is substantively equivalent to the compute-matching mechanism described in this contribution. Paper [28] and [25] explore inference-time compute scaling but do not involve compute-matching protocols for autoregressive best-of-k sampling.\n\n### Evaluation\nThe evaluation design involves timing measurements on A100-80GB hardware, robustness checks with median vs p75 timing estimators, and application to specific tasks (Countdown and Mini Sudoku). Paper [12] uses identical hardware (NVIDIA H100 80GB) and identical compute budgets for both paradigms, isolating the generation paradigm as the sole variable, which matches the evaluation design at the benchmark family level. Paper [8] and [25] also explore inference-time compute scaling but do not use the same evaluation design (timing estimators or task-specific robustness checks). No prior paper introduces a genuinely new evaluation design matching this contribution's specifics.\n\n### Domain\nThe domain is evaluation methodology for planning/reasoning language models, specifically comparing diffusion and autoregressive paradigms. Paper [12] operates in the same general application area of comparing autoregressive and diffusion-based language models, which covers the domain facet. Paper [3] also compares these paradigms but focuses on generation quality/diversity rather than planning/reasoning tasks, so it does not match the domain as closely. Papers [9] and [4] address reasoning tasks but do not focus on evaluation methodology for comparing diffusion vs autoregressive models.\n\n---\n\nVERDICT purpose = 12  \nVERDICT mechanism = 12  \nVERDICT evaluation = 12  \nVERDICT domain = 12  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 12
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Enable a fair comparison between diffusion and autoregressive language models that isolates the generation paradigm from inference budget.**\n\nPaper [12] explicitly states \"a controlled empirical comparison between autoregressive (AR) and masked diffusion (MDLM) language models\" with \"identical compute budget... isolating the generation paradigm as the sole variable.\" Paper [3] also presents \"a systematic empirical comparison between discrete diffusion approaches and autoregressive baselines.\" Both pursue the same objective of fair/controlled comparison between diffusion and AR models. Paper [15] also discusses the inference speed gap between diffusion and AR models. The purpose is clearly covered by [12] and [3].\n\n**MECHANISM: Compute-matched evaluation protocol calibrating AR best-of-k sampling so k*t_AR ≈ t_diffusion, with k = floor(t_diffusion / t_AR) measured on a held-out calibration set.**\n\nThe specific primitive here is: measure wall-clock time of both systems on a calibration set, then set k for best-of-k AR sampling to match the diffusion model's inference time, enabling iso-compute comparison. Paper [12] controls for compute budget but does so at training time (identical training steps/hardware), not at inference time via time-matched best-of-k. Paper [3] compares generation quality but doesn't describe this timing-calibrated best-of-k mechanism. Paper [8] discusses best-of-N sampling scaling but for alignment purposes, not for iso-compute comparison against a different generation paradigm. Paper [15] discusses inference speed of diffusion vs AR but proposes acceleration methods, not a matched-compute evaluation protocol. No prior paper describes the specific primitive of calibrating k in best-of-k AR sampling to match diffusion wall-clock time per instance using a held-out calibration set. This mechanism appears genuinely absent.\n\n**EVALUATION: Applied on A100-80GB measuring timing (48-56s vs 1.4s → k=35/39), with robustness checked via median vs p75 timing estimators.**\n\nThe evaluation design involves: (1) measuring wall-clock inference times on specific hardware, (2) deriving k values, (3) running best-of-k AR vs diffusion on reasoning benchmarks (Countdown, Mini Sudoku), (4) checking robustness with different timing estimators. Paper [12] uses controlled benchmark comparison on H100 hardware. Paper [3] uses empirical comparison on generation benchmarks. The specific design of timing-calibrated best-of-k with robustness checks via percentile estimators is not found in prior work. However, the broader evaluation design of comparing diffusion vs AR on reasoning/generation benchmarks is present in [3] and [12]. The robustness check with median vs p75 is a sensitivity analysis (generic shape). The core evaluation design — benchmarking reasoning tasks with LLM outputs — is present in [3] and [12], but the specific protocol of timing-matched k derivation is tied to the mechanism. Since the evaluation design (comparing diffusion vs AR on reasoning benchmarks, measuring task performance) is present in [3] and [12], I'll mark it covered.\n\n**DOMAIN: Evaluation methodology for planning/reasoning language models (diffusion vs autoregressive).**\n\nPapers [3], [12], [1], [2], [6] all work in the domain of diffusion vs autoregressive language model comparison. Paper [15] specifically discusses Dream-7B and Qwen2.5-7B inference. The domain of diffusion vs AR language model evaluation is clearly covered.\n\nVERDICT purpose = 12\nVERDICT mechanism = NONE\nVERDICT evaluation = 3\nVERDICT domain = 3",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes a compute-matched evaluation protocol that calibrates best-of-k autoregressive sampling by setting k = floor(t_diffusion / t_AR) using wall-clock times measured on a held-out calibration set. Paper [3] compares AR and diffusion models empirically but does not implement this specific time-matching protocol. Paper [15] discusses inference speed comparisons but not this calibration mechanism. No other paper contains this element under any alternative framing or terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 12
+      },
+      "mechanism": {
+       "covered_by": 25
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: COVERED by [12], which pursues the same objective of a \"controlled empirical comparison between autoregressive (AR) and masked diffusion (MDLM) language models... isolating the generation paradigm as the sole variable.\" While [12] controls for training budget and the contribution controls for inference budget, the objective at the problem-class level—a fair comparison isolating the generation paradigm—is the same.\n\n**mechanism**: COVERED by [25], which uses a \"simple budget forcing strategy\" at inference time. The contribution's mechanism of matching wall-clock time by adjusting the number of autoregressive samples is a specific implementation of this same technical primitive: enforcing a computational budget at inference time to control for compute.\n\n**evaluation**: COVERED by [12], which employs the same evaluation design of a \"controlled comparison\" to isolate a core variable. The design in [12] is to match the \"identical compute budget\" during training to compare paradigms; this is the same validation framework as matching the inference compute budget, just with a different resource being controlled.\n\n**domain**: COVERED by multiple papers, including [3], which conducts \"An Empirical Comparison of Generation Quality and Diversity Between Discrete Diffusion and Autoregressive Text Generation.\" This is the same general application area of comparing diffusion and autoregressive language models.\n\nVERDICT purpose = 12\nVERDICT mechanism = 25\nVERDICT evaluation = 12\nVERDICT domain = 3",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     5,
+     21
+    ],
+    "evaluation": null,
+    "domain": [
+     1,
+     3,
+     10
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to determine whether diffusion's reported planning advantage survives compute matching. This specific empirical relationship — comparing planning performance between diffusion and autoregressive models under compute-matched conditions — is not established in any prior paper. While several papers (e.g., [1], [3], [5]) discuss diffusion's planning advantages, none explicitly investigate compute-matched comparisons or survival of the advantage under such conditions. Therefore, no prior paper reports the same empirical relationship.\n\n### Mechanism\nThe mechanism involves evaluating Dream-7B (diffusion) against its autoregressive initializer Qwen2.5-7B under greedy, compute-matched best-of-k, and diffusion conditions on two Reasoning Gym tasks (Countdown, Mini Sudoku). Papers [1], [3], and [5] describe diffusion models and their planning capabilities, but none use the specific experimental setup of compute-matched comparisons across greedy, best-of-k, and diffusion sampling strategies. While [5] explores diffusion vs. autoregressive models in data-constrained settings, it does not employ the same mechanism or experimental design. Thus, the mechanism is uncovered.\n\n### Evaluation\nThe evaluation design involves task-dependent results comparing performance on Countdown and Mini Sudoku under compute-matched conditions. Papers [8], [13], [14], [16], and [17] discuss self-consistency and adaptive sampling techniques for reasoning tasks, but none use compute-matched comparisons or the specific Reasoning Gym tasks. While [18] introduces functional benchmarks for reasoning evaluation, it does not employ compute-matched comparisons or the same statistical framework. No prior paper uses this evaluation design, making it uncovered.\n\n### Domain\nThe domain is planning tasks, specifically sequential arithmetic (Countdown) and constraint satisfaction (Mini Sudoku). Papers [1], [3], [5], and [10] address planning tasks broadly, including reasoning and constraint satisfaction. While the specific tasks (Countdown and Mini Sudoku) are new instances, the general application area of planning tasks is covered by prior work. Therefore, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 5 | reason: Paper [5] systematically studies compute-matched comparisons between diffusion and autoregressive models, including planning advantages in constrained settings. Quote: \"diffusion-based language models significantly outperform AR models when compute is matched.\"\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper evaluates Dream-7B against Qwen2.5-7B under greedy, compute-matched best-of-k, and diffusion conditions on Countdown and Mini Sudoku tasks.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports task-dependent results with compute-matched AR vs diffusion performance on Countdown and Mini Sudoku, nor provides equivalent numerical claims."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 5
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Determine whether diffusion's reported planning advantage survives compute matching.**\n\nThe purpose is specifically to test whether diffusion models' claimed planning advantage holds up when compute is equalized (best-of-k for AR). Paper [1] claims Dream 7B has \"superior planning abilities\" but does not test whether this survives compute matching — it introduces the model. Paper [5] studies diffusion vs AR under compute constraints but in \"data-constrained settings\" (training compute), not inference-time compute matching for planning. Paper [3] argues diffusion beats AR on reasoning/planning but doesn't do compute-matched comparison. No prior paper specifically pursues the objective of \"does diffusion's planning advantage survive inference-compute matching?\" — this is a distinct purpose from introducing diffusion models or showing they outperform AR under some condition. The closest is [5], but its purpose is about training data constraints, not inference-time compute fairness on planning tasks.\n\n**MECHANISM: Evaluate Dream-7B vs Qwen2.5-7B under greedy, compute-matched best-of-k, and diffusion conditions on Reasoning Gym tasks.**\n\nThe mechanism is a controlled comparison using best-of-k (compute-matched) as the AR baseline, comparing against a diffusion model initialized from the same AR model. Paper [5] uses \"compute-matched\" comparisons between diffusion and AR models — it mentions \"compute is abundant\" and systematic study. Paper [1] compares Dream-7B against AR baselines. The specific design of using best-of-k as a compute-matched AR oracle to fairly compare against diffusion inference is a standard evaluation protocol. Paper [8], [13], [16], [17] all use best-of-k / self-consistency sampling as inference-time compute scaling for AR models. The mechanism of \"compare diffusion vs AR with compute-matched best-of-k\" is essentially combining known primitives (best-of-k from [8]/[13] and diffusion vs AR comparison from [5]).\n\n**EVALUATION: Task-dependent result on Countdown and Mini Sudoku from Reasoning Gym.**\n\nThe evaluation design uses Reasoning Gym benchmarks (Countdown, Mini Sudoku) with accuracy metrics and confidence intervals. Reasoning Gym is a specific benchmark family. No prior paper among those listed uses Reasoning Gym tasks (Countdown, Mini Sudoku) as evaluation benchmarks — these are not mentioned in any prior paper. The CI reporting is standard. However, the evaluation *design* (accuracy on reasoning tasks, best-of-k comparison, CI) is standard. The question is whether Reasoning Gym constitutes a \"named benchmark family\" used in prior work. None of the prior papers use Reasoning Gym. This appears to be a genuinely new benchmark instance not covered by prior papers listed.\n\n**DOMAIN: Planning tasks (sequential arithmetic vs constraint satisfaction).**\n\nPaper [3] explicitly addresses \"complex reasoning and planning tasks\" with diffusion models. Paper [1] discusses \"superior planning abilities.\" Paper [10] discusses \"sequential planning and constraint composition.\" The domain of planning/reasoning tasks for LLMs is clearly covered by multiple prior papers.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 5\nVERDICT evaluation = NONE\nVERDICT domain = 3",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper asks whether diffusion's reported planning advantage survives compute matching; [5] compares under data-constrained compute parity but focuses on data efficiency, not planning tasks, and no paper frames the question as auditing a claimed planning advantage under matched compute.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports the specific task-dependent reversal finding (AR beating diffusion by 32.5pp on Countdown vs. diffusion retaining a 10.4pp advantage on Mini Sudoku) under compute-matched conditions; no equivalent empirical result exists in any prior paper under any terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        5,
+        21
+       ]
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": [
+        3,
+        10
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "purpose: The contribution's purpose is to determine if the claimed planning superiority of diffusion models holds up under compute-matched conditions. No prior paper investigates this specific empirical relationship; papers like [1] and [3] make the initial claim of superiority, while others like [5] compare the architectures in a different regime (data-constrained training) and [21] studies inference compute scaling for only one architecture type (AR).\n\nmechanism: The mechanism is a controlled comparison of a diffusion model against its AR initializer, using compute-matched best-of-k sampling. This experimental design is a composition of known primitives: [5] performs a \"systematically study\" of diffusion vs. AR models, and [21] explicitly investigates \"Trading Inference-Time Compute for Adversarial Robustness,\" establishing the principle of scaling inference compute via sampling to improve performance.\n\nevaluation: The evaluation design consists of a head-to-head comparison on benchmark tasks (\"Reasoning Gym\") reporting accuracy and confidence intervals. This is a standard evaluation protocol used in many prior papers, such as [1] which \"outperforms existing... models on general, mathematical, and coding tasks,\" necessarily using the same design of benchmark-based performance comparison.\n\ndomain: The domain is planning and complex reasoning tasks, including sequential arithmetic and constraint satisfaction. This general application area is explicitly addressed in numerous prior works, including [3] (\"...for Complex Reasoning and Planning\") and [10] which discusses \"sequential planning and constraint composition.\"\n\nVERDICT purpose = NONE\nVERDICT mechanism = 5, 21\nVERDICT evaluation = 1\nVERDICT domain = 3, 10",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the specific objective of comparing diffusion and autoregressive models on planning tasks under a compute-matched setting. Paper [5] compares them in a data-constrained setting \"when compute is abundant,\" which is a different experimental question than controlling for and matching the compute budget to test the validity of the planning advantage claim. Other papers ([1], [3]) claim a planning advantage for diffusion but do not set out to test this claim under compute-matching."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     11,
+     22
+    ],
+    "mechanism": [
+     1,
+     2,
+     19
+    ],
+    "evaluation": [
+     2,
+     9,
+     19
+    ],
+    "domain": [
+     11,
+     22
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 11
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 11
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to \"explain the structural basis of the task-dependent advantage.\" This requires prior work to explicitly establish or explain the relationship between task structure and the relative advantages of different generation paradigms (e.g., diffusion vs. autoregressive). Paper [11] (\"Autoregressive vs. Masked Diffusion Language Models: A Controlled Comparison\") provides a controlled empirical comparison of autoregressive and diffusion models, isolating the generation paradigm as the sole variable. It reports findings on their relative strengths and weaknesses, which aligns with the purpose of explaining task-dependent advantages. Additionally, paper [22] (\"An Empirical Comparison of Generation Quality and Diversity Between Discrete Diffusion and Autoregressive Text Generation\") systematically compares the two paradigms, focusing on diversity and controllability, which also relates to task-dependent advantages. Both papers cover the purpose.\n\n### Mechanism\nThe mechanism involves \"analysis via scaling curves (accuracy vs. k) and problem-structure interpretation, linking diffusion's bidirectional/iterative refinement to global-coherence tasks and AR sampling diversity to sequential tasks.\" Paper [2] (\"Large Language Monkeys: Scaling Inference Compute with Repeated Sampling\") explores scaling curves (accuracy vs. k) in the context of repeated sampling, which matches the scaling curve analysis aspect of the mechanism. Paper [11] discusses the iterative refinement capabilities of diffusion models and their implications for global coherence, which aligns with the bidirectional/iterative refinement aspect. Paper [22] also examines the diversity and controllability of diffusion and autoregressive models, which relates to the sequential-task diversity aspect. Together, these papers cover the mechanism.\n\n### Evaluation\nThe evaluation involves specific findings: \"On Countdown AR surpasses Dream at k=4 (11% of budget, no saturation); on Mini Sudoku log-linear extrapolation estimates k~87 (2.2x budget) needed to match Dream.\" This evaluation design uses scaling curves (accuracy vs. k) and extrapolation to compare performance. Paper [2] uses scaling curves (accuracy vs. k) to evaluate repeated sampling, which matches the evaluation design. Paper [9] (\"On the Role of Temperature Sampling in Test-Time Scaling\") also examines scaling trends at large k values, including saturation effects, which aligns with the evaluation design. Paper [19] (\"Beyond Pass@k: Breadth-Depth Metrics for Reasoning Boundaries\") discusses scaling trends and crossover phenomena in pass@k metrics, which further matches the evaluation design. These papers collectively cover the evaluation.\n\n### Domain\nThe domain is \"analysis of generation-paradigm advantages by problem structure.\" Papers [11] and [22] both analyze the advantages of different generation paradigms (diffusion vs. autoregressive) in text generation tasks, which matches the domain. Paper [2] also explores scaling in autoregressive models, which is relevant to the domain. These papers cover the domain.\n\n---\n\nVERDICT purpose = 11  \nVERDICT mechanism = 2  \nVERDICT evaluation = 2  \nVERDICT domain = 11  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 11
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Explain the structural basis of the task-dependent advantage (of diffusion vs. AR generation paradigms)**\n\nThe purpose is to explain *why* one generation paradigm outperforms another depending on problem structure — specifically linking bidirectional/iterative refinement to global-coherence tasks and sampling diversity to sequential tasks.\n\nPaper [11] presents \"A Controlled Comparison\" between AR and masked diffusion models and reports findings about when each paradigm performs better. Paper [22] does \"An Empirical Comparison of Generation Quality and Diversity Between Discrete Diffusion and Autoregressive Text Generation.\" However, neither paper specifically establishes the relationship \"bidirectional refinement → global coherence advantage; sampling diversity → sequential task advantage\" as a demonstrated empirical relationship with structural interpretation. Paper [11] reports comparative findings but focuses on training throughput and perplexity, not structural basis of task-dependent advantages. Paper [22] compares quality and diversity but doesn't link these to problem structure in the same way.\n\nNo prior paper establishes the same empirical relationship (structural basis linking generation paradigm properties to task-type advantages) with the same variables and direction of effect.\n\n**MECHANISM: Analysis via scaling curves (accuracy vs k) and problem-structure interpretation**\n\nThe mechanism involves plotting accuracy vs. number of samples k (scaling curves) and interpreting the curves through the lens of problem structure (global coherence vs. sequential). \n\nPaper [2] \"Large Language Monkeys\" explicitly studies how coverage scales with repeated sampling k across tasks. Paper [9] \"On the Role of Temperature Sampling in Test-Time Scaling\" analyzes accuracy vs. K curves and finds saturation effects. Paper [19] \"Beyond Pass@k\" analyzes scaling curves and crossover phenomena between models. These papers all use accuracy-vs-k scaling curves as an analysis tool. The problem-structure interpretation is an additional layer, but the core analysis mechanism (scaling curves) is well-covered.\n\n**EVALUATION: Specific quantitative results on Countdown and Mini Sudoku with k-budget comparisons**\n\nThe evaluation design uses accuracy-vs-k scaling curves on reasoning benchmarks (Countdown, Mini Sudoku) to compare generation paradigms. Paper [2] uses coverage-vs-k curves across tasks. Paper [9] uses accuracy-vs-K curves with saturation analysis. Paper [19] uses pass@k curves with crossover analysis. These all use the same evaluation design (scaling curves with k as the axis, comparing models). The specific benchmarks differ but the design is the same.\n\n**DOMAIN: Analysis of generation-paradigm advantages by problem structure**\n\nThe domain is LLM/language model generation paradigm comparison. Papers [11] and [22] both work in this exact area — comparing AR vs. diffusion language model generation paradigms. This is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 2\nVERDICT evaluation = 9\nVERDICT domain = 11",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explains the structural basis of why a task-dependent advantage exists between AR and diffusion models — paper [11] reports the empirical finding but does not explain the structural basis, and no other paper addresses this objective even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 22
+      },
+      "mechanism": {
+       "covered_by": [
+        1,
+        2,
+        19
+       ]
+      },
+      "evaluation": {
+       "covered_by": 19
+      },
+      "domain": {
+       "covered_by": [
+        11,
+        22
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to establish and explain a specific empirical relationship: that the performance advantage of a generation paradigm (AR vs. diffusion) depends on the structure of the task (sequential vs. global coherence). While prior work compares AR and diffusion models ([11], [22]) and discusses their intrinsic properties like global coherence ([1]), no cited paper has the explicit purpose of demonstrating this task-structure-dependent performance trade-off as its central finding.\n\n**mechanism**: The analysis method combines scaling curves of accuracy versus sampling budget (k) with an interpretation based on problem structure. The use of scaling curves to analyze performance versus inference compute/samples is a standard technique, as seen in [2] which observes that \"coverage... scales with the number of samples k\", and [19] which analyzes \"Pass@k at large sampling budgets\". The interpretive part, linking a model's architecture (e.g., diffusion) to structural capabilities (e.g., \"global bidirectional contextual capability\"), is also present in prior work like [1].\n\n**evaluation**: The evaluation design involves comparing two paradigms on different tasks, measuring performance as a function of sampling budget (k), and analyzing the resulting curves for crossovers. This design is not new; [19] explicitly analyzes a \"crossover phenomenon\" where the superior model changes as the sampling budget k increases. Using Sudoku as a benchmark for constraint satisfaction is also established in prior work ([16], [25], [26]).\n\n**domain**: The contribution operates in the domain of comparative analysis of text generation paradigms, specifically autoregressive versus diffusion models. This is a well-established research area, with numerous papers like [11] (\"Autoregressive vs. Masked Diffusion Language Models: A Controlled Comparison\") and [22] (\"An Empirical Comparison of Generation Quality and Diversity Between Discrete Diffusion and Autoregressive Text Generation\") working in the exact same domain.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 1, 2, 19\nVERDICT evaluation = 19\nVERDICT domain = 11, 22",
+      "stage2": "FACET: purpose: Explain the structural basis of the task-dependent advantage. | FINAL: COVERED-BY [22] | reason: The paper's stated purpose is to conduct \"a systematic empirical comparison between discrete diffusion approaches and autoregressive baselines\" to understand how structural differences (e.g., \"left-to-right factorization\") lead to different performance characteristics (\"generation quality and diversity\"). This is the same objective."
+     }
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,364 @@
+{
+ "paper_id": "FA0020",
+ "title": "AlignDefTok: Training-Free Transfer of DefensiveTokens via Embedding-Space Alignment",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     27
+    ],
+    "evaluation": [
+     8
+    ],
+    "domain": [
+     8
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 27
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to eliminate the ~16 GPU-hour per-model training cost of DefensiveTokens prompt-injection defenses. None of the prior papers explicitly address the same objective of reducing the computational cost of training DefensiveTokens defenses. While several papers (e.g., [8], [6], [3]) propose defenses against prompt injection attacks, they do not focus on the specific problem of reducing the training cost of DefensiveTokens defenses. Therefore, no prior work covers this purpose.\n\n### Mechanism\nThe mechanism, AlignDefTok, enables the transfer of DefensiveTokens between related models (same tokenizer and embedding dimension) without retraining. This is a novel mechanism. While some prior works discuss transferability in other contexts (e.g., [19], [27], [23], [24], [29]), they focus on transferring prompts or adversarial triggers, not DefensiveTokens. For example, [19] discusses zero-shot continuous prompt transfer, and [27] introduces soft prompt transfer, but these mechanisms are not substantively equivalent to transferring DefensiveTokens across models. No prior work describes a mechanism for transferring DefensiveTokens specifically, making this mechanism novel.\n\n### Evaluation\nThe evaluation demonstrates 133-285x compute savings versus full DefensiveTokens training while maintaining comparable defense performance (0-1.9% ASR on AlpacaFarm). This evaluation design is covered by [8], which evaluates DefensiveTokens defenses against prompt injection attacks using metrics like attack success rate (ASR). While the specific dataset (AlpacaFarm) and models differ, the evaluation design — measuring defense performance in terms of ASR and comparing against baseline DefensiveTokens training — is substantively equivalent to the evaluation in [8].\n\n### Domain\nThe domain is LLM security, specifically prompt injection defense. This domain is covered by multiple prior papers, including [8], [6], [3], and [5], all of which address prompt injection defenses in the context of LLM security. While the specific instance (reducing training cost for DefensiveTokens) is new, the general application area of LLM security and prompt injection defense is well-covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 8  \nVERDICT domain = 8  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses eliminating the training cost (~16 GPU-hour per model) of DefensiveTokens defenses.  \nFACET: mechanism | FINAL: COVERED-BY 27 | reason: SPoT (Soft Prompt Transfer) describes transferring learned prompts between models, aligning with the mechanism of transferring DefensiveTokens without retraining: \"SPoT first learns a prompt on one or more source tasks and then uses it to initialize the prompt for a target task.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 27
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "## Per-Facet Reasoning\n\n### Purpose\nThe contribution's purpose is to **eliminate the ~16 GPU-hour per-model training cost of DefensiveTokens** by enabling defense transfer across related models without retraining. This is specifically about reducing the training cost of a particular prompt-injection defense mechanism (DefensiveTokens) through transfer.\n\nPaper [8] (\"Defending Against Prompt Injection With a Few DefensiveTokens\") is the original DefensiveTokens paper — it introduces the defense but does not address eliminating its training cost via transfer. No other paper pursues the objective of \"transfer a trained soft-prompt-style defense to avoid retraining costs for prompt injection.\" Papers [19], [23], [24], [27], [29], [30] deal with prompt/soft-prompt transfer for task adaptation efficiency, but their purpose is improving task performance transfer, not eliminating security-defense training costs. The specific gap being closed — retraining cost of a security defense — is not covered by any prior paper.\n\n**No prior paper covers this purpose.** → NONE\n\n### Mechanism\nThe mechanism is **transferring trained DefensiveTokens (soft prompt embeddings used as a security defense) from a source model to a related target model** (same tokenizer and embedding dimension) to enable defense reuse without retraining.\n\nAt the underlying primitive level, this is \"transfer soft/continuous prompt embeddings from one model to another.\" This primitive is directly addressed by multiple prior papers:\n- Paper [27] (SPoT): \"learns a prompt on one or more source tasks and then uses it to initialize the prompt for a target task\" — soft prompt transfer between models.\n- Paper [19]: \"zero-shot continuous prompt transfer method, where source prompts are encoded into relative space and the corresponding target prompts are searched for transferring to target models.\"\n- Paper [23] (CrossPT): \"enables controlled knowledge transfer\" of prompts across tasks/models.\n- Paper [24] (MPT): \"learns a single transferable prompt by distilling knowledge from multiple task-specific source prompts.\"\n\nThe key distinction is that AlignDefTok transfers *security defense tokens* rather than task-adaptation prompts, but the underlying primitive — mapping/transferring soft prompt embeddings between models — is the same. Per the instructions, different application domain does not break equivalence at the primitive level. Paper [27] is the clearest match.\n\n**Covered by [27] (and also [19], [23], [24]).** → 27\n\n### Evaluation\nThe evaluation design involves: measuring Attack Success Rate (ASR) on AlpacaFarm benchmark, comparing compute savings (training hours), and measuring defense performance parity.\n\n- Paper [8] uses AlpacaFarm and ASR metrics for evaluating DefensiveTokens — same benchmark family and metric semantics.\n- Paper [4] and [5] use ASR-style metrics for prompt injection defense evaluation.\n- The compute savings comparison is a standard efficiency/iso-compute comparison.\n\nThe evaluation design (ASR on AlpacaFarm, comparing against a baseline defense) is used in paper [8], which is the DefensiveTokens paper itself. The benchmark family (AlpacaFarm + ASR) is established prior work.\n\n**Covered by [8].** → 8\n\n### Domain\nThe domain is **LLM security / prompt injection defense**. This is clearly covered by numerous prior papers: [1], [2], [3], [4], [5], [6], [7], [8], [9], [14], [15], [16].\n\n**Covered by [8] (and many others).** → 8\n\n---\n\nVERDICT purpose = NONE\nVERDICT mechanism = 27\nVERDICT evaluation = 8\nVERDICT domain = 8",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the specific objective of eliminating the ~16 GPU-hour per-model training cost of DefensiveTokens defenses. Paper [8] is the DefensiveTokens paper itself (the cost being addressed), and no other paper targets reducing or eliminating that specific training overhead for that specific defense mechanism. The closest papers (e.g., [6] mentioning \"near-zero overhead\") address different defense mechanisms with different cost profiles, not the DefensiveTokens training cost specifically."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     11,
+     21
+    ],
+    "mechanism": [
+     1,
+     4,
+     6
+    ],
+    "evaluation": [
+     23,
+     27
+    ],
+    "domain": [
+     11,
+     17
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 11
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to provide a training-free transfer mechanism that preserves the tokens' critical high-norm property. None of the prior papers explicitly address this specific objective. While some papers discuss transfer mechanisms (e.g., [21], [25]), they do not focus on preserving high-norm properties of tokens as a core goal. Papers like [11] and [17] discuss soft prompt transfer but do not emphasize norm preservation as a critical property.\n\n### Mechanism\nThe mechanism involves Orthogonal Procrustes alignment, which computes the optimal rotation matrix from vocabulary embeddings and applies it to DefensiveTokens, exploiting the norm-preserving property of rotations. Papers [1], [2], [4], [5], and [10] all discuss Orthogonal Procrustes alignment or related methods for aligning matrices or embeddings. Specifically, [1] investigates the norm-dependent geometric behavior of Procrustes alignment, and [4] explicitly mentions that orthogonal transformations preserve distances (and thus norms). These papers cover the mechanism at the primitive level.\n\n### Evaluation\nThe evaluation design involves measuring attack success rates and speedup for Procrustes transfer between LLMs. Papers like [21], [11], and [25] evaluate prompt transferability across models, but none use the specific evaluation design of measuring attack success rates for Procrustes transfer. While [28] discusses evaluation frameworks for security measures, it does not align with the specific evaluation design here. Thus, the evaluation design appears to be novel.\n\n### Domain\nThe domain is embedding-space alignment for soft prompts. Papers [11], [17], [21], and [25] all work in the general area of soft prompt tuning and transfer for large language models, which includes embedding-space alignment. While the specific instance of Procrustes alignment for soft prompts may differ, the general application area is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 1  \nVERDICT evaluation = NONE  \nVERDICT domain = 11  ",
+      "stage2": "1. **FACET: purpose** | **FINAL: NONE** | reason: No prior paper explicitly provides a training-free transfer mechanism that preserves the tokens' critical high-norm property. While some papers discuss Procrustes problems or soft prompt transfer, none address this specific objective.\n\n2. **FACET: evaluation** | **FINAL: NONE** | reason: No prior paper reports achieving a 0% attack success rate for the Llama-3.1 to Llama-3 direction with a 285x speedup, nor do they present an equivalent named design or claim."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 11
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 23
+      },
+      "domain": {
+       "covered_by": 11
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Provide a training-free transfer mechanism that preserves the tokens' critical high-norm property.**\n\nThe purpose is specifically about transferring soft prompts (DefensiveTokens) across LLMs without training, while preserving high-norm properties. Paper [11] \"Efficient and Privacy-Preserving Soft Prompt Transfer for LLMs\" directly addresses transferring soft prompts across LLMs without retraining. Paper [21] \"Zero-Shot Continuous Prompt Transfer\" also addresses zero-shot/training-free transfer of continuous prompts between models. Paper [17] SPoT addresses soft prompt transfer but requires training. The norm-preservation aspect is a specific constraint, but the core objective — training-free soft prompt transfer — is covered by [11] and [21].\n\n**MECHANISM: Orthogonal Procrustes alignment applied to vocabulary embeddings, exploiting norm-preserving property of rotations.**\n\nPapers [1]-[7] and [10] all address Orthogonal Procrustes problems mathematically. Paper [6] \"Unsupervised Alignment of Embeddings with Wasserstein Procrustes\" applies Procrustes alignment to word embeddings specifically. Paper [10] \"Manifold alignment using Procrustes analysis\" applies Procrustes to domain transfer. Paper [11] addresses soft prompt transfer — let me check its mechanism: it uses a \"privacy-preserving\" approach, likely different. Paper [21] uses relative space encoding. The specific application of Orthogonal Procrustes to vocabulary embeddings for soft prompt transfer is closest to [6], which applies Procrustes alignment to embedding spaces. The primitive (compute optimal rotation from embeddings, apply to target vectors) is substantively equivalent to [6]'s approach of using Procrustes to align embedding spaces.\n\n**EVALUATION: Procrustes transfer achieves 0% attack success rate for Llama-3.1 to Llama-3 direction with 285x speedup.**\n\nThe evaluation design uses attack success rate (ASR) as a metric for jailbreak/adversarial defense evaluation, combined with speedup measurement. This is a standard evaluation design in adversarial/defense papers. Paper [23] evaluates jailbreaking attacks and defenses with similar metrics. Paper [28] discusses security evaluation frameworks. The ASR metric for adversarial defense is standard in the field. However, the specific combination of ASR + speedup for soft prompt transfer in this security context — I need to check if any prior paper uses this exact evaluation design. Papers [11] and [21] evaluate soft prompt transfer but in NLP task performance, not security/ASR. The ASR metric for defense evaluation appears in [23]. The evaluation design (ASR + speedup for a transfer method) is a combination, but ASR as a metric for defense is covered by [23].\n\n**DOMAIN: Embedding-space alignment for soft prompts.**\n\nPaper [11] works on soft prompt transfer across LLMs. Paper [17] SPoT works on soft prompt transfer. Paper [21] works on continuous prompt transfer. Paper [9] works on soft prompt tuning for cross-lingual transfer. Paper [6] works on embedding alignment. The domain of embedding-space alignment for soft prompts is covered by [11], [17], and [21].\n\nVERDICT purpose = 11\nVERDICT mechanism = 6\nVERDICT evaluation = 23\nVERDICT domain = 11",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 21
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 27
+      },
+      "domain": {
+       "covered_by": 17
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The objective of a training-free transfer mechanism for continuous/soft prompts is covered by prior work. Paper [21] explicitly proposes a \"zero-shot continuous prompt transfer method\" to generalize task semantics across different language models without training.\n\n**mechanism**: The use of Orthogonal Procrustes to align two sets of points (embeddings) by finding an optimal rotation is a classical and well-documented method. Paper [4] describes the core primitive as \"rotating the configuration X1 to match the configuration X2\", and paper [10] applies it for \"manifold alignment using Procrustes analysis\" to achieve knowledge transfer.\n\n**evaluation**: The evaluation design, which consists of applying a defense or transfer method and then measuring the success rate of an attack, is a standard protocol in the adversarial machine learning literature. Paper [27] evaluates the transferability of 3D point cloud attacks by measuring their \"success rates when transferred to attack remote black-box models.\"\n\n**domain**: The application area of aligning embedding spaces for the purpose of transferring soft prompts between models is covered by prior work. Paper [17] introduces \"SPoT: Soft Prompt Transfer,\" a method that learns a prompt on a source task and uses it to initialize a prompt for a target task.\n\nVERDICT purpose = 21\nVERDICT mechanism = 4\nVERDICT evaluation = 27\nVERDICT domain = 17",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     10
+    ],
+    "mechanism": [
+     3,
+     7
+    ],
+    "evaluation": [
+     5,
+     22,
+     28
+    ],
+    "domain": [
+     2,
+     5
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 10
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 22
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to handle harder transfer directions where pure training-free alignment is insufficient. Paper [10] discusses few-shot cross-lingual transfer for low-resource languages, specifically addressing the challenge of poor performance in harder transfer directions. It shares the same objective of improving transfer performance in challenging scenarios, albeit in a different context. Therefore, the purpose is **covered** by paper [10].\n\n### Mechanism\nThe contribution mechanism is \"tiny-adapt, a lightweight fine-tuning stage that uses Procrustes-transferred tokens as initialization.\" Paper [7] discusses Orthogonal Procrustes Alignment (OPA) for unsupervised domain adaptation, which is substantively equivalent to the Procrustes-based initialization described here. Paper [8] and [15] discuss lightweight fine-tuning approaches using adapters, which are conceptually similar to the \"tiny-adapt\" mechanism. Combining Procrustes alignment with lightweight fine-tuning is novel as no prior paper explicitly combines these two primitives. Therefore, the mechanism is **uncovered**.\n\n### Evaluation\nThe evaluation facet claims faster convergence and improved attack success rate (ASR) for harder transfer directions. Paper [22] discusses ASR as a robustness measure, and paper [23] analyzes how learning rate warmup accelerates convergence. Both papers use evaluation designs that align with the contribution's validation setup, such as measuring convergence speed and attack success rates. Thus, the evaluation design is **covered** by papers [22] and [23].\n\n### Domain\nThe contribution operates in the domain of efficient defense adaptation. Paper [2] discusses adaptable, dynamic network defenses in cybersecurity, and paper [4] addresses poisoning attacks in federated learning, both of which fall under the broader domain of defense adaptation. Therefore, the domain is **covered** by papers [2] and [4].\n\n---\n\nVERDICT purpose = 10  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 22  \nVERDICT domain = 2  ",
+      "stage2": "FACET: mechanism | FINAL: COVERED-BY 7 | reason: Orthogonal Procrustes Alignment (OPA) is explicitly mentioned as a geometry-based alignment method, which aligns with the initialization of Procrustes-transferred tokens in tiny-adapt."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 10
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Handle harder transfer directions where pure training-free alignment is insufficient.**\n\nThe purpose is specifically about addressing cases where a training-free (Procrustes-based) alignment method fails, and a lightweight fine-tuning stage is needed as a fallback/supplement. I need to find a paper that addresses the same gap: \"training-free alignment is insufficient for some cases, so we add fine-tuning.\"\n\nPaper [10] discusses \"few-shot cross-lingual transfer\" where zero-shot transfer fails for distant languages — similar spirit but in NLP cross-lingual transfer, not defense adaptation. Paper [15] addresses \"random initialization\" challenges in adapter tuning for low-resource settings. Paper [7] discusses when Orthogonal Procrustes Alignment is insufficient for domain adaptation. None of these specifically address \"training-free alignment insufficient → add lightweight fine-tuning as supplement for harder cases\" in the defense adaptation context. The closest conceptually is [10] (harder transfer directions needing few-shot fine-tuning) but the problem class is cross-lingual NLP, not defense adaptation. At the problem-class level, \"some transfer directions are harder and need fine-tuning beyond zero-shot/training-free methods\" is addressed by [10].\n\n**MECHANISM: Tiny-adapt — lightweight fine-tuning using Procrustes-transferred tokens as initialization.**\n\nThe key primitive is: use a geometric alignment (Procrustes) to produce an initialization, then fine-tune from that warm start. Paper [15] (TAML-Adapter) uses meta-learning for better initialization of adapters. Paper [28] uses warm-starting iterative solvers. Paper [32] uses screening-guided warm start for genetic algorithms. Paper [18] uses Procrustes for manifold alignment/transfer. Paper [7] uses Orthogonal Procrustes Alignment for domain adaptation. None combine Procrustes-transferred tokens specifically as initialization for a subsequent fine-tuning stage. The warm-start + fine-tune primitive appears in [28] and [32], but not with Procrustes-transferred tokens as the initialization source. This combination appears genuinely absent.\n\n**EVALUATION: 4x faster convergence, reaching 1.9% ASR with 133x speedup.**\n\nThe evaluation design uses convergence speed metrics (speedup factor) and attack success rate (ASR) as metrics. Paper [22] uses ASR as a robustness metric. Paper [5] evaluates adversarial robustness with efficiency metrics. The evaluation design of measuring convergence speedup (e.g., \"X times faster\") appears in papers [28] (warm-starting convergence speedup), [23] (learning rate warmup convergence), [19]/[20] (faster SGD). The specific design of measuring ASR + convergence speedup together in a defense adaptation context — paper [5] evaluates defense robustness with iteration efficiency. The evaluation design (convergence speed + ASR metric) is covered by combinations of [5] and [22]/[28].\n\n**DOMAIN: Efficient defense adaptation.**\n\nThis is in the domain of adversarial defense/robustness. Paper [5] explicitly works on \"practical evaluation of adversarial robustness\" and defense models. Paper [2] works on \"adaptable, dynamic network defenses.\" This domain is clearly covered.\n\nVERDICT purpose = 10\nVERDICT mechanism = NONE\nVERDICT evaluation = 5\nVERDICT domain = 5",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes a lightweight fine-tuning stage that uses Procrustes-transferred tokens specifically as initialization (tiny-adapt). Paper [7] uses Orthogonal Procrustes Alignment for domain adaptation but does not combine it with a subsequent lightweight fine-tuning stage initialized from those transferred tokens. Paper [15] addresses adapter initialization via meta-learning, not Procrustes transfer. No paper in the set combines Procrustes-based token transfer as the initialization seed for a lightweight fine-tuning stage in the way tiny-adapt does."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 10
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 28
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The objective is to improve transfer learning for difficult cases where training-free methods are not enough. This is substantively equivalent to the purpose of [10], which addresses the failure of zero-shot transfer for \"low-resource languages distant to the source language\" by using few-shot fine-tuning.\n\n**mechanism**: The mechanism is a two-stage process: first, use Procrustes alignment to get an initial mapping, and second, use that mapping to initialize a lightweight fine-tuning stage. This \"warm-start\" primitive is covered by [3], which uses manifold alignment to find a \"sensible initialization for the policy\" before reinforcement learning, and [15], which addresses \"challenges related to random initialization\" in adapter tuning by using meta-learning to find a better starting point.\n\n**evaluation**: The evaluation design measures convergence speed (\"4x faster convergence\", \"133x speedup\") and final performance (ASR). Measuring convergence speed and speedup is a standard evaluation design for methods claiming efficiency improvements, as seen in prior work like [28] (\"Warm-Starting... for Faster Sequential Inference\") and [19] (\"Towards Faster Stochastic Gradient Search\").\n\n**domain**: The application area is adapting defenses efficiently. This area is covered by [2], which identifies the \"increasing need for adaptable, dynamic network defenses\" in response to adversarial learning.\n\nVERDICT purpose = 10\nVERDICT mechanism = 3\nVERDICT evaluation = 28\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     7,
+     10
+    ],
+    "mechanism": [
+     10,
+     18
+    ],
+    "evaluation": [
+     10,
+     14,
+     18
+    ],
+    "domain": [
+     5,
+     14
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        7,
+        10
+       ]
+      },
+      "mechanism": {
+       "covered_by": [
+        10,
+        18
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        10,
+        18
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        5,
+        14
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose:\nThe contribution aims to quantify the overall deployment cost reduction of the transfer approach. Paper [7] (\"TRAINING TECHNOLOGIES PILOT STUDY: COST COMPARISON ANALYSIS\") explicitly focuses on cost comparison analysis, which is substantively equivalent to the purpose of quantifying deployment cost reduction. Paper [10] (\"Towards Compute-Optimal Transfer Learning\") also addresses computational efficiency in transfer learning, aiming to reduce compute costs, which aligns with the same objective at the problem-class level. Both papers share the same purpose of cost reduction quantification.\n\n### Mechanism:\nThe mechanism involves an end-to-end comparison of transfer pipeline compute against full DefensiveTokens training on the AlpacaFarm benchmark. Paper [10] (\"Towards Compute-Optimal Transfer Learning\") proposes a method to trade computational efficiency for performance in transfer learning, which is substantively equivalent to the mechanism of comparing transfer pipeline compute against full training. Paper [18] (\"AlpacaFarm: A Simulation Framework for Methods that Learn from Human Feedback\") introduces the AlpacaFarm benchmark, which is directly relevant to the mechanism used in this contribution. Together, these papers cover the mechanism.\n\n### Evaluation:\nThe evaluation reports 133-285x compute savings while matching native defense performance (0-1.9% ASR on AlpacaFarm). Paper [18] (\"AlpacaFarm: A Simulation Framework for Methods that Learn from Human Feedback\") uses the AlpacaFarm benchmark for evaluation, which matches the design-level evaluation setup. Paper [10] (\"Towards Compute-Optimal Transfer Learning\") also evaluates compute savings in transfer learning, which aligns with the evaluation design of comparing computational efficiency and performance. Thus, the evaluation facet is covered.\n\n### Domain:\nThe domain is LLM security deployment. Paper [14] (\"Defending Against Prompt Injection With a Few DefensiveTokens\") explicitly addresses LLM security deployment, focusing on defenses against prompt injection attacks in LLM systems. Paper [5] (\"SecurityLingua: Efficient Defense of LLM Jailbreak Attacks via Security-Aware Prompt Compression\") also operates in the domain of LLM security deployment, addressing vulnerabilities and defenses in LLM systems. Both papers cover the domain facet.\n\n---\n\nVERDICT purpose = 7, 10  \nVERDICT mechanism = 10, 18  \nVERDICT evaluation = 10, 18  \nVERDICT domain = 5, 14  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 10
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 14
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Quantify the overall deployment cost reduction of the transfer approach.**\n\nThe purpose is to demonstrate compute savings from transferring a defense (DefensiveTokens) rather than training it from scratch. Paper [10] \"Towards Compute-Optimal Transfer Learning\" explicitly studies computational efficiency of transfer learning vs. training from scratch, framing it as \"trade computational efficiency for asymptotic performance.\" Paper [14] is the DefensiveTokens paper itself, which likely contains this finding. Paper [7] is a \"Cost Comparison Analysis\" for training technologies. Paper [10] is the closest match — it pursues the same objective of quantifying compute savings from transfer vs. full training. However, [10] is about general transfer learning compute-optimality, not about security/defense deployment cost. The relationship being established here is specifically \"transfer of a security defense saves X compute while matching performance\" — [10] covers the general form of this relationship (compute savings from transfer vs. scratch training). This is substantively equivalent at the problem-class level.\n\n**MECHANISM: End-to-end comparison of transfer pipeline compute against full DefensiveTokens training on the AlpacaFarm benchmark.**\n\nThe mechanism is a compute comparison between a transfer pipeline and full training. Paper [10] uses exactly this kind of compute comparison (FLOPs analysis of transfer vs. full training). Paper [14] (DefensiveTokens) is the source paper for this finding. The analysis design — comparing transfer pipeline compute to full training compute — is a standard approach used in [10] and [13] (which discusses computational inefficiency of GCG and transfer efficiency).\n\n**EVALUATION: 133-285x compute savings while matching native defense performance (0-1.9% ASR on AlpacaFarm).**\n\nThe evaluation design uses AlpacaFarm as a benchmark and ASR (Attack Success Rate) as a metric. Paper [18] introduces AlpacaFarm as a simulation/evaluation framework. Paper [14] uses AlpacaFarm and ASR metrics for evaluating prompt injection defenses. The evaluation design (using AlpacaFarm + ASR metric) is covered by [14] and [18]. The compute-savings metric framing appears in [10].\n\n**DOMAIN: LLM security deployment.**\n\nMultiple papers operate in LLM security: [2], [3], [5], [6], [14], [16] all work in LLM security/defense against attacks. This domain is clearly covered.\n\nVERDICT purpose = 10\nVERDICT mechanism = 10\nVERDICT evaluation = 14\nVERDICT domain = 14",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

@@ -2,7 +2,7 @@
 """Download ICAIS 2025 AI-generated papers from AiraXiv (research use; polite crawl)."""
 import urllib.request, re, os, time, json
 
-BASE = '/Users/TaoTao/Desktop/Learn/硕士阶段/machine-science-audit/data/airaxiv-icais2025'
+BASE = os.environ.get('AIRAXIV_DIR', 'data/airaxiv-icais2025')
 os.makedirs(BASE, exist_ok=True)
 UA = {'User-Agent': 'novelty-audit-research/0.1 (mailto:tan1@my.hpu.edu; academic corpus study)'}
 

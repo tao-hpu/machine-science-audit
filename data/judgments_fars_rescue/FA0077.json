@@ -1,0 +1,276 @@
+{
+ "paper_id": "FA0077",
+ "title": "LogitGate: Probe-Gated Output Logit Bias as a Simplification of Activation Steering for Tool Calling",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     15,
+     27
+    ],
+    "evaluation": [
+     1,
+     4
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 15
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to enable activation steering benefits in frameworks without mid-layer hooks. No prior paper explicitly addresses this specific objective. While several papers discuss activation steering (e.g., [2], [3], [10], [12], [13], [16]), their purposes focus on improving steering effectiveness, exploring steering methods, or applying steering to specific tasks. None of them explicitly aim to address the absence of mid-layer hooks as a problem.\n\n### Mechanism\nThe contribution's mechanism involves moving probe-gated ternary gating from intermediate layers to the output logit layer. Paper [14] introduces confidence-gated mechanisms for intermediate layers, but it does not involve ternary gating or address moving gating mechanisms to the output logit layer. Paper [23] discusses ternary logic systems but focuses on hardware design rather than activation steering. No prior paper describes a substantively equivalent mechanism for probe-gated ternary gating at the logit layer.\n\n### Evaluation\nThe evaluation uses BFCL and Qwen2.5-1.5B to measure ASA recovery (80.7% Trigger-F1 gain, FPR held at 0.0833). Paper [4] introduces CLaS-Bench, a benchmark for evaluating activation steering techniques, and paper [12] uses a feedback controller to evaluate steering methods. Both papers employ evaluation designs that involve steering effectiveness metrics, making the evaluation design substantively equivalent. The specific benchmark instance (BFCL) and model (Qwen2.5-1.5B) are new, but the evaluation design itself is covered.\n\n### Domain\nThe contribution operates in the domain of LLM tool calling. Paper [1] explicitly addresses tool calling in LLMs, introducing a benchmark for multilingual tool-use research. This establishes that the domain of LLM tool calling is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 4  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses enabling activation steering benefits without mid-layer hooks under any framing or terminology.  \nFACET: mechanism | FINAL: COVERED-BY 15 | reason: \"SDIM-logit... takes as input the logits produced by any given discriminative classifier\" aligns with moving probe-gated ternary gating to the output logit layer.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Make activation steering gains available when mid-layer hook frameworks are unavailable**\n\nThe purpose is specifically about enabling activation steering benefits in constrained deployment scenarios (no mid-layer hooks), by relocating the intervention point. Paper [13] (CAST) proposes conditional activation steering that selectively applies steering based on activation patterns — but its purpose is selective/conditional application, not working around hook unavailability. Paper [10] improves instruction-following via activation steering. Paper [12] develops control-theoretic foundations for activation steering. None of these papers address the specific objective of \"making activation steering work when mid-layer hooks are unavailable\" — this is a distinct engineering/deployment constraint problem. No prior paper covers this purpose.\n\n**MECHANISM: Probe-gated ternary gating moved from mid-layer to output logit layer**\n\nThe mechanism combines: (1) a probe that gates behavior, (2) ternary (three-valued) gating, (3) applied at the output logit layer rather than mid-layer residual stream. Paper [13] (CAST) uses activation pattern analysis to conditionally apply/withhold steering — this is probe-gated conditional steering at mid-layers, not logit-layer. Paper [27] (FUDGE) uses a discriminator operating on partial sequences to adjust output logits — this is logit-layer intervention guided by a classifier, which is mechanistically close. However, FUDGE doesn't use ternary gating or a probe trained on internal activations. Paper [5]/[7] (PPLM) uses attribute classifiers to modify logits/activations. The specific combination of probe-gated ternary control applied at the logit layer (rather than residual stream) doesn't appear to be covered. The ternary gating aspect is not present in any steering paper. No prior paper covers this specific mechanism.\n\n**EVALUATION: BFCL benchmark + specific metrics (ASA, Trigger-F1, FPR)**\n\nBFCL (Berkeley Function Calling Leaderboard) is a named benchmark family for tool calling evaluation. Paper [1] introduces ITC for tool calling but doesn't use BFCL. No prior paper in the list explicitly uses BFCL as an evaluation benchmark. The metrics (ASA, Trigger-F1, FPR) appear to be specific to the activation steering + tool calling context. However, FPR is a standard metric, and the evaluation design of measuring steering effectiveness via classification metrics on a tool-calling benchmark is a combination not seen in prior papers. No prior paper uses BFCL or this specific evaluation design.\n\n**DOMAIN: LLM tool calling**\n\nPaper [1] explicitly addresses tool calling in LLMs: \"Tool calling allows large language models (LLMs) to interact with external systems like APIs.\" This clearly covers the domain of LLM tool calling.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper addresses making activation steering benefits available specifically when mid-layer hook frameworks are unavailable; [13] CAST uses conditional steering but requires mid-layer access, and no other paper targets this architectural constraint.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes a probe-gated ternary gate that operates at the output logit layer as a substitute for mid-layer intervention; [13] CAST uses mid-layer probes, [27] FUDGE adjusts logits but uses a future discriminator without ternary gating or probe-based conditioning, and no paper combines these elements.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper evaluates on BFCL + Qwen2.5-1.5B measuring recovery of ASA 80.7% Trigger-F1 gain with FPR held at 0.0833; this specific benchmark-model-metric combination appears nowhere in the prior papers."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 27
+      },
+      "mechanism": {
+       "covered_by": 27
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: The objective is to enable activation steering-like control in frameworks that lack access to intermediate layer activations (mid-layer hooks). This is substantively equivalent to the purpose of [27], which proposes a method for controlled text generation \"requiring access only to G’s output logits,\" thereby also enabling control without mid-layer intervention.\n\nmechanism: The mechanism is a probe-gated ternary gate that operates on the output logits, described as being \"moved\" from the middle layers. The core primitive of using a learned predictor (a probe) to modulate the final output probabilities (logits) for controlled generation is present in [27], which \"learns an attribute predictor... and uses this predictor’s outputs to adjust G’s original probabilities.\" This covers the \"probe-gated\" and \"at the output logit layer\" aspects, making the \"move\" not novel; the specific use of a discrete ternary gate is an implementation detail of the same underlying primitive.\n\nevaluation: The evaluation design consists of measuring performance (Trigger-F1, FPR) on a dedicated benchmark for tool calling (BFCL). This design—using a specialized benchmark to assess LLM tool-use capabilities—is established by [1], which introduces the \"International Tool Calling (ITC)\" dataset for this exact purpose. Using a different benchmark instance (BFCL) does not make the evaluation design itself novel.\n\ndomain: The application area is LLM tool calling. This domain is explicitly addressed by [1], titled \"Enhancing Tool Calling in LLMs with the International Tool Calling Dataset.\"\n\nVERDICT purpose = 27\nVERDICT mechanism = 27\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": [
+     3
+    ],
+    "domain": [
+     9
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to identify the source of gain in calibration (\"定位增益来源\"). This specific objective — understanding the origin of calibration improvement — is not directly addressed in any of the prior papers. While several papers discuss calibration (e.g., [3], [5], [6], [9], [11], [15], [26]), their purposes are focused on improving calibration, proposing new calibration methods, or applying calibration to specific tasks, rather than isolating and identifying the source of calibration gain. None explicitly aim to pinpoint the gain source as a primary objective.\n\n### Mechanism\nThe mechanism involves performing an ablation study by removing the bias of the first token (\"K=1 首 token 偏置消融\"). This specific mechanism — targeting the first token's bias for ablation — does not appear in any prior paper. While ablation studies are common (e.g., [10], [20], [28]), none focus on the specific primitive of first-token bias removal. Papers like [10] and [20] discuss token-level phenomena (e.g., positional bias, token homogenization), but they do not employ this specific ablation mechanism.\n\n### Evaluation\nThe evaluation design involves demonstrating that \"K=1\" is sufficient to support the boundary calibration hypothesis (\"K=1 足够,支持 boundary calibration 假说\"). This evaluation design is not novel. Papers such as [3], [5], [6], and [9] use similar evaluation setups to validate calibration-related hypotheses, including boundary calibration and decision-theoretic calibration. For example, [3] and [5] evaluate calibration in decision-making contexts, and [9] systematically examines calibration in large language models. The specific benchmark or instance may differ, but the evaluation design (validating calibration sufficiency or boundary-related hypotheses) is covered.\n\n### Domain\nThe domain of the contribution is calibration, particularly in the context of boundary calibration and token-level analysis in large language models (\"同上\"). This domain is well-covered by prior work. Papers such as [3], [5], [6], [9], and [11] all operate in the general area of calibration, including its application to large language models ([9], [11]) and decision-making tasks ([5], [6]). While the specific focus on first-token bias may be narrower, it does not constitute a new application area.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 3  \nVERDICT domain = 9  ",
+      "stage2": "1. **FACET: purpose | FINAL: NONE | reason:** No prior paper explicitly addresses the objective of \"定位增益来源\" (identifying the source of gain) with the same empirical relationship, framing, or domain-specific vocabulary.  \n2. **FACET: mechanism | FINAL: NONE | reason:** No prior paper explicitly investigates \"K=1 首 token 偏置消融\" (K=1 first token bias ablation) or an equivalent mechanism under a different name, framing, or domain vocabulary."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**Purpose: 定位增益来源 (Locating the source of gain)**\n\nThis contribution's purpose is to identify *where* a performance gain comes from — specifically, whether the gain from some method is attributable to a boundary calibration effect. I need to find a prior paper that establishes the same empirical relationship: that a first-token/positional bias is the source of observed gains. Paper [10] investigates \"token homogenization... and its relationship to positional bias in large language models\" and examines \"how positional bias amplifies this effect.\" Paper [30] investigates label biases in ICL including \"vanilla-label bias, context-label bias, and domain-label bias.\" Paper [20] discusses \"single-token linear probing\" and analyzes \"the logit of the first generated token.\" None of these specifically establish the same relationship (first-token bias as the source of a method's gain). No prior paper reports the same empirical relationship — same variables and direction — that the gain of a method is attributable to first-token boundary calibration.\n\n**Mechanism: K=1 首 token 偏置消融 (K=1 first-token bias ablation)**\n\nThe mechanism is a controlled ablation where K is set to 1 to isolate the first-token bias contribution. Paper [10] performs \"layer-wise similarity analysis and controlled experiments\" on positional bias. Paper [20] analyzes \"the logit of the first generated token.\" Paper [30] mitigates label biases in ICL. None of these use a K=1 ablation as a specific mechanism to isolate first-token bias. However, as a generic ablation design (setting a parameter to a minimal value to isolate a component), this is a standard experimental move. Per the rules, generic ablation shapes don't count unless validating the same claim. No prior paper uses this specific K=1 first-token ablation to validate the same claim.\n\n**Evaluation: K=1 足够,支持 boundary calibration 假说 (K=1 is sufficient, supporting boundary calibration hypothesis)**\n\nThe evaluation design here is a controlled ablation experiment measuring whether a minimal configuration (K=1) suffices to reproduce the gain, used to validate a calibration hypothesis. Paper [10] uses \"controlled experiments\" to examine positional bias. Paper [30] systematically investigates label biases. These are generic ablation shapes, not a named benchmark or protocol family. The evaluation design — using a K=1 sufficiency test to validate a boundary calibration hypothesis — is not a named benchmark family or established protocol found in prior work.\n\n**Domain: 同上 (Same as above — LLMs/ICL/calibration)**\n\nThe domain is large language models, specifically in-context learning with calibration. Papers [9], [11], [26], [30] all work in LLM calibration or ICL settings. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 9",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly aims to locate/attribute the source of performance gains in the specific context examined; the closest papers discuss calibration improvement or bias mitigation but none share the same objective of diagnosing where gains originate.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper performs a K=1 first-token bias ablation as a controlled experimental mechanism; [30] addresses label biases in ICL but does not isolate a K=1 first-token bias ablation specifically.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper presents an evaluation finding that K=1 is sufficient and uses this to support a boundary calibration hypothesis; [3] discusses boundary calibration in medical imaging but does not make this specific empirical claim about K=1 sufficiency."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 28
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "purpose: The contribution's purpose is to establish a specific empirical finding: that the performance gain from a method comes from ablating a bias in the first token. Per the rules for a \"finding\" contribution, the purpose is only covered if a prior paper reports the same empirical relationship. No prior paper establishes this specific link between a performance gain and a first-token bias.\n\nmechanism: The mechanism is \"K=1 first token bias ablation,\" which is a controlled experiment designed to isolate the effect of a single component. This is a standard analysis protocol. Paper [10] uses an equivalent design (\"controlled experiments\") to investigate the relationship between \"token homogenization\" and \"positional bias,\" making the underlying analysis primitive covered.\n\nevaluation: The evaluation is the finding that \"K=1 is sufficient,\" which is used to support a \"boundary calibration hypothesis.\" The evaluation design is thus to provide evidence for this specific, named hypothesis. The concept of \"boundary calibration\" is introduced and investigated in paper [3], \"Confidence-Uncertainty Boundary Calibration...\". Therefore, using an experiment to validate a hypothesis within this existing conceptual framework is a covered evaluation design.\n\ndomain: The domain is model calibration, particularly for large language models. This is a well-established application area. Paper [9] explicitly addresses this domain in its title, \"On the Calibration of Large Language Models and Alignment,\" and paper [3] introduces the specific concept of \"Boundary Calibration.\"\n\nVERDICT purpose = NONE\nVERDICT mechanism = 10\nVERDICT evaluation = 3\nVERDICT domain = 9",
+      "stage2": "FACET: purpose: 定位增益来源 | FINAL: COVERED-BY [28] | reason: The paper's explicit purpose is to find the factors that determine success, which is the same as locating the source of gains. QUOTE: \"To investigate the relationship between the location of accessory pathways, electrophysiologic characteristics, and ablation success\"."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     26
+    ],
+    "evaluation": [
+     19,
+     26
+    ],
+    "domain": [
+     2,
+     19
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 26
+      },
+      "evaluation": {
+       "covered_by": 19
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to demonstrate the necessity of gating mechanisms (\"证明门控必要性\"). This requires prior work to establish or empirically demonstrate the same relationship — that gating mechanisms are necessary for a specific function or performance improvement. None of the prior papers explicitly report or establish this relationship. While some papers discuss gating mechanisms (e.g., [2], [9]), they focus on improving or analyzing gating designs rather than proving their necessity. No prior paper empirically demonstrates the necessity of gating mechanisms in the same sense.\n\n#### Mechanism:\nThe contribution uses a \"去门控消融\" (ungated ablation) approach, which involves removing gating mechanisms and observing the impact. Ablation studies are a standard experimental technique, and [26] explicitly discusses ablation studies in artificial neural networks. Although [26] does not focus on gating mechanisms specifically, the ablation methodology itself is equivalent at the design level. Therefore, the mechanism is covered.\n\n#### Evaluation:\nThe evaluation reports a 10.5× increase in false positives when gating is removed (\"无门控 FP 增 10.5×\"). This is a statistical comparison of performance metrics under different conditions (gated vs. ungated). Papers like [12], [19], and [25] discuss false positive suppression and analyze metrics related to false positives, but none use the same evaluation design — comparing gated vs. ungated setups to quantify the impact of gating. The evaluation design itself appears novel.\n\n#### Domain:\nThe contribution operates in the same general application area as prior work on gating mechanisms ([2], [9], [16]). While the specific instance (e.g., the dataset or model) may differ, the domain remains the same: systems or models employing gating mechanisms. Thus, the domain is covered.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = 26  \nVERDICT evaluation = NONE  \nVERDICT domain = 2  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly demonstrates the necessity of gating under the same empirical relationship or objective.  \nFACET: evaluation | FINAL: COVERED-BY 19 | reason: \"False positives in pedestrian detection remain a challenge that has yet to be effectively resolved... employing various pedestrian feature re-evaluation strategies to filter out low-quality pedestrian proposals\" aligns with the claim of reducing false positives by 10.5×."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 26
+      },
+      "evaluation": {
+       "covered_by": 26
+      },
+      "domain": {
+       "covered_by": 19
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**Purpose: 证明门控必要性 (Proving the necessity of gating)**\n\nThis purpose is about demonstrating that a gating mechanism is necessary for a system's performance (specifically to suppress false positives). Paper [2] \"Scaled gated networks\" studies gated networks and their properties. Paper [9] \"Refined Gate\" studies gating mechanisms in RNNs and their necessity/effectiveness. However, neither paper specifically establishes the empirical relationship \"gating is necessary to suppress false positives\" — they study gating improvement but not the same variables/direction. Paper [19] addresses false positive suppression in CNN detection but doesn't involve gating necessity. No prior paper reports the same empirical relationship: gating → FP suppression, with removal of gating causing FP increase. The purpose is NONE.\n\n**Mechanism: 去门控消融 (De-gating ablation)**\n\nThis is an ablation study where the gating component is removed to measure its effect. Paper [26] \"Ablation Studies in Artificial Neural Networks\" explicitly covers ablation as a general methodology in neural networks — removing components to assess their contribution. This is the same design-level primitive: remove a component, measure degradation. This covers the mechanism.\n\n**Evaluation: 无门控 FP 增 10.5× (Without gating, FP increases 10.5×)**\n\nThe evaluation design here is: remove gating, measure false positive rate change (a ratio metric). Paper [26] covers ablation study design. Papers [12], [19], [25] deal with false positive metrics in detection settings. The evaluation design — ablation + FP metric measurement — is a standard ablation/metric design. Paper [26] covers ablation design generically, and papers like [19] and [25] use FP metrics. However, per the special rule, generic ablation shape alone doesn't establish coverage unless it validates the same claim. The specific metric (FP rate change from gating removal) combined with the ablation design is a standard controlled ablation with a standard detection metric. Paper [19] uses FP suppression metrics in detection, and [26] covers ablation design. Together, the evaluation design (ablation + FP metric) is covered by [26] for the ablation framework and [19]/[25] for FP metrics in detection. I'll mark this as covered by [26] (ablation design) combined with [19] (FP metric).\n\n**Domain: 同上 (Same as above — false positive suppression in detection)**\n\nPapers [19], [25], [22] all work in the domain of false positive suppression in object/pedestrian detection using CNN-based methods. This is the same general application area.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 26\nVERDICT evaluation = 26\nVERDICT domain = 19",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the objective of proving the necessity of a gating mechanism through ablation or comparative analysis in this context. Paper [9] addresses gate undertraining problems in RNNs and paper [2] discusses scaled gated networks, but neither has the same objective of demonstrating that gating is necessary (as opposed to improving or analyzing existing gates). No quoted phrase from any prior paper establishes the same empirical purpose of proving gating necessity."
+     }
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,246 @@
+{
+ "paper_id": "FA0201",
+ "title": "Cap-and-Spill: Two-Pass CUDA-Graph MoE Dispatch Without Worst-Case Padding",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": null,
+    "domain": [
+     6
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to reduce padding waste in CUDA-graph-captured MoE AllToAll dispatch while keeping fixed buffer sizes. None of the prior papers explicitly address this specific objective. Papers like [6] and [9] discuss MoE inference optimizations, but their focus is on load balancing, sparsity-aware caching, or sharding, not on reducing padding waste in CUDA-graph-captured dispatch. Similarly, papers like [19] and [4] discuss CUDA graph optimizations, but they do not address padding waste or fixed buffer sizes in MoE dispatch.\n\n### Mechanism\nThe mechanism, Cap-and-Spill, involves a two-pass CUDA-graph-compatible dispatch algorithm using quantile-based buffer capacity (C = Q99) for the first pass and a second pass for overflow tokens. None of the prior papers propose a substantively equivalent mechanism. Papers like [6], [9], and [11] discuss MoE routing mechanisms, but they do not involve quantile-based buffer capacity or a two-pass dispatch algorithm. Papers like [19] and [4] discuss CUDA graph optimizations, but they focus on scheduling or kernel launch overhead, not on buffer capacity or overflow handling.\n\n### Evaluation\nThe evaluation design involves maintaining fixed buffers for both passes to ensure CUDA-graph compatibility and demonstrating that unconditional two-pass execution outperforms conditional execution by eliminating synchronization overhead. Papers like [19] and [4] discuss CUDA graph evaluation setups, but they do not use the same evaluation design. No prior paper evaluates a two-pass dispatch algorithm with fixed buffers for CUDA-graph compatibility or compares unconditional versus conditional execution in this context. Thus, the evaluation design appears to be novel.\n\n### Domain\nThe domain is distributed MoE inference systems. Papers like [6], [9], [11], and [20] work in the same general application area of MoE inference systems, even though they target different specific sub-problems (e.g., load balancing, sparsity-aware caching, dynamic routing). Therefore, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 6  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses reducing padding waste in CUDA-graph-captured MoE AllToAll dispatch while keeping fixed buffer sizes.  \nFACET: mechanism | FINAL: NONE | reason: No prior paper proposes a two-pass CUDA-graph-compatible dispatch algorithm using quantile-based buffer capacity (C = Q99) for the first pass and a second pass for overflow tokens.  \nFACET: evaluation | FINAL: NONE | reason: No prior paper evaluates unconditional two-pass execution outperforming conditional execution by eliminating synchronization overhead while maintaining CUDA-graph compatibility.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Reduce padding waste in CUDA-graph-captured MoE AllToAll dispatch while keeping fixed buffer sizes.**\n\nThe purpose is specifically about eliminating padding waste in MoE dispatch buffers while maintaining CUDA-graph compatibility (fixed buffer sizes). Paper [6] addresses MoE inference inefficiency due to imbalanced token routing and communication overhead, but focuses on load balancing via tensor sharding, not padding waste with fixed buffers. Paper [9] addresses MoE inference efficiency on personal machines. No prior paper addresses the specific objective of reducing padding waste in fixed-buffer CUDA-graph-captured MoE dispatch. The closest domain papers ([6], [9]) target different objectives (load balancing, memory offloading), not the padding-waste-vs-fixed-buffer tradeoff.\n\n**MECHANISM: Two-pass CUDA-graph-compatible dispatch using quantile-based buffer capacity (C = Q99) for first pass, second pass for overflow tokens.**\n\nThis is a two-pass overflow handling scheme with statistically-sized buffers (quantile-based capacity). Paper [23] \"Predictive Load Control for Flexible Buffer Allocation\" touches on buffer allocation with prediction, but is about telecommunications, not GPU dispatch. Paper [16] on balanced allocations discusses load distribution but not two-pass overflow. Paper [14] \"Linear-density hashing with dynamic overflow sharing\" involves overflow handling in hashing, but the mechanism (dynamic overflow sharing in hash tables) is different from a two-pass quantile-capped dispatch. None of the papers present a two-pass quantile-based overflow dispatch mechanism for GPU kernels or MoE routing. The CUDA-graph compatibility constraint (fixed buffers, unconditional second pass) is also not present anywhere.\n\n**EVALUATION: Both passes use fixed buffers maintaining CUDA-graph compatibility; unconditional two-pass execution outperforms conditional execution by eliminating synchronization overhead.**\n\nThe evaluation design here is a performance comparison between conditional vs. unconditional execution paths in a GPU dispatch system, measuring throughput/latency. Paper [19] (PyGraph) evaluates CUDA graph coverage and performance in PyTorch ML workloads, using latency/throughput benchmarks. Paper [1] evaluates CUDA graph workflow optimizations with performance metrics. However, the specific evaluation design — comparing unconditional two-pass vs. conditional execution to demonstrate synchronization overhead elimination — is not a named benchmark family or standard protocol found in prior work. This is a custom performance evaluation specific to this system design. No prior paper uses this specific evaluation design (conditional vs. unconditional two-pass dispatch comparison for MoE AllToAll).\n\n**DOMAIN: Distributed MoE inference systems.**\n\nMultiple prior papers work in MoE inference/systems: [6] (MoE inference with expert parallelism), [9] (MoE inference on personal machines), [11] (MoE routing), [5] (MoE routing), [20] (MoE efficiency), [21] (MoE routing). This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 6",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper addresses reducing padding waste in CUDA-graph-captured MoE AllToAll dispatch while maintaining fixed buffer sizes; the closest papers touch MoE routing efficiency or CUDA graphs separately but none combine this specific objective.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper proposes a two-pass dispatch algorithm named or equivalent to Cap-and-Spill using quantile-based buffer capacity (Q99) for overflow handling in a CUDA-graph-compatible MoE setting; nothing in the prior papers matches this specific algorithmic construction even under different terminology.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper evaluates the claim that unconditional two-pass execution with fixed buffers outperforms conditional execution by eliminating synchronization overhead in the context of CUDA-graph-compatible MoE dispatch; this specific design comparison and finding appears nowhere in the prior works."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": [
+     1,
+     17
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to demonstrate the latency benefit of the method with correctness guarantees. None of the prior papers explicitly report or establish the same empirical relationship between latency reduction and correctness guarantees in the context of MoE dispatch performance. While some papers (e.g., [1], [11], [13], [15]) discuss efficiency improvements in MoE models, they do not substantiate the specific relationship between latency reduction and correctness guarantees. Papers like [9] and [12] address latency-sensitive applications but do not involve MoE dispatch or correctness guarantees.\n\n### Mechanism\nThe mechanism involves benchmarking Cap-and-Spill on 8xA100 NVLink with Mixtral-8x7B routing traces against worst-case-padded and oracle eager dispatch. Paper [1] discusses token dropping and padding inefficiencies in MoE routing, which is conceptually related to addressing hardware inefficiency due to padding. However, Cap-and-Spill as a specific mechanism for MoE dispatch is not covered. Papers [11], [13], and [15] discuss dynamic routing and expert selection in MoE models but do not benchmark against worst-case-padded or oracle eager dispatch setups. No prior paper describes a substantively equivalent mechanism.\n\n### Evaluation\nThe evaluation reports a 33.9% mean latency reduction, recovering 53.2% of the gap to oracle eager dispatch, with bitwise-equal exact correctness. Papers [1], [11], [13], and [15] evaluate MoE routing strategies, but none use the same evaluation design involving latency reduction relative to oracle eager dispatch with correctness guarantees. Papers like [9] and [12] focus on latency-sensitive applications but do not use the same evaluation design. The evaluation design appears to be novel.\n\n### Domain\nThe domain is MoE dispatch performance, specifically Mixtral-8x7B. Papers [1], [11], [13], and [15] all address MoE dispatch performance, making the domain covered. While the specific instance (Mixtral-8x7B) is new, the general application area of MoE dispatch performance is well-established in prior work.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper demonstrates latency benefit with correctness guarantees under the same empirical relationship.  \nFACET: mechanism | FINAL: NONE | reason: No prior paper benchmarks Cap-and-Spill on 8xA100 NVLink with Mixtral-8x7B routing traces against worst-case-padded and oracle eager dispatch.  \nFACET: evaluation | FINAL: NONE | reason: No prior paper reports 33.9% mean latency reduction, recovering 53.2% of the gap to oracle eager dispatch, with bitwise-equal exact correctness.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Demonstrate the latency benefit of the method with correctness guarantees.**\n\nThe purpose is to show that a specific MoE dispatch optimization (Cap-and-Spill) reduces latency while maintaining bitwise-exact correctness. Looking through all prior papers: [1] addresses MoE routing efficiency and token dropping/padding issues, but its purpose is to improve routing, not to demonstrate latency benefits with correctness guarantees of a specific dispatch mechanism. [15] addresses serving MoE on edge devices with latency concerns. None of the prior papers share the specific purpose of demonstrating latency reduction with formal correctness guarantees for an MoE dispatch scheduling method. The closest are [1] and [15] on MoE efficiency, but neither targets the same objective (validating a cap-and-spill dispatch mechanism's latency vs. correctness tradeoff). No prior paper establishes this same empirical relationship.\n\n**MECHANISM: Benchmark Cap-and-Spill on 8xA100 NVLink with Mixtral-8x7B routing traces against worst-case-padded and oracle eager dispatch.**\n\nThe mechanism is a comparative benchmarking protocol: run a proposed method against a worst-case baseline and an oracle baseline on specific hardware with real routing traces. This is a standard comparative evaluation design (controlled benchmark with baselines). Papers like [1] and [15] use similar comparative evaluation designs for MoE systems. However, the specific primitive of \"worst-case-padded vs. oracle eager dispatch\" comparison is a design choice specific to this contribution. No prior paper uses this exact benchmarking protocol design.\n\n**EVALUATION: 33.9% mean latency reduction (1077 us -> 712 us), recovering 53.2% of the gap to oracle eager dispatch, with bitwise-equal exact correctness.**\n\nThe evaluation design uses latency measurement on GPU hardware with baseline comparisons — a standard evaluation design for systems papers. [1] evaluates MoE routing efficiency with throughput/latency metrics. [15] evaluates latency on edge devices. The design of measuring latency reduction percentage and gap-to-oracle recovery is a standard systems evaluation framework used broadly. The \"gap to oracle\" metric framing appears in systems work generally. This is a standard latency benchmarking design applied to a new object.\n\n**DOMAIN: MoE dispatch performance (Mixtral-8x7B)**\n\nMultiple prior papers work in the MoE domain: [1] covers MoE routing with capacity constraints and padding/token-dropping, [11]/[12] cover dynamic routing in MoE models, [15] covers serving MoE models, [22] covers MoE buffer overflow in routing. The domain of MoE model performance is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper demonstrates latency benefit with correctness guarantees for a cap-and-spill style MoE dispatch mechanism; the closest MoE papers ([1], [11], [12], [24]) address throughput or accuracy but not latency with formal correctness guarantees.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper benchmarks a Cap-and-Spill algorithm on 8xA100 NVLink with Mixtral-8x7B routing traces against worst-case-padded and oracle eager dispatch baselines; this specific experimental setup appears nowhere in the prior works."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: COVERED. The objective is to demonstrate a latency/performance benefit for a method while providing correctness or performance guarantees. This is substantively equivalent to the purpose of [3], which is to \"provide a performance guarantee for several practical prefetching algorithms\" by proving their \"total elapsed time is no more than twice the smallest possible total elapsed time.\"\n\n**mechanism**: COVERED. The analysis method is to benchmark a proposed system against both a pessimistic baseline (worst-case padding) and an ideal/oracle baseline. This evaluation design is present in [3], which characterizes algorithms by comparing their performance to the \"smallest possible total elapsed time,\" an oracle baseline.\n\n**evaluation**: COVERED. The evaluation design uses latency reduction as the primary metric. This is a standard metric in performance-oriented systems work. For example, [17] presents a scheduler designed to \"minimize p95 latency.\" The specific metric of \"recovering... the gap to oracle\" is a direct application of the oracle-comparison design found in [3].\n\n**domain**: COVERED. The application area is the performance of Mixture-of-Experts (MoE) models. Several prior papers operate in this exact domain, including [1] (\"Maximum Score Routing For Mixture-of-Experts\"), [11, 13] (\"Dynamic Routing in MoE Models\"), and [22] (\"Buffer Overflow in Mixture of Experts\").\n\nVERDICT purpose = 3\nVERDICT mechanism = 3\nVERDICT evaluation = 17\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     1,
+     14
+    ],
+    "evaluation": [
+     1
+    ],
+    "domain": [
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to characterize MoE routing distributions to justify the quantile operating point. Paper [1] discusses a quantile-based approach for evaluating performance in systems with heavy-tailed input, which aligns with the objective of using quantiles to analyze distributions. Paper [23] also uses percentile-based charging models for traffic allocation, which involves quantile-based reasoning but in a different domain (CDNs). However, neither paper explicitly characterizes MoE routing distributions or justifies quantile operating points in the context of MoE models. Thus, no prior paper establishes the same purpose.\n\n### Mechanism\nThe contribution analyzes the heavy-tailed nature of per-peer token counts and evaluates percentile choices. Paper [14] characterizes heavy-tailed distributions in the NGG process, and paper [15] characterizes user behavior using heavy-tailed distributions. Both papers analyze heavy-tailed properties, but neither applies this analysis to MoE routing distributions or evaluates percentile choices. Paper [16] discusses heavy-tailed data in network traffic but does not evaluate percentile choices. Thus, no prior paper uses the same mechanism.\n\n### Evaluation\nThe contribution evaluates the 99th percentile as the optimal operating point, balancing buffer reduction with minimal overflow. Paper [1] uses a quantile-based approach to evaluate performance in systems with heavy-tailed input, which matches the evaluation design of using percentiles to optimize performance metrics. Paper [23] also evaluates percentile-based charging models, which involves balancing cost and performance under a quantile-based framework. Both papers use the same evaluation design (quantile-based optimization), even though the specific object differs. Thus, the evaluation facet is covered.\n\n### Domain\nThe contribution operates in the domain of MoE routing distribution analysis. Papers [2], [3], [6], [7], [8], [19], [20], and [25] all address MoE routing mechanisms, load balancing, or token distribution, which are part of the same general application area. Although the specific focus on quantile-based analysis of routing distributions may differ, the domain is clearly covered by prior work in MoE routing.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 1  \nVERDICT domain = 2  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly characterizes MoE routing distributions to justify the quantile operating point, even under different terminology or framing.  \n\nFACET: mechanism | FINAL: COVERED-BY 14 | reason: Paper [14] explicitly analyzes heavy-tailed distributions, stating, \"The right tail of an NGG process is heavy-tailed provided that the centering distribution is itself heavy-tailed,\" which aligns with analyzing the heavy-tailed nature of per-peer token counts."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Characterize MoE routing distributions to justify the quantile operating point.**\n\nThe purpose is to understand the statistical distribution of per-peer token counts in MoE routing and use that characterization to justify a specific percentile choice for buffer sizing. Looking through all papers: MoE papers [2,3,6,7,8,19,20,25] deal with routing but none characterize routing distributions to justify a quantile operating point for buffer sizing. Buffer sizing papers [4,5,9,10] don't characterize MoE routing distributions. Paper [1] evaluates performance with heavy-tailed input using a quantile-based approach, which is thematically related but is about system performance evaluation, not characterizing MoE routing distributions to justify a buffer sizing percentile. No prior paper establishes the same empirical relationship: characterizing MoE routing token-count distributions to justify a quantile operating point for buffer allocation.\n\n**MECHANISM: Analyze the heavy-tailed nature of per-peer token counts (Cmax/mu = 8.4x) and evaluate percentile choices.**\n\nThe mechanism involves measuring the ratio of maximum to mean token counts and analyzing the distribution's tail behavior to select a percentile. Paper [1] explicitly uses a quantile-based approach for heavy-tailed inputs in performance evaluation — \"Evaluating performance in systems with heavy tailed input: a quantile based approach.\" This is the same primitive: characterize heavy-tailed distributions and use quantile analysis to make operational decisions. Papers [13,16] also discuss heavy-tailed traffic analysis. Paper [1] is the closest match at the primitive level.\n\n**EVALUATION: Show the 99th percentile is the optimal operating point, balancing buffer reduction (2.69x) with minimal overflow (5.4%).**\n\nThe evaluation design involves selecting a percentile operating point by measuring the tradeoff between buffer reduction and overflow probability. Paper [1] uses a quantile-based approach to evaluate performance under heavy-tailed inputs — same design of evaluating percentile choices against performance metrics. Paper [23] uses percentile charging (95th percentile) and evaluates tradeoffs. Paper [11] estimates buffer overflow probabilities. The design of \"evaluate percentile choices against overflow/performance tradeoff\" appears in [1] and [23].\n\n**DOMAIN: MoE routing distribution analysis.**\n\nThe domain is MoE routing. Papers [2,3,6,7,8,19,20,25] all work in MoE architectures and routing. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 1\nVERDICT evaluation = 1\nVERDICT domain = 2",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper characterizes MoE routing distributions specifically to justify a quantile operating point; MoE routing papers [2,3,6,7,8,19,20,25] analyze load balance or routing efficiency but none empirically characterize the routing score distribution to motivate or validate a particular quantile threshold choice."
+     }
+    }
+   }
+  }
+ ]
+}

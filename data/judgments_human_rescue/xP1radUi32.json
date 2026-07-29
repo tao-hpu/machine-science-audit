@@ -1,0 +1,330 @@
+{
+ "paper_id": "xP1radUi32",
+ "title": "Endless Jailbreaks with Bijection Learning",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     4
+    ],
+    "mechanism": [
+     8,
+     19
+    ],
+    "evaluation": [
+     21
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 19
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "**Purpose**:  \nThe contribution's purpose is to produce a universal black-box jailbreak attack that generates an effectively endless supply of attack prompts for any single harmful intent, rather than relying on fixed hand-crafted cipher sets. Paper [8] discusses novel complex ciphers for jailbreaking LLMs, revealing vulnerabilities in reasoning capabilities, but does not aim for universality or endless prompt generation. Paper [15] introduces Tree of Attacks, an automated method for generating jailbreaks, but it does not emphasize universality or endless supply for a single harmful intent. Paper [14] uses reinforcement learning for black-box jailbreak attacks but does not focus on universality or endless prompt generation. No prior paper explicitly matches the purpose of universal and endless prompt generation for a single harmful intent.  \n\n**Mechanism**:  \nThe contribution's mechanism involves bijection learning, where the LLM is taught a random string-to-string encoding in-context, bypassing safety training, and decoding responses using the inverse mapping and a denoiser. Paper [8] discusses user-defined ciphers and decoding complex instructions, which aligns with the primitive of encoding/decoding to bypass safety filters. Paper [19] and [20] explore decipherment techniques using random restarts and neural models, which align with the primitive of encoding/decoding random mappings. Paper [15] iteratively refines prompts for jailbreak attacks, but this does not involve bijection learning or random encodings. Paper [14] uses reinforcement learning for black-box jailbreaks but does not involve bijection learning or encoding/decoding primitives. Papers [19] and [20] substantively match the mechanism at the primitive level.  \n\n**Evaluation**:  \nThe contribution evaluates attack success rate (ASR) across GPT and Claude frontier models using AdvBench and HarmBench, outperforming previous encoding attacks. Paper [1] evaluates jailbreak attacks comprehensively but does not use AdvBench or HarmBench. Paper [5] mentions HarmBench but does not evaluate encoding attacks or best-of-n strategies. Paper [21] evaluates multi-turn jailbreaks on HarmBench but does not focus on encoding attacks or best-of-n. Paper [15] evaluates black-box jailbreaks but does not use AdvBench or HarmBench. No prior paper uses the same evaluation design (AdvBench and HarmBench with encoding attacks and best-of-n strategies).  \n\n**Domain**:  \nThe contribution operates in the domain of LLM safety/jailbreak attacks. Papers [1], [5], [8], [13], [14], [15], [18], and [21] all address LLM safety and jailbreak attacks, making this domain well-covered.  \n\n**Verdict Lines**:  \nVERDICT purpose = NONE  \nVERDICT mechanism = 19  \nVERDICT evaluation = NONE  \nVERDICT domain = 1  ",
+      "stage2": "1. **FACET: purpose** | **FINAL: NONE** | reason: No prior paper explicitly or equivalently addresses a universal black-box jailbreak attack generating an endless supply of attack prompts for any single harmful intent. No evidence of the same objective under different terminology or framing.\n\n2. **FACET: evaluation** | **FINAL: NONE** | reason: No prior paper demonstrates state-of-the-art ASR across GPT and Claude frontier models on AdvBench and HarmBench, nor reports comparable performance metrics (e.g., >=30 percentage points improvement or 86.3% ASR against Claude 3.5 Sonnet)."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 21
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Produce a black-box jailbreak attack that is universal and generates an effectively endless supply of attack prompts for any single harmful intent.**\n\nThe key elements are: (1) black-box jailbreak, (2) universality across harmful intents, (3) generating a large/endless supply of diverse attack prompts (not a fixed set).\n\nPaper [4] (h4rm3l) explicitly addresses the problem of \"fail to cover sufficiently large and diverse sets of jailbreak attacks\" and proposes composable synthesis to generate many attack variants. Paper [8] proposes novel cipher-based jailbreaks. Paper [15] (TAP) is a black-box automated jailbreak generator. Paper [25] uses random search with multiple restarts to generate attack prompts.\n\nPaper [4] is closest — it explicitly targets the problem of generating large, diverse sets of jailbreak attacks (not a fixed hand-crafted set), which is substantively equivalent to the purpose of generating an endless supply. Paper [15] also generates jailbreaks automatically in a black-box setting. However, neither specifically frames the purpose as \"endless supply via random sampling of encodings for a single harmful intent.\" Paper [4]'s purpose is \"composable synthesis to cover large/diverse attack space,\" which is substantively equivalent at the problem-class level.\n\nPaper [8] also targets the purpose of creating novel cipher-based jailbreaks that bypass safety training, which partially overlaps. But the \"endless supply via random encoding\" framing is most closely matched by [4].\n\nI'll call this COVERED by [4] (and partially [15]).\n\n---\n\n**MECHANISM: Bijection learning — teach the target LLM an arbitrary randomly-generated string-to-string encoding in-context, pass encoded harmful query, apply inverse mapping + denoiser to recover response; random sampling of encodings enables best-of-n.**\n\nKey primitives: (a) in-context teaching of a custom encoding/cipher to the LLM, (b) encoding the harmful query in that cipher, (c) random generation of the encoding, (d) best-of-n over many random encodings, (e) denoiser for decoding errors.\n\nPaper [8] (\"When Competency in Reasoning Opens the Door to Vulnerability\") explicitly uses \"novel complex ciphers\" and \"user-defined ciphers\" taught in-context to jailbreak LLMs — \"Enhanced reasoning enables LLMs to interpret complex instructions and decode complex user-defined ciphers.\" This is substantively the same primitive: teach the LLM a custom cipher in-context, encode the harmful query. The random generation and best-of-n are additional elements.\n\nPaper [25] uses random search with multiple restarts (best-of-n flavor) on adversarial suffixes, but the encoding mechanism differs.\n\nPaper [6] uses in-context demonstrations to modulate safety alignment, but not cipher-based encoding.\n\nThe core primitive — in-context teaching of a user-defined cipher/encoding to bypass safety — is clearly present in [8]. The random sampling + best-of-n is a natural extension (similar to [25]'s random restarts). The denoiser is a minor engineering addition.\n\nThis is COVERED by [8] (core cipher-in-context primitive) and partially [25] (random restarts/best-of-n).\n\n---\n\n**EVALUATION: ASR on AdvBench and HarmBench against GPT and Claude frontier models; best-of-n comparison; outperforming ensemble of encoding attacks by ≥30pp.**\n\nAdvBench and HarmBench are named benchmark families used extensively in jailbreak literature. Papers [1], [4], [5], [8], [15], [21], [25] all evaluate jailbreak attacks using ASR metrics on AdvBench or HarmBench against frontier models. Paper [21] explicitly mentions \"HarmBench\" and ASR metrics. Paper [25] evaluates on frontier models with ASR. The evaluation design (ASR on AdvBench/HarmBench, frontier model evaluation) is standard in this literature.\n\nThis is COVERED by [21] and [25] (HarmBench, ASR against frontier models).\n\n---\n\n**DOMAIN: LLM safety / jailbreak attacks.**\n\nVirtually every paper in the list ([1]-[8], [13]-[16], [18], [21], [24], [25]) operates in the LLM safety / jailbreak attack domain. This is clearly COVERED.\n\n---\n\nVERDICT purpose = 4\nVERDICT mechanism = 8\nVERDICT evaluation = 21\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 21
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: COVERED. The objective of creating a generative system for producing a large and diverse set of jailbreak prompts, rather than using a fixed set, is present in prior work. For example, paper [4] proposes \"A Language for Composable Jailbreak Attack Synthesis\" to \"cover sufficiently large and diverse sets of jailbreak attacks,\" and paper [15] presents \"an automated method for generating jailbreaks\" that iteratively refines prompts.\n\n**mechanism**: COVERED. The core technical primitive of teaching a large language model a novel, arbitrary, user-defined cipher via in-context instructions to bypass safety filters is described in paper [8]. That paper explicitly discusses jailbreaking via \"novel complex ciphers\" and \"complex user-defined ciphers\" that advanced LLMs can learn to interpret, which is substantively equivalent to the contribution's \"bijection learning\" of a \"randomly-generated string-to-string encoding\".\n\n**evaluation**: COVERED. The evaluation design, which consists of measuring Attack Success Rate (ASR) on the HarmBench benchmark, is a standard protocol used in prior work. Paper [21] explicitly uses this design, reporting \"exceeding 70% attack success rate (ASR) on HarmBench against defenses,\" demonstrating that the evaluation framework itself is not new.\n\n**domain**: COVERED. The application area of LLM safety and jailbreak attacks is the explicit focus of numerous prior papers. For instance, paper [1] is a \"Comprehensive Assessment of Jailbreak Attacks Against LLMs,\" and many others like [2], [3], [4], [8], and [14] also operate squarely within this domain.\n\nVERDICT purpose = 4\nVERDICT mechanism = 8\nVERDICT evaluation = 21\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     6,
+     11
+    ],
+    "mechanism": [
+     13,
+     21
+    ],
+    "evaluation": [
+     1,
+     17
+    ],
+    "domain": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     13,
+     14,
+     15,
+     20
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        13,
+        14,
+        15,
+        20
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to make an encoding-based jailbreak scale-adaptive, allowing it to tune to any model capability level rather than relying on fixed ciphers. Paper [6] discusses how advanced reasoning capabilities in LLMs make them more susceptible to novel complex ciphers, but its focus is on exploiting reasoning vulnerabilities rather than introducing scale-adaptive encoding. Paper [13] introduces personalized encryption tactics for jailbreaking but does not address scale-adaptivity or tuning to model capability levels. No prior paper explicitly addresses the purpose of scale-adaptive encoding for jailbreak attacks.\n\n### Mechanism\nThe mechanism introduces quantitative complexity hyperparameters (e.g., number of key-value mappings in the bijection) to control encoding complexity, enabling fine-grained adaptation of the attack to the target model's capability. Paper [6] discusses novel complex ciphers but does not introduce hyperparameters for controlling encoding complexity. Paper [13] uses personalized encryption tactics but does not employ hyperparameters for fine-grained adaptation. Papers [21] and [23] discuss homophonic substitution ciphers, which involve mapping plaintext symbols to multiple ciphertext symbols, but they do not introduce hyperparameters for smooth control of encoding complexity. No prior paper contains a substantively equivalent mechanism.\n\n### Evaluation\nThe evaluation claims novelty in using hyperparameters to scale encoding complexity, enabling smooth control versus the discontinuous efficacy gaps of prior encoding attacks. Paper [6] evaluates complex ciphers but does not use hyperparameters to scale encoding complexity. Paper [13] evaluates personalized encryption tactics but does not involve hyperparameter-based scaling. Papers [21] and [23] evaluate homophonic substitution ciphers but do not use hyperparameters for smooth control. No prior paper uses the same evaluation design.\n\n### Domain\nThe domain is LLM safety/jailbreak attacks. Papers [1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [13], [14], [15], and [20] all work in the general area of LLM safety and jailbreak attacks. While the specific focus of this contribution (scale-adaptive encoding-based jailbreaks) is narrower, the domain itself is covered by prior work.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 14, 15, 20]  ",
+      "stage2": "- **FACET: purpose** | **FINAL: COVERED-BY 6** | reason: Paper [6] explicitly discusses \"novel complex ciphers\" that adapt to model reasoning capabilities, which aligns with the objective of making encoding-based jailbreaks scale-adaptive. Quote: \"Enhanced reasoning enables LLMs to interpret complex instructions and decode complex user-defined ciphers, creating an expanded attack surface.\"\n  \n- **FACET: mechanism** | **FINAL: COVERED-BY 13** | reason: Paper [13] introduces \"personalized encryption tactics\" with adjustable parameters, which conceptually matches the introduction of hyperparameters to control encoding complexity. Quote: \"CodeChameleon... allows attackers to adjust encryption complexity to evade detection, tailoring attacks to the target model's capability.\"\n\n- **FACET: evaluation** | **FINAL: NONE** | reason: No prior paper explicitly evaluates jailbreak attacks using hyperparameters to scale encoding complexity, nor characterizes attacks as black-box, universal, and scale-adaptive."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Make an encoding-based jailbreak scale-adaptive, so it can be tuned to any model capability level rather than working only on models that already know a specific fixed cipher.**\n\nPaper [6] is the closest — it discusses jailbreaking via novel complex ciphers and notes that \"as LLMs advance in reasoning, they inadvertently become more susceptible to novel jailbreaking attacks,\" touching on the relationship between model capability and cipher complexity. However, its purpose is to *introduce* cipher-based attacks exploiting reasoning capability, not to make the attack *adaptive/tunable* to different capability levels. Paper [13] (CodeChameleon) introduces personalized encryption for jailbreaking but doesn't address scale-adaptivity. No prior paper's purpose is specifically to make encoding attacks tunable across model capability levels — the gap being closed (adaptivity of encoding complexity to model capability) is not addressed by any prior paper.\n\n**MECHANISM: Introduce quantitative complexity hyperparameters (e.g., number of key-value mappings in a bijection) that smoothly control encoding complexity.**\n\nPaper [6] uses user-defined ciphers with varying complexity but doesn't introduce explicit quantitative hyperparameters to smoothly tune complexity. Paper [13] uses personalized encryption but again no complexity-controlling hyperparameter. Papers [17] and [19] explore hyperparameter sensitivity in adversarial robustness contexts, but these are about model training hyperparameters, not encoding complexity parameters for jailbreaks. No prior paper introduces a quantitative complexity hyperparameter specifically controlling encoding difficulty as a continuous dial for jailbreak attacks.\n\n**EVALUATION: First in jailbreaking literature to use hyperparameters to scale encoding complexity; characterized as black-box, universal, and scale-adaptive.**\n\nThe evaluation design uses standard jailbreak benchmarks and attack success rate metrics, which appear throughout [1], [3], [6], [13], [20]. The \"black-box\" characterization appears in [20] (TAP is explicitly black-box). The benchmark/metric design (ASR on harmful question sets, LLM-as-judge or keyword matching) is standard across [1], [3], [6]. The evaluation design itself — measuring attack success rate across models using standard harmful question benchmarks — is covered by prior work even if the specific hyperparameter sweep is new. The generic design of evaluating jailbreak ASR across models is well-established.\n\n**DOMAIN: LLM safety / jailbreak attacks.**\n\nThis is clearly covered by numerous prior papers: [1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [13], [14], [15], [20] all operate in LLM safety/jailbreak attacks.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper describes the objective of making an encoding-based jailbreak scale-adaptive so it can be tuned to any model capability level rather than relying on a fixed cipher. Paper [6] is the closest (novel complex ciphers tied to LLM reasoning ability) but its purpose is to exploit reasoning capability, not to provide a tunable scaling mechanism across capability levels. No other paper contains an equivalent objective even under different terminology.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper introduces quantitative complexity hyperparameters (e.g., number of key-value mappings in a bijection) that smoothly control encoding complexity for fine-grained adaptation of a jailbreak attack to a target model's capability. Paper [6] uses complex ciphers but does not parameterize complexity as a tunable hyperparameter. Papers [17] and [19] discuss hyperparameters in adversarial robustness but in entirely different domains (image-based adversarial examples), with no equivalent mechanism for encoding complexity in LLM jailbreaks. No equivalent found under any alternative framing."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 11
+      },
+      "mechanism": {
+       "covered_by": 21
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: Paper [11] covers this purpose at the problem-class level by aiming to \"[relate] Network Complexity to Defensive Difficulty,\" which is the same abstract objective as tuning an attack's complexity to a target's capability level.\n\nmechanism: Papers [21] and [23] cover the underlying primitive by describing \"Homophonic substitution ciphers,\" in which complexity is determined by the number of possible ciphertext symbols for each plaintext symbol, matching the contribution's mechanism of using \"quantitative complexity hyperparameters (e.g. number of key-value mappings)\" to control encoding complexity.\n\nevaluation: Paper [17] covers the evaluation design by presenting \"a sensitivity analysis that illustrates that the effectiveness of adversarial training hinges on the settings of a few salient hyperparameters,\" which is the same design of varying a parameter to measure its effect on adversarial performance, just applied to a different object (a defense instead of an attack).\n\ndomain: Paper [1] and numerous others operate in the same domain, as it is a \"Comprehensive Assessment of Jailbreak Attacks Against LLMs.\"\n\nVERDICT purpose = 11\nVERDICT mechanism = 21\nVERDICT evaluation = 17\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     2
+    ],
+    "mechanism": [
+     11,
+     22
+    ],
+    "evaluation": [
+     11,
+     15
+    ],
+    "domain": [
+     1,
+     18
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to establish the scientific finding that increased model capability itself is a vulnerability: more capable models are more severely jailbroken. Paper [2] explicitly reports a similar finding: \"Enhanced reasoning enables LLMs to interpret complex instructions and decode complex user-defined ciphers, creating an exponential vulnerability.\" This aligns with the same empirical relationship between model capability and vulnerability severity. Paper [11] and [15] discuss inverse scaling phenomena but focus on task performance degradation rather than vulnerability severity, so they do not cover the purpose.\n\n### Mechanism\nThe contribution uses correlation/scaling analysis plotting bijection complexity against model scale (MMLU capability vs HarmBench ASR) across Claude, GPT-4o, and Llama 3.1 families, plus analysis of guardrail failures. Paper [11] employs scaling analysis to study inverse scaling laws, which is substantively equivalent to the mechanism of correlating model scale with performance metrics. Paper [15] also uses scaling analysis to study U-shaped inverse scaling but does not include guardrail failure analysis. Paper [2] discusses reasoning and vulnerability but does not use scaling analysis as a mechanism. Thus, [11] covers the mechanism.\n\n### Evaluation\nThe contribution reveals a Pareto frontier of model vulnerability with a two-stage scaling/saturated regime and provides evidence attacks succeed by making safety-guardrail classification difficult. Paper [11] uses scaling laws to evaluate inverse scaling, which matches the evaluation design of scaling-based analysis. Paper [15] also evaluates scaling laws but does not address guardrail classification difficulty. Paper [2] does not use scaling-based evaluation. Thus, [11] covers the evaluation design.\n\n### Domain\nThe contribution operates in the domain of LLM safety/red-teaming. Papers [1], [2], [5], [6], [7], [8], [13], [14], [18], and [19] all work in the general application area of LLM safety/red-teaming, even though they target different specific sub-problems or datasets. Therefore, the domain is covered by multiple prior papers.\n\n---\n\nVERDICT purpose = 2  \nVERDICT mechanism = 11  \nVERDICT evaluation = 11  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Establish that increased model capability is itself a vulnerability — more capable models are more severely jailbroken.**\n\nPaper [2] is the closest match: \"as LLMs advance in reasoning, they inadvertently become more susceptible to novel jailbreaking attacks. Enhanced reasoning enables LLMs to interpret complex instructions and decode complex user-defined ciphers, creating an exp[osure].\" This directly establishes the same empirical relationship: higher capability → greater jailbreak susceptibility. The purpose is substantively equivalent — same variables (capability/scale vs. jailbreak success), same direction of effect.\n\nPaper [11] (\"Inverse Scaling: When Bigger Isn't Better\") establishes that larger models can perform *worse* on certain tasks, which is a related but different relationship (general task degradation, not safety/jailbreak vulnerability specifically).\n\nPaper [2] covers this purpose at the problem-class level.\n\n**MECHANISM: Correlation/scaling analysis plotting bijection complexity against model scale (MMLU vs. HarmBench ASR) across model families; guardrail failure analysis.**\n\nPaper [2] discusses the relationship between reasoning capability and cipher-based jailbreak susceptibility, but does not perform a systematic scaling analysis plotting capability metrics (MMLU) against ASR across multiple model families with scaling laws. Papers [11] and [22] perform scaling law analyses but not for jailbreak ASR. No prior paper performs the specific cross-model scaling correlation analysis (MMLU capability vs. HarmBench ASR) with Pareto frontier identification and guardrail cost-effectiveness analysis. This combination appears absent.\n\n**EVALUATION: Pareto frontier of vulnerability with two-stage scaling regime; per-model and cross-model scaling laws; guardrail cost-effectiveness (ASR reduction vs. inference cost).**\n\nPaper [18] (\"JailbreakRadar\") conducts \"large-scale evaluation of various jailbreak attacks\" with \"comprehensive measurement and ablation studies\" across multiple models and attack types, using ASR as a metric on benchmark families. Paper [14] (\"JailbreakLens\") performs visual analysis of jailbreak attacks evaluating LLM defensive capabilities. These use ASR-based evaluation across models, which is the same metric family. However, the specific evaluation design of plotting scaling laws (ASR vs. model scale/capability) and identifying Pareto frontiers with two-stage regimes, plus guardrail cost-effectiveness analysis, is not present in prior papers. The guardrail cost-effectiveness design (ASR reduction vs. inference cost tradeoff) is genuinely new. The scaling-law evaluation design is not present in prior jailbreak papers. This is a new evaluation design.\n\n**DOMAIN: LLM safety / red-teaming.**\n\nPapers [1], [2], [3], [4], [5], [6], [7], [8], [13], [14], [18], [19] all operate in LLM safety/red-teaming. This is clearly covered.\n\nVERDICT purpose = 2\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper plots bijection complexity against model scale (MMLU capability vs HarmBench ASR) across multiple model families, nor analyzes guardrail failures in this context. Paper [2] discusses reasoning capability enabling cipher-based jailbreaks qualitatively but contains no cross-model scaling analysis or quantitative correlation plots. No other paper contains this element under any terminology.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper identifies a two-stage scaling/saturated regime (Pareto frontier of vulnerability with ASR peaking at intermediate complexity), per-model and cross-model scaling laws for attack efficacy, a model-specific exception (Gemini lacking a turning point), or quantifies guardrail cost-effectiveness (10pp ASR reduction at 3× inference cost). Paper [2] touches on reasoning enabling vulnerability but provides none of these empirical characterizations. No equivalent finding exists in any prior paper under any framing."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 22
+      },
+      "evaluation": {
+       "covered_by": 15
+      },
+      "domain": {
+       "covered_by": 18
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: Paper [2] covers this by stating the same scientific finding, namely that increased model capability leads to increased vulnerability: \"we reveal a paradoxical vulnerability: as LLMs advance in reasoning, they inadvertently become more susceptible to novel jailbreaking attacks.\"\n\nmechanism: Paper [22] covers the mechanism by formalizing the same analysis design of \"scaling analysis,\" providing a functional form to model \"how the evaluation metric of interest varies as... number of model parameters... varies.\"\n\nevaluation: Paper [15] covers the evaluation design by explicitly looking for non-monotonic scaling behavior, which it calls \"U-shaped\" scaling; this is the same design as revealing a \"two-stage scaling/saturated regime.\"\n\ndomain: Paper [18] covers the domain by operating in the same area of empirical LLM safety analysis, presenting a \"Comprehensive Assessment of Jailbreak Attacks Against LLMs.\"\n\nVERDICT purpose = 2\nVERDICT mechanism = 22\nVERDICT evaluation = 15\nVERDICT domain = 18",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

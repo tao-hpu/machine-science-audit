@@ -1,0 +1,319 @@
+{
+ "paper_id": "FA0049",
+ "title": "Premature Speech EOS is Not a Dominant Failure Mode in Qwen2.5-Omni: An Empirical Study of Text-Length-Coupled Audio Stopping",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     2,
+     14
+    ],
+    "mechanism": [
+     2,
+     5,
+     7
+    ],
+    "evaluation": [
+     1,
+     23
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to test whether coupling speech stopping to generated text length improves speech-text consistency in an end-to-end omni-modal LLM. No prior paper explicitly addresses this purpose. Papers [1], [2], and [16] discuss speech-text alignment or length control, but their objectives differ: [1] focuses on decoding paradigms for joint speech-text modeling, [2] addresses length control for speech translation to match source audio duration, and [16] investigates monotonic alignment constraints in decoder-only TTS models. None of these papers aim to improve speech-text consistency by coupling speech stopping to text length.\n\n### Mechanism\nThe mechanism, TLC-AS, is a training-free decode-time intervention that computes a minimum audio token floor from text word count and a calibrated words-per-second rate, masking the speech EOS token until the floor is reached. Paper [2] discusses controlling output length in speech translation using word/character counts, which is conceptually similar to the primitive of coupling text length to speech duration. Paper [19] also explores methods for controlling output length in neural encoder-decoder models, which aligns with the underlying mechanism of length-based constraints. Both papers cover the mechanism at the primitive level.\n\n### Evaluation\nThe evaluation uses VoiceBench CommonEval (200 samples) to compare WER with and without the intervention. Papers [1], [2], and [16] employ evaluation setups that involve word error rate (WER) as a metric for speech-text alignment or generation quality. For example, [1] systematically compares decoding strategies using WER, [2] evaluates length-controlled speech translation using WER, and [16] assesses alignment constraints in TTS models using WER. These prior papers reuse the same evaluation design (WER-based comparison), even though the specific benchmark (VoiceBench CommonEval) differs. Thus, the evaluation facet is covered.\n\n### Domain\nThe domain is omni-modal LLM speech generation. Papers [1], [3], [4], [7], [10], [15], [16], and [20] all operate within the general area of speech generation or text-to-speech synthesis, which includes omni-modal or multi-modal models. While the specific focus or dataset may differ, the application area of speech generation is well-covered by these prior works.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 2  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 2 | reason: Paper [2] explicitly discusses controlling generated text length to match source audio duration, which aligns with the objective of improving speech-text consistency through coupling text length to speech stopping. Quoted phrase: \"Many ST applications require strict length control to ensure that the translation duration matches the length of the source audio, including both speech and pause segments.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Test whether coupling speech stopping to generated text length improves speech-text consistency in an end-to-end omni-modal LLM.**\n\nThe purpose is specifically about fixing a speech-text length consistency problem in omni-modal LLMs by controlling when speech generation stops. Paper [1] compares speech-text jointly decoding strategies and discusses \"alignment quality\" in speech LMs, but its purpose is comparing decoding paradigms for efficiency/performance, not fixing a speech stopping/length consistency bug. Paper [16] addresses word skipping/repeating in decoder-only TTS via attention constraints — this is about alignment robustness in TTS, not speech-text consistency in omni-modal LLMs. No prior paper has the same objective of coupling speech EOS to text word count to fix truncation in omni-modal LLMs.\n\n**MECHANISM: TLC-AS — compute a minimum audio token floor from text word count × calibrated words-per-second rate, then mask the EOS token until the floor is reached.**\n\nThe core primitive is: (1) derive a minimum length from a cross-modal count (words→audio tokens via a rate), and (2) mask/suppress the EOS token until that floor is reached. Paper [19] proposes \"controlling output sequence length for neural encoder-decoder models\" including \"decoding-based methods\" that control length at decode time — this is close but targets text length control in NMT/summarization, not cross-modal floor computation. Paper [16] uses attention-constrained inference to prevent premature stopping in TTS, which is related but uses attention maps rather than a word-count floor. Paper [7] (TED-TTS) proposes training-free duration control for TTS, computing duration targets and enforcing them — this is a training-free decode-time intervention that enforces a minimum duration derived from text content, which is substantively equivalent to the TLC-AS primitive (compute a length floor from text, enforce it by suppressing early termination). The underlying primitive — \"training-free, derive a minimum token/frame count from text, mask/suppress early stopping until floor reached\" — is covered by [7].\n\n**EVALUATION: Empirical study on Qwen2.5-Omni with VoiceBench CommonEval (200 samples) comparing WER with and without the intervention.**\n\nThe evaluation design is: use VoiceBench (a named benchmark) with WER metric, comparing a baseline vs. intervention. VoiceBench is a specific named benchmark for evaluating voice assistants/speech LLMs. No prior paper in the list uses VoiceBench CommonEval. However, the evaluation design pattern — comparing WER before/after an intervention on a speech benchmark — is a standard ASR/speech evaluation design. Paper [1] compares decoding strategies using speech quality metrics. The specific benchmark (VoiceBench CommonEval) does not appear in any prior paper. The evaluation design (WER comparison on a speech benchmark) is generic and appears in papers like [1], [23]. Since VoiceBench is a named benchmark family, and the design (WER comparison with/without intervention on a speech benchmark) matches the generic pattern used in [1] and [23], this is covered at the design level.\n\n**DOMAIN: Omni-modal LLM speech generation.**\n\nPaper [1] works on \"Speech language models (Speech LMs)\" that enable \"end-to-end speech-text modeling within a single model\" — this is the same general application area of end-to-end speech-text LLMs. The omni-modal LLM is a specific instance of this broader area.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 7\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper tests whether coupling speech stopping to generated text length improves speech-text consistency in an end-to-end omni-modal LLM. Paper [1] compares joint speech-text decoding paradigms but does not test a length-coupled stopping mechanism for consistency. No other paper contains this specific objective even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 14
+      },
+      "mechanism": {
+       "covered_by": 5
+      },
+      "evaluation": {
+       "covered_by": 23
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: Papers [14] and [16] cover this purpose; [14] identifies the importance of a \"duration model for speech-text alignment\" and [16] aims to fix alignment issues like \"word skipping and repeating,\" which are forms of speech-text inconsistency.\nmechanism: The core mechanism of masking an EOS token to enforce a minimum length constraint is a standard primitive in constrained decoding, a topic surveyed in papers like [5] and [6] on \"constrained text generation for LLMs\".\nevaluation: The design of measuring Word Error Rate (WER) on a benchmark is standard in speech processing evaluation, as extensively documented in the survey paper [23] on \"End-to-End Speech Recognition\".\ndomain: Paper [1] works in the same domain, which it calls \"Speech language models (Speech LMs)\" that perform \"end-to-end speech-text modeling within a single model\".\n\nVERDICT purpose = 14\nVERDICT mechanism = 5\nVERDICT evaluation = 23\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     9,
+     10
+    ],
+    "evaluation": [
+     10
+    ],
+    "domain": [
+     3
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Per-Facet Reasoning:\n\n**Purpose:**  \nThe contribution aims to establish whether premature EOS emission is a dominant failure mode in Qwen2.5-Omni. None of the prior papers explicitly investigate premature EOS emission as a failure mode in Qwen2.5-Omni or any other model. While some papers (e.g., [3], [4], [6]) discuss multimodal or speech-related model behaviors, they do not report or establish the same empirical relationship (premature EOS emission as a dominant failure mode). Therefore, the purpose is **NONE**.\n\n**Mechanism:**  \nThe mechanism involves measuring early-stopping frequency under a raised audio token cap and WER change under TLC-AS. Paper [10] discusses WER as a metric for speech recognition error analysis, but it does not involve measuring early-stopping frequency or the specific setup of raised audio token caps and TLC-AS. Paper [9] introduces classifier-induced stopping for early sequence classification, which is conceptually related to early-stopping behavior but does not involve the same measurement protocol or multimodal speech generation context. No prior paper uses substantively equivalent primitives for this mechanism. Therefore, the mechanism is **NONE**.\n\n**Evaluation:**  \nThe evaluation design involves measuring early-stopping frequency and WER change under specific conditions (raised audio token cap and TLC-AS). Paper [10] uses WER as a metric for speech recognition evaluation, which matches the evaluation design at the metric level. Although the specific experimental conditions differ, the use of WER as a validation metric is substantively equivalent. Paper [9] also evaluates early-stopping behavior, but its evaluation design is focused on classifier-induced stopping in sequence classification, not multimodal speech generation. Thus, the evaluation design is **COVERED** by [10].\n\n**Domain:**  \nThe domain is omni-modal LLM speech generation. Papers [3], [4], [5], and [6] all address multimodal or speech-related applications within the context of large language models, including text-to-speech synthesis and multimodal reasoning. While the specific focus on Qwen2.5-Omni is new, the general application area of multimodal LLM speech generation is well-covered by these prior works. Therefore, the domain is **COVERED**.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 10  \nVERDICT domain = 3  ",
+      "stage2": "1. **FACET: purpose** | **FINAL: NONE** | reason: No prior paper explicitly establishes whether premature EOS emission is a dominant failure mode in Qwen2.5-Omni. No equivalent objective found under different terminology, framing, or domain vocabulary.\n\n2. **FACET: mechanism** | **FINAL: COVERED-BY 9** | reason: Paper [9] discusses \"early sequence classification\" and introduces \"classifier-induced stopping,\" which measures early-stopping frequency and its impact, aligning with the mechanism facet. Quote: \"For this early sequence classification, we introduce our novel classifier-induced stopping.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Establish whether premature EOS emission is actually a dominant failure mode in Qwen2.5-Omni.**\n\nThis purpose is about empirically verifying (or refuting) a specific failure mode hypothesis in a specific omni-modal LLM. I need to find a prior paper that establishes the same empirical relationship — that premature/early stopping is (or is not) a dominant failure mode in speech/sequence generation. Paper [3] is the Qwen2.5-Omni technical report itself, which describes the model but does not investigate premature EOS as a failure mode. No prior paper reports or establishes the same empirical relationship (early stopping frequency as a dominant vs. non-dominant failure mode in omni-modal LLM speech generation). The closest thematic neighbors are papers on autoregressive TTS robustness (e.g., [15] on skipping/repeating/collapse in TTS attention) but these don't address EOS emission in LLM-based omni-modal systems.\n\n**MECHANISM: Measurement of early-stopping frequency under a raised audio token cap and of WER change under TLC-AS.**\n\nThis involves two specific measurements: (1) counting how often early stopping occurs when the token cap is raised, and (2) measuring WER before/after applying a specific intervention (TLC-AS). No prior paper uses this specific analysis protocol — raising an audio token cap to measure EOS frequency, or applying TLC-AS to measure WER impact. WER measurement is standard (papers [10], [18] use WER), but the specific design of measuring early-stopping frequency via token cap manipulation is not present in any prior paper.\n\n**EVALUATION: Only 0.5% early stopping, WER increases from 5.86% to 9.05%.**\n\nThe evaluation design here involves WER measurement (a standard metric used in [10], [18]) and frequency counting. WER as a metric is covered by [10] and [18]. However, the specific evaluation design — measuring WER degradation from a specific intervention (TLC-AS) and measuring early-stopping frequency via token cap — is a novel protocol not matching any prior paper's named benchmark or standard evaluation framework. The WER metric itself is standard, but the evaluation design (the logic of the experiment) is genuinely new as a protocol for diagnosing this failure mode.\n\n**DOMAIN: Omni-modal LLM speech generation.**\n\nPapers [1], [2], [3], [5], [22] all work in the omni-modal LLM area. Paper [3] specifically covers Qwen2.5-Omni. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 3",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper investigates whether premature EOS emission is a dominant failure mode specifically in Qwen2.5-Omni; the Qwen2.5-Omni technical report [3] describes the model but does not diagnose or quantify EOS-related failure modes.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper measures early-stopping frequency under a raised audio token cap or measures WER change under a token-length-capped audio segmentation method; none of the prior papers contain any equivalent experimental procedure even under different terminology.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports the specific finding that only 0.5% of samples exhibit early stopping and that a token-length cap intervention raises WER from 5.86% to 9.05%, nor any equivalent quantitative result showing a proposed fix degrades rather than improves ASR performance in this context."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to establish a specific empirical relationship: whether premature EOS emission is a dominant failure mode in the Qwen2.5-Omni model. No prior paper investigates or establishes this specific relationship for this or any other model; they are concerned with proposing new methods or benchmarks, not diagnosing this particular failure mode. Therefore, the purpose is not covered.\n\n**mechanism**: The mechanism is the analysis method used to obtain the finding, which involves measuring the frequency of early stopping and measuring the change in Word Error Rate (WER) after an intervention. The use of WER as a diagnostic metric is a standard analysis protocol in speech recognition, as established by [10], which refers to the \"commonly used Word Error Rate (WER) metric for speech recognition evaluation\".\n\n**evaluation**: The evaluation design is based on measuring performance using Word Error Rate (WER). This evaluation design (using WER as a core metric) is not new. Paper [10] explicitly discusses the \"Word Error Rate (WER) metric for speech recognition evaluation\", covering the design at the level of metric semantics.\n\n**domain**: The domain is omni-modal LLM speech generation. This application area is explicitly covered by multiple prior papers. For instance, [3] introduces \"Qwen2.5-Omni, an end-to-end multimodal model designed to perceive diverse modalities, including... audio... while simultaneously generating... natural speech responses\".\n\nVERDICT purpose = NONE\nVERDICT mechanism = 10\nVERDICT evaluation = 10\nVERDICT domain = 3",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the specific objective of empirically investigating whether premature EOS emission is a dominant failure mode in the Qwen2.5-Omni model. While papers like [15] and [20] address related generation failures (e.g., \"collapse\", \"compounding error\"), their purpose is to propose new methods to solve them, not to conduct a focused diagnostic analysis on a specific, existing model."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     3,
+     24
+    ],
+    "mechanism": [
+     7,
+     8
+    ],
+    "evaluation": [
+     14,
+     23
+    ],
+    "domain": [
+     7,
+     8
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        1,
+        3,
+        24
+       ]
+      },
+      "mechanism": {
+       "covered_by": [
+        7,
+        8
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        14,
+        23
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        7,
+        8
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to draw a methodological lesson about verifying failure modes before designing interventions. Paper [1] discusses diagnostic tools to identify faults prior to failure, which aligns with the idea of verifying failure modes before intervention. Paper [3] emphasizes the importance of accurately identifying failure modes in complex systems to avoid poor generalization, which also aligns with the methodological lesson of verifying failure modes before intervention. Paper [24] integrates human factors into root cause analysis to design stronger interventions, which similarly emphasizes the importance of understanding failure modes before acting. These papers collectively cover the purpose.\n\n### Mechanism\nThe mechanism attributes the null/negative result to Qwen2.5-Omni's Thinker-Talker architecture already achieving good speech-text alignment. Paper [7] explores joint modeling of dialogue response and speech synthesis based on large language models, which closely resembles the Thinker-Talker architecture's alignment of speech and text. Paper [8] discusses optimal transport regularization for speech-text alignment in spoken language models, which also addresses the alignment challenge between modalities. Both papers cover the mechanism of attributing results to strong speech-text alignment.\n\n### Evaluation\nThe evaluation is supported by the 0.5% early-stopping rate and WER degradation (5.86% to 9.05%) under intervention. Paper [14] studies the effect of early stopping on error performance in iterative MIMO equalization, revealing its impact on controlling unnecessary iterations and error rates, which matches the evaluation design of using early stopping to measure performance degradation. Paper [23] discusses word error rate (WER) estimation for speech recognition, which aligns with the use of WER as a metric in the evaluation. Both papers cover the evaluation design.\n\n### Domain\nThe domain is omni-modal LLM speech generation. Paper [7] explicitly addresses large language models for dialogue response and speech synthesis, which falls within the same application area of omni-modal LLM speech generation. Paper [8] also focuses on spoken language models that extend LLMs to perceive speech inputs, which is directly relevant to the domain. Both papers cover the domain.\n\n---\n\nVERDICT purpose = 1, 3, 24  \nVERDICT mechanism = 7, 8  \nVERDICT evaluation = 14, 23  \nVERDICT domain = 7, 8  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 23
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Draw a methodological lesson about verifying failure modes before designing interventions.**\n\nThis purpose is about a meta-level methodological lesson: check whether a problem actually exists before designing a fix. None of the prior papers establish this same empirical relationship in the context of LLM/speech alignment research. Papers [1], [2], [20], [22], [24], [31] touch on failure mode diagnosis or root cause analysis, but these are in engineering/reliability/healthcare contexts and don't establish the same relationship (verifying alignment failure modes before intervening in neural speech models). The purpose here is specifically about the empirical finding that the assumed failure mode didn't exist, leading to a null result — none of the prior papers report this same variables-and-direction relationship in any relevant setting.\n\n**MECHANISM: Attribution of null/negative result to Qwen2.5-Omni's Thinker-Talker architecture already achieving good speech-text alignment.**\n\nThis mechanism is the specific analytical attribution: explaining a null result by pointing to an architectural property (Thinker-Talker separation) that pre-solves the alignment problem. Paper [8] discusses speech-text alignment in spoken language models and modality gaps, which is thematically related, but it doesn't perform this attribution analysis. No prior paper uses the mechanism of attributing a null intervention result to an existing architectural alignment solution in omni-modal LLMs.\n\n**EVALUATION: Supported by 0.5% early-stopping rate and WER degradation (5.86% to 9.05%) under intervention.**\n\nThe evaluation uses WER as a metric, which is a standard ASR/speech evaluation metric. Paper [23] explicitly discusses WER estimation for speech recognition. Paper [32] also uses ASR error metrics. However, the specific evaluation design here — measuring early-stopping rate as a diagnostic signal plus WER degradation under an intervention — is a specific protocol. WER as a metric is covered by [23], and the general design of measuring degradation under intervention is generic. The WER metric family is covered by [23].\n\n**DOMAIN: Omni-modal LLM speech generation.**\n\nPaper [7] explores joint modeling of dialogue response and speech synthesis based on LLMs. Paper [8] works on spoken language models extending LLMs to speech. These cover the general area of LLM-based speech generation/understanding. The domain of omni-modal LLM speech is covered at the area level by [7] and [8].\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 23\nVERDICT domain = 8",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper contains the same objective of drawing a methodological lesson about verifying failure modes before designing interventions in the context of speech-text alignment or multimodal LLM research; the closest papers (e.g., [24] on root cause analysis, [22] on diagnosability) concern engineering/safety domains with entirely different empirical relationships and no equivalent framing.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper attributes a null or negative result to the Thinker-Talker architecture achieving good speech-text alignment, nor does any paper use equivalent terminology or framing for this specific architectural explanation; [8] discusses speech-text modality gaps in SLMs but does not attribute null results to a Thinker-Talker design, and no other paper comes close to this specific mechanistic claim."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe purpose is to \"draw a methodological lesson about verifying failure modes before designing interventions.\" This is a well-established principle in engineering and diagnostics. For example, [1] discusses using \"Diagnostics Tools [to] Identify Faults Prior to Failure,\" and [24] describes using \"Root Cause Analysis\" to design \"strong, sustainable interventions,\" both of which embody the same methodological lesson of diagnosing a problem before attempting to fix it.\n\n**MECHANISM**\nThe mechanism is the attribution of a result to a \"Thinker-Talker architecture\" that achieves good speech-text alignment. This architectural primitive is substantively equivalent to the system proposed in [7], which aims to build a system that \"'thinks how to respond' and 'thinks how to speak' simultaneously\" by jointly modeling dialogue and speech synthesis within a large language model.\n\n**EVALUATION**\nThe evaluation design relies on measuring Word Error Rate (WER) degradation and early-stopping rates. WER is a standard metric in the field, with papers like [23] dedicated to its estimation. The analysis of early stopping's effect on performance is an evaluation design element used in [14], which studies the \"Effect of early stopping on error performance.\"\n\n**DOMAIN**\nThe domain is \"omni-modal LLM speech generation.\" This application area is covered by prior work on using large language models for speech-related tasks. Specifically, [7] works in the same domain by exploring the \"Joint Modeling of Dialogue Response and Speech Synthesis based on Large Language Model.\"\n\nVERDICT purpose = 1\nVERDICT mechanism = 7\nVERDICT evaluation = 14\nVERDICT domain = 7",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

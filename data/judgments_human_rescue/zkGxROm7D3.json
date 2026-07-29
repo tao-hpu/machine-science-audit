@@ -1,0 +1,348 @@
+{
+ "paper_id": "zkGxROm7D3",
+ "title": "State & Image Guidance: Teaching Old Text-to-Video Diffusion Models New Tricks",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     11,
+     17
+    ],
+    "evaluation": [
+     13
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 17
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to extend the capability of existing text-to-video (T2V) diffusion models to generate dynamic video scenes with significant temporal changes, without retraining the model. This is distinct from prior papers that focus on improving video realism, motion consistency, or narrative consistency but do not explicitly address the inability to generate dynamic scenes with significant temporal changes. Papers [1], [2], [3], [6], and [11] discuss challenges in T2V generation, such as motion consistency, narrative consistency, or multi-scene generation, but none explicitly target the problem of generating dynamic video scenes with significant temporal changes as defined by the contribution. Therefore, the purpose is **not covered**.\n\n### Mechanism\nThe mechanism introduces \"State Guidance,\" a training-free sampling method that defines dynamic video scenes as a state triplet (<initial state, transition state, terminal state>) and adjusts guidance strength across frames during diffusion steps. Papers [9], [15], [17], and [18] discuss training-free guidance methods for diffusion models, including classifier-free guidance and loss-based guidance, but none propose a mechanism that explicitly defines dynamic video scenes as state triplets or schedules guidance strength across frames. Paper [27] introduces a training-free method for transition video generation but focuses on transitions between scenes rather than dynamic state evolution within a single scene. Thus, the mechanism is **not covered**.\n\n### Evaluation\nThe evaluation uses a self-constructed Dynamic Scenes Benchmark to compare the proposed method against existing models (VideoCrafter2, LaVie, CogVideoX) in terms of prompt alignment, dynamicity, and temporal consistency. Papers [13] and [14] introduce benchmarks for evaluating temporal dynamics and compositional text-to-video generation, respectively, but neither includes the specific Dynamic Scenes Benchmark or evaluates the same claims (prompt alignment, dynamicity, and temporal consistency). Paper [7] discusses metrics for temporal assessment but does not propose a new benchmark. Therefore, the evaluation design is **not covered**.\n\n### Domain\nThe domain is text-to-video generation within computer vision. All prior papers ([1]–[28]) operate within the same general application area of text-to-video generation, even if they target different sub-problems, datasets, or instances. For example, papers [1], [2], [3], [6], [11], and [13] all address text-to-video generation challenges. Thus, the domain is **covered**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [1]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses the inability of existing T2V diffusion models to generate dynamic scenes with significant temporal changes without retraining.  \nFACET: mechanism | FINAL: COVERED-BY 17 | reason: \"Given an unconditional diffusion model and a predictor for a target property of interest (e.g., a classifier), the goal of training-free guidance is to generate samples with desirable target properties without additional training.\"  \nFACET: evaluation | FINAL: COVERED-BY 13 | reason: \"We introduce T2VBench, a comprehensive T2V evaluation benchmark enriched with temporal dynamics lexicons derived from curated temporal words on Wikipedia.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Extending T2V diffusion models to generate high-dynamic videos with significant temporal change, without retraining**\n\nThe purpose is specifically to enable *training-free* generation of *dynamically changing scenes* (significant state transitions over time) in existing T2V models. Paper [11] (TALC) addresses multi-scene T2V generation from pretrained models, but focuses on narrative consistency across scenes rather than dynamic motion/state transitions. Paper [25] addresses training-free camera control for video diffusion models — same \"training-free extension of T2V\" framing but for camera movement, not dynamic scene content. Paper [6] examines T2V from a storytelling perspective noting single-scene limitations. Paper [27] (TVG) proposes training-free transition video generation between two states using diffusion models — this is quite close: generating videos that transition between states, training-free. However, TVG's purpose is specifically \"transition videos for media production\" (morphing between two visual states), whereas this contribution's purpose is enabling dynamic scene generation in general T2V models. The overlap is meaningful but TVG targets a different problem framing. No paper precisely targets \"training-free extension of T2V to generate high-dynamic temporally-varying scenes\" as its core objective.\n\n**MECHANISM: State Guidance — training-free sampling that defines video as <initial, transition, final> state triplet with per-frame guidance scheduling across diffusion steps**\n\nPaper [27] (TVG) proposes a training-free transition video generation method using diffusion models, generating videos between two states. It involves modeling transitions between content states without training. This is mechanistically very close — both use training-free diffusion guidance to interpolate/transition between defined states across frames. Paper [11] (TALC) uses time-aligned captions for different temporal segments of a video, assigning different text prompts to different frames — this is structurally similar to the state triplet approach (different prompts for different temporal positions). Paper [9] (Classifier-Free Diffusion Guidance) is the foundation for CFG. Paper [17] (TFG) provides unified training-free guidance framework. Paper [15] discusses dynamic CFG scheduling. The combination of (a) multi-prompt state triplet + (b) per-frame guidance strength scheduling is most closely matched by [11] (time-aligned captions per frame segment) and [27] (training-free transition between states). Paper [11] explicitly assigns different captions to different temporal positions in a training-free manner from a pretrained T2V model — this is substantively equivalent to the state triplet mechanism with per-frame prompt scheduling.\n\n**EVALUATION: Custom benchmark (Dynamic Scenes Benchmark) + quantitative table + user study, comparing standard vs. guided versions of multiple T2V models**\n\nThe evaluation uses: (1) a self-built benchmark, (2) quantitative metrics (prompt alignment, dynamic degree, temporal consistency), (3) user study. Paper [7] discusses metrics for T2V evaluation. Paper [13] (T2VBench) introduces a benchmark for temporal dynamics in T2V. Paper [14] (T2V-CompBench) introduces a benchmark for compositional T2V. The self-built \"Dynamic Scenes Benchmark\" is a newly constructed benchmark. However, the evaluation *design* — comparing model variants on a T2V benchmark with quantitative metrics + user study — is standard in the field and appears in papers like [11], [13], [14]. The user study + quantitative metric combination for T2V evaluation appears in multiple prior papers. The benchmark itself is new, but the evaluation design (LLM/CLIP-based metrics + user study for T2V) is covered by prior work like [7], [13], [14].\n\n**DOMAIN: Computer vision / text-to-video generation**\n\nThis is clearly covered by numerous prior papers [1], [2], [3], [4], [5], [6], [7], [8], [10], [11], [13], [14], [23], [25], [27], etc.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 11\nVERDICT evaluation = 13\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of extending existing T2V diffusion models' text-conditioning to generate temporally dynamic scenes with significantly changing content over time *without retraining*. TALC [11] generates multi-scene videos from pretrained T2V models but focuses on narrative/scene transitions via time-aligned captions, not on overcoming the low-dynamic single-frame-description limitation. Training-free guidance papers [17][18][25] address control without retraining but target different problems (property guidance, camera control). None of the 29 papers explicitly identifies and addresses the specific limitation that T2V text-conditioning only supports single-frame-applicable descriptions producing low-dynamic video, and proposes to extend this capability without retraining."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1
+    ],
+    "mechanism": [
+     6
+    ],
+    "evaluation": [
+     1
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to enable a pretrained text-to-video (T2V) diffusion model, which does not natively support image conditioning, to perform zero-shot image-conditioned video generation (I2V). This purpose is **substantively equivalent** to the purpose of [1] (\"TI2V-Zero\"), which explicitly aims to empower pretrained T2V diffusion models to generate videos conditioned on both text and images in a zero-shot manner. Both contributions address the same problem-class level objective: enabling zero-shot I2V generation using pretrained T2V models without retraining.\n\n**VERDICT purpose = 1**\n\n---\n\n### Mechanism\nThe contribution introduces \"Image Guidance,\" which modifies the score-based diffusion process to incorporate image conditioning by injecting denoising directions into the reverse diffusion trajectory, transforming the sampling model from \\(p(z|p_c)\\) to \\(p(z|p_c, i_c)\\). This mechanism is **substantively equivalent** to the universal guidance framework in [6] (\"Universal Guidance for Diffusion Models\"), which enables pretrained diffusion models to incorporate arbitrary guidance modalities (including image guidance) without retraining. Both approaches share the same underlying primitive: modifying the reverse diffusion process to incorporate additional conditioning signals (e.g., images) without altering the pretrained model.\n\n**VERDICT mechanism = 6**\n\n---\n\n### Evaluation\nThe contribution evaluates its method on a custom I2V benchmark, comparing against zero-shot (TI2V-Zero) and training-based I2V methods (I2VGen-XL, SVD, DynamiCrafter) using metrics like text/image similarity, temporal consistency (TC), and optical flow scores. This evaluation design is **substantively equivalent** to the evaluation in [1] (\"TI2V-Zero\"), which also uses a custom benchmark to compare zero-shot I2V performance against other methods using similar metrics (e.g., text/image similarity, temporal consistency). The specific benchmark instance and datasets differ, but the evaluation design (custom benchmark + comparison on standard metrics) is the same.\n\n**VERDICT evaluation = 1**\n\n---\n\n### Domain\nThe contribution operates in the domain of computer vision, specifically image-to-video (I2V) generation. This domain is **substantively equivalent** to the domain of [1] (\"TI2V-Zero\"), which also addresses I2V generation. Both contributions target the same general application area, even though the specific datasets and problem instances may differ.\n\n**VERDICT domain = 1**\n\n---\n\n### Final Verdicts\nVERDICT purpose = 1  \nVERDICT mechanism = 6  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Enable zero-shot image-conditioned video generation from a standard pretrained T2V model (not originally designed for image conditioning)**\n\nPaper [1] TI2V-Zero explicitly addresses \"zero-shot, tuning-free method that empowers a pretrained text-to-video (T2V) diffusion model to be conditioned on a provid[ed image]\" — this is substantively the same purpose: zero-shot image conditioning of a pretrained T2V model.\n\nPaper [22] AnimateZero also addresses zero-shot image animation of T2V models, though more focused on appearance/motion decoupling.\n\nPaper [18] I4VGen uses image as intermediate step for T2V but requires training.\n\nThe purpose is clearly covered by [1].\n\n**MECHANISM: Score-based diffusion reformulation to inject image conditioning into the reverse diffusion trajectory by mixing denoising directions, without retraining (Image Guidance)**\n\nPaper [6] \"Universal Guidance for Diffusion Models\" proposes \"a universal guidance algorithm that enables diffusion models to be controlled by arbitrary guidance modalities without the need to retrain\" — this is the same primitive: inject arbitrary conditioning into a pretrained diffusion model's sampling process via guidance without retraining.\n\nPaper [15] TFG: \"training-free guidance\" for diffusion models using a predictor for target properties without additional training — same class of mechanism.\n\nPaper [25] \"Diffusion models as plug-and-play priors\" considers inference with a diffusion prior plus auxiliary differentiable constraint, mixing guidance signals into the sampling trajectory.\n\nPaper [19] \"Towards Practical Plug-and-Play Diffusion Models\" also uses external models to guide diffusion sampling without finetuning.\n\nPaper [1] TI2V-Zero also uses a zero-shot, tuning-free approach to inject image conditioning into T2V diffusion sampling.\n\nThe core mechanism — modifying the reverse diffusion sampling trajectory to inject image conditioning via score/gradient mixing without retraining — is covered by [6] (universal guidance) and [1] (same domain, same approach).\n\n**EVALUATION: Custom I2V benchmark comparing zero-shot vs. trained I2V methods on Text Similarity, Image Similarity, TC, Optical Flow Score**\n\nPaper [1] TI2V-Zero is explicitly named as a comparison baseline in the same evaluation setup (Table 5), and uses the same metric family (text/image similarity, temporal consistency). The evaluation design — comparing zero-shot T2V-based I2V against trained I2V models on similarity and temporal consistency metrics — matches [1]'s evaluation design.\n\nPaper [22] AnimateZero also evaluates on similar metrics for zero-shot image animation.\n\nThe evaluation design (LLM/CLIP-based similarity metrics + temporal consistency + optical flow on I2V benchmarks) is covered by [1].\n\n**DOMAIN: Computer vision / image-to-video generation**\n\nPaper [1] operates in exactly this domain: image-to-video generation using T2V diffusion models.\nPapers [13], [17], [18], [22] also operate in image-to-video or text-to-video generation domains.\n\nDomain is clearly covered by [1] and others.\n\nVERDICT purpose = 1\nVERDICT mechanism = 6\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     2,
+     10,
+     11
+    ],
+    "mechanism": [
+     3,
+     18
+    ],
+    "evaluation": [
+     11
+    ],
+    "domain": [
+     2,
+     10
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 18
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is \"zero-shot generation of transition videos given a start frame, end frame, and text description (Zero-Shot II2V).\" This objective is explicitly addressed in prior papers. For example, [2] (\"Text2Video-Zero\") introduces zero-shot text-to-video generation, leveraging text-to-image diffusion models for video generation without training. Similarly, [11] (\"TVG\") focuses on training-free transition video generation, specifically targeting transition videos between frames. [10] (\"Generative Inbetweening\") also adapts a pretrained image-to-video model for keyframe interpolation, which aligns with the purpose of generating transition videos between two frames. These papers collectively cover the purpose of zero-shot transition video generation.\n\n### Mechanism\nThe contribution's mechanism is \"combining State Guidance and Image Guidance (ξ=0.5, partial quadratic guidance schedule) to build an II2V pipeline on top of pretrained T2V models.\" This mechanism involves specific guidance techniques for diffusion models. [13] (\"Classifier-Free Diffusion Guidance\") introduces classifier-free guidance, which is a foundational method for guiding diffusion models. [15] (\"No Training, No Problem\") revisits classifier-free guidance and introduces independent condition guidance (ICG), which is relevant to training-free guidance methods. [18] (\"PGDiff\") introduces partial guidance, which aligns with the partial quadratic guidance schedule in the contribution. These papers collectively cover the mechanism of using guidance techniques in diffusion models.\n\n### Evaluation\nThe evaluation involves comparing the proposed method against training-based II2V methods (e.g., DynamiCrafter, DiffMorpher, TVG) on MorphBench, achieving robust quantitative results without requiring training-based image conditioning. MorphBench is a benchmark for evaluating II2V methods, and [11] (\"TVG\") evaluates transition video generation methods using similar benchmarks and metrics. Additionally, [2] (\"Text2Video-Zero\") and [5] (\"ControlVideo\") evaluate zero-shot text-to-video generation methods using comparable evaluation designs. Since the evaluation design (benchmark family and metrics) is reused, the evaluation facet is covered.\n\n### Domain\nThe domain is \"computer vision / image-to-video generation.\" This domain is extensively covered in prior work. For example, [2] (\"Text2Video-Zero\"), [11] (\"TVG\"), and [10] (\"Generative Inbetweening\") all operate in the image-to-video generation domain. These papers address various aspects of video generation, including zero-shot methods, transition videos, and keyframe interpolation. The domain is therefore covered.\n\n---\n\nVERDICT purpose = 2  \nVERDICT mechanism = 18  \nVERDICT evaluation = 11  \nVERDICT domain = 2  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 11
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 10
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose: Zero-shot generation of transition video given two reference frames (start + end) + text\n\nLooking for papers that aim to generate videos bridging two input frames without training on paired data.\n\n- Paper [10] \"Generative Inbetweening\" explicitly addresses \"generating video sequences with coherent motion between a pair of input key frames\" — this is keyframe interpolation/transition video generation, but it uses fine-tuning (not zero-shot).\n- Paper [11] TVG: \"Training-Free Transition Video Generation\" — directly addresses transition video generation between two frames without training. This is substantively equivalent to the purpose.\n- Paper [19] VIDIM: \"video interpolation, which creates short videos given a start and end frame\" — same objective but uses trained cascaded diffusion models.\n- Paper [2] Text2Video-Zero: zero-shot video generation from text, but not conditioned on two reference frames.\n\nPaper [11] covers the purpose most directly (training-free transition video from two frames). Paper [10] also covers it (keyframe interpolation between two frames), though not zero-shot.\n\n## Mechanism: Combining State Guidance + Image Guidance with partial quadratic guidance schedule on pretrained T2V\n\n- Paper [11] TVG uses training-free diffusion-based transition video generation with specific guidance mechanisms. It mentions \"poor inter-frame relationship modeling\" solutions — need to check if it uses the same guidance combination.\n- Paper [15] ICG: rethinks CFG for diffusion models without training.\n- Paper [17] TFG: unified training-free guidance framework.\n- Paper [21]: \"Compress Guidance\" — partial guidance scheduling (reducing guidance at certain timesteps), which relates to \"partial quadratic guidance schedule.\"\n- Paper [16]: \"Elucidating The Design Space of Classifier-Guided Diffusion Generation\" — training-free guidance methods.\n- Paper [18] PGDiff: \"partial guidance\" concept for diffusion models — \"partial guidance, a fresh perspective.\"\n\nThe specific combination of State Guidance + Image Guidance with a partial quadratic schedule built on top of a pretrained T2V model doesn't appear to be directly covered. Paper [11] TVG is training-free but uses different mechanisms. Paper [18] introduces \"partial guidance\" but for face restoration. Paper [21] discusses compressing/scheduling guidance. None covers the exact combination of these two guidance types with this specific schedule on T2V for II2V.\n\n## Evaluation: MorphBench comparison against DynamiCrafter/DiffMorpher/TVG (Table 6)\n\n- Paper [11] TVG is one of the methods being compared against, and it likely uses MorphBench as an evaluation benchmark.\n- Paper [10] Generative Inbetweening evaluates on keyframe interpolation benchmarks.\n- Paper [19] VIDIM evaluates video interpolation with standard metrics.\n\nMorphBench appears to be a specific benchmark. If Paper [11] TVG introduced or used MorphBench, then the evaluation design is covered. Given TVG is a prior paper on transition video generation, it likely uses MorphBench. The evaluation design (comparing transition video methods on MorphBench with quantitative metrics) would be covered by [11].\n\n## Domain: Computer vision / image-to-video generation\n\nMultiple papers work in this domain: [2], [3], [4], [5], [10], [11], [14], [19], [28] all operate in video generation/image-to-video space.\n\nVERDICT purpose = 11\nVERDICT mechanism = NONE\nVERDICT evaluation = 11\nVERDICT domain = 10",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes the specific combination of State Guidance and Image Guidance with ξ=0.5 and a partial quadratic guidance schedule built on a pretrained T2V model to construct an II2V pipeline. Paper [11] (TVG) uses dual guidance in a transition video context but does not describe this specific mechanism or schedule. Paper [20] combines text and image guidance in a unified framework but for image synthesis, not II2V on T2V models. No quoted phrase from any prior paper matches this specific composite mechanism."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 10
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 10
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: COVERED. The objective of generating a video between a start and end frame (generative inbetweening/interpolation) is explicitly addressed by multiple prior papers. For example, [10] presents \"a method for generating video sequences with coherent motion between a pair of input key frames,\" and [19] \"creates short videos given a start and end frame.\"\n\nmechanism: COVERED. The core technical primitives are present in prior work. The idea of building a training-free pipeline on a pretrained model is in [2] and [3]. The use of image guidance is in [3] (\"ConditionVideo... based on the provided condition, video, and input text\"). The concept of a non-uniform guidance schedule is in [21], which finds that \"reducing or excluding guidance at numerous timesteps can mitigate\" issues.\n\nevaluation: COVERED. The evaluation design is a quantitative comparison on the MorphBench benchmark. This exact evaluation design is used by prior work. Specifically, [11] states, \"We conducted extensive experiments on the public benchmark MorphBench to validate the effectiveness of our method.\"\n\ndomain: COVERED. The application area is computer vision, specifically image-to-video generation. Numerous prior papers operate in this exact domain. For instance, [2] is titled \"Text-to-Image Diffusion Models are Zero-Shot Video Generators,\" and [10] works on \"Adapting Image-to-Video Models for Keyframe Interpolation.\"\n\nVERDICT purpose = 10\nVERDICT mechanism = 3\nVERDICT evaluation = 11\nVERDICT domain = 10",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "resource",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     2,
+     17
+    ],
+    "mechanism": [
+     16
+    ],
+    "evaluation": [
+     2,
+     16,
+     17
+    ],
+    "domain": [
+     1,
+     2,
+     24
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe stated purpose is to address the lack of benchmarks specifically designed for evaluating dynamic scene generation in text-to-video (T2V) models, focusing on scenarios with significant scene changes.  \n- **Paper [2]** introduces T2VBench, which evaluates temporal dynamics in T2V models, including camera transitions, movement, and event sequences. While it emphasizes temporal dynamics, it does not explicitly focus on dynamic scene changes involving object property or position changes.  \n- **Paper [5]** discusses FETV, a benchmark for fine-grained evaluation of T2V models, categorizing prompts into different aspects but does not specifically address dynamic scene changes.  \n- **Paper [17]** proposes DEVIL, an evaluation protocol centered on dynamics in video content, but its focus is on measuring visual vividness and honesty to text prompts rather than addressing the lack of benchmarks for dynamic scene changes.  \n- No prior paper explicitly addresses the gap of benchmarks tailored for evaluating dynamic scene generation in T2V models.  \n\n**Verdict:** NONE.\n\n---\n\n#### Mechanism:\nThe mechanism involves manually collecting 106 prompts describing significant scene changes (object property changes and object position changes), each with three states: initial, transition, and terminal.  \n- **Paper [2]** mentions curated temporal words from Wikipedia to enrich T2VBench's evaluation framework, but this is a lexicon-based approach rather than manually collecting prompts with three-state descriptions.  \n- **Paper [5]** categorizes prompts for fine-grained evaluation but does not involve manual collection of prompts with three-state descriptions.  \n- **Paper [8]** introduces T2V-CompBench, which focuses on compositional text-to-video generation, encompassing diverse aspects like object attributes and motions, but does not involve manually collecting prompts with three-state descriptions.  \n- No prior paper employs the same mechanism of manually collecting prompts with three-state descriptions for dynamic scene changes.  \n\n**Verdict:** NONE.\n\n---\n\n#### Evaluation:\nThe evaluation facet involves the Dynamic Scenes Benchmark, a set of 106 prompts specifically designed for evaluating dynamic scene generation in T2V models.  \n- **Paper [2]** introduces T2VBench, a hierarchical evaluation framework for temporal dynamics in T2V models, which is a benchmark family addressing temporal aspects but does not focus on dynamic scene changes.  \n- **Paper [5]** proposes FETV, a benchmark for fine-grained evaluation of T2V models, categorizing prompts into different aspects, but it does not specifically address dynamic scene changes.  \n- **Paper [8]** introduces T2V-CompBench, a benchmark tailored for compositional text-to-video generation, but it does not focus on dynamic scene changes.  \n- **Paper [17]** proposes DEVIL, an evaluation protocol centered on dynamics in video content, but it does not involve a benchmark specifically designed for dynamic scene generation.  \n- No prior paper uses an evaluation design specifically tailored for dynamic scene generation in T2V models.  \n\n**Verdict:** NONE.\n\n---\n\n#### Domain:\nThe domain is computer vision, specifically evaluation benchmarks for text-to-video (T2V) generation.  \n- **Paper [2]** (T2VBench), **Paper [5]** (FETV), **Paper [8]** (T2V-CompBench), and **Paper [17]** (DEVIL) all operate in the domain of computer vision and evaluation benchmarks for T2V generation. While the specific focus of these benchmarks differs, they share the same general application area.  \n\n**Verdict:** [2].\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [2]  ",
+      "stage2": "1. **FACET: purpose** | **FINAL: COVERED-BY 2** | reason: T2VBench explicitly addresses the gap in evaluating temporal dynamics in T2V models, including dynamic scene generation, as stated: \"a comprehensive T2V evaluation benchmark enriched with temporal dynamics lexicons derived from curated temporal words on Wikipedia.\"\n\n2. **FACET: mechanism** | **FINAL: NONE** | reason: No prior paper describes the manual collection of prompts with explicit three-state descriptions (initial, transition, termination) for object property and position changes.\n\n3. **FACET: evaluation** | **FINAL: COVERED-BY 17** | reason: DEVIL introduces an evaluation protocol centered on video dynamics, explicitly addressing the need for assessing \"the dynamics of video content,\" which aligns with the purpose of evaluating dynamic scene generation."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 17
+      },
+      "mechanism": {
+       "covered_by": 16
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": 24
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: 填补现有 T2V 基准偏重低动态场景、缺乏动态场景生成评测的空白**\n\nPaper [17] (DEVIL) explicitly states \"Existing evaluation protocols primarily focus on temporal consistency and content continuity, yet largely ignore the dynamics of video content\" and proposes evaluation centered on dynamics. Paper [16] (TC-Bench) argues that \"generated videos should incorporate the emergence of new concepts and their relation transitions\" and evaluates temporal compositionality including state changes. Paper [2] (T2VBench) notes T2V models \"lack a comprehensive evaluation across the temporal dimension.\" These papers share the same objective of filling the gap in dynamic/temporal evaluation of T2V models. Paper [17] is the closest match — same purpose of addressing the lack of dynamics evaluation in T2V benchmarks.\n\n**MECHANISM: 手工收集 106 条描述明显场景变化的 prompt，分 object property change 与 object position change 两类，每条附初始/过渡/终止三态文本描述**\n\nPaper [16] (TC-Bench) constructs prompts specifically designed to capture \"relation transitions\" and \"emergence of new concepts,\" with prompts structured around before/after state changes, categorized by transition types. It explicitly includes \"attribute changes\" and \"spatial relation changes\" — directly analogous to \"object property change\" and \"object position change.\" The three-state (initial/transition/terminal) description structure is also reflected in TC-Bench's transition-aware prompt design. This is substantively equivalent at the primitive level: manually curated prompts categorized by change type with structured state descriptions.\n\n**EVALUATION: Dynamic Scenes Benchmark，106 prompts，文献中首个专为评测 T2V 动态场景生成设计的基准**\n\nPaper [16] (TC-Bench) uses the same evaluation design: a curated benchmark of prompts for T2V evaluation focused on temporal/state transitions, with structured metrics. Paper [17] (DEVIL) also uses a benchmark-based evaluation design for T2V dynamics. Paper [24] (VBench) uses a comprehensive benchmark suite for video generation evaluation. The evaluation design — a curated prompt benchmark for T2V model evaluation — is well-established across [1], [2], [5], [8], [13], [16], [17], [24]. The design (curated prompt set → generate videos → assess) is covered.\n\n**DOMAIN: 计算机视觉 / 评测基准**\n\nMultiple prior papers ([1], [2], [5], [8], [13], [16], [17], [24]) operate in the same domain of computer vision / T2V evaluation benchmarks. This is clearly covered.\n\nVERDICT purpose = 17\nVERDICT mechanism = 16\nVERDICT evaluation = 16\nVERDICT domain = 24",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 16
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The purpose of filling the gap in T2V evaluation concerning dynamic scenes is covered by prior work. Paper [2] explicitly states that T2V models \"lack a comprehensive evaluation across the temporal dimension, with a limited focus on basic dynamics,\" and paper [17] notes that existing protocols \"largely ignore the dynamics of video content.\"\n\n**mechanism**: The mechanism of constructing prompts with structured state transitions is covered. Paper [16] proposes \"prompt templates\" to assess temporal compositionality, where each template \"consists of a subject, an initial state, a pivotal action, and a final state,\" which is substantively equivalent to the contribution's initial/transition/final state descriptions.\n\n**evaluation**: The evaluation design, which is a curated benchmark of text prompts to test a specific model capability, is covered. This is a standard design for T2V evaluation, used by numerous prior papers, including [2] (\"T2VBench, a comprehensive T2V evaluation benchmark\"), [8] (\"T2V-CompBench, the first benchmark tailored for compositional text-to-video generation\"), and [24] (\"VBench, a comprehensive benchmark suite\").\n\n**domain**: The domain of creating evaluation benchmarks for generative models in computer vision is covered. Many prior papers operate in this exact domain, for example, paper [1] which \"presents a dataset of 201 text prompts used to automatically generate 1,005 videos using 5 very recent T2V models\" for evaluation purposes.\n\nVERDICT purpose = 2\nVERDICT mechanism = 16\nVERDICT evaluation = 2\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

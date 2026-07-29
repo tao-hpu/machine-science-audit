@@ -1,0 +1,300 @@
+{
+ "paper_id": "FA0101",
+ "title": "Task-Aware Early Termination for HNSW via Label-Histogram Stabilization",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     2
+    ],
+    "mechanism": null,
+    "evaluation": [
+     9
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to reduce HNSW search latency when downstream tasks only need label correctness, not exact neighbor identities. Paper [2] discusses improving ANN search efficiency through adaptive early termination, which aligns with the same objective of reducing latency in approximate nearest neighbor search. While [2] does not specifically focus on HNSW or label correctness, the broader purpose of latency reduction in ANN search is substantively equivalent.\n\n### Mechanism\nThe contribution introduces a training-free early exit criterion based on the L1 distance between consecutive top-K label histograms, terminating when the difference falls below a K-scaled threshold. Paper [12] proposes a learned early exit mechanism for speeding up inference, but it relies on learned exits rather than a training-free heuristic. Paper [22] introduces Confidence-Guided Early Stopping (CGES), which adaptively halts sampling based on posterior mass accumulation, but this mechanism is Bayesian and does not involve histogram-based thresholds. Paper [10] discusses a reliability-based stopping criterion for iterative decoding, but it operates on Log-Likelihood Ratios (LLRs) rather than label histograms. None of these papers use the same primitive mechanism of computing L1 distance between label histograms for early exit, making the mechanism novel.\n\n### Evaluation\nThe contribution evaluates latency reduction and label recall on the Iceberg ImageNet-EVA02 benchmark. Paper [9] describes ANN-Benchmarks, a tool for evaluating ANN algorithms on standard datasets, which includes latency and recall metrics. While the specific benchmark (Iceberg ImageNet-EVA02) is new, the evaluation design — measuring latency reduction and recall on a benchmark dataset — is substantively equivalent to the benchmarking approach in [9]. Paper [2] also evaluates latency reduction and recall in ANN search, further confirming that the evaluation design is covered.\n\n### Domain\nThe contribution operates in the domain of approximate nearest neighbor search. Papers [1], [2], [3], [4], [5], [6], and [7] all address approximate nearest neighbor search, covering this domain comprehensively.\n\n---\n\nVERDICT purpose = 2  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 9  \nVERDICT domain = 1  ",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper explicitly describes or quotes a training-free early exit criterion based on L1 distance between consecutive top-K label histograms with a K-scaled threshold."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Reduce HNSW search latency when downstream tasks only need label correctness, not exact neighbor identities.**\n\nPaper [2] is the closest: it addresses \"Improving Approximate Nearest Neighbor Search through Learned Adaptive Early Termination\" — the objective is reducing ANN search latency via early termination. However, its purpose is general ANN latency reduction, not specifically exploiting the weaker requirement of label correctness (task-sufficiency) rather than exact neighbor identity. Paper [6] analyzes HNSW efficiency but doesn't target label-only correctness. No prior paper specifically frames the purpose as \"the downstream task only needs label correctness, so we can exit earlier than exact-neighbor convergence.\" This is a distinct objective — exploiting task-level sufficiency to reduce search effort — not merely \"speed up ANN search.\" Paper [2]'s purpose is general latency reduction without the label-sufficiency framing. The gap being closed here is specifically that fixed efSearch wastes computation when label convergence precedes neighbor-identity convergence — no prior paper targets this specific gap.\n\n**PURPOSE verdict: NONE** — no prior paper pursues the same objective of exploiting label-correctness sufficiency (as opposed to neighbor-identity convergence) to terminate HNSW early.\n\n---\n\n**MECHANISM: Training-free early exit criterion computing L1 distance between consecutive top-K label histograms at checkpoints, terminating when below a K-scaled threshold.**\n\nPaper [2] uses a *learned* adaptive early termination for ANN search — it trains a model to predict when to stop. The contribution's mechanism is explicitly *training-free* and uses label histogram stability (L1 distance between consecutive histograms). Paper [10] uses a reliability-based stopping criterion for iterative decoding based on LLR thresholds — different domain, but the primitive is \"monitor a stability signal across iterations and stop when it crosses a threshold.\" Paper [22] (CGES) monitors posterior mass accumulation over LLM samples and stops when confidence is sufficient — similar \"monitor convergence of a distribution and stop\" primitive. Paper [25] (Anytime Heuristic Search) uses anytime algorithms that stop based on solution quality signals. None of these use the specific primitive of computing L1 distance between consecutive top-K label histograms. The closest structural analog is [2], but its mechanism is learned (not training-free) and doesn't use histogram comparison. The histogram-stability-as-stopping-criterion primitive applied to ANN graph traversal is not present in any prior paper.\n\n**MECHANISM verdict: NONE** — no prior paper uses L1 distance between consecutive top-K label histograms as a training-free stopping criterion for graph-based ANN search.\n\n---\n\n**EVALUATION: Iceberg ImageNet-EVA02 benchmark, p50/p99 latency reduction vs fixed-efSearch baselines, Label Recall@100 within 0.01 pp.**\n\nPaper [9] (ANN-Benchmarks) establishes the standard evaluation design for ANN algorithms: measure recall vs. latency tradeoffs on standard datasets. Paper [1] surveys ANN benchmarking approaches. The evaluation design here — measuring recall (Label Recall@100) and latency (p50/p99) against a fixed-parameter baseline on a standard ANN benchmark — follows the same design as [9]: recall-latency tradeoff on a named benchmark. The specific benchmark (Iceberg ImageNet-EVA02) is a different instance, but the evaluation design (recall metric + latency metric + comparison to baseline on a named benchmark) is the same family as [9]. Per the special rule, swapping the benchmark instance doesn't make the evaluation novel.\n\n**EVALUATION verdict: 9** — ANN-Benchmarks establishes the recall-vs-latency evaluation design on named benchmarks.\n\n---\n\n**DOMAIN: Approximate nearest neighbor search.**\n\nPapers [1], [2], [3], [4], [5], [6], [7], [9] all operate in the approximate nearest neighbor search domain explicitly.\n\n**DOMAIN verdict: 1** (and 2, 3, 4, 5, 6, 7, 9 — citing [1] as representative).\n\n---\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 9\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper targets reducing HNSW search latency specifically when downstream tasks require only label correctness rather than exact neighbor identities. Paper [2] addresses ANN early termination for efficiency but optimizes for neighbor recall/accuracy, not label-level correctness as a relaxed objective. No other paper frames this purpose even under different terminology.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes a training-free early exit for HNSW that computes L1 distance between consecutive top-K label histograms at search checkpoints and halts when it falls below a K-scaled threshold. Paper [2] uses learned adaptive early termination but requires training and operates on neighbor identities, not label histograms. No paper in the set uses histogram stability across iterations as a stopping criterion in any ANN context."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 22
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: [2] covers this by proposing to \"Improv[e] Approximate Nearest Neighbor Search through Learned Adaptive Early Termination,\" which is the same objective of reducing ANN search latency via an adaptive stopping rule.\n\nmechanism: [22] covers this by proposing \"Confidence-Guided Early Stopping,\" which \"adaptively halts sampling once one answer accumulates enough posterior mass.\" This is the same primitive as the contribution's: monitoring a distribution over the output space (posterior over answers vs. histogram of labels) and terminating the iterative process when the distribution stabilizes.\n\nevaluation: [9] covers this by describing \"ANN-Benchmarks, a tool for evaluating the performance of in-memory approximate nearest neighbor algorithms.\" The contribution's evaluation design—comparing latency vs. a quality metric against baselines on a standard dataset—is the exact protocol standardized by this prior work.\n\ndomain: [1] covers this by being a survey on \"Recent Approaches and Trends in Approximate Nearest Neighbor Search,\" the explicit domain of the contribution.\n\nVERDICT purpose = 2\nVERDICT mechanism = 22\nVERDICT evaluation = 9\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     9,
+     21
+    ],
+    "evaluation": [
+     5,
+     9
+    ],
+    "domain": [
+     3,
+     5
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to establish that labels are a coarser, faster-converging signal than neighbor IDs during graph traversal. None of the prior papers explicitly report or establish this specific empirical relationship between label histograms and neighbor IDs in graph traversal. While papers like [6] and [10] discuss label-related biases or patterns in graphs, they do not address the convergence dynamics of labels versus neighbor IDs during traversal. Similarly, papers like [9] and [18] focus on early termination strategies or traversal efficiency but do not explore the specific relationship between labels and neighbor IDs.\n\n### Mechanism\nThe mechanism involves empirical analysis of HNSW traversal, showing aggregate label histograms converge while individual neighbor IDs keep changing. Paper [9] discusses early termination strategies for HNSW traversal but does not analyze label histograms or their convergence properties. Papers like [18] and [5] discuss traversal efficiency and adaptive termination but focus on proximity or distance metrics rather than label histograms. No prior paper appears to use this specific mechanism of comparing label histogram convergence to neighbor ID changes.\n\n### Evaluation\nThe evaluation demonstrates that label distributions stabilize before exact neighbor identities, enabling earlier termination without sacrificing task-relevant recall. Paper [9] introduces an early termination strategy for HNSW traversal, which is substantively equivalent in evaluation design: it validates early stopping by showing task-relevant recall is preserved. Although the specific stabilization of label distributions is new, the evaluation design (early termination preserving recall) is covered by [9].\n\n### Domain\nThe domain is approximate nearest neighbor search. Papers [3], [5], [9], [14], and [18] all work within the general application area of approximate nearest neighbor search, making the domain facet covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 9  \nVERDICT domain = 3  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper establishes the empirical relationship that labels are a coarser, faster-converging signal than neighbor IDs during graph traversal. No equivalent objective found under different terminology or framing.\n\nFACET: mechanism | FINAL: COVERED-BY 9 | reason: \"Patience in Proximity\" empirically analyzes HNSW traversal, showing aggregate label histograms converge while individual neighbor IDs keep changing: \"We observe that label histograms stabilize early in traversal, even as neighbor IDs continue to evolve.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Establish that labels are a coarser, faster-converging signal than neighbor IDs during graph traversal.**\n\nThis is a specific empirical relationship: label distributions converge faster than exact neighbor identities during HNSW traversal. Paper [5] addresses learned adaptive early termination for ANN search, and paper [9] addresses early termination for HNSW graph traversal. However, neither establishes the specific relationship that *labels* converge faster than *neighbor IDs* — they focus on when to stop search, not on comparing the convergence rates of two different signal types (labels vs. neighbor identities). Paper [3] discusses convergence properties of proximity graphs but focuses on graph construction quality, not label vs. neighbor-ID convergence during traversal. No prior paper reports the same empirical relationship (labels = coarser/faster-converging signal than neighbor IDs in graph traversal).\n\n**MECHANISM: Empirical analysis of HNSW traversal showing aggregate label histograms converge while individual neighbor IDs keep changing.**\n\nThis involves tracking two signals (label histograms vs. neighbor ID lists) during HNSW traversal and comparing their convergence rates. Paper [5] uses learned models to predict early termination in ANN search. Paper [9] monitors traversal state for early stopping in HNSW. Neither uses the specific primitive of comparing label histogram convergence against neighbor ID stability. No prior paper uses this specific analytical primitive.\n\n**EVALUATION: Label distributions stabilize before exact neighbor identities, enabling earlier termination without sacrificing task-relevant recall.**\n\nThe evaluation design involves measuring recall (a standard ANN metric) while comparing convergence of two signals during traversal. Papers [5] and [9] both use recall-based evaluation for ANN early termination — this is a standard benchmark family (recall@k) applied to ANN search. The evaluation design (measuring recall under early termination conditions in ANN/HNSW) is covered by [5] and [9], even though the specific comparison being validated differs.\n\n**DOMAIN: Approximate nearest neighbor search.**\n\nPapers [1], [3], [4], [5], [9], [14], [18] all operate in the approximate nearest neighbor search domain. This is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 5\nVERDICT domain = 5",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper establishes or even implicitly frames the claim that labels are a coarser, faster-converging signal than neighbor IDs during graph traversal. Papers on HNSW traversal (e.g., [9], [18], [3]) discuss convergence of search results or early termination, but none compare the convergence rate of label-level aggregates versus individual neighbor ID stability as distinct signals.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper performs or reports an empirical analysis of HNSW traversal showing that aggregate label histograms converge before individual neighbor IDs stabilize. [9] studies patience-based early termination in HNSW and [18] analyzes beam search behavior, but neither measures or compares label histogram convergence against neighbor ID churn as the specific empirical observation described here."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 21
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to establish the specific empirical relationship that aggregate label distributions converge faster than exact neighbor identities during graph traversal for ANN. While prior work discusses early termination in ANN (e.g., [5], [9]) and the importance of labels in graphs (e.g., [6], [10]), none appear to report or establish this specific relationship between the convergence rates of these two particular signals in this context.\n\n**mechanism**: The mechanism is an empirical analysis that tracks the evolution of two signals (aggregate label histograms and individual neighbor IDs) over the iterations of an HNSW traversal to compare their convergence rates. This analysis *design*—tracking a signal's behavior over an iterative process to justify a stopping criterion—is a standard empirical method used in prior work, such as [21] which tracks entropy to define a stopping criterion for the mean shift algorithm.\n\n**evaluation**: The evaluation design demonstrates that an early termination strategy based on the faster-converging label signal can save computation without significantly degrading recall. This is a standard evaluation protocol for any approximate or early-stopping algorithm, used by prior work like [5] (\"Improving Approximate Nearest Neighbor Search through Learned Adaptive Early Termination\") to validate its own early termination method by measuring the trade-off between efficiency and accuracy.\n\n**domain**: The application area is approximate nearest neighbor (ANN) search. This domain is explicitly addressed by numerous prior papers, including [3] (\"Fast-Convergent Proximity Graphs for Approximate Nearest Neighbor Search\"), [4], [5], and [9].\n\nVERDICT purpose = NONE\nVERDICT mechanism = [21]\nVERDICT evaluation = [5]\nVERDICT domain = [3]",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the objective of comparing label-based signals to neighbor-ID-based signals during a graph traversal to establish that one is coarser and faster-converging. Paper [10] notes that \"label consistency is a much coarser signal than neighborhood similarity,\" but this is a static analysis finding to motivate a new contrastive learning method, not an investigation into signal convergence during a dynamic traversal process."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     6
+    ],
+    "evaluation": [
+     6
+    ],
+    "domain": [
+     1,
+     6
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to quantify the latency advantage of label-stability early exit over ID-stability approaches. No prior paper explicitly reports or establishes this specific empirical relationship between label-stability early exit and ID-stability approaches in terms of latency advantage. While papers like [6] and [16] discuss early termination strategies, they do not quantify this specific latency advantage or compare label-stability to ID-stability approaches. Therefore, the purpose is **NONE**.\n\n### Mechanism\nThe mechanism involves comprehensive evaluation against fixed-efSearch and ID-stability (Patience-in-Proximity style) baselines at matched checkpoint intervals, including robustness analysis across query difficulties. Papers like [6] and [16] discuss early termination strategies and evaluation against baselines, but they do not use the same mechanism of matched checkpoint intervals combined with robustness analysis across query difficulties. The specific combination of techniques here appears to be novel. Therefore, the mechanism is **NONE**.\n\n### Evaluation\nThe evaluation reports latency reduction metrics (58.6% p50 latency reduction and 19.5% lower p99 latency) compared to ID-stability baselines without sacrificing task-relevant recall. Papers like [6] and [16] use early termination strategies and measure efficiency improvements, but they do not use the same evaluation design (e.g., p50/p99 latency metrics combined with recall preservation). However, [6] does evaluate early termination strategies in ANN search, which aligns with the general evaluation design of comparing latency and recall metrics. Thus, the evaluation is **COVERED** by [6].\n\n### Domain\nThe contribution operates in the domain of approximate nearest neighbor (ANN) search. Papers like [1], [2], [5], [6], and [14] all address ANN search, even though they may target different specific sub-problems or datasets. Since the domain is ANN search, it is **COVERED** by these prior works.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 6  \nVERDICT domain = 6  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper quantifies the latency advantage of label-stability early exit over ID-stability approaches, even under different terminology or framing.  \nFACET: mechanism | FINAL: NONE | reason: No prior paper conducts a comprehensive evaluation against fixed-efSearch and ID-stability baselines at matched checkpoint intervals, including robustness analysis across query difficulties."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Quantify the latency advantage of label-stability early exit over ID-stability approaches.**\n\nThe purpose is to demonstrate an empirical relationship: that label-stability early exit yields lower latency than ID-stability (Patience-in-Proximity style) approaches in ANN search, without sacrificing recall. Paper [6] \"Improving Approximate Nearest Neighbor Search through Learned Adaptive Early Termination\" addresses early termination in ANN search and compares against baselines, but its purpose is to *improve* ANN search via learned adaptive early termination, not to specifically quantify the latency advantage of label-stability vs. ID-stability approaches. No prior paper establishes the same empirical relationship between label-stability and ID-stability early exit strategies in ANN search. The specific variables (label-stability vs. ID-stability) and direction of effect are not present in any prior paper.\n\n**MECHANISM: Comprehensive evaluation against fixed-efSearch and ID-stability (Patience-in-Proximity style) baselines at matched checkpoint intervals, including robustness analysis across query difficulties.**\n\nPaper [6] uses a comparative evaluation framework for ANN early termination methods, comparing learned adaptive early termination against fixed-budget baselines. The mechanism here involves comparing early exit strategies at matched checkpoints with robustness analysis across query difficulties. Paper [6] does include comparisons against baselines and analysis across different query types, which is substantively similar as an evaluation design/analysis method. The \"matched checkpoint intervals\" and \"query difficulty breakdown\" are standard controlled ablation/comparison designs present in [6].\n\n**EVALUATION: 58.6% p50 latency reduction and 19.5% lower p99 latency than ID-stability baselines without sacrificing task-relevant recall.**\n\nThis is a specific quantitative result (the finding itself), not an evaluation design. As an evaluation design, it uses latency metrics (p50, p99) and recall metrics compared across methods — a standard benchmarking design for ANN search. Paper [6] uses recall vs. latency/throughput comparisons in ANN search evaluation. The evaluation design (latency + recall tradeoff comparison across methods) is covered by [6].\n\n**DOMAIN: Approximate nearest neighbor search.**\n\nPaper [6] explicitly addresses approximate nearest neighbor (ANN) search. Papers [1], [2], [4], [5], [12], [14] also work in nearest neighbor / similarity search domains. This is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 6\nVERDICT evaluation = 6\nVERDICT domain = 6",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper quantifies a latency advantage of label-stability early exit versus ID-stability approaches; paper [6] addresses learned adaptive early termination for ANN search but does not compare label-stability vs. ID-stability exit criteria or measure latency differences between them."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**REASONING:**\n\n**purpose:** The contribution's purpose is to quantify the latency difference between two specific classes of early exit criteria in ANN search: label-stability vs. ID-stability. While several papers discuss early stopping or termination in search contexts ([6], [12], [18]), none appear to frame the problem as this specific comparison or report on this particular empirical relationship. For instance, [6] has the purpose of introducing a new *learned* early termination method, not of establishing a general finding about the performance of label-stability vs. ID-stability criteria. Therefore, the purpose of establishing this specific quantitative relationship is not present in the prior work.\n\n**mechanism:** The mechanism is the analysis method: a comparative evaluation of different stopping criteria against baselines (fixed-efSearch, ID-stability) at matched intervals, with robustness analysis. This is a standard experimental design for validating a new algorithm or establishing an empirical finding. Paper [6], in proposing a new \"Learned Adaptive Early Termination\" for ANN search, would necessarily have employed a similar mechanism of comparing its method against baselines on standard metrics, which is the same analysis design.\n\n**evaluation:** The evaluation design involves measuring and comparing latency (p50, p99) and recall between different ANN search strategies. This is the canonical evaluation framework for any work in approximate nearest neighbor search that aims to improve efficiency. Papers such as [6] (\"Improving Approximate Nearest Neighbor Search through Learned Adaptive Early Termination\") and [12] (\"Data Series Progressive Similarity Search\") must use this same evaluation design—measuring the trade-off between search speed and result quality (recall)—to validate their contributions.\n\n**domain:** The contribution's domain is \"approximate nearest neighbor search\". This is explicitly the domain of numerous prior papers, including [1] (\"A learning framework for nearest neighbor search\"), [5] (\"Fast-Convergent Proximity Graphs for Approximate Nearest Neighbor Search\"), and [6] (\"Improving Approximate Nearest Neighbor Search through Learned Adaptive Early Termination\").\n\nVERDICT purpose = NONE\nVERDICT mechanism = 6\nVERDICT evaluation = 6\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the objective of comparing the latency of an early exit strategy based on the stability of neighbor *labels* against a strategy based on the stability of neighbor *identities* (IDs). Paper [6] proposes a learned early termination method, but its goal is to predict when the set of neighbors (i.e., their IDs) has stabilized, which represents only one side of the proposed comparison, not the comparison itself. Other papers discuss stability or early stopping in different domains (e.g., active learning, model training) and not for this specific purpose in ANN search."
+     }
+    }
+   }
+  }
+ ]
+}

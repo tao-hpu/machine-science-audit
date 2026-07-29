@@ -1,0 +1,345 @@
+{
+ "paper_id": "FA0012",
+ "title": "Delta-Map Belief Updates for Stable Spatial Revision in Vision-Language Models",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     11,
+     22
+    ],
+    "mechanism": [
+     19,
+     22
+    ],
+    "evaluation": [
+     20,
+     22
+    ],
+    "domain": null
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 11
+      },
+      "mechanism": {
+       "covered_by": 19
+      },
+      "evaluation": {
+       "covered_by": 20
+      },
+      "domain": {
+       "covered_by": 20
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to enable VLMs to maintain and revise spatial beliefs over time without wasteful and error-prone full cognitive-map regeneration. This objective is not directly covered by any prior paper. While several papers address belief revision (e.g., [2], [6], [8], [13], [30], [31]), they focus on general belief revision or truth maintenance systems rather than the specific problem of spatial belief maintenance in VLMs. Papers on dialogue state tracking ([18], [22], [29], [32], [34]) involve belief updates but are limited to dialogue systems and do not address spatial reasoning or cognitive-map regeneration. No prior paper explicitly targets the same problem-class level objective.\n\n### Mechanism\nThe mechanism involves a delta-map belief update interface that treats cognitive maps (structured JSON) as external state and updates them through sparse delta operations with explicit preserve/overwrite rules. This mechanism is substantively equivalent to [19] (JSON Patch), which defines a JSON document structure for expressing a sequence of operations to apply to a JSON document, including sparse updates. Additionally, [12] (JSON Merge Patch) and [11] (JSON Whisperer) describe similar mechanisms for efficient JSON editing using patch-based approaches. These papers cover the same underlying primitive of sparse delta-based updates with explicit modification rules, even though their application domains differ.\n\n### Evaluation\nThe evaluation uses the Theory of Space benchmark to show that providing prior map context improves false-belief identification F1 by +16.7 percentage points over scratch regeneration. This evaluation design is covered by [20] (Do Language Models Have Beliefs?), which uses LLMs as judges to evaluate belief-related tasks, and [11] (JSON Whisperer), which evaluates patch-based editing frameworks using JSON-based benchmarks. Both papers employ similar evaluation designs involving task-specific benchmarks and metrics to validate belief-related updates. The specific benchmark instance (Theory of Space) is new, but the evaluation design itself is not.\n\n### Domain\nThe domain is spatial reasoning in vision-language models. Spatial reasoning is a well-established application area, and prior papers such as [20] (Do Language Models Have Beliefs?) and [18] (Dialogue State Tracking) address belief-related reasoning tasks in language models. While these papers do not focus specifically on spatial reasoning, they operate within the broader domain of reasoning tasks in VLMs and dialogue systems. Thus, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 19  \nVERDICT evaluation = 20  \nVERDICT domain = 20  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 11 | reason: JSON Whisperer explicitly addresses efficient incremental updates to JSON structures without full regeneration, aligning with the objective of maintaining and revising spatial beliefs over time without wasteful regeneration. Quoted phrase: \"enables LLMs to generate RFC 6902 diff patches—expressing only the necessary modifications—rather than complete documents.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 22
+      },
+      "mechanism": {
+       "covered_by": 22
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": null
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "evaluation",
+      "domain"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Enable VLMs to maintain and revise spatial beliefs over time without wasteful and error-prone full cognitive-map regeneration.**\n\nThe closest candidates are papers about efficient belief/state updating without full regeneration. Paper [22] (\"Efficient Dialogue State Tracking by Selectively Overwriting Memory\") explicitly states: \"they are inefficient in that they predict the dialogue state at every turn from scratch. Here, we consider dialogue state as an explicit fixed-sized memory and propose a selectively overwriting mechanism for more efficient DST.\" This is substantively equivalent at the problem-class level: avoid full regeneration of structured state by maintaining and selectively updating it. Paper [11] (\"JSON Whisperer\") also targets \"current approaches regenerate entire structures for each edit, resulting in computational inefficiency.\" Both share the same objective: avoid wasteful full regeneration of structured state. Paper [22] is the stronger match on the \"maintain and revise beliefs over time\" framing.\n\n---\n\n**MECHANISM: A delta-map belief update interface that treats cognitive maps (structured JSON) as external state and updates them through sparse delta operations with explicit preserve/overwrite rules.**\n\nPaper [22] proposes \"selectively overwriting mechanism\" with explicit state operation prediction (keep/update/delete) on slot-value pairs — this is the same primitive: sparse delta operations with explicit preserve/overwrite rules on structured external state. Paper [11] (\"JSON Whisperer\") uses \"RFC 6902 diff patches—expressing only the necessary modifications—rather than complete documents\" applied to JSON structures. Paper [19] (JSON Patch) defines the patch format itself. Paper [12] (JSON Merge Patch) defines merge patch with explicit overwrite semantics. The combination of (a) treating structured JSON as external state + (b) sparse delta operations with preserve/overwrite rules is covered by [22] (for the belief-update-with-explicit-operations primitive) and [11] (for the JSON-specific sparse delta editing). Paper [22] is the strongest match on the mechanism primitive.\n\n---\n\n**EVALUATION: On the Theory of Space benchmark, providing prior map context improves false-belief identification F1 by +16.7 pp over scratch regeneration.**\n\nThe evaluation design involves: (1) a named benchmark (\"Theory of Space\"), (2) F1 metric, (3) comparing a context-augmented condition vs. a from-scratch baseline. I need to check whether any prior paper uses the same benchmark family, metric semantics, or validation framework. The \"Theory of Space\" benchmark appears to be specific to this contribution's domain (spatial reasoning in VLMs). No prior paper in the list uses this benchmark or an equivalent spatial-belief-tracking evaluation protocol. The F1 metric is generic, but the evaluation design (Theory of Space benchmark + false-belief identification + context vs. scratch comparison) does not appear in any prior paper. The closest structural analog would be DST papers [22], [32], [34] which compare incremental vs. from-scratch state tracking, but they use dialogue state tracking benchmarks (MultiWOZ, etc.), not spatial reasoning benchmarks. The evaluation design itself (Theory of Space, false-belief identification F1) appears genuinely new.\n\n---\n\n**DOMAIN: Spatial reasoning in vision-language models.**\n\nThe prior papers cover: dialogue state tracking ([18], [19], [22], [29], [32], [34]), belief revision in formal logic ([2], [6], [8], [13], [31]), LLM knowledge editing ([5], [10]), JSON protocols ([3], [7], [11], [12], [19]). None of these operate in spatial reasoning for vision-language models. The closest is the general VLM/LLM space, but spatial reasoning as an application area is not addressed by any prior paper listed. No prior paper works in spatial reasoning for VLMs.\n\n---\n\nVERDICT purpose = 22\nVERDICT mechanism = 22\nVERDICT evaluation = NONE\nVERDICT domain = NONE",
+      "stage2": "FACET: evaluation | FINAL: NONE | reason: No prior paper contains a benchmark called \"Theory of Space,\" measures false-belief identification F1, or reports a +16.7 pp improvement from prior map context over scratch regeneration — no equivalent result exists under any terminology in the prior papers.\n\nFACET: domain | FINAL: NONE | reason: No prior paper addresses spatial reasoning in vision-language models; the closest papers touch on dialogue state tracking or belief revision in symbolic/logical systems, none of which constitute spatial reasoning in VLMs even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 22
+      },
+      "mechanism": {
+       "covered_by": 19
+      },
+      "evaluation": {
+       "covered_by": 22
+      },
+      "domain": {
+       "covered_by": null
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "domain"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to enable efficient updates to a model's belief state (\"spatial beliefs\") to avoid \"wasteful... full... regeneration.\" This is substantively equivalent to the purpose of paper [22], which aims to solve the inefficiency of predicting dialogue state \"at every turn from scratch\" by proposing a more efficient update mechanism. Both share the objective of replacing full, from-scratch state regeneration with a more efficient, incremental update process.\n\n**mechanism**: The contribution uses \"sparse delta operations\" on a \"structured JSON\" object treated as \"external state\" with \"preserve/overwrite rules.\" This is an application of a standard technical primitive. Paper [19] defines \"JSON Patch,\" a standard for \"expressing a sequence of operations to apply to a... JSON document,\" which is precisely a delta-update mechanism. Similarly, paper [11] uses this primitive by having an LLM generate \"diff patches\" to avoid regenerating entire JSON documents.\n\n**evaluation**: The evaluation design compares the proposed method (\"providing prior map context\") against a baseline of \"scratch regeneration\" on a benchmark. This design is covered by paper [22], which frames its contribution as an improvement over methods that \"predict the dialogue state at every turn from scratch,\" necessitating a comparison between its selective update method and a \"from scratch\" baseline to validate its claims of efficiency. This is the same evaluation design, just applied to a different object (dialogue state vs. spatial map).\n\n**domain**: The contribution's application area is \"spatial reasoning in vision-language models.\" None of the prior papers operate in this domain. The listed papers focus on areas like theoretical belief revision, dialogue systems ([18], [22], [29]), general language models ([5], [10], [11]), or protocol specifications ([3], [19]), none of which are equivalent to the VLM spatial reasoning domain.\n\nVERDICT purpose = 22\nVERDICT mechanism = 19\nVERDICT evaluation = 22\nVERDICT domain = NONE",
+      "stage2": "FACET: domain | FINAL: NONE | reason: No prior paper studies vision-language models or the specific problem of spatial reasoning within them. The papers focus on belief revision, JSON protocols, dialogue systems, and language-only model editing."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     7,
+     9,
+     11
+    ],
+    "mechanism": [
+     9,
+     10,
+     11
+    ],
+    "evaluation": [
+     9,
+     11,
+     28
+    ],
+    "domain": [
+     1,
+     2,
+     3,
+     9,
+     11
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        9,
+        11
+       ]
+      },
+      "mechanism": {
+       "covered_by": [
+        9,
+        11
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        9,
+        11
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        3,
+        9,
+        11
+       ]
+      },
+      "single_paper_covers_all": 9
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to demonstrate that prior map context matters for detecting environmental changes. Paper [9] (\"MH-CDNet: Map- and History-Aided Change Detection of Traffic Signs in High-Definition Maps\") explicitly addresses the role of prior map context in change detection, focusing on updating maps to align with real-world environments. This aligns substantively with the purpose of the contribution, as both aim to show the importance of prior map context in detecting changes. Paper [11] (\"Change Detection under Global Viewpoint Uncertainty\") also uses prior information extracted from view sequence maps for change detection, which similarly demonstrates the importance of prior context in detecting environmental changes. Both papers cover the purpose.\n\n### Mechanism\nThe contribution's mechanism involves an empirical comparison of update conditions with vs. without prior map context on the Theory of Space benchmark. Paper [9] (\"MH-CDNet\") uses a map- and history-aided approach to change detection, which involves leveraging prior map context to improve detection accuracy. Paper [11] (\"Change Detection under Global Viewpoint Uncertainty\") extracts prior information from view sequence maps and uses it for change detection, which is substantively equivalent to comparing conditions with and without prior map context. Both papers employ mechanisms that align with the contribution's underlying primitive.\n\n### Evaluation\nThe contribution evaluates prior context's impact on change detection, reporting a +54% relative improvement (false-belief identification F1 +16.7 points). Paper [9] (\"MH-CDNet\") evaluates the effectiveness of prior map context in improving change detection accuracy, which matches the evaluation design of assessing the impact of prior context on detection performance. Paper [11] (\"Change Detection under Global Viewpoint Uncertainty\") similarly evaluates the role of prior information in change detection, using a compact bag-of-words scene model. Both papers reuse the evaluation design of measuring the improvement in detection performance due to prior context, even though the specific benchmarks differ.\n\n### Domain\nThe contribution operates in the domain of spatial belief revision benchmarking. Paper [1] (\"Cognitive processes underlying spatial belief revision\") and Paper [3] (\"Spatial belief revision\") both address spatial belief revision, which is the general application area of the contribution. Paper [9] (\"MH-CDNet\") and Paper [11] (\"Change Detection under Global Viewpoint Uncertainty\") also operate in spatial change detection and map updating, which fall within the broader domain of spatial belief revision. The domain is covered by multiple prior papers.\n\n---\n\nVERDICT purpose = 9, 11  \nVERDICT mechanism = 9, 11  \nVERDICT evaluation = 9, 11  \nVERDICT domain = 1, 3, 9, 11  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Demonstrate that prior map context matters for detecting environmental changes.**\n\nThe purpose is specifically about showing that having prior map/context information improves the detection of changes in an environment (spatial belief revision setting). Paper [11] \"Change Detection under Global Viewpoint Uncertainty\" explicitly uses prior information from a map for change detection: \"Two kinds of prior information are extracted from the view sequence map and used for change detection.\" Paper [9] \"MH-CDNet: Map- and History-Aided Change Detection\" also uses prior map information to improve change detection. Paper [21] \"Exploring Real World Map Change Generalization of Prior-Informed HD Map Prediction Models\" examines prior-informed models for map change detection. However, these are in robotics/autonomous driving domains. The contribution's purpose is specifically about *spatial belief revision* (cognitive/AI benchmark context) — demonstrating that prior map context matters for detecting environmental changes in a Theory of Space benchmark. None of the prior papers establish this same empirical relationship (prior map context → better change detection) in a spatial belief revision / cognitive benchmark setting. Papers [7] \"Change Detection in Context\" examines contextual influence on change detection in visual scenes, which is related but focuses on semantic context of surrounding stimuli, not prior map state. No prior paper establishes the same relationship (prior map context improves environmental change detection in a spatial belief revision benchmark).\n\n**MECHANISM: Empirical comparison of update conditions with vs. without prior map context on the Theory of Space benchmark.**\n\nThe mechanism is a controlled ablation/comparison: with-context vs. without-context conditions, measured on a specific benchmark. Paper [11] uses prior map information and compares approaches for change detection empirically. Paper [7] empirically studies context effects on change detection with/without contextual conditions. Paper [10] \"An empirical study of context in object detection\" presents empirical evaluation of context's role, comparing with/without context conditions. These are standard controlled comparison designs (with vs. without context), which is a generic experimental shape. However, the Theory of Space benchmark is a specific named benchmark. The mechanism as a design (empirical comparison with vs. without prior context) is a standard controlled ablation. Paper [10] does exactly this — empirical evaluation of context contribution using controlled comparison. This counts as a covered design at the primitive level.\n\n**EVALUATION: Prior context improves change detection by +54% relative improvement (false-belief identification F1 +16.7 points).**\n\nThe evaluation design uses F1 metric on a named benchmark (Theory of Space) for false-belief identification. The specific metric (F1) and benchmark family are the evaluation design elements. Paper [4] \"The Predictive Power of Spatial Relational Reasoning Models: A New Evaluation Approach\" develops a benchmark for spatial relational reasoning evaluation. Paper [8] presents a novel benchmark for QSR in LMs. The Theory of Space benchmark appears to be a specific named benchmark used here. The evaluation design (F1 on a named spatial reasoning/belief benchmark) — is this covered? F1 as a metric is standard and appears in many papers. The specific benchmark (Theory of Space) does not appear in any prior paper listed. The evaluation design combining F1 metric with false-belief identification on this specific benchmark appears genuinely new as a protocol. However, F1 is a standard metric. The question is whether the evaluation *design* is new. Since no prior paper uses the Theory of Space benchmark or false-belief identification F1 as an evaluation protocol, this seems uncovered.\n\n**DOMAIN: Spatial belief revision benchmarking.**\n\nPapers [1], [2], [3] explicitly address spatial belief revision. Paper [3] \"Spatial belief revision\" presents an experimental paradigm for how people change beliefs about object locations. Paper [4] addresses spatial relational reasoning benchmarking. The domain of spatial belief revision benchmarking is clearly covered by papers [1], [2], [3].\n\nVERDICT purpose = NONE\nVERDICT mechanism = 10\nVERDICT evaluation = NONE\nVERDICT domain = 3",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: Paper [11] uses prior map information for change detection but its purpose is scaling to large maps under GPS-denied viewpoint uncertainty, not demonstrating that prior map context matters for detecting environmental changes as a general principle. Paper [9] uses map and history for change detection but focuses on HD map updating for autonomous driving, not on demonstrating the value of prior context per se. No paper contains the same objective — showing that prior map context matters for environmental change detection — even under different terminology.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports a quantitative result equivalent to \"+54% relative improvement\" or \"+16.7 F1 points\" for false-belief identification from prior context in change detection. Papers [9], [11], [21], [27], [29] all involve change detection with priors but none report this specific claim or a named design yielding the same empirical finding. The closest candidates ([11], [21]) report different metrics in different task framings with no equivalent numerical result."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        7,
+        11
+       ]
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 28
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        2,
+        3
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: Covered by [7] and [11]. [7] investigates how \"Change detection is greatly dependant on... the contextual setting,\" and [11] explicitly uses \"prior information... from the view sequence map... for change detection,\" both establishing the same core relationship between prior context and improved change detection.\n\n**mechanism**: Covered by [10]. The mechanism is a controlled empirical comparison of performance with and without context, which is the same experimental design as [10]'s \"empirical evaluation of the role of context... using top-performing local appearance detectors as baseline.\"\n\n**evaluation**: Covered by [28]. The evaluation design is the use of a \"false-belief task\" to measure performance, which is an established experimental paradigm used in prior work such as [28]'s study comparing \"spontaneous and explicit false belief tasks.\"\n\n**domain**: Covered by [1], [2], and [3]. These papers explicitly work in the same domain of \"spatial belief revision.\"\n\nVERDICT purpose = 7, 11\nVERDICT mechanism = 10\nVERDICT evaluation = 28\nVERDICT domain = 1, 2, 3",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     8,
+     12,
+     20
+    ],
+    "evaluation": [
+     4,
+     12,
+     20
+    ],
+    "domain": [
+     1,
+     2,
+     6,
+     11
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        8,
+        12
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        12,
+        20
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        2,
+        6,
+        11
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to show that sparse targeted updates are as accurate as full regeneration while being more efficient. None of the prior papers explicitly establish this empirical relationship between sparse updates and full regeneration in terms of accuracy and efficiency. While papers like [4] (Sparse Sparse Attention) and [8] (Sparsity Exploiting Erasure Coding) discuss sparsity and efficiency, they do not demonstrate the same empirical relationship or focus on the same problem class. Similarly, [12] (Incremental Outlines for OpenStreetMap Data Updating) and [20] (Incremental View Maintenance) discuss incremental updates but do not establish the equivalence of sparse updates to full regeneration in terms of accuracy and efficiency.\n\n### Mechanism\nThe mechanism involves comparing delta-map sparse updates against full map regeneration and analyzing per-step object update rates. Paper [8] (Sparsity Exploiting Erasure Coding) discusses storing deltas between subsequent versions rather than full objects, which is substantively equivalent to the primitive of sparse updates versus full regeneration. Paper [12] (Incremental Outlines for OpenStreetMap Data Updating) also uses an incremental object-based approach for updating maps, which aligns with the mechanism of sparse updates. Both papers share the underlying primitive of incremental or sparse updates compared to full regeneration.\n\n### Evaluation\nThe evaluation design compares sparse updates to full regeneration in terms of accuracy (F1 scores) and efficiency (structured output size and object update rates). Paper [12] (Incremental Outlines for OpenStreetMap Data Updating) uses a similar evaluation design, comparing incremental updates to full updates in terms of data accuracy and efficiency. Paper [20] (Incremental View Maintenance) also evaluates incremental updates in terms of computational cost and efficiency, which matches the design of comparing sparse updates to full regeneration. These prior papers reuse the same evaluation design, even though the specific benchmarks and objects differ.\n\n### Domain\nThe domain is efficient spatial memory for embodied AI. Papers [1] (Semantic Mapping in Indoor Embodied AI), [2] (KARMA), [6] (MoDA), and [11] (Learning 3D Persistent Embodied World Models) all address embodied AI agents and their memory systems, including spatial memory and map-based reasoning. These papers operate in the same general application area of embodied AI, even though the specific sub-problems or datasets differ.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 8, 12  \nVERDICT evaluation = 12, 20  \nVERDICT domain = 1, 2, 6, 11  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses the objective of demonstrating that sparse targeted updates are as accurate as full regeneration while being more efficient."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 20
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Show that sparse targeted updates are as accurate as full regeneration while being more efficient.**\n\nThe purpose is to demonstrate that sparse/incremental updates to a spatial map can match full regeneration quality while being computationally cheaper. Paper [18] \"Minimal Change and Bounded Incremental Parsing\" investigates \"how and to what extent it is possible to give such a guarantee\" for incremental processing where \"the time that an incremental algorithm uses to process a change should be a function of the size of the change rather than... the size of the entire current input\" — this is about efficiency of incremental vs. full reprocessing. However, this is in parsing, not spatial maps, and the specific claim (accuracy parity + efficiency) is not the same relationship. Paper [20] LINVIEW studies incremental view maintenance for analytical queries, comparing delta-based updates vs. full recomputation. Paper [27] also covers incremental view maintenance optimality. None of these establish the same empirical relationship (sparse targeted updates ≈ full regeneration in accuracy for spatial memory maps in embodied AI). The closest are [20] and [27] but they are about database/linear algebra queries, not spatial object maps, and don't report the same variables/direction of effect in the same setting.\n\n**MECHANISM: Comparison of delta-map sparse updates against full map regeneration, plus analysis of per-step object update rates.**\n\nThe mechanism involves comparing sparse delta updates vs. full regeneration and measuring what fraction of objects need updating per step. Paper [20] LINVIEW develops \"a framework for capturing deltas of linear algebra programs\" and compares incremental vs. full recomputation. Paper [27] covers incremental view maintenance comparisons. Paper [8] studies delta-based versioning with sparsity exploitation. Paper [12] uses \"incremental outline-based approach for OpenStreetMap data updating\" and compares incremental vs. full object mapping. However, none of these specifically analyze \"per-step object update rates\" in a spatial embodied AI map context. The delta-comparison design is present in [20] and [12], but the specific combination with per-step update rate analysis for spatial object maps is not clearly covered. At the primitive level, comparing delta/sparse updates vs. full recomputation is covered by [20] and [12].\n\n**EVALUATION: Sparse updates match full regeneration (F1 = 0.479 vs 0.477) with 52-63% smaller structured outputs; only ~30% of objects require updating per step.**\n\nThe evaluation design uses F1 metric comparison between two system variants (sparse vs. full) plus output size measurement. F1-based comparison of system variants is a standard evaluation design. Paper [26] \"Image Scene Graph Generation (SGG) Benchmark\" uses standard metrics for scene graph evaluation. Paper [22] uses incremental scene graph generation evaluation. The F1 comparison between two method variants is a generic experimental design (swap a component, measure accuracy) — this is a generic shape. No prior paper uses this specific named benchmark/protocol for spatial map update evaluation. The evaluation design here is essentially a controlled ablation with F1 + output size metrics, which is generic. However, the specific protocol of comparing sparse vs. full regeneration with F1 in embodied spatial mapping doesn't match a named benchmark family or protocol in prior work.\n\n**DOMAIN: Efficient spatial memory for embodied AI.**\n\nPapers [1], [2], [3], [6], [11], [14] all work in embodied AI with spatial/semantic mapping. Paper [1] is explicitly \"Semantic Mapping in Indoor Embodied AI.\" Paper [2] covers memory systems for embodied AI agents. Paper [6] uses map-based memory for embodied agents. Paper [11] covers \"3D Persistent Embodied World Models.\" This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 20\nVERDICT evaluation = NONE\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper claims that sparse targeted updates achieve accuracy parity with full regeneration while being more efficient in the context of structured scene/world-state outputs. Paper [18] discusses minimal change in incremental parsing and [20] discusses incremental view maintenance, but neither makes the specific claim that sparse updates match full regeneration accuracy — they address computational efficiency without the accuracy-equivalence comparison. No quoted phrase from any prior paper establishes this same objective.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports a direct numerical comparison between sparse/partial updates and full regeneration showing matched F1 scores alongside a measured reduction in output size and a measured fraction of objects requiring updates per step. Paper [22] involves incremental scene graph generation but does not report this specific empirical equivalence claim. No quoted phrase from any prior paper contains this evaluation design or these specific claims."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 12
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The objective of showing that incremental/sparse updates can be as accurate as full regeneration while being more efficient is covered by [12], which proposes an \"incremental object-based approach\" for OpenStreetMap data updating to improve data quality over \"mapping the whole changing objects\". This shares the same core purpose of demonstrating the viability of incremental updates over full ones for spatial data.\n\n**mechanism**: The mechanism of using delta-based sparse updates is covered by [8], which describes systems where \"differences (deltas) between subsequent versions rather than the whole objects are stored\". The comparison of this approach against full regeneration is covered by [12], which contrasts its \"incremental object-based approach\" with \"mapping the whole changing objects\".\n\n**evaluation**: The evaluation design, a head-to-head comparison of a sparse method against a full baseline on accuracy and efficiency metrics, is covered by [4]. That paper compares \"sparse attention\" against \"full-attention\" to measure a \"performance degradation\" gap, which is the same evaluation design.\n\n**domain**: The application domain of spatial memory for embodied AI is covered by several papers, including [1], a survey on \"Semantic Mapping in Indoor Embodied AI\", and [6], which focuses on \"Map-based memory... for... embodied agents\".\n\nVERDICT purpose = 12\nVERDICT mechanism = 8\nVERDICT evaluation = 4\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

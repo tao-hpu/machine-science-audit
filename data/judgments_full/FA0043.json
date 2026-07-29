@@ -1,0 +1,265 @@
+{
+ "paper_id": "FA0043",
+ "title": "Isolated Solve-Then-Judge: A Simple Defense Against Candidate-Response Prompt Injection for Multimodal LLM Judges",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     3,
+     23
+    ],
+    "mechanism": [
+     6,
+     11,
+     18,
+     24
+    ],
+    "evaluation": [
+     20
+    ],
+    "domain": [
+     3,
+     7,
+     10
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": [
+        6,
+        11,
+        18
+       ]
+      },
+      "evaluation": {
+       "covered_by": 20
+      },
+      "domain": {
+       "covered_by": [
+        3,
+        7
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to defend multimodal LLM judges against prompt injection attacks embedded in candidate responses. Paper [3] explicitly investigates the vulnerability of LLM-as-a-Judge architectures to prompt injection attacks, which aligns with the purpose of the contribution. Paper [9] also targets LLM-as-a-Judge systems but focuses on introducing an attack (JudgeDeceiver) rather than defending against it. Therefore, [9] does not cover the purpose. Papers [1], [2], [4], [5], [8], and [22] address defenses against prompt injection attacks in general but do not specifically target multimodal LLM judges. Thus, the purpose is **covered by [3]**.\n\n### Mechanism\nThe mechanism is a two-pass architecture where Pass 1 generates a self-answer from trusted inputs (image + query), and Pass 2 judges candidates against this uncontaminated reference. Papers [6], [11], and [18] describe two-pass architectures, but they are applied to opinion mining, speech recognition, and ASR, respectively. Despite the different domains, the underlying primitive of a two-pass architecture is equivalent. Therefore, the mechanism is **covered by [6], [11], and [18]**.\n\n### Evaluation\nThe evaluation uses VL-RewardBench with Qwen2.5-VL-7B-Instruct to measure the reduction in conditional attack success rate. Paper [20] introduces VL-RewardBench, the same benchmark used in this contribution, and paper [17] also evaluates multimodal reward models using Multimodal RewardBench, which is a related benchmark. Since the evaluation design (using VL-RewardBench) is reused, the evaluation is **covered by [20]**.\n\n### Domain\nThe domain is multimodal LLM-as-a-Judge security. Paper [3] explicitly investigates vulnerabilities in LLM-as-a-Judge architectures, and paper [7] discusses multimodal LLMs as judges, which is the same application area. Paper [10] addresses multimodal prompt injection defense but focuses on agentic AI systems rather than LLM-as-a-Judge. Therefore, the domain is **covered by [3] and [7]**.\n\n---\n\nVERDICT purpose = 3  \nVERDICT mechanism = 6, 11, 18  \nVERDICT evaluation = 20  \nVERDICT domain = 3, 7  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 23
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 20
+      },
+      "domain": {
+       "covered_by": 10
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Defend multimodal LLM judges against prompt injection attacks embedded in candidate responses.**\n\nPaper [3] investigates \"the vulnerability of LLM-as-a-Judge architectures to prompt-injection attacks\" — this is the attack side, not the defense side. Paper [9] proposes JudgeDeceiver, an attack on LLM-as-a-Judge, not a defense. Paper [23] studies \"SteadyEval, a guardrailed exam-grading pipeline\" that defends against \"answer-side prompt injection\" in an LLM-as-a-Judge (grader) context — this is substantively equivalent: defending an LLM judge against prompt injection in candidate responses. The domain differs (exam grading vs. multimodal), but the purpose at the problem-class level is the same.\n\n**MECHANISM: Two-pass architecture where Pass 1 generates a self-answer from only trusted inputs and Pass 2 judges candidates against this uncontaminated reference.**\n\nPaper [8] (MELON) uses \"Masked re-Execution\" — re-executing with masked tool outputs to detect IPI attacks, which is a two-pass re-execution idea but focused on agent action comparison, not self-answer generation as a reference. Paper [23] uses a filter preprocessing step then a grader, which is sequential but not a self-answer generation mechanism. Paper [26] uses \"pairwise self-evaluation\" where LLMs evaluate their own rationales, but this is about verifier training, not a two-pass trusted-input reference generation. No prior paper describes the specific primitive of: generate a reference answer from trusted inputs only, then use that as an anchor for judging untrusted candidates. The closest structural analog is MELON's re-execution, but MELON compares tool call outputs for agent action integrity, not self-answer generation for judge defense. This mechanism appears uncovered.\n\n**EVALUATION: Evaluated on VL-RewardBench (N=1,247) with Qwen2.5-VL-7B-Instruct, reducing conditional attack success rate from 91.3% to 29.3%.**\n\nPaper [20] introduces VL-RewardBench — this is the exact benchmark used. Paper [17] introduces Multimodal RewardBench, another benchmark in the same family. The evaluation design (using VL-RewardBench as a benchmark for multimodal reward/judge models) is directly covered by [20], which introduced and used this benchmark. The metric of attack success rate reduction is also used in papers like [3] and [9] for LLM-as-a-Judge attack/defense evaluation.\n\n**DOMAIN: Multimodal LLM-as-a-Judge security.**\n\nPaper [3] covers LLM-as-a-Judge security (text-only). Paper [9] covers LLM-as-a-Judge attacks. Paper [10] covers multimodal prompt injection defense in VLMs. Paper [7] covers multimodal LLM-as-a-Judge. The combination of multimodal + LLM-as-a-Judge + security is touched by [10] (multimodal PI defense) and [3]/[9] (LLM-as-a-Judge security). Paper [10] explicitly addresses \"multimodal prompt injection\" in \"Vision-Language Models,\" covering this domain.\n\nVERDICT purpose = 23\nVERDICT mechanism = NONE\nVERDICT evaluation = 20\nVERDICT domain = 10",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes a two-pass architecture where Pass 1 generates a self-answer exclusively from trusted inputs (image + query) to serve as an uncontaminated reference, and Pass 2 judges candidates against that reference. The two-pass speech recognition papers ([11], [18]) use two passes for streaming/rescoring audio, not for contamination isolation. Paper [8] (MELON) uses masked re-execution for tool comparison in agents, not a trusted-input self-answer reference. No other paper contains this specific mechanism even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 23
+      },
+      "mechanism": {
+       "covered_by": 24
+      },
+      "evaluation": {
+       "covered_by": 20
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: COVERED by [23], which shares the same objective of defending an LLM-as-a-Judge system against prompt injection attacks originating from the candidate answer. Paper [23] targets \"LLM Exam Graders\" and defends against \"answer-side prompt injection,\" which is substantively equivalent to the contribution's purpose.\n\nmechanism: COVERED by [24], which uses the same underlying primitive of generating a reference response and then using it to evaluate another response. Paper [24] proposes to \"first generate a reference response using a powerful teacher model and then train a reward model to check the student model’s response against the reference,\" which is the same two-stage, reference-based verification logic.\n\nevaluation: COVERED by [20], which introduces the named benchmark used in the contribution. The contribution's evaluation design is to measure performance on \"VL-RewardBench,\" and paper [20] is titled \"VL-RewardBench: A Challenging Benchmark for Vision-Language Generative Reward Models,\" establishing this evaluation design.\n\ndomain: COVERED by [3], which works in the same general application area of LLM-as-a-Judge security. Paper [3] explicitly \"investigates the vulnerability of LLM-as-a-Judge architectures to prompt-injection attacks,\" establishing the domain, even if it is not specified as multimodal.\n\nVERDICT purpose = 23\nVERDICT mechanism = 24\nVERDICT evaluation = 20\nVERDICT domain = 3",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": [
+     1,
+     11
+    ],
+    "domain": [
+     2,
+     3,
+     13
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": [
+        2,
+        3,
+        13
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to quantify the defense's effectiveness and isolate what causes it. Paper [1] evaluates defense combinations against prompt injection attacks but does not isolate specific causal factors contributing to defense effectiveness. Paper [3] evaluates attack-defense setups for multimodal LLMs but focuses on unlearning sensitive information rather than quantifying defense effectiveness or isolating causal factors. Paper [13] introduces a framework to uncover vulnerabilities in defense-equipped VLMs but does not quantify defense effectiveness or isolate causal contributions. None of the prior papers establish the same empirical relationship or purpose.\n\n### Mechanism\nThe contribution uses empirical evaluation on VL-RewardBench with controlled experiments separating information isolation from prompt engineering effects. Paper [1] evaluates defense combinations but does not use controlled experiments to separate specific effects like information isolation. Paper [3] evaluates multimodal LLMs but focuses on unlearning sensitive information rather than isolating effects of specific defense mechanisms. Paper [13] introduces a framework for uncovering vulnerabilities but does not use controlled experiments to isolate effects. None of the prior papers employ substantively equivalent mechanisms.\n\n### Evaluation\nThe contribution reports a 62 percentage-point reduction in conditional attack success rate, with information isolation contributing an additional 4pp defense beyond prompt engineering alone. Paper [1] evaluates defenses against prompt injection attacks but does not use VL-RewardBench or report percentage-point reductions in conditional attack success rates. Paper [3] evaluates multimodal LLMs but does not use VL-RewardBench or report similar metrics. Paper [13] evaluates vulnerabilities in defense-equipped VLMs but does not use VL-RewardBench or report percentage-point reductions. None of the prior papers use the same evaluation design.\n\n### Domain\nThe contribution operates in the domain of multimodal LLM-as-a-Judge security. Paper [2] addresses multimodal LLMs and their vulnerabilities to jailbreak attacks, which overlaps with the general application area of multimodal LLM security. Paper [3] evaluates multimodal LLMs for sensitive information unlearning, which also falls within the broader domain of multimodal LLM security. Paper [13] evaluates vulnerabilities in defense-equipped VLMs, which similarly overlaps with the domain of multimodal LLM security. The domain is covered by prior work.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [2, 3, 13]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper quantifies defense effectiveness and isolates causal factors under the same empirical relationship.  \n\nFACET: mechanism | FINAL: NONE | reason: No prior paper empirically evaluates VL-RewardBench with controlled experiments separating information isolation from prompt engineering effects.  \n\nFACET: evaluation | FINAL: COVERED-BY 11 | reason: \"Base64 defense has been recognized as one of the most effective methods for reducing success rate of prompt injection attacks.\" Matches the same claim of reducing attack success rate quantitatively.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 13
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Quantify the defense's effectiveness and isolate what causes it.**\n\nThe purpose is to measure how well a specific defense works AND to decompose its effectiveness into contributing factors (information isolation vs. prompt engineering). Paper [1] evaluates \"defense combinations against prompt injection attacks\" and explicitly addresses the gap of \"defenses evaluated in isolation,\" seeking to understand what combinations work — this is close but focuses on combining defenses rather than decomposing a single defense's causal factors. Paper [13] exposes \"cross-model vulnerabilities in defense-equipped VLMs\" but focuses on attacks, not defense decomposition. No prior paper specifically establishes the same empirical relationship: quantifying a defense's effectiveness AND isolating information isolation as a distinct causal contributor beyond prompt engineering in a multimodal judge security context. The closest is [1] (evaluating defense effectiveness), but it doesn't isolate sub-components of a single defense mechanism causally. This purpose appears uncovered.\n\n**MECHANISM: Empirical evaluation on VL-RewardBench with controlled experiments separating information isolation from prompt engineering effects.**\n\nThe mechanism is a controlled ablation design that separates two components of a defense. Paper [1] uses \"evaluating defense combinations\" with controlled comparisons. Paper [13] uses systematic evaluation of defense-equipped VLMs. The general design of \"controlled ablation separating components\" is a standard experimental primitive appearing in many papers. However, VL-RewardBench is a specific named benchmark. The mechanism here is essentially a controlled ablation/component-separation experiment — a generic experimental design that appears broadly. Per the rules, generic ablation shapes don't establish coverage unless validating the same claim. No prior paper uses VL-RewardBench or separates information isolation from prompt engineering specifically. This mechanism appears uncovered.\n\n**EVALUATION: 62 percentage-point reduction in conditional attack success rate, with information isolation contributing additional 4pp.**\n\nThe evaluation design uses attack success rate (ASR) as a metric on a benchmark, with component-wise breakdown. Paper [1] evaluates \"defense combinations\" measuring attack success rates. Paper [13] evaluates VLMs under attack using success rate metrics. Paper [2] evaluates jailbreak detection in MLLMs. Attack success rate as a metric for defense evaluation is standard across [1], [2], [4], [13]. The evaluation design (measure ASR, compare conditions) is covered by multiple papers. Paper [1] explicitly measures defense effectiveness via ASR comparisons across conditions.\n\n**DOMAIN: Multimodal LLM-as-a-Judge security.**\n\nThe domain combines multimodal LLMs with security/adversarial robustness. Papers [2], [3], [4], [13], [24] all work in multimodal LLM security/adversarial robustness. Paper [7] uses LLM-as-Judge in a multimodal context (though not security-focused). The general area of multimodal LLM security is well-covered by [2], [4], [13]. The specific sub-problem of \"LLM-as-a-Judge security\" is a narrower instance within multimodal LLM security — per the domain rule, this is still COVERED as it's within the same general application area.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 13",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of quantifying a specific defense's effectiveness while isolating what causes it (information isolation vs. prompt engineering) — the closest candidates ([1], [13]) evaluate defense combinations or robustness but do not attempt to decompose causal contributors to a defense's effectiveness in this way.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper uses VL-RewardBench with controlled experiments that separate information isolation from prompt engineering effects — [1] evaluates defense combinations but not on VL-RewardBench nor with this specific controlled decomposition; no other paper contains this experimental design under any alternative terminology."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     2,
+     12
+    ],
+    "mechanism": [
+     2,
+     3
+    ],
+    "evaluation": [
+     3
+    ],
+    "domain": [
+     3
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 12
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to \"characterize the costs and limits of the defense across attack categories.\" This involves analyzing the trade-offs and limitations of a defense mechanism in terms of clean accuracy degradation and residual attack success across different attack types. None of the prior papers explicitly report or establish this same empirical relationship. While several papers (e.g., [2], [6], [10], [11], [13], [14], [22]) discuss the accuracy-robustness trade-off in adversarial training, they do not focus on characterizing the costs and limits of a defense across multiple attack categories. Papers like [3], [4], [5], and [7] address vulnerabilities and robustness of LLM-as-a-Judge systems but do not analyze the costs and limits of defenses across attack categories. Therefore, no prior paper covers this purpose.\n\n### Mechanism\nThe mechanism involves a \"trade-off and per-category analysis of clean accuracy degradation and residual attack success.\" Papers like [2], [6], [10], [11], [13], and [14] discuss trade-offs between accuracy and robustness in adversarial training, which is substantively equivalent to the mechanism here. For example, [6] performs an empirical study of the accuracy-robustness trade-off, and [14] analyzes pixel-level contributions to this trade-off. While these papers do not focus on LLM-as-a-Judge systems, the underlying mechanism of analyzing trade-offs and residual success rates is equivalent across domains. Thus, the mechanism is covered.\n\n### Evaluation\nThe evaluation reports specific metrics: \"10.8pp clean accuracy cost; strongest for hallucination detection (74.8pp reduction), weakest for reasoning tasks (36.4pp); authority impersonation attacks still achieve 63.6% success.\" Papers like [3], [4], [5], [7], and [16] evaluate LLM-as-a-Judge systems using similar designs, such as assessing robustness against adversarial attacks and measuring task-specific performance. For instance, [3] conducts a comprehensive assessment of LLM-as-a-Judge robustness, and [7] evaluates adversarial robustness across diverse models and benchmarks. These prior works use the same evaluation design (e.g., task-specific breakdowns, adversarial success rates) even if the specific metrics or tasks differ. Therefore, the evaluation is covered.\n\n### Domain\nThe domain is \"multimodal LLM-as-a-Judge security.\" Papers like [3], [4], [5], [7], and [16] explicitly address the security and robustness of LLM-as-a-Judge systems, which is the same general application area. For example, [3] assesses the robustness of LLM-as-a-Judge systems, and [4] investigates their vulnerability to prompt-injection attacks. While the specific focus or datasets may differ, the domain is clearly covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 2  \nVERDICT evaluation = 3  \nVERDICT domain = 3  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 12 | reason: Paper [12] explicitly analyzes \"multi-parameter analysis\" for attack-defense trees, addressing costs and limits across attack categories. Quoted phrase: \"The objective of this work is to address this problem by introducing a multi-parameter analysis framework.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Characterize the costs and limits of the defense across attack categories.**\n\nThe purpose is to measure what a defense costs in clean accuracy and where it fails (residual attack success), broken down by attack category. Papers [3], [5], [7] examine robustness of LLM-as-a-Judge systems and discuss limitations of defenses/evaluations. Paper [3] (\"Comprehensive Assessment on the Robustness of LLM-as-a-Judge\") explicitly characterizes vulnerabilities across attack categories. Paper [5] (\"Know Thy Judge\") highlights challenges including adversarial evaluations and performance limits. However, none of these specifically characterize a *defense's* costs and limits (clean accuracy degradation + residual attack success per category) — they characterize attack success, not defense trade-offs. Papers [2], [6], [9], [10], [11], [13], [14], [22] all study accuracy-robustness trade-offs in adversarial training, but in computer vision/DNN contexts, not LLM-as-a-Judge. The purpose \"characterize costs and limits of a defense\" at the problem-class level is covered by the adversarial training trade-off papers (same objective: measure clean accuracy cost vs. robustness gain of a defense). Paper [2] explicitly studies \"Accuracy-Robustness Trade-Off\" for a defense mechanism. This is the same objective at the problem-class level.\n\n**MECHANISM: Trade-off and per-category analysis of clean accuracy degradation and residual attack success.**\n\nThe mechanism is a per-category breakdown comparing clean accuracy drop against residual attack success rates. Papers [3] and [5] perform per-category/per-attack-type analysis of LLM judge robustness. Paper [3] provides \"comprehensive assessment\" across diverse attack types. Paper [5] analyzes performance across different conditions. The adversarial training papers ([2], [6], [10], [13], [14]) use trade-off analysis as their core analytical primitive. Per-category breakdown of defense effectiveness appears in [3] which analyzes attack categories systematically. The mechanism (trade-off + per-category breakdown) is a standard analytical design present in [3] and [5].\n\n**EVALUATION: 10.8pp clean accuracy cost; strongest for hallucination detection (74.8pp reduction), weakest for reasoning tasks (36.4pp); authority impersonation attacks still achieve 63.6% success.**\n\nThese are specific numerical results from a specific experimental setup. The evaluation *design* involves measuring clean accuracy degradation and per-category attack success rates. This design (measuring clean accuracy + robustness per attack category) appears in [3] which uses comprehensive benchmarking across attack categories with success rate metrics, and in adversarial training papers measuring clean accuracy vs. robust accuracy. The design of \"measure clean accuracy cost + residual attack success rate across categories\" is present in [3] and [5]. The specific numbers are new instances, but the design is covered.\n\n**DOMAIN: Multimodal LLM-as-a-Judge security.**\n\nPapers [3], [4], [5], [7], [8] all work in LLM-as-a-Judge security. The multimodal aspect may be new, but the general application area (LLM-as-a-Judge security) is clearly covered by multiple papers. The multimodal specificity is a narrower instance within the existing area.\n\nVERDICT purpose = 2\nVERDICT mechanism = 3\nVERDICT evaluation = 3\nVERDICT domain = 3",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

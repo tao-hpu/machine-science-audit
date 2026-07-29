@@ -1,0 +1,404 @@
+{
+ "paper_id": "hzVpZDrW73",
+ "title": "Dynamic-LLaVA: Efficient Multimodal Large Language Models via Dynamic Vision-language Context Sparsification",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     24,
+     28
+    ],
+    "evaluation": [
+     10,
+     28
+    ],
+    "domain": [
+     2,
+     10,
+     19
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 24
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 10
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to address the inefficiency in MLLM inference caused by existing methods that only sparsify visual tokens, leading to diminishing acceleration benefits during the decoding phase as output tokens are generated. This specific problem — inefficiency due to the lack of simultaneous sparsification of both visual and language contexts — is not directly addressed by any prior paper. While papers like [10] and [22] discuss sparsification of visual tokens for efficient MLLM inference, they do not identify or solve the issue of diminishing acceleration during decoding due to the absence of language-context sparsification. Similarly, papers like [7], [8], and [27] focus on KV cache compression or eviction policies but do not address the simultaneous sparsification of visual and language contexts.\n\n### Mechanism\nThe mechanism introduces the Dynamic-LLaVA framework, which uses two learnable predictors to sparsify both the visual context during the prefill phase and the language context during the decoding phase. This dual sparsification approach is claimed to be the first of its kind. Papers like [24], [28], and [33] propose token pruning or sparsification methods, but they focus on either visual tokens or language tokens independently, not both simultaneously. For example, [24] and [33] focus on dynamic token sparsification for vision transformers, while [28] addresses token pruning for transformers in general. None of these papers propose a mechanism that simultaneously sparsifies visual and language contexts in MLLMs.\n\n### Evaluation\nThe evaluation reports significant computational savings (e.g., 75% reduction in prefill computation, 50% reduction in decoding computation and GPU memory usage) with negligible or even improved performance degradation. Papers like [10], [22], and [7] use similar evaluation designs, such as measuring computational savings during inference and assessing performance degradation. For example, [10] evaluates inference speed improvements via visual token withdrawal, and [7] measures memory savings and performance trade-offs in KV cache compression. These evaluation designs are substantively equivalent to the one used in the contribution, even though the specific benchmarks and metrics differ.\n\n### Domain\nThe domain is efficient inference for multimodal large language models (MLLMs). Papers like [10], [22], and [19] clearly operate in the same general application area of efficient MLLM inference. For instance, [10] focuses on rapid inference for MLLMs via visual token withdrawal, and [22] addresses video token sparsification for efficient MLLMs in autonomous driving. While the specific sub-problems or datasets differ, the general domain of efficient MLLM inference is shared.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 10  \nVERDICT domain = 10  ",
+      "stage2": "- **FACET: purpose** | **FINAL: NONE** | reason: No prior paper explicitly addresses the issue of accelerating MLLM reasoning by simultaneously compressing both visual tokens and language tokens during decoding to mitigate diminishing acceleration benefits.  \n- **FACET: mechanism** | **FINAL: COVERED-BY 24** | reason: DynamicViT (2021-06-03) introduces a framework for dynamic token sparsification using lightweight predictors to estimate token importance, which aligns with the described mechanism of using learnable predictors for simultaneous sparsification of visual and language contexts. Quote: \"we propose a dynamic token sparsification framework to prune redundant tokens progressively and dynamically based on the input.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 10
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\n\nThe contribution's purpose is to solve the problem that existing MLLM acceleration methods only compress visual tokens, and their speedup benefit gradually disappears during the decoding stage as output tokens are generated (because the growing language context dominates).\n\n- Paper [10] (VTW) addresses MLLM inference acceleration by withdrawing visual tokens, but focuses only on visual token reduction, not the decoding-stage degradation problem.\n- Paper [25] (Inf-MLLM) addresses streaming inference of MLLMs under long context with KV cache management, touching on decoding efficiency, but the framing is about long-context streaming, not specifically about the \"visual-only compression loses benefit during decoding\" problem.\n- Paper [22] addresses video token sparsification for MLLMs in autonomous driving — again visual token focused.\n- No prior paper explicitly identifies and targets the specific gap: \"visual-only compression methods lose their acceleration benefit during decoding as language context grows.\" This is a specific problem formulation not covered by prior work.\n\n**Purpose: NONE** — no prior paper identifies this specific gap (visual-only compression's benefit vanishing during decoding due to growing language context).\n\n## Mechanism\n\nThe mechanism is: two learnable predictors that simultaneously sparsify (1) visual context during prefill and (2) language context during decoding in MLLMs.\n\n- Paper [24] (DynamicViT) uses a lightweight prediction module to estimate token importance scores and prune tokens dynamically — but only for vision transformers, not MLLMs, and not for language context.\n- Paper [28] (LTP) uses learned token pruning with adaptive thresholds for transformers.\n- Paper [10] (VTW) sparsifies visual tokens in MLLMs during prefill.\n- Paper [25] (Inf-MLLM) manages KV cache for both visual and language tokens in MLLMs during streaming inference, using attention-based importance scoring. This is close — it handles both modalities' KV cache. However, it focuses on KV cache eviction for streaming, not simultaneous learnable predictors for both prefill visual sparsification and decoding language sparsification.\n- Papers [7],[8],[9],[27],[34] handle KV cache compression for language tokens in LLMs, but not jointly with visual token sparsification in MLLMs.\n\nThe combination of simultaneously using two learnable predictors to sparsify both visual (prefill) and language (decoding) contexts in MLLMs is not directly covered. Paper [25] is the closest but uses attention-based heuristics rather than learnable predictors, and its framing is streaming/long-context rather than joint visual+language sparsification.\n\n**Mechanism: NONE** — no prior paper uses learnable predictors to simultaneously sparsify both visual prefill context and language decoding context in MLLMs.\n\n## Evaluation\n\nThe evaluation design involves: measuring FLOPs reduction (~75% prefill, ~50% decoding), GPU memory savings (~50% KV cache), and performance on standard MLLM benchmarks with near-zero degradation.\n\n- Papers [10], [22], [25] evaluate MLLM efficiency with FLOPs/memory metrics and standard VQA/benchmark performance — same evaluation design (efficiency metrics + benchmark accuracy).\n- Paper [24] evaluates with FLOPs reduction and accuracy on standard benchmarks.\n- This is a standard evaluation design: compute reduction + accuracy on named benchmarks (VQA, MMBench, etc.) — covered by [10], [22], [25].\n\n**Evaluation: COVERED** by [10], [22], [25].\n\n## Domain\n\nThe domain is multimodal large language models / efficient inference.\n\n- Papers [10], [22], [25], [19], [1], [2], [3] all work in the MLLM domain with efficiency focus.\n\n**Domain: COVERED** by [10], [19], [22], [25].\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 10\nVERDICT domain = 10",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper specifically identifies and targets the problem that visual-token-only compression methods lose their acceleration benefit during the decoding stage as output tokens accumulate. Paper [10] (VTW) addresses visual token compression in MLLMs but does not frame the problem as \"acceleration gains vanishing during decoding\"; no other paper articulates this specific gap either.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper proposes a framework that simultaneously sparsifies both visual context in the prefill stage and language context in the decoding stage of an MLLM using two learnable predictors. Paper [25] (Inf-MLLM) handles streaming MLLM inference with KV cache management but does not use dual learnable predictors jointly targeting visual and language context sparsification. No equivalent mechanism found under any alternative terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 22
+      },
+      "mechanism": {
+       "covered_by": [
+        24,
+        28
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        10,
+        28
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        2,
+        10,
+        19
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "purpose: The contribution's purpose is to solve the problem where MLLM acceleration from visual token compression fades during the decoding phase, by extending compression to the generated language tokens. No prior paper frames the problem this way; they either focus on compressing visual tokens (e.g., [10], [22]) or on compressing language tokens/KV cache in a general LLM context (e.g., [7], [9], [28]), but do not identify and solve this specific issue of \"fading benefits\" in the MLLM setting.\n\nmechanism: The mechanism combines two primitives: (1) sparsifying visual context and (2) sparsifying language context, using learnable predictors. Both primitives are covered by prior work. Sparsifying visual tokens is done in [24] which proposes a \"dynamic token sparsification framework to prune redundant tokens progressively\". Sparsifying language tokens is done in [28] which \"adaptively removes unimportant tokens as an input sequence passes through transformer layers\" via a learned method.\n\nevaluation: The evaluation design consists of measuring computational/memory savings against task performance degradation. This is the standard validation framework for efficiency research and is used by numerous prior papers. For example, [10] measures \"inference speed\" against performance on \"eight MLLM benchmarks\", and [28] measures \"inference speedup\" against \"downstream task performance\".\n\ndomain: The domain is efficient inference for Multimodal Large Models (MLLMs). This is explicitly the domain of several prior papers. For instance, [2] works on \"inference efficiency of MLLMs\", [10] aims for \"Rapid Inference\" in \"Multimodal Large Language Models\", and [19] is a survey on \"Efficient multimodal large language models\".\n\nVERDICT purpose = NONE\nVERDICT mechanism = [24], [28]\nVERDICT evaluation = [10], [28]\nVERDICT domain = [2], [10], [19]",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY [22] | reason: Paper [22] explicitly states this exact problem: \"While these methods effectively reduce the number of visual tokens, the computational benefits diminish as the model generates longer text sequences. This is because the Key-Value (KV) cache for the generated text tokens grows with each new token, gradually overshadowing the initial savings from visual token reduction.\""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     3,
+     11
+    ],
+    "evaluation": [
+     1,
+     5
+    ],
+    "domain": [
+     19
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 19
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to design a consistent and efficient sparsification scheme tailored to different inference modes of multimodal large language models (MLLMs). None of the prior papers explicitly address the same objective of customizing sparsification schemes for prefill, decoding without KV cache, and decoding with KV cache modes in MLLMs. While papers like [19] and [20] discuss multimodal inference efficiency, they focus on token pruning or visual token withdrawal rather than mode-specific sparsification schemes. Therefore, no prior paper shares this exact purpose.\n\n### Mechanism\nThe mechanism involves designing sparsification schemes for three inference modes, including \"online KV cache compression,\" which uses the current output token features to decide whether to retain activations without relying on historical KV cache. Papers [1], [3], and [5] discuss KV cache compression methods, including adaptive and layer-wise approaches. Specifically, [3] introduces adaptive KV cache compression based on profiling attention structures, which is substantively equivalent to the \"online KV cache compression\" mechanism described here. Thus, the mechanism is covered by [3].\n\n### Evaluation\nThe evaluation design involves applying the predictor once after layer \\( l=2 \\), sharing decisions across subsequent layers, and measuring GPU latency/memory usage (Tab.4/Tab.14). Papers [1], [3], and [5] evaluate KV cache compression methods using similar designs, including GPU memory and latency measurements. For example, [1] and [5] report GPU memory savings and latency improvements for KV cache compression methods. These evaluations follow the same benchmark family and metric semantics, even if the specific benchmarks or datasets differ. Therefore, the evaluation design is covered.\n\n### Domain\nThe domain is multimodal large language models (MLLMs) and inference scheduling. Papers [19], [20], and [26] address multimodal LLMs and inference efficiency, including visual token pruning and multimodal KV cache management. While the specific sub-problems differ, the general application area of multimodal LLM inference is shared. Thus, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 3  \nVERDICT evaluation = 1  \nVERDICT domain = 19  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses \"为 MLLM 的不同推理模式定制一致高效的稀疏化方案\" (customizing consistent and efficient sparsification schemes for different reasoning modes of MLLMs) under the same objective, framing, or terminology."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 19
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: 为 MLLM 的不同推理模式定制一致高效的稀疏化方案 (tailoring consistent, efficient sparsification schemes for different inference modes of MLLMs)**\n\nThe purpose is to unify sparse inference across multiple distinct inference phases (prefill, decoding w/o KV cache, decoding w/ KV cache) in MLLMs. Paper [19] (LOOK-M) addresses KV cache optimization for multimodal LLMs specifically. Paper [20] (FitPrune) and [26] (VTW) address visual token pruning for MLLMs. However, none of these papers specifically target the problem of designing a *unified* sparsification scheme that covers all three inference modes (prefill + two decoding modes) simultaneously. The closest is [19] which targets MLLM KV cache but only for long-context inference, not a unified multi-mode sparsification framework. No prior paper covers the same objective of unifying sparsification across all three inference modes for MLLMs.\n\n**MECHANISM: 三种模式分别设计稀疏化推理；with KV cache 模式实现'online KV cache compression'——用当前输出 token 特征决定是否保留激活，不依赖历史 KV cache**\n\nThe key primitive here is using the *current output token's features* to decide activation retention without relying on historical KV cache — an online, forward-looking compression signal rather than retrospective attention-score-based eviction. Paper [3] (AdaptiveKV) uses attention patterns to adaptively compress KV cache but relies on historical attention scores. Paper [19] (LOOK-M) compresses multimodal KV cache but uses attention weights from prior tokens. Paper [13] uses LLM self-selection for attention span. Paper [21] (LTP) prunes tokens based on attention scores below a threshold. None of these use the current output token's features as the compression signal independent of historical KV cache — this is a distinct primitive. The three-mode decomposition (prefill / decoding w/o KV / decoding w/ KV) as a unified framework also appears absent.\n\n**EVALUATION: predictor 仅在第 l=2 层后应用一次、决策共享至后续层，附加计算 <1%；GPU 实测延迟/显存见 Tab.4/Tab.14**\n\nThe evaluation design involves: (1) measuring actual GPU latency and memory usage, and (2) measuring computational overhead percentage. GPU latency/memory benchmarking appears in papers [1], [5], [19], [20], [26] which all report GPU memory savings and latency measurements for LLM/MLLM inference. The design of measuring wall-clock GPU latency and memory as validation metrics for compression methods is standard and covered by multiple prior papers (e.g., [1], [5], [19]).\n\n**DOMAIN: 多模态大模型 / 推理调度 (Multimodal Large Language Models / inference scheduling)**\n\nPapers [19], [20], [23], [26] all work in the domain of multimodal large language models (MLLMs) with inference efficiency as the application area. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 19",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper targets the objective of designing a unified yet mode-specific sparsification scheme tailored to the distinct inference modes (prefill, decoding w/o KV cache, decoding w/ KV cache) of MLLMs. [19] addresses multimodal KV cache but only for long-context compression, not a cross-mode sparsification framework.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes a three-mode sparsification design covering prefill, decoding without KV cache, and decoding with KV cache, nor the specific \"online KV cache compression\" mechanism where the current output token's features determine whether to retain activations without relying on historical KV cache. The closest papers ([1]–[5], [19]) perform KV cache compression but all rely on historical/accumulated KV states rather than current output token features, and none partition inference into these three distinct modes."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 19
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "purpose: The objective is to create sparsification schemes tailored to the different modes of MLLM inference (prefill, decoding with/without KV cache). Prior work on MLLM or LLM inference optimization proposes a single, general-purpose method rather than explicitly designing a portfolio of techniques customized for the distinct computational characteristics of each inference phase.\n\nmechanism: The core technical primitive is using a small, cheap predictor module to make a dynamic, online decision about the computational path of the main network (here, whether to sparsify activations). This is an instance of dynamic networking, a concept covered by prior work such as [11], which proposes a \"Predictive Exit framework\" using a \"low-cost prediction engine\" to dynamically terminate inference early.\n\nevaluation: The evaluation design consists of measuring wall-clock GPU latency and peak memory consumption to validate the performance of an inference optimization technique. This is a standard benchmarking protocol for this research area, used by numerous prior papers, including [5] which aims to \"accelerate inference\" and reduce \"GPU memory usage\".\n\ndomain: The application area is optimizing inference for Multimodal Large Language Models (MLLMs). Several prior papers operate in this exact domain, for instance [19] which focuses on \"Efficient Multimodal Long-Context Inference\" and [20] which proposes \"Visual Token Pruning for Multi-modal Large Language Models\".\n\nVERDICT purpose = NONE\nVERDICT mechanism = 11\nVERDICT evaluation = 5\nVERDICT domain = 19",
+      "stage2": "FACET: purpose: 为 MLLM 的不同推理模式定制一致高效的稀疏化方案。 | FINAL: NONE | reason: The prior papers on MLLM optimization ([19], [20], [23], [26]) each propose a single, specific technique for pruning or compression. None state the objective of creating a customizable or adaptive scheme that is tailored to different MLLM inference modes (e.g., single-image vs. multi-image reasoning). Their goal is a universal optimization for MLLMs, not a framework customized for varied operational contexts."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     2,
+     21
+    ],
+    "mechanism": [
+     4,
+     5,
+     9,
+     18
+    ],
+    "evaluation": [
+     5,
+     9,
+     18
+    ],
+    "domain": [
+     2,
+     5,
+     8
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 21
+      },
+      "mechanism": {
+       "covered_by": [
+        4,
+        5,
+        9,
+        18
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        9,
+        18
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        2,
+        5,
+        8
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to make sparse decision-making end-to-end trainable while adapting to GPU batch-parallel hardware. Paper [5] introduces token sparsification for efficient video transformers, which dynamically selects informative tokens for computation, but its focus is on sparsification for computational efficiency rather than enabling end-to-end trainability. Paper [21] discusses an end-to-end network pruning pipeline with sparsity enforcement, but its focus is on sparsification for deployment on resource-constrained devices rather than GPU batch-parallel adaptation. No prior paper explicitly addresses the same objective of enabling sparse decision-making to be end-to-end trainable while adapting to GPU batch-parallel hardware.\n\n### Mechanism\nThe contribution uses masked softmax to isolate non-essential tokens' influence on important tokens, combined with Gumbel-Softmax and Straight-Through gradient estimation to enable end-to-end optimization, and develops a batch-parallel strategy. Paper [9] introduces the Gumbel-Softmax gradient estimator for categorical reparameterization, which is equivalent to the gradient estimation mechanism here. Paper [4] generalizes the Gumbel-Softmax trick to combinatorial spaces, which also matches the gradient estimation mechanism. Paper [18] discusses the Straight-Through Gumbel-Softmax gradient estimator, which is directly equivalent to the mechanism used here. Paper [5] applies Gumbel-Softmax for token sparsification in video transformers, which overlaps with the masked softmax and sparsification mechanism. The batch-parallel strategy appears novel, as no prior paper explicitly develops this hardware-specific optimization.\n\n### Evaluation\nThe contribution evaluates using a temperature decay schedule for Gumbel-Softmax, ablation studies (e.g., Tab. 6 for l values), and integration into frameworks like LLaVA and TokenPacker. Paper [9] evaluates Gumbel-Softmax with temperature decay, which matches the temperature decay design here. Paper [18] evaluates Straight-Through Gumbel-Softmax estimators, which aligns with the gradient estimation validation design. Ablation studies are generic experimental techniques, but no prior paper evaluates the same claim (e.g., sparsification impact on LLaVA/TokenPacker integration). The evaluation design for temperature decay and gradient estimation is covered, but the integration experiments appear novel.\n\n### Domain\nThe contribution operates in the domain of multimodal large models and training optimization. Paper [2] addresses efficient transformer adaptation, which falls under training optimization for large models. Paper [5] applies token sparsification to video transformers, which overlaps with the general area of multimodal large models. Paper [8] discusses learned token pruning for transformers, which also falls under training optimization for large models. These papers collectively cover the domain of multimodal large models and training optimization.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = [4, 5, 9, 18]  \nVERDICT evaluation = [9, 18]  \nVERDICT domain = [2, 5, 8]  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 21 | reason: Paper [21] explicitly states \"an end-to-end network pruning pipeline with sparsity enforcement,\" which aligns with the objective of making sparsification decisions end-to-end trainable and adaptable to GPU batch-parallel hardware."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 5
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\nThe purpose is to make sparsification decisions end-to-end trainable and adapted to GPU batch-parallel hardware, specifically in the context of multimodal LLMs (token reduction/selection).\n\nPaper [2] states \"we craft a lightweight soft token merging system that maintains end-to-end differentiability\" — this covers end-to-end trainable token selection. Paper [5] (TSNet) applies Gumbel-softmax for token sparsification in video transformers with end-to-end training. Paper [8] (LTP) presents \"Learned Token Pruning\" for adaptively removing tokens end-to-end. Paper [24] introduces \"differentiable parameter-free Adaptive Token Sampler.\" These all share the objective of making token sparsification end-to-end trainable. The GPU batch-parallel hardware adaptation aspect is more specific, but the core purpose of end-to-end trainable sparsification is covered by [2], [5], [8], [24].\n\n## Mechanism\nThe mechanism combines: (1) masked softmax to isolate important tokens from non-important ones, (2) Gumbel-Softmax + Straight-Through gradient estimation for end-to-end optimization, (3) batch-parallel strategy.\n\nPaper [9] introduces Gumbel-Softmax with straight-through estimation for discrete variables. Paper [5] (TSNet) explicitly \"apply the Gumbel-softmax technique to sample tokens\" for token sparsification in transformers. Paper [26] uses hard concrete/L0 with straight-through-like approaches for sparse networks. Paper [18] and [13] analyze Rao-Blackwellized Straight-Through Gumbel-Softmax. Paper [1] uses Gumbel-Softmax for extracting subnetworks. The combination of masked softmax + Gumbel-Softmax + ST for token sparsification is most directly covered by [5], which applies Gumbel-softmax to token selection in transformers. The masked softmax isolation primitive is present in [2] (soft token merging with differentiability). The core Gumbel-Softmax + ST mechanism is in [9], [5].\n\n## Evaluation\nThe evaluation includes: Gumbel-Softmax temperature annealing from T=1 to T=0.1 (exponential decay), ablation studies (Tab.6 on l values), and plug-in integration tests with LLaVA and TokenPacker.\n\nTemperature annealing of Gumbel-Softmax is a standard protocol described in [9] (\"smoothly annealed\"). Ablation studies appear in [5], [8], [2]. The plug-in integration evaluation design (inserting module into existing architectures and measuring performance) is used in [2] (\"broad applicability\"), [8], [24]. These are standard evaluation designs for token reduction methods. The LLM-as-judge or specific benchmark families aren't novel here — the ablation + temperature sensitivity + plug-in evaluation design is covered by [5] and [2].\n\n## Domain\nThe domain is multimodal large language models / training optimization. Prior papers [2], [5], [8], [23], [24] work in vision transformers and token reduction. None of the prior papers explicitly target multimodal LLMs (e.g., LLaVA-style vision-language models). However, the general area of \"efficient transformer / token reduction in vision/multimodal models\" is covered by [2], [5], [8], [23], [24] — these are all in the vision transformer efficiency space, which is the same general application area. Multimodal LLMs are a specific instance of transformer-based vision-language models.\n\nVERDICT purpose = 2\nVERDICT mechanism = 5\nVERDICT evaluation = 5\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     2
+    ],
+    "mechanism": [
+     2
+    ],
+    "evaluation": [
+     2,
+     6
+    ],
+    "domain": [
+     1,
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to empirically validate that Dynamic-LLaVA achieves nearly lossless or even improved understanding and generation capabilities despite significant token reduction. No prior paper explicitly reports or establishes this same empirical relationship between token reduction and improved or minimally impacted multimodal understanding and generation capabilities. While token reduction methods are discussed in papers like [2], [3], [7], [9], [12], [14], and [16], none of them empirically validate this specific relationship for multimodal models. Thus, the purpose is **not covered**.\n\n### Mechanism\nThe mechanism involves comparing Dynamic-LLaVA against state-of-the-art visual token sparsification methods, constructing new benchmarks (LVIS-VQA and ShareGPT4V-VQA), and evaluating generation capabilities using PPL and METEOR metrics. Token sparsification methods are extensively covered in papers like [2], [3], [7], [9], [12], [14], and [16], which discuss adaptive token pruning, structured/unstructured sparsification, and multimodal token reduction. Additionally, [20] introduces benchmarks for long-text generation, and [26] discusses token pruning in multimodal models. The use of PPL and METEOR for generation evaluation is standard and appears in prior work. Therefore, the mechanism is **covered**.\n\n### Evaluation\nThe evaluation design involves measuring token reduction (80%), FLOPs reduction (70%+), and performance metrics like SciQA improvement (+2.3%/+0.8%) and Dynamic-LLaVA-TokenPacker's minimal loss (0.3%/0.1%) with fewer tokens. It also evaluates generation capabilities (PPL increase <0.3, METEOR improvement). Token reduction and computational efficiency evaluations are standard in papers like [2], [3], [7], [9], [12], [14], and [16]. Performance metrics like PPL and METEOR are widely used in generation tasks, as seen in [20]. The evaluation design is **covered**.\n\n### Domain\nThe domain is multimodal large models, specifically focusing on visual understanding and long-text generation. Papers like [1], [2], [13], [16], and [26] address multimodal large models, including visual understanding and token sparsification. Long-text generation benchmarks are discussed in [20]. Thus, the domain is **covered**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 2  \nVERDICT evaluation = 2  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly or equivalently addresses the empirical validation of Dynamic-LLaVA's near-lossless or improved understanding and generation capabilities under any framing or terminology."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**PURPOSE: 实证验证 Dynamic-LLaVA 在理解与生成能力上几乎无损甚至有增益**\n\nThe purpose is to empirically validate that a specific dynamic visual token sparsification method (Dynamic-LLaVA) achieves near-lossless or even improved performance on both understanding and generation tasks. This is a specific empirical relationship: \"dynamic visual token reduction → near-lossless/improved multimodal understanding AND generation.\" No prior paper establishes this same relationship — papers like [2] (LLaVA-PruMerge) validate token reduction for understanding benchmarks but don't specifically establish the \"near-lossless + generation\" relationship for a dynamic dual-context sparsification system. The closest are [2] and [13] which validate token reduction in VLMs, but they don't report the same variables (dual-context dynamic sparsification with generation metrics). However, the purpose at the problem-class level is \"validate that visual token reduction preserves/improves multimodal model capability,\" which [2] and [13] do pursue. This is covered at the problem-class level by [2] (\"Adaptive Token Reduction for Efficient Large Multimodal Models\") and [13] (token dropping for VLMs with accuracy validation).\n\n**MECHANISM: Comparison on visual understanding benchmarks + constructing LVIS-VQA/ShareGPT4V-VQA with PPL/METEOR + comparison against Random/Structure/H2O baselines**\n\nThe mechanism involves: (1) benchmarking against SoTA visual sparsification methods on standard VQA benchmarks, (2) constructing new generation benchmarks (LVIS-VQA, ShareGPT4V-VQA) evaluated with PPL and METEOR, (3) comparing against static dropping (Random/Structure) and H2O KV compression. Paper [2] uses comparison on visual understanding benchmarks against SoTA token reduction methods. Paper [8] introduces H2O as a baseline. The use of PPL and METEOR for generation evaluation in multimodal settings is a standard NLP evaluation protocol. Paper [20] evaluates long text generation with similar metrics. The construction of new VQA-style generation benchmarks is somewhat novel, but PPL/METEOR as metrics are standard. The overall analysis design (compare against baselines on standard + custom benchmarks) is covered by [2] and [13].\n\n**EVALUATION: ~80% token reduction, 70%+ FLOPs reduction; specific accuracy numbers on SciQA; PPL <0.3 increase, METEOR slight improvement**\n\nThese are specific quantitative findings/results, not an evaluation design. The evaluation design itself — comparing token-reduced VLMs on standard understanding benchmarks (SciQA, etc.) plus generation metrics (PPL, METEOR) against baselines — is covered by [2] (uses same benchmark families for VLM token reduction evaluation) and [13] (uses VQA benchmarks for token-dropping evaluation in VLMs). The use of PPL as a generation quality metric appears in [6] (\"KV Cache Compression\" benchmark using perplexity). The evaluation design of measuring both understanding benchmarks and generation quality metrics for compressed LLMs is covered by [6] and [2].\n\n**DOMAIN: 多模态大模型 / 实证**\n\nThe domain is multimodal large language models. Papers [2], [13], [16], [26], and [1] all work in the multimodal LLM / vision-language model area. This is clearly covered.\n\nVERDICT purpose = 2\nVERDICT mechanism = 2\nVERDICT evaluation = 6\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": 2
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to empirically demonstrate that a dynamic token reduction method for a vision-language model (Dynamic-LLaVA) can significantly improve efficiency with little to no loss in understanding or generation capabilities. This purpose is covered by prior work that introduces and validates similar methods, aiming to establish the same empirical relationship. For example, [2] introduces \"LLaVA-Prumerge: Adaptive Token Reduction for Efficient Large Multimodal Models,\" which has the same objective of showing that adaptive token reduction can make LMMs efficient while preserving performance.\n\n**mechanism**: The analysis method involves comparing the proposed technique against SOTA sparsification methods, static dropping baselines, and KV cache compression, evaluated on a mix of existing visual understanding benchmarks and newly constructed long-text generation benchmarks using standard metrics (PPL, METEOR). This overall experimental design—validating a new efficiency method through comprehensive comparisons against multiple classes of baselines on relevant benchmarks—is a standard protocol in the field. For instance, [2] would have employed a substantively equivalent analysis protocol to validate its own adaptive token reduction method for LMMs.\n\n**evaluation**: The evaluation design measures performance using a combination of efficiency metrics (token reduction, FLOPs reduction) and task performance metrics (accuracy on SciQA, generation quality via PPL and METEOR). This design is a standard way to validate model compression or acceleration techniques. Prior works on efficient models, such as [2] on efficient LMMs or [8] on efficient LLM inference, use the same evaluation design of trading off resource usage (like tokens or KV cache size) against model performance (on benchmarks or perplexity).\n\n**domain**: The application area is the efficiency of Multimodal Large Models (LMMs), also referred to as Vision-Language Models (VLMs). This domain is explicitly addressed by numerous prior papers. For example, [2] \"LLaVA-Prumerge: Adaptive Token Reduction for Efficient Large Multimodal Models\" and [16] \"Multimodal Alignment-Guided Dynamic Token Pruning for Accelerating Vision-Language Transformer\" both operate in the exact same application domain.\n\nVERDICT purpose = 2\nVERDICT mechanism = 2\nVERDICT evaluation = 2\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

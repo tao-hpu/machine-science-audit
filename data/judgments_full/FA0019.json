@@ -1,0 +1,332 @@
+{
+ "paper_id": "FA0019",
+ "title": "Step-Down Bridge Guidance Scheduling for Dual-CFG in Video-Audio Diffusion",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     29
+    ],
+    "mechanism": [
+     1,
+     4,
+     9,
+     19,
+     25
+    ],
+    "evaluation": [
+     1,
+     4,
+     9,
+     10,
+     19,
+     25
+    ],
+    "domain": [
+     10,
+     24
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        1,
+        4,
+        9,
+        19,
+        25
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        1,
+        4,
+        9,
+        19,
+        25
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        10,
+        24
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to improve speech fidelity in joint video-audio diffusion where constant bridge guidance crowds out text-condition sensitivity in late denoising steps. No prior paper explicitly addresses this specific objective. While several papers discuss guidance scheduling (e.g., [1], [4], [9], [19], [25]), their focus is on improving image fidelity or prompt alignment rather than addressing the specific issue of text-condition sensitivity in joint video-audio diffusion. Papers like [10] and [24] discuss challenges in text-to-sounding video generation and speech-driven animation, but they do not target the specific problem of speech fidelity degradation due to constant bridge guidance.\n\n### Mechanism\nThe mechanism, \"Step-Down bridge guidance scheduling,\" is a training-free modification for MOVA's dual-CFG that ramps down guidance scale in late denoising steps. Papers [1], [4], [9], [19], and [25] all discuss dynamic or adaptive guidance scheduling in diffusion models. For example, [1] applies guidance in a limited interval, [4] introduces dynamic negative guidance, [9] uses annealing guidance scales, and [19] proposes dynamic CFG scheduling. These mechanisms are substantively equivalent to the contribution's approach of modifying guidance scales dynamically during the denoising process, even though the specific ramping schedule and application domain differ.\n\n### Evaluation\nThe evaluation uses Verse-Bench speech prompts to measure WER improvement and synchronization quality. Papers like [10] and [24] evaluate text-to-sounding video generation and speech-driven animation, respectively, but do not use Verse-Bench or similar benchmarks. However, the evaluation design — measuring fidelity improvements and synchronization quality — aligns with standard practices in diffusion model validation. Papers such as [1], [4], [9], [19], and [25] use similar evaluation designs (e.g., fidelity metrics, synchronization quality, or prompt alignment) for assessing guidance scheduling. Therefore, the evaluation design is covered.\n\n### Domain\nThe domain is joint video-audio diffusion generation. Papers [10] and [24] operate in closely related areas, such as text-to-sounding video generation and speech-driven 3D facial animation. These papers address multimodal generation tasks involving video and audio, making the domain substantively equivalent.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 1, 4, 9, 19, 25  \nVERDICT evaluation = 1, 4, 9, 19, 25  \nVERDICT domain = 10, 24  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses improving speech fidelity in joint video-audio diffusion by mitigating constant bridge guidance crowding out text-condition sensitivity in late denoising steps."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 10
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Improve speech fidelity in joint video-audio diffusion where constant bridge guidance crowds out text-condition sensitivity in late denoising steps.**\n\nThe purpose is specifically about fixing a degradation in speech quality caused by constant guidance scale in a dual-CFG (bridge + text) joint video-audio diffusion system. I need to find a paper that addresses the same objective: improving conditional fidelity (specifically speech/audio) by addressing the problem of constant guidance scale harming late-step text sensitivity.\n\n- Paper [1] addresses \"constant guidance weight applied throughout the sampling chain\" being harmful, and proposes restricting guidance to a specific interval. This is closely related — the problem identified is that constant guidance is suboptimal at certain noise levels.\n- Paper [4] explicitly states \"conventional NP is limited by the assumption of a constant guidance scale, which may lead to highly suboptimal results\" and derives dynamic guidance. The purpose is to fix constant guidance scale problems.\n- Paper [25] analyzes CFG weight schedulers and finds monotonically increasing schedules work better, addressing the same gap of constant vs. scheduled guidance.\n- Paper [10] focuses on text-to-sounding-video generation with modal interference issues — closer to the domain but not the same purpose.\n\nHowever, the specific purpose here is about **speech fidelity** being harmed by constant bridge guidance in a dual-CFG joint video-audio system. Papers [1], [4], [25] address the general problem of constant guidance being suboptimal, but not specifically in the context of speech fidelity in joint video-audio diffusion. The problem-class level objective — \"fix constant guidance scale harming conditional fidelity in late denoising steps\" — IS covered by papers [1] and [4] at the problem-class level, even if the specific modality differs.\n\nPaper [1]: \"constant guidance weight has been applied throughout the sampling chain... guidance is clearly harmful toward the beginning of the chain... largely unnecessary toward the end.\" This covers the purpose at the problem-class level.\n\n---\n\n**MECHANISM: Step-Down bridge guidance scheduling — training-free, cosine ramp-down from s_B=3.5 to s_B=1.5 at step k=12 in MOVA's dual-CFG.**\n\nThe mechanism is a scheduled (non-constant) guidance scale that decreases in later denoising steps, applied training-free to a specific dual-CFG system.\n\n- Paper [1]: Restricts guidance to a limited interval (not applied at high noise or low noise levels). The primitive is \"vary guidance scale across denoising steps\" — covered.\n- Paper [9]: \"Navigating with Annealing Guidance Scale\" — explicitly proposes annealing (decreasing) the guidance scale during diffusion sampling. This is the same primitive: cosine/annealing schedule for guidance scale.\n- Paper [25]: Analyzes CFG weight schedulers, finds monotonically increasing schedules work better — but this is about increasing, not decreasing. Still, the primitive of \"scheduled guidance\" is covered.\n- Paper [4]: Dynamic Negative Guidance — derives state-dependent guidance scale changes.\n- Paper [18]: CADS — condition-annealed sampling, anneals the conditioning signal (not the guidance scale directly, but related).\n- Paper [19]: Dynamic CFG scheduling via online feedback.\n\nPaper [9] is the strongest match: it explicitly proposes annealing (decreasing) the guidance scale as a training-free modification to diffusion sampling. The cosine ramp-down is the same primitive as annealing guidance scale.\n\n---\n\n**EVALUATION: On Verse-Bench speech prompts, WER improvement of 1.5% over constant baseline, AV-A within 1.2%.**\n\nThe evaluation uses Verse-Bench (a specific benchmark), WER (Word Error Rate for speech), and AV-A (audio-visual alignment metric). I need to check if any prior paper uses the same evaluation design.\n\n- Paper [10]: \"Taming Text-to-Sounding Video Generation\" — this paper works in the same domain (joint video-audio generation) and likely uses similar metrics (AV synchronization metrics). It mentions \"synchronized audio\" and alignment evaluation.\n- No prior paper explicitly mentions Verse-Bench, WER for speech in video-audio diffusion, or AV-A metric.\n\nVerse-Bench appears to be a specific benchmark for this contribution. WER is a standard metric but applied here in a novel evaluation design for video-audio diffusion speech quality. AV-A is a specific audio-visual alignment metric. The combination and the benchmark (Verse-Bench) appear newly constructed or at least not present in prior papers listed.\n\nNone of the prior papers use Verse-Bench or this specific evaluation protocol for joint video-audio diffusion speech quality. This appears to be a new evaluation design (new benchmark + new metric combination for this specific task).\n\n---\n\n**DOMAIN: Joint video-audio diffusion generation.**\n\n- Paper [10]: \"Taming Text-to-Sounding Video Generation\" — explicitly works in joint video-audio generation from text. This is the same domain.\n- Paper [5]: Video coding with diffusion — video domain but not joint audio-video generation.\n\nPaper [10] clearly covers the domain of joint video-audio diffusion generation.\n\n---\n\nVERDICT purpose = 1\nVERDICT mechanism = 9\nVERDICT evaluation = NONE\nVERDICT domain = 10",
+      "stage2": "FACET: evaluation | FINAL: NONE | reason: No prior paper reports WER or AV-A metrics on Verse-Bench speech prompts, nor any equivalent benchmark comparing a dynamic guidance schedule against a constant baseline on speech intelligibility and audio-visual synchronization quality."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 29
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 10
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: The contribution's purpose is to resolve a conflict between two competing guidance signals (inter-modality synchronization vs. text-to-modality fidelity) in a joint generative model. This is covered by [29], which has the explicit purpose of \"Designing sequences that satisfy multiple, often conflicting, objectives\" via \"Multi-Objective Guidance,\" matching the problem class exactly.\n\nmechanism: The core mechanism is a training-free, non-constant guidance schedule where the guidance strength is varied across the denoising steps (high early, low late). This primitive is covered by multiple papers, including [9] which proposes an \"Annealing Guidance Scale in Diffusion Space\" and [25] which analyzes various \"Classifier-Free Guidance Weight Schedulers.\"\n\nevaluation: The evaluation design consists of using a standard benchmark (\"Verse-Bench\") and established metrics for the task: Word Error Rate (WER) for speech fidelity and an audio-visual synchronization metric (AV-A). This design is covered by [10], which works on the identical task of \"Text-to-Sounding-Video generation\" and would necessarily employ a substantively equivalent evaluation design to measure audio quality and synchronization.\n\ndomain: The application domain is joint video-audio diffusion generation. This is covered by [10], which explicitly addresses \"Text-to-Sounding-Video (T2SV) generation,\" the same application area.\n\nVERDICT purpose = 29\nVERDICT mechanism = 9\nVERDICT evaluation = 10\nVERDICT domain = 10",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     16
+    ],
+    "evaluation": [
+     16
+    ],
+    "domain": [
+     1,
+     16,
+     22
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 16
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution aims to explain mechanistically why constant high bridge guidance hurts speech fidelity. This is a specific empirical relationship between guidance dynamics and speech fidelity degradation. None of the prior papers explicitly report or establish this same relationship. While several papers discuss the effects of guidance scale (e.g., [1], [5], [8], [9], [16], [17]), they focus on image generation or general guidance effects rather than speech fidelity or bridge guidance dynamics. No prior paper addresses this specific purpose.\n\n#### Mechanism:\nThe contribution uses norm analysis of guidance term dynamics across denoising steps under constant \\( s_B = 3.5 \\). Papers like [16] and [17] analyze guidance dynamics, including stage-wise effects and oversaturation, but they do not perform norm analysis of guidance terms across denoising steps in the specific context of bridge guidance. While [16] discusses stage-wise dynamics and [17] examines oversaturation effects, neither employs the same primitive mechanism of norm analysis for guidance dynamics. Thus, the mechanism is uncovered.\n\n#### Evaluation:\nThe evaluation shows the bridge-to-text guidance norm ratio increasing from 1.04 in early steps to 1.47 in late steps, indicating bridge guidance increasingly dominates the combined signal. Papers like [16] and [17] analyze guidance effects across denoising steps, but they do not use the same evaluation design of tracking norm ratios between guidance components. No prior paper employs this specific evaluation design, making it uncovered.\n\n#### Domain:\nThe contribution operates in the domain of diffusion guidance analysis. Several prior papers ([1], [5], [8], [9], [16], [17]) work in the general area of diffusion guidance analysis, even though they focus on different application instances (e.g., image generation, text-to-image synthesis). The domain is therefore covered.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 1  ",
+      "stage2": "- **FACET: purpose** | **FINAL: NONE** | reason: No prior paper explicitly explains mechanistically why constant high bridge guidance hurts speech fidelity, even under different terminology or framing.  \n- **FACET: mechanism** | **FINAL: COVERED-BY 16** | reason: \"We analyze CFG under multimodal conditionals and show that the sampling process unfolds in three successive stages. In the Direction Shift stage, guidance accelerates movement toward the weighted mean, introducing instability in dynamics.\"  \n- **FACET: evaluation** | **FINAL: NONE** | reason: No prior paper provides a quantitative analysis of the bridge-to-text guidance norm ratio increasing across denoising steps, nor an equivalent claim.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 16
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**Purpose:** The contribution aims to explain *mechanistically* why constant high bridge guidance hurts speech fidelity — specifically, why a fixed guidance scale causes degradation by examining how guidance term norms evolve across denoising steps. Paper [1] shows \"guidance is clearly harmful toward the beginning of the chain (high noise levels)\" and restricts guidance to beneficial intervals, but its purpose is to *improve* sampling by limiting guidance intervals, not to mechanistically explain why constant guidance hurts via norm dynamics. Paper [16] analyzes \"stage-wise dynamics of CFG in diffusion models\" and studies how CFG impacts sampling dynamics across stages — this is the closest match, as it seeks to explain *why* CFG behaves differently at different stages. However, [16] focuses on CFG's effect on conditional fidelity in image diffusion, not on a bridge guidance term in speech. More critically, the specific relationship being explained — that a *bridge* guidance term increasingly dominates a combined signal in late steps, hurting speech fidelity — is not established by any prior paper. No prior paper reports the same empirical relationship (bridge guidance norm ratio growing across steps → speech fidelity degradation). This purpose appears uncovered.\n\n**Mechanism:** The mechanism is norm analysis of guidance term dynamics across denoising steps under a fixed guidance scale. Paper [16] analyzes \"stage-wise dynamics\" of CFG and studies how guidance affects sampling at different stages, which is conceptually related. Paper [1] examines guidance effects at different noise levels. Paper [5] analyzes \"non-stationarity and state-dependence of the reverse process\" under constant guidance. However, none of these papers specifically use *norm ratio analysis* of competing guidance terms across timesteps as their analytical primitive. That said, tracking the magnitude/norm of guidance signals across denoising steps is a standard analysis tool used implicitly in papers like [9] (energy of guided output) and [17] (low-frequency signal accumulation). The norm-tracking-across-steps design is a generic analytical move present in spirit across [1], [5], [16]. Paper [16] most directly covers this — it analyzes CFG dynamics stage by stage, which is the same primitive of \"measure guidance signal properties across denoising steps.\" This is COVERED by [16].\n\n**Evaluation:** The evaluation shows a specific norm ratio (1.04 → 1.47) across denoising steps. The design is: compute guidance term norms at each denoising step and report their ratio. This is a per-step signal-magnitude tracking protocol. Paper [16] uses stage-wise analysis of CFG dynamics, and papers like [1] and [5] analyze guidance behavior across timesteps/noise levels. The evaluation design (tracking a guidance-related quantity across denoising steps) is present in [1], [5], and [16]. This is COVERED by [16].\n\n**Domain:** The domain is diffusion guidance analysis. Nearly all prior papers ([1]–[17] range) operate in diffusion model guidance analysis, primarily for image/video generation. The contribution applies this to speech/audio diffusion, but the domain facet rule says the same general application area counts as covered even if the specific sub-problem differs. Diffusion guidance analysis is clearly covered by [1], [2], [3], [4], [5], [8], [9], [16], etc.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 16\nVERDICT evaluation = 16\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper mechanistically explains why constant high bridge guidance specifically hurts speech fidelity; the closest papers (e.g., [1], [16]) address guidance harm in image diffusion at high noise levels or oversaturation, but none provide a mechanistic account in the speech/audio domain linking constant high guidance scale to degraded speech fidelity."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        5,
+        16
+       ]
+      },
+      "mechanism": {
+       "covered_by": 16
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        16,
+        22
+       ]
+      },
+      "single_paper_covers_all": 16
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to mechanistically explain why constant high guidance is harmful by analyzing its dynamics across the denoising process. This objective is covered by prior work that also seeks to explain the failure modes of constant guidance by analyzing its time-varying effects. For example, [5] identifies the \"non-stationarity and state-dependence of the reverse process\" as the reason constant guidance is suboptimal, and [16] explicitly analyzes the \"Stage-wise Dynamics of Classifier-Free Guidance\" to show the sampling process unfolds in distinct stages.\n\n**mechanism**: The mechanism is a \"norm analysis of guidance term dynamics across denoising steps.\" This is an instance of the general analysis method of examining the properties of the guidance signal at different stages of the reverse process to understand its behavior. This analysis method is used in [16], which analyzes the \"Stage-wise Dynamics\" of the sampling process, and implicitly in [5], which analyzes the process to conclude it is \"non-stationarity and state-dependence.\"\n\n**evaluation**: The evaluation design involves measuring the relative strength of guidance components (via a norm ratio) at different denoising steps to show how their influence changes over time. This design—characterizing the sampling process by measuring its properties at different stages—is not new. [16] employs the same evaluation design by analyzing how the sampling process \"unfolds in three successive stages,\" which requires measuring and characterizing the dynamics at different points in the process.\n\n**domain**: The contribution is in the domain of \"diffusion guidance analysis,\" specifically for speech. This general domain is extensively covered by numerous prior papers, including [1] and [16] which analyze guidance for image generation. The specific application to audio/speech is also not new, as seen in [22] which works on \"Speech Enhancement\" using diffusion models.\n\nVERDICT purpose = 5, 16\nVERDICT mechanism = 16\nVERDICT evaluation = 16\nVERDICT domain = 1, 16, 22",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     24
+    ],
+    "mechanism": [
+     4,
+     8,
+     24
+    ],
+    "evaluation": [
+     1,
+     11,
+     24
+    ],
+    "domain": [
+     1,
+     11
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 11
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to show that the temporal allocation of guidance strength, not just its values, determines speech fidelity. This is a specific empirical relationship between guidance scheduling and speech fidelity. None of the prior papers explicitly report or establish this relationship. Papers like [8], [17], [18], [24], and [25] discuss adaptive guidance scheduling or weight schedulers in diffusion models, but they focus on general conditional generation or image fidelity rather than speech fidelity. Papers like [11], [13], and [19] address prosody modeling or classifier guidance in text-to-speech synthesis but do not investigate the temporal allocation of guidance strength or its impact on fidelity. Therefore, no prior paper establishes the same empirical relationship.\n\n#### Mechanism:\nThe mechanism involves a controlled comparison of Step-Down against a constant baseline and Step-Up (same guidance values in reversed order). Papers [8], [17], [18], [24], and [25] discuss adaptive guidance scheduling or weight schedulers in diffusion models, which involve varying guidance strength over time. These mechanisms are substantively equivalent to the contribution's mechanism, as they also explore the impact of temporal guidance allocation on model performance. The specific comparison of Step-Down versus Step-Up is a new experimental instance but does not introduce a fundamentally new mechanism.\n\n#### Evaluation:\nThe evaluation design involves measuring WER improvement and AV-A consistency to validate the impact of guidance scheduling on speech fidelity. Papers [11], [13], and [19] evaluate text-to-speech synthesis models using metrics related to fidelity and naturalness, which are substantively equivalent evaluation designs. Papers [8], [17], [18], [24], and [25] also evaluate guidance scheduling using fidelity-related metrics, though in different domains. The evaluation design is therefore covered, as it reuses standard fidelity metrics and validation frameworks.\n\n#### Domain:\nThe domain is speech fidelity in multimodal synthesis. Papers [11], [13], and [19] work in text-to-speech synthesis, which is the same general application area. While the contribution targets a specific sub-problem (speech fidelity under temporal guidance allocation), this is a narrower instance within the broader domain of text-to-speech synthesis. Therefore, the domain is covered.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = 8  \nVERDICT evaluation = 11  \nVERDICT domain = 11  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses the objective of showing that the temporal allocation of guidance strength, not just its values, determines speech fidelity."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 24
+      },
+      "mechanism": {
+       "covered_by": 24
+      },
+      "evaluation": {
+       "covered_by": 24
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Show that the temporal allocation of guidance strength, not just its values, determines speech fidelity.**\n\nThe purpose is to demonstrate that *when* guidance is applied (temporal scheduling/ordering) matters more than *what* values are used. Paper [24] \"Analysis of Classifier-Free Guidance Weight Schedulers\" explicitly investigates how varying guidance weights throughout the diffusion process affects quality, finding that \"simple, monotonically increasing/decreasing\" schedules matter. Paper [25] notes \"high guidance early in sampling\" has specific effects. Paper [8] addresses \"guidance scheduling--determining the appropriate guidance weight.\" However, these are in image/vision domains and focus on the scheduling question generally. The specific claim that temporal *ordering* (not just values) determines *speech fidelity* is the relationship being established. Paper [24] comes closest — it studies whether the schedule (temporal allocation) of CFG weights matters, which is substantively the same objective at the problem-class level, even if applied to text-to-image rather than speech.\n\n**MECHANISM: Controlled comparison of Step-Down against a constant baseline and against Step-Up (same guidance values in reversed order).**\n\nThe mechanism is a controlled ablation comparing decreasing vs. constant vs. increasing guidance schedules with matched values. Paper [24] conducts \"comprehensive experiments\" on CFG weight schedulers, comparing different schedule shapes. Paper [18] compares annealing (decreasing) guidance scales against alternatives. Paper [17] compares dynamic vs. static CFG schedules. These all use the same design: compare schedule variants (including reversed/mirrored schedules) against baselines. Paper [24] explicitly compares monotonically increasing vs. decreasing schedules — this is the same primitive as Step-Down vs. Step-Up comparison.\n\n**EVALUATION: Step-Down achieves 1.5% WER improvement with AV-A within 1.2%, and outperforms Step-Up by 1.9% despite identical guidance values.**\n\nWER (Word Error Rate) is a standard ASR/speech metric. The evaluation design uses WER as the metric and compares schedule variants. Paper [1] involves speech synthesis evaluation. The specific metric (WER) is standard in speech, and the design (compare schedule variants on a speech benchmark) follows the same evaluation design as papers like [24] which compare CFG schedule variants on standard benchmarks. However, WER applied to TTS/speech synthesis is a standard speech evaluation protocol. Paper [1] mentions speech fidelity evaluation. The evaluation design (benchmark metric comparison of schedule variants) is covered by [24]'s approach of comparing schedulers on standard benchmarks, even though the specific metric and domain differ.\n\n**DOMAIN: Speech fidelity in multimodal synthesis.**\n\nPapers [1], [3], [5], [6], [11], [13], [19] all work in speech synthesis/TTS domains. Paper [1] specifically addresses \"speech fidelity\" in synthesis. This domain is clearly covered.\n\nVERDICT purpose = 24\nVERDICT mechanism = 24\nVERDICT evaluation = 24\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 24
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe purpose is to show that the temporal allocation (schedule) of guidance strength is a key determinant of output quality. This general finding is not new. Several prior papers on diffusion models investigate guidance scheduling, establishing the same relationship. For example, [24] provides an \"Analysis of Classifier-Free Guidance Weight Schedulers,\" explicitly studying how varying the weights over the diffusion process impacts results. Similarly, [25] analyzes the effect of CFG \"with a special emphasis on the guidance schedule.\"\n\n**MECHANISM**\nThe mechanism is a controlled comparison between a \"Step-Down\" schedule (decreasing strength) and a \"Step-Up\" schedule (increasing strength). This experimental design primitive—comparing a monotonically decreasing regimen against a monotonically increasing one—is not new, even if the application to speech guidance is. For instance, [4] uses the exact same design in its \"Comparison of step-down and step-up regimens in ovarian stimulation for IVF.\"\n\n**EVALUATION**\nThe evaluation design consists of a head-to-head comparison of different methods against a baseline, using standard domain-specific metrics like Word Error Rate (WER). This is a standard validation protocol in speech synthesis research. Prior work in the same domain, such as [1], which proposes a method for \"Personalized Speech Synthesis,\" would necessarily use this same evaluation design (comparing a new method to baselines on standard metrics) to validate its claims.\n\n**DOMAIN**\nThe domain is speech fidelity in synthesis. This general application area is well-established and is the subject of numerous prior papers. For example, [1] works on \"Zero-Shot Personalized Speech Synthesis,\" [3] on a \"Practical Text-to-Speech Synthesis System,\" and [5] on \"Unified Voice Synthesis,\" all of which fall into the same general application area.\n\nVERDICT purpose = 24\nVERDICT mechanism = 4\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

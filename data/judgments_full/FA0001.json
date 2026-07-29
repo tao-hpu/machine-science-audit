@@ -1,0 +1,249 @@
+{
+ "paper_id": "FA0001",
+ "title": "Canary-Controlled Safe-Data Interleaving for Reducing Emergent Misalignment",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": [
+     1
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to mitigate emergent misalignment (EM) during fine-tuning by dynamically adjusting defense strength based on the model's real-time risk state, rather than using fixed interleaving ratios. Several prior papers address emergent misalignment, but none propose a dynamic, risk-state-based adjustment mechanism. For example, [1], [2], [5], and [7] discuss emergent misalignment and its mitigation, but they focus on static or mechanistic approaches (e.g., latent blocking in [2] or unlearning in [5]) rather than dynamic, real-time adjustments. No prior paper explicitly shares the purpose of dynamically adapting defense strength to the model's risk state.\n\n### Mechanism\nThe mechanism is a closed-loop, canary-controlled adaptive interleaving framework that evaluates canary prompts during training, computes an EMA-smoothed risk estimate, and adjusts the safe-data interleaving ratio via a threshold-based policy with hysteresis. While [13] and [15] describe interleaving-based control frameworks, they are in unrelated domains (vehicle stability and optimal control) and do not involve canary prompts, risk estimation, or hysteresis policies. Similarly, [16] uses canaries for exploitability evaluation, but this is unrelated to adaptive interleaving or fine-tuning alignment. No prior paper combines these elements into a substantively equivalent mechanism.\n\n### Evaluation\nThe evaluation uses the Security EM benchmark with Qwen2.5-7B-Instruct, achieving a 25% relative improvement in General %Misaligned compared to fixed interleaving. While the specific benchmark instance (Security EM) and model (Qwen2.5-7B-Instruct) are new, the evaluation design — measuring misalignment reduction on a benchmark with a fixed metric — is not novel. For example, [1], [2], [5], and [10] all evaluate misalignment mitigation using similar benchmark-based designs, even if the specific benchmarks or models differ. Thus, the evaluation design is covered.\n\n### Domain\nThe domain is LLM safety and fine-tuning alignment. This is a well-established area, with numerous prior papers ([1], [2], [5], [7], [8], [9], etc.) addressing emergent misalignment and safety in fine-tuning. While this contribution targets a specific sub-problem (dynamic risk-based adjustment), it remains within the broader domain of LLM safety and alignment.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses mitigating emergent misalignment during fine-tuning by dynamically adjusting defense strength based on real-time risk state.  \nFACET: mechanism | FINAL: NONE | reason: No prior paper describes a closed-loop, canary-controlled adaptive interleaving framework with EMA-smoothed risk estimates and a threshold-based policy with hysteresis."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Mitigates emergent misalignment (EM) during fine-tuning by adjusting defense strength to the model's real-time risk state instead of using fixed interleaving ratios.**\n\nPaper [1] presents \"the first systematic study\" of in-training defenses against EM, and explicitly studies safe-data interleaving as a defense mechanism. However, the contribution's specific purpose is *adaptive* adjustment based on real-time risk state vs. fixed ratios. Paper [1] covers fixed interleaving as a defense but does not pursue the objective of making it adaptive/dynamic. Papers [2], [5], [8], [11] address EM mitigation but via different mechanisms (latent blocking, unlearning, backdoor alignment). None of the prior papers specifically pursue the objective of \"adjust defense strength dynamically based on real-time risk monitoring during fine-tuning.\" Paper [1] is the closest — it studies interleaving as a defense — but its purpose is characterizing/comparing fixed defenses, not replacing fixed ratios with adaptive ones. The specific gap being closed (fixed vs. adaptive interleaving ratio) is not covered by any prior paper.\n\n**PURPOSE verdict: NONE**\n\n---\n\n**MECHANISM: Closed-loop canary-controlled adaptive interleaving framework — evaluates canary prompts during training, computes EMA-smoothed risk estimate, adjusts safe-data interleaving ratio via threshold-based policy with hysteresis.**\n\nThis mechanism has several sub-components:\n- **Canary probing during training**: Paper [16] (CanaryExp) uses canary-based techniques but for binary vulnerability exploitation, not LLM training monitoring. No prior paper uses canary prompts to monitor model risk state during fine-tuning.\n- **EMA-smoothed risk estimate**: EMA is a generic signal-processing primitive, but no prior paper applies it to monitor alignment risk during training.\n- **Adaptive interleaving ratio**: Paper [1] uses fixed interleaving. Paper [15] uses \"interleaved training method\" in adaptive dynamic programming for control systems — different domain entirely. Paper [13] uses \"interleaved predictive control\" for vehicle stability — again different domain.\n- **Threshold-based policy with hysteresis**: Paper [13] mentions hysteresis in a steering control context. Paper [19] uses adaptive sliding mode control. These are control-systems papers, not LLM training.\n\nThe combination of canary probing + EMA risk estimation + threshold/hysteresis-based adaptive interleaving ratio adjustment as a closed-loop system during LLM fine-tuning is not present in any prior paper. The closest structural analog would be closed-loop adaptive control (papers [13], [19], [20]) but applied to entirely different domains. Per the cross-domain equivalence rule, I must check if the underlying primitive is the same. The mechanism here is \"monitor a system's state via probe signals, smooth the estimate, and adjust a parameter via threshold+hysteresis policy\" — this IS structurally similar to adaptive control loops in [13]/[19]. However, the specific primitive of using *canary prompts* to estimate *alignment risk* and feeding back into *data mixing ratio* is distinct from vehicle/electrolyzer control. The generic closed-loop adaptive control primitive does appear in [13] and [19], but the specific instantiation (canary probes → EMA risk → interleaving ratio) is not covered.\n\nActually, applying the cross-domain equivalence rule strictly: \"closed-loop feedback control adjusting a parameter based on a smoothed state estimate with hysteresis\" IS the same primitive as in [13] (interleaved predictive control with hysteresis for steering). This is a borderline call, but the contribution's mechanism is specifically about *what* is being monitored (canary prompts for alignment risk) and *what* is being adjusted (safe data ratio), which together form a novel instantiation. The generic feedback-control primitive is covered by [13], but the canary-based risk monitoring component is not.\n\nI'll mark this NONE since no prior paper combines canary-based alignment monitoring with adaptive interleaving in LLM training.\n\n**MECHANISM verdict: NONE**\n\n---\n\n**EVALUATION: Security EM benchmark with Qwen2.5-7B-Instruct, %Misaligned metric, comparison against fixed interleaving baseline.**\n\nPaper [1] uses the Security EM benchmark and %Misaligned metric (it introduces the systematic study of EM defenses). Paper [6] evaluates Qwen2.5 family models on EM benchmarks. The evaluation design — using the Security EM benchmark with %Misaligned as the metric — is established in prior work ([1], [3], [6]). The contribution applies the same benchmark family and metric semantics to evaluate a new defense method. Per the special rule, reusing an existing evaluation design counts as COVERED.\n\n**EVALUATION verdict: 1**\n\n---\n\n**DOMAIN: LLM safety / fine-tuning alignment**\n\nPapers [1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12] all operate in LLM safety / fine-tuning alignment. This domain is clearly covered.\n\n**DOMAIN verdict: 1**\n\n---\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: Paper [1] studies in-training defenses against EM but does not describe adjusting defense strength to a model's real-time risk state instead of fixed interleaving ratios; no prior paper matches the specific objective of dynamic, risk-adaptive defense calibration during fine-tuning.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes a closed-loop system combining canary prompt evaluation during training, EMA-smoothed risk estimation, and threshold-based hysteresis control over safe-data interleaving ratios; papers [9]/[11] use backdoor-enhanced safety alignment, [1] uses fixed interleaving, and no other paper contains any equivalent closed-loop adaptive interleaving mechanism under any terminology."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     4,
+     8
+    ],
+    "evaluation": [
+     8,
+     14,
+     15
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to establish that adaptive interleaving outperforms fixed-ratio safe-data interleaving in both mean misalignment and stability. None of the prior papers explicitly report or establish this specific empirical relationship. Papers [1], [3], [5], [8], [10], [11], [14], and [15] discuss safety alignment, misalignment, or fine-tuning strategies, but none of them directly compare adaptive interleaving to fixed-ratio interleaving or demonstrate its superiority in terms of misalignment and stability. Papers [6], [7], and [12] discuss mixed- versus fixed-ratio schedules, but these are in unrelated contexts (e.g., reinforcement schedules in animals or children) and do not address LLM safety or fine-tuning alignment.\n\n### Mechanism\nThe mechanism involves an empirical comparison of the canary-controlled method against a fixed 5% interleaving baseline across multiple seeds on the Security EM benchmark. Papers [6], [7], and [12] describe mechanisms for comparing mixed- versus fixed-ratio schedules, but these are in unrelated domains (e.g., reinforcement schedules in animals or children) and do not involve LLM safety or fine-tuning alignment. None of the other papers describe a substantively equivalent mechanism for comparing adaptive interleaving to fixed-ratio interleaving in the context of LLM safety. Thus, the mechanism is not covered.\n\n### Evaluation\nThe evaluation design involves comparing General %Misaligned and cross-seed variance between adaptive and fixed interleaving methods. Papers [1], [3], [5], [8], [10], [11], [14], and [15] evaluate misalignment in LLMs, but none of them use the specific evaluation design of comparing adaptive interleaving to fixed interleaving. However, the evaluation design itself — comparing performance metrics (e.g., misalignment rates) across different methods or configurations — is a standard approach in LLM safety research. For example, [8] evaluates misalignment across varying data ratios, and [15] evaluates misalignment using narrowly misaligned datasets. Therefore, the evaluation design is covered.\n\n### Domain\nThe domain is LLM safety and fine-tuning alignment. Papers [1], [3], [5], [8], [10], [11], [14], and [15] all operate in the same general application area of LLM safety and fine-tuning alignment. While the specific problem of adaptive versus fixed interleaving is new, the domain itself is not. Thus, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 8  \nVERDICT domain = 1  ",
+      "stage2": "1. **FACET: purpose** | **FINAL: NONE** | reason: No prior paper establishes the specific empirical relationship that adaptive interleaving outperforms fixed-ratio safe-data interleaving in both mean misalignment and stability. No equivalent objective was found under different terminology or framing.\n\n2. **FACET: mechanism** | **FINAL: COVERED-BY 8** | reason: The phrase *\"We evaluate gpt-4o models fine-tuned with varying ratios (10\\% to 90\\% correct) of both observed and synthetic data on the Security EM benchmark\"* in [8] describes an empirical comparison of methods (including fixed-ratio baselines) on the Security EM benchmark, satisfying the same facet-specific standard."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "**Purpose:** The contribution establishes that adaptive interleaving outperforms fixed-ratio safe-data interleaving in both mean misalignment and stability. I need to find a prior paper that reports or establishes the same empirical relationship — that adaptive/dynamic scheduling outperforms fixed-ratio scheduling in the context of safe-data interleaving during LLM fine-tuning. Papers [1], [3], [4], [8] deal with safe data interleaving or safety-capability trade-offs in fine-tuning, but none specifically compare adaptive vs. fixed-ratio interleaving schedules and establish that adaptive is better in both mean and variance of misalignment. Paper [8] investigates varying ratios of correct/incorrect data but does not compare adaptive vs. fixed scheduling. No prior paper establishes this specific relationship (adaptive > fixed in mean misalignment AND variance).\n\n**Mechanism:** The mechanism is an empirical comparison of a canary-controlled adaptive method against a fixed 5% interleaving baseline across multiple seeds on a Security EM benchmark. This is a controlled multi-seed ablation/substitution experiment comparing two scheduling strategies. Papers [8] compares different fixed ratios of data mixing but does not use a canary-controlled adaptive method. Papers [1], [4] compare safety methods but not adaptive vs. fixed interleaving with canary signals. No prior paper uses this specific mechanism (canary-controlled adaptive interleaving vs. fixed baseline, multi-seed). However, the mechanism as an analysis design — multi-seed comparison of two training data mixing strategies — is a generic experimental shape. The canary-controlled method is the novel primitive here. No prior paper covers this specific mechanism.\n\n**Evaluation:** The evaluation design uses the Security EM benchmark with %Misaligned metric and cross-seed variance comparison. The Security EM benchmark and %Misaligned metric appear in the emergent misalignment literature (papers [5], [10], [14], [15] reference emergent misalignment evaluation). Paper [14] and [15] use emergent misalignment benchmarks with similar metric semantics (%misaligned responses). This evaluation design (LLM fine-tuning safety benchmark measuring %misaligned outputs across seeds) is used in prior work on emergent misalignment. The specific Security EM benchmark with %Misaligned metric is used in papers like [5], [10], [14], [15].\n\n**Domain:** The domain is LLM safety / fine-tuning alignment. This is clearly covered by numerous prior papers: [1], [2], [3], [4], [5], [8], [10], [14], [15] all work in LLM safety and fine-tuning alignment.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 14\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper establishes that adaptive interleaving outperforms fixed-ratio safe-data interleaving in both mean misalignment and stability; the closest papers (e.g., [8]) vary interleaving ratios but never compare adaptive vs. fixed-ratio methods on these specific outcome dimensions.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes an empirical comparison of a canary-signal-controlled adaptive interleaving method against a fixed 5% interleaving baseline across multiple seeds on a Security EM benchmark; none of the prior works use canary probes to drive dynamic data mixing decisions evaluated this way."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 15
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose:** The contribution's purpose is to establish that an adaptive/variable data interleaving strategy outperforms a fixed-ratio one. This exact finding, that \"mixed- versus fixed-ratio schedules\" result in superior outcomes (preference/performance), is a classic result from behavioral psychology, established by prior work such as [6] and [12].\n\n**mechanism:** The mechanism is an empirical comparison of a proposed method against a fixed baseline on a benchmark, repeated across multiple seeds to assess stability. This is a standard experimental design, used for example in [4] which proposes \"Antidote\" and evaluates it against existing defenses (baselines) to show its superiority.\n\n**evaluation:** The evaluation design uses the \"Security EM benchmark\" and a metric of \"%Misaligned\". This benchmark belongs to the family of \"Emergent Misalignment\" (EM) evaluations, which is the explicit topic of several prior papers like [15], which focuses on creating \"model organisms\" and datasets for studying EM.\n\n**domain:** The domain is \"LLM safety / fine-tuning alignment\". Numerous prior papers operate in this exact application area, including [1] (\"Anchoring Safety During LLM Fine-Tuning\"), [3] (\"safety-capability trade-offs in fine-tuning\"), and [4] (\"Post-fine-tuning Safety Alignment\").\n\nVERDICT purpose = [6]\nVERDICT mechanism = [4]\nVERDICT evaluation = [15]\nVERDICT domain = [1]",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     3,
+     6
+    ],
+    "evaluation": null,
+    "domain": [
+     6
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to isolate the source of improvement, showing that adaptive timing itself matters beyond the average amount of safe data used. None of the prior papers explicitly establish this empirical relationship. While several papers discuss adaptive mechanisms or scheduling (e.g., [5], [17], [18], [26]), they do not isolate the specific effect of adaptive timing independent of safe-data volume. Papers like [6], [16], and [21] focus on curriculum learning or adaptive scheduling but do not demonstrate the same empirical relationship between adaptive timing and performance improvement.\n\n### Mechanism\nThe mechanism involves ablation studies comparing adaptive timing against fixed-timing variants with identical safe-data volume and removing EMA smoothing and hysteresis from the controller. Papers like [5] and [18] discuss dynamic scheduling policies, and [26] uses reinforcement learning for reactive scheduling, but none of these papers employ the specific ablation design to isolate adaptive timing effects or analyze EMA smoothing and hysteresis in controllers. The mechanism design appears unique.\n\n### Evaluation\nThe evaluation design compares fixed-timing variants showing 36% worse performance despite identical safe-data volume and demonstrates the critical role of EMA smoothing and hysteresis for stable controller behavior. Papers like [5], [18], and [26] use dynamic scheduling evaluations, but none employ the same evaluation design to validate adaptive timing effects or controller stability. The evaluation design appears uncovered.\n\n### Domain\nThe domain is LLM safety and fine-tuning alignment. Papers like [6], [16], and [21] address curriculum learning and adaptive scheduling in LLM training, which falls within the same general application area of LLM alignment and safety. Although the specific sub-problem differs, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 6  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper isolates adaptive timing's impact beyond safe-data volume using the same empirical relationship.  \nFACET: mechanism | FINAL: COVERED-BY 3 | reason: \"Ablation studies comparing adaptive timing against fixed-timing variants with identical safe-data volume\" aligns with \"learning optimal control policies from scratch can be inefficient and therefore testing adaptive methods.\"  \nFACET: evaluation | FINAL: NONE | reason: No prior paper demonstrates fixed-timing variants performing 36% worse or critical EMA smoothing/hysteresis for stability with the same claim.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**PURPOSE: Isolates the source of improvement, showing adaptive timing itself matters beyond the average amount of safe data used.**\n\nThis is a very specific empirical claim: that the *timing* of safe data injection (adaptive vs. fixed) matters independently of the *quantity* of safe data. I need to find a prior paper that establishes this same relationship — same variables (timing vs. quantity), same direction (timing matters beyond quantity). Papers [3] and [4] involve safe curriculum learning but focus on safety in RL/UAV control, not on isolating timing vs. quantity of safe data in LLM fine-tuning. Paper [6] involves adaptive curriculum for LLMs but focuses on difficulty scheduling, not isolating timing from quantity. No prior paper establishes the specific empirical relationship that adaptive timing contributes independently of safe-data volume in an LLM alignment context.\n\n**MECHANISM: Ablation studies comparing adaptive timing against fixed-timing variants with identical safe-data volume, and removing EMA smoothing and hysteresis from the controller.**\n\nThe mechanism is a controlled ablation design: hold quantity constant, vary timing; then remove specific controller components (EMA, hysteresis). This is a standard ablation/component-removal design. Papers [6], [16], [21] use ablation studies in LLM training contexts. However, per the finding-type rules, the mechanism is judged at design level — controlled ablation comparing variants with one variable held constant appears in many papers. Paper [6] performs ablations on curriculum components. Paper [16] performs ablations on scheduling components. These are standard ablation designs that appear across the prior work.\n\n**EVALUATION: Fixed-timing variants show 36% worse performance despite identical safe-data volume; EMA smoothing and hysteresis shown critical.**\n\nThe evaluation design here is: iso-compute/iso-data ablation comparison (hold one variable constant, measure performance difference). This is a generic ablation shape. Per the special rule, generic experimental moves like ablation/substitution don't establish coverage unless validating the same claim. The specific claim (timing vs. quantity in LLM safety fine-tuning) is not validated in any prior paper. No prior paper uses this specific evaluation design for this claim.\n\n**DOMAIN: LLM safety / fine-tuning alignment.**\n\nPaper [6] works on instruction tuning of LLMs. Paper [16] works on RL-based LLM post-training. Paper [21] works on LLM reasoning training. These all operate in the LLM training/fine-tuning area. The domain of LLM fine-tuning/alignment is clearly covered by papers [6], [16], and [21].\n\nVERDICT purpose = NONE\nVERDICT mechanism = 6\nVERDICT evaluation = NONE\nVERDICT domain = 6",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper isolates adaptive timing as the independent variable controlling improvement beyond average safe-data volume; the closest candidates (papers [3],[4]) address safe curriculum scheduling but never perform a controlled comparison holding data volume constant while varying timing adaptivity.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports a fixed-timing ablation showing ~36% performance degradation at matched data volume, nor names or evaluates EMA smoothing and hysteresis as stabilization mechanisms for a safety-gating controller; these specific quantitative and mechanistic claims appear nowhere in the prior works under any alternative terminology."
+     }
+    }
+   }
+  }
+ ]
+}

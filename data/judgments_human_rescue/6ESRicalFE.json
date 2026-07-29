@@ -1,0 +1,288 @@
+{
+ "paper_id": "6ESRicalFE",
+ "title": "LLM Unlearning via Loss Adjustment with Only Forget Data",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     14
+    ],
+    "evaluation": [
+     2,
+     15
+    ],
+    "domain": [
+     1,
+     4,
+     5,
+     7,
+     9,
+     10,
+     11,
+     13,
+     14,
+     15,
+     17
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        4,
+        5,
+        7,
+        9,
+        10,
+        11,
+        13,
+        14,
+        15,
+        17
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to eliminate the dependency of LLM unlearning methods on retain data or reference models, which blur the boundary between forget and retain data and increase training costs. Paper [1] explicitly mentions the conventional LLM unlearning task involving retain documents and reference models, but it does not propose eliminating this dependency. Paper [17] addresses the limitation of relying solely on negative feedback for unlearning but does not focus on removing retain/reference dependencies. No prior paper explicitly targets the same objective of removing retain/reference dependencies in LLM unlearning.\n\n### Mechanism\nThe mechanism, FLAT (Forget data only Loss AdjustmenT), adjusts the loss using only forget data and pairs each forget sample with a template/example response (e.g., \"I don't know\"), avoiding retain data or reference models. Paper [4] mentions unlearning methods requiring only negative examples (harmful data) but does not describe a mechanism equivalent to FLAT's loss adjustment using forget data templates. Paper [17] introduces an alternate optimization approach but still relies on negative feedback and does not match FLAT's primitive. No prior paper describes a substantively equivalent mechanism.\n\n### Evaluation\nThe evaluation design involves qualitative comparison (Table 1) showing FLAT as the only loss-adjustment method that avoids retain data and reference models. Paper [2] focuses on refining evaluation frameworks for LLM unlearning but does not use the same qualitative comparison design. Paper [1] evaluates unlearning methods but does not use a comparison design highlighting independence from retain/reference data. No prior paper employs the same evaluation design.\n\n### Domain\nThe domain is LLM machine unlearning. Papers [1], [4], [5], [7], [9], [10], [11], [13], [14], [15], and [17] all work in the general area of LLM unlearning, even if they target different specific sub-problems or datasets. Therefore, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [1, 4, 5, 7, 9, 10, 11, 13, 14, 15, 17]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses removing retain data or reference model dependency to avoid blurred forget/retain boundaries and increased training costs.  \nFACET: mechanism | FINAL: NONE | reason: No prior paper proposes a loss adjustment method using only forget data with template/example responses, without retain data or reference model.  \nFACET: evaluation | FINAL: NONE | reason: No prior paper provides a comparative evaluation showing a method that avoids both retain data and reference model dependency in loss adjustment.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\n\nThe purpose is: eliminate dependency on retain data and reference LLM in LLM unlearning, to avoid blurring forget/retain boundaries and reduce training cost.\n\nLooking through the papers:\n- [1] explicitly uses retain documents and a reference model (logit difference approach), but doesn't address eliminating this dependency\n- [4] \"only requires negative (e.g. harmful) examples\" — this is close, as it mentions only needing forget-side data, but the purpose framing is about alignment, not specifically about eliminating retain/reference dependencies\n- [11] NPO uses negative preference optimization without a reference model in some formulations, but still relies on retain data concepts\n- [14] \"Towards Natural Machine Unlearning\" addresses relabeling-based methods but still uses retain data\n- [15] \"Label-Agnostic Forgetting\" aims for \"supervision-free unlearning\" and explicitly states methods \"typically rely on complete supervision throughout the unlearning process\" and aims to remove that dependency — this is substantively equivalent in purpose: removing the need for supervision/retain data labels during unlearning\n\nPaper [15] states the goal of removing reliance on supervision for both forgetting and remaining data, which partially overlaps. However, [15] focuses on label supervision, not specifically on retain data + reference model dependency in LLM unlearning. The specific combination (no retain data AND no reference model, in LLM context) doesn't appear to be directly covered. Paper [4] mentions only needing negative examples, which touches on no-retain-data, but doesn't address reference model dependency specifically.\n\nNo prior paper precisely targets the combined objective of eliminating both retain data AND reference model dependencies in LLM unlearning. NONE is appropriate.\n\n## Mechanism\n\nThe mechanism is: loss adjustment using only forget data, with a template/example response (e.g., 'I don't know') paired with each forget sample — no retain data or reference model needed.\n\n- [4] LLM unlearning uses gradient ascent on forget data only, but doesn't use template responses\n- [11] NPO uses negative preference optimization; it uses a reference model for KL divergence\n- [14] \"Natural Machine Unlearning\" uses relabeling with incorrect labels — similar in spirit (pairing forget data with a new response), but uses incorrect labels rather than a template like 'I don't know'\n- [17] \"Alternate Preference Optimization\" pairs forget data with negative feedback and uses template-like responses, but still uses a reference model\n- [15] uses supervision-free approach but through different mechanism (not template responses)\n\nPaper [14] is the closest: it modifies forget data with new labels and fine-tunes. The \"I don't know\" template response is conceptually similar to relabeling. However, [14] still uses retain data in its framework. The specific primitive of \"pair each forget sample with a fixed template response and do standard fine-tuning loss, with no retain data or reference model\" — [4] mentions using only negative examples with gradient ascent, but the template-response pairing mechanism is distinct from gradient ascent.\n\nPaper [14] uses relabeling (pairing forget data with incorrect labels) which is mechanistically similar to pairing with 'I don't know'. This seems covered at the primitive level.\n\n## Evaluation\n\nThe evaluation is a qualitative Table 1 comparison showing FLAT is the only method not requiring retain data or reference model among loss-adjustment methods.\n\nThis is a standard comparison table/taxonomy of methods — this design (comparing methods on properties like data requirements) appears in survey/comparison papers. [2] \"Towards Effective Evaluations and Comparisons for LLM Unlearning Methods\" explicitly does comparative evaluation of LLM unlearning methods. [3] is a survey that compares methods. This evaluation design (property comparison table) is standard and appears in [2] and [3].\n\n## Domain\n\nThe domain is LLM machine unlearning. Papers [1], [2], [3], [4], [11], [17] all work in LLM unlearning explicitly.\n\n---\n\n**Purpose:** No prior paper specifically targets eliminating both retain data AND reference model dependencies as the primary objective in LLM unlearning. NONE.\n\n**Mechanism:** Paper [14] uses relabeling (pairing forget data with new target responses) as the core primitive, which is substantively equivalent to pairing forget data with template responses like 'I don't know'. The underlying primitive is the same: replace the forget sample's target with a fixed alternative response and fine-tune.\n\n**Evaluation:** Paper [2] explicitly performs comparative evaluation of LLM unlearning methods, and [3] provides survey-style comparison tables. The design of a property-comparison table is covered.\n\n**Domain:** Papers [1], [2], [4], [11], [17] all work in LLM machine unlearning.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 14\nVERDICT evaluation = 2\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of eliminating dependence on *both* retain data *and* a reference LLM specifically to avoid blurring the forget/retain boundary and reducing training cost. Paper [1] uses retain documents explicitly; [11] and [17] still rely on reference models or negative preference signals; no paper quotes a goal matching \"remove dependence on retain data or reference LLM to avoid blurring forget/retain boundaries.\""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 15
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to remove the dependency on retain data or a reference model in LLM unlearning to reduce complexity and cost. This is substantively equivalent to the purpose of prior work aiming to simplify unlearning data requirements. Paper [4] covers this by proposing an unlearning method that \"only requires negative (e.g. harmful) examples, which are much easier and cheaper to collect,\" directly addressing the same objective of unlearning with only the \"forget\" set.\n\n**mechanism**: The proposed mechanism is to fine-tune the model on \"forget\" data, where each sample is paired with a generic template response (e.g., 'I don't know'). This is an instance of a known unlearning primitive. Paper [14] describes this exact mechanism class as a \"mainstream of relabeling-based MU methods\" which \"involves modifying the forgetting data with incorrect labels and subsequently fine-tuning the model.\" Using a template response is a specific form of this relabeling and fine-tuning approach.\n\n**evaluation**: The evaluation is a qualitative comparison table highlighting that the proposed method is the only one in its class that does not require retain data or a reference model. This evaluation *design* — a qualitative feature comparison to demonstrate reduced dependencies — is not new. Paper [15] uses the same design to argue for its novelty, contrasting its \"Supervision-Free Unlearning\" against prior methods that \"typically rely on complete supervision throughout the unlearning process.\"\n\n**domain**: The application domain is machine unlearning for large language models. This is a well-established domain explicitly addressed by numerous prior papers. For example, paper [1] is titled \"An Efficient LLM Unlearning Framework\" and operates in the exact same domain.\n\nVERDICT purpose = 4\nVERDICT mechanism = 14\nVERDICT evaluation = 15\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     4,
+     14
+    ],
+    "mechanism": [
+     6
+    ],
+    "evaluation": [
+     10
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to theoretically optimize the balance between forgetting quality and model utility without relying on retain data or reference models. Paper [4] discusses balancing the dual objectives of effective erasure and maintaining model performance in machine unlearning, which aligns with the same problem-class level objective. Paper [9] also addresses the dual goals of forgetting specified knowledge while retaining other knowledge, which is substantively equivalent to the purpose described here. Both papers share the same high-level objective of balancing forgetting and utility.\n\n### Mechanism\nThe contribution's mechanism involves maximizing the f-divergence between template responses and forget responses, using its variational form to reweight template learning and forget objectives with different importance weights, supported by theoretical guarantees. Papers [6], [7], [21], and [26] all discuss variational representations of f-divergence minimization or optimization, which is substantively equivalent to the mechanism described here. Specifically, [6] and [26] explore variational methods for training probabilistic models using f-divergence, while [7] and [21] provide theoretical foundations and applications of f-divergence minimization. These prior works cover the underlying primitive of using variational f-divergence optimization.\n\n### Evaluation\nThe evaluation facet involves qualitative validation of the reweighting mechanism and theoretical guarantees, with comparisons to DPO focusing on activation functions, token loss aggregation, and logarithmic transformations. Papers [10], [13], [19], [20], and [28] all use DPO or generalized preference optimization frameworks for evaluation, which matches the evaluation design described here. These papers employ similar evaluation setups, including comparisons of reweighting mechanisms and loss formulations, making the evaluation design covered.\n\n### Domain\nThe contribution operates in the domain of machine unlearning for large language models (LLMs). Papers [1], [3], [4], [9], [11], [14], and [18] all address machine unlearning in the context of LLMs, which is substantively equivalent to the application area described here. These prior works cover the general domain of LLM unlearning, even if specific sub-problems or datasets differ.\n\n---\n\nVERDICT purpose = 4  \nVERDICT mechanism = 6  \nVERDICT evaluation = 10  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 14
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\n\nThe purpose is: \"theoretically derive how to optimally balance forgetting quality and model utility without retain data or reference model.\"\n\nPaper [14] addresses \"zero-shot unlearning scenario, whereby an unlearning algorithm must be able to remove data given only a trained model and the data to be forgotten\" and explores information-theoretic approaches to balance forgetting and model performance. This is close but focuses on information-theoretic framing rather than the specific \"no retain data/no reference model + theoretical optimality of balance\" framing.\n\nPaper [1] discusses \"eliminating undesirable data influence while maintaining the integrity of essential knowledge\" — the dual objective is present but no theoretical optimality without retain data.\n\nPaper [4] addresses \"balancing between the dual objectives of unlearning\" but uses a learning-to-unlearn framework with retain data.\n\nPaper [14] is the closest: zero-shot (no retain data), information-theoretic, balance forgetting and utility. This substantially overlaps with the purpose of theoretically characterizing the optimal balance without retain data/reference model.\n\n## Mechanism\n\nThe mechanism is: \"maximize f-divergence between template response and forget response; variational form assigns different importance weights to template learning term and forget unlearning term, with theoretical guarantees.\"\n\nPaper [6] presents \"Variational f-divergence Minimization\" — a general variational method for training probabilistic models using f-divergences. Paper [26] covers f-GAN training via variational divergence minimization. Paper [21] discusses \"tighter variational representations of f-divergences.\" Paper [27] covers properties of f-divergences and f-GAN training.\n\nHowever, none of these apply f-divergence maximization between template and forget responses in an unlearning context with differential importance weighting. The specific combination — f-divergence between template/forget responses as the unlearning objective, with variational form yielding reweighting — is not present. Papers [6], [26], [21], [27] cover the variational f-divergence primitive generically, which is the core mathematical mechanism here.\n\nPaper [10] (GPO) uses a general class of convex functions to unify preference optimization, which is structurally related to f-divergence-based reweighting in alignment. Paper [19] uses importance sampling for preference optimization.\n\nThe variational f-divergence primitive is covered by [6] and [26]. The reweighting interpretation from variational form is covered by [6]/[26]. The application to unlearning with template vs. forget responses is new, but the underlying primitive (variational f-divergence → importance weights) is in [6].\n\n## Evaluation\n\nThe evaluation is described as: qualitative/theoretical — showing the variational form gives a reweighting mechanism with theoretical guarantees, and comparing with DPO on three specific technical differences (reweighting activation function, token loss sum vs. average, log vs. no log).\n\nThis is primarily a theoretical/analytical evaluation comparing formulas. Paper [10] (GPO) performs exactly this kind of analytical comparison — showing DPO, IPO, SLiC as special cases of a unified framework, comparing their mathematical forms. Paper [28] also does \"new desiderata for DPO\" with analytical comparison of variants. This evaluation design (theoretical unification + formula-level comparison with DPM variants) is covered by [10].\n\n## Domain\n\nThe domain is LLM machine unlearning. Papers [1], [2], [3], [9], [14] all explicitly work in LLM machine unlearning.\n\nVERDICT purpose = 14\nVERDICT mechanism = 6\nVERDICT evaluation = 10\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     5
+    ],
+    "mechanism": [
+     2,
+     4,
+     9,
+     11
+    ],
+    "evaluation": [
+     12,
+     13,
+     16
+    ],
+    "domain": [
+     5,
+     7,
+     12,
+     13,
+     20
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": [
+        2,
+        4,
+        9,
+        11
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        12,
+        13,
+        16
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        5,
+        7,
+        12,
+        13,
+        20
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Facet Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to validate that FLAT achieves a balance between forgetting efficiency and model utility across various forgetting tasks.  \n- Paper [5] discusses an efficient LLM unlearning framework that aims to balance forgetting specific knowledge while retaining other knowledge, which aligns with the same objective of balancing forgetting efficiency and model utility.  \n- Paper [13] introduces KnowUnDo, which evaluates unlearning paradigms for LLMs with a focus on retaining non-targeted knowledge while erasing specific knowledge, addressing the same purpose.  \n\n**Conclusion:** Papers [5] and [13] share the same purpose at the problem-class level.  \n\n---\n\n#### Mechanism:\nThe contribution compares FLAT against strong baselines (GA/KL/GD/NPO/Mismatch/PO/LLMU/DPO) using four types of f-divergence (TV/JS/Pearson/KL).  \n- Paper [2] generalizes Direct Preference Optimization (DPO) with diverse divergence constraints, including KL divergence, which overlaps with the mechanism of using f-divergences for optimization.  \n- Paper [4] focuses on discriminative estimation of f-divergences, which directly relates to the use of f-divergences as technical primitives.  \n- Paper [9] discusses deriving f-divergence inequalities and bounds, which is substantively equivalent to the use of f-divergences in the contribution.  \n- Paper [11] explores properties of f-divergences and their application in f-GAN training, which is equivalent to the mechanism of leveraging f-divergences for optimization.  \n\n**Conclusion:** Papers [2], [4], [9], and [11] cover the mechanism.  \n\n---\n\n#### Evaluation:\nThe contribution evaluates FLAT on benchmarks like Harry Potter (OPT-2.7B), MUSE-News, and TOFU (Llama2-7B/Phi-1.5B/OPT-2.7B), demonstrating FLAT's performance across three main metrics and conducting ablation studies.  \n- Paper [12] evaluates unlearning techniques on the Harry Potter dataset using Llama2-7B, which matches the evaluation design of using LLM-based benchmarks for unlearning tasks.  \n- Paper [13] introduces KnowUnDo, a benchmark for evaluating unlearning paradigms in LLMs, which aligns with the evaluation design of using benchmarks to assess unlearning performance.  \n- Paper [16] revisits the Harry Potter unlearning task and introduces targeted unlearning criteria, which matches the evaluation design of using benchmarks to validate unlearning methods.  \n\n**Conclusion:** Papers [12], [13], and [16] share the same evaluation design.  \n\n---\n\n#### Domain:\nThe contribution operates in the domain of copyright content forgetting and entity forgetting.  \n- Paper [5] addresses LLM unlearning for privacy and copyright concerns, which aligns with the domain of copyright content forgetting.  \n- Paper [7] focuses on machine unlearning in facial recognition systems, which involves entity forgetting, matching the domain.  \n- Paper [12] evaluates unlearning copyrighted content (Harry Potter) in LLMs, which directly overlaps with the domain of copyright content forgetting.  \n- Paper [13] evaluates unlearning paradigms for copyrighted content and user privacy domains, which matches the domain of copyright content forgetting and entity forgetting.  \n- Paper [20] discusses sequential unlearning of copyrighted content in LLMs, which aligns with the domain of copyright content forgetting.  \n\n**Conclusion:** Papers [5], [7], [12], [13], and [20] cover the domain.  \n\n---\n\n### Verdicts:\nVERDICT purpose = 5  \nVERDICT mechanism = 2, 4, 9, 11  \nVERDICT evaluation = 12, 13, 16  \nVERDICT domain = 5, 7, 12, 13, 20  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 12
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: 验证 FLAT 在多种遗忘任务上兼顾遗忘效率与模型效用**\n\nThe purpose is to demonstrate that a specific unlearning method (FLAT) achieves both forgetting effectiveness and model utility preservation across multiple unlearning task types. Papers [5] (RKLD/logit difference framework), [12] (Harry Potter unlearning), [16] (targeted unlearning), [20] (copyright unlearning), [29] (RKLD for personal info unlearning) all pursue the same objective: showing that an LLM unlearning method balances forgetting and utility. Paper [5] explicitly states \"The target LLM should forget the knowledge... and it should retain the other knowledge.\" This is the same problem-class objective — demonstrating a new unlearning method achieves both forgetting and retention — just with a different method (FLAT vs. their respective methods). Paper [22] surveys this exact balance as the central challenge. The purpose is COVERED.\n\n**MECHANISM: 对比 GA/KL/GD/NPO/Mismatch/PO/LLMU/DPO 等强基线，用四种 f-divergence（TV/JS/Pearson/KL）**\n\nThe mechanism involves using multiple f-divergences (TV, JS, Pearson, KL) as the technical primitive for unlearning. Paper [2] \"Beyond Reverse KL: Generalizing Direct Preference Optimization with Diverse Divergence Constraints\" explicitly generalizes DPO using diverse f-divergences including KL, JS, and others for LLM alignment. Paper [10] discusses f-divergence properties. Papers [4], [9], [10], [11] cover f-divergence theory. The use of multiple f-divergences as a unifying primitive for LLM optimization is covered by [2], which applies diverse divergence constraints to LLM training. The comparative baseline evaluation design (GA/GD/NPO/DPO etc.) appears in papers like [5] and [29] which compare against similar baselines. The core mechanism of using f-divergences for LLM unlearning/alignment is covered by [2].\n\n**EVALUATION: Harry Potter (OPT-2.7B)、MUSE-News、TOFU benchmarks with specific metrics**\n\nThe evaluation uses named benchmark families: Harry Potter unlearning (from [12]), TOFU benchmark (a known LLM unlearning benchmark), and MUSE-News. Paper [12] introduces and uses the Harry Potter unlearning evaluation. Paper [16] also uses Harry Potter unlearning evaluation. Papers [5] and [29] use TOFU as an evaluation benchmark. The evaluation design — using these named unlearning benchmarks with forgetting/utility metrics — is covered by prior papers. The specific combination differs, but the benchmark families and metric semantics (forgetting quality + model utility) are established in prior work.\n\n**DOMAIN: 版权内容遗忘 / 实体遗忘**\n\nThe domain is LLM unlearning for copyright content and entity knowledge. Papers [12] (Harry Potter copyright unlearning), [16] (targeted unlearning of Harry Potter), [20] (copyright infringement via LLM unlearning), [13] (copyrighted content and privacy unlearning), [29] (personal information unlearning), [5] (LLM unlearning framework) all operate in this exact domain. This is clearly COVERED.\n\nVERDICT purpose = 5\nVERDICT mechanism = 2\nVERDICT evaluation = 12\nVERDICT domain = 12",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

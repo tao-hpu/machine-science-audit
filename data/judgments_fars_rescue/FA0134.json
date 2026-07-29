@@ -1,0 +1,276 @@
+{
+ "paper_id": "FA0134",
+ "title": "Post-hoc Top-p Expert Routing for Dynamic Compute Allocation in Mixture-of-Experts Language Models",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     2
+    ],
+    "mechanism": [
+     12
+    ],
+    "evaluation": [
+     2
+    ],
+    "domain": [
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to enable input-adaptive compute allocation in pretrained fixed-top-k Mixture-of-Experts (MoE) models without retraining. Papers [2] and [3] both aim to dynamically allocate experts based on input difficulty, which aligns with the objective of adaptive compute allocation. While these papers focus on dynamic routing mechanisms, they do not explicitly address the retraining-free aspect. However, the broader purpose of adaptive compute allocation is substantively equivalent.\n\n### Mechanism\nThe mechanism involves post-hoc top-p expert routing, repurposing router softmax probabilities as a confidence signal to select the minimum set of experts whose cumulative probability exceeds a threshold p (nucleus-style). Paper [12] discusses nucleus sampling, which operates on the probability simplex to select tokens based on cumulative probability thresholds. While [12] applies this mechanism to decoding rather than expert routing, the underlying primitive of cumulative probability thresholding is equivalent. Papers [2] and [3] describe dynamic routing based on confidence levels but do not explicitly use a nucleus-style cumulative probability threshold, making their mechanisms distinct.\n\n### Evaluation\nThe evaluation modifies the expert selection rule at inference on Qwen3-30B-A3B and measures perplexity penalties (+0.25 vs static top-4 at matched compute). Papers [2], [3], and [6] evaluate dynamic routing mechanisms in MoE models, measuring computational efficiency and model performance. While the specific model (Qwen3-30B-A3B) and perplexity penalty are new, the evaluation design — comparing dynamic routing against static top-k routing — is substantively equivalent to prior work.\n\n### Domain\nThe domain is Mixture-of-Experts language models with dynamic expert routing. Papers [2], [3], [6], [9], and [10] all operate within the same general application area of MoE language models and dynamic expert routing. Although the specific model (Qwen3-30B-A3B) is new, the domain itself is covered.\n\n---\n\nVERDICT purpose = 2  \nVERDICT mechanism = 12  \nVERDICT evaluation = 2  \nVERDICT domain = 2  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Enable input-adaptive compute allocation in pretrained fixed-top-k MoE models without retraining.**\n\nPapers [2] and [3] are essentially the same paper: \"Harder Tasks Need More Experts: Dynamic Routing in MoE Models.\" They explicitly state the purpose is \"adjusting the number of activated experts based on input difficulty\" and \"dynamically allocates experts based on the confidence level in expert selection for each input\" — this is the same objective of input-adaptive compute allocation in MoE models. The key question is whether \"without retraining\" is covered. Papers [2]/[3] introduce a \"novel dynamic expert selection framework\" which implies training a new model/framework, not post-hoc application to a pretrained fixed-top-k model. However, the purpose at the problem-class level — \"enable input-adaptive compute allocation in MoE models\" — is clearly covered. The \"without retraining\" aspect is part of the mechanism (training-free), not a distinct purpose class. Paper [10] (LD-MoLE) also addresses \"adaptive, token-dependent expert selection\" but requires fine-tuning. At the problem-class level, [2]/[3] cover this purpose.\n\n---\n\n**MECHANISM: Post-hoc top-p expert routing — repurposes router softmax probabilities as a confidence signal, selecting minimum set of experts whose cumulative probability exceeds threshold p (nucleus-style), training-free.**\n\nPapers [2]/[3] use \"confidence level in expert selection\" to dynamically select experts — they use the router's softmax scores as a confidence signal to decide how many experts to activate. This is substantively the same primitive: use softmax router probabilities to determine the number of experts. However, [2]/[3] appear to require training a new model with this routing strategy, not applying it post-hoc to a pretrained fixed-top-k model. The nucleus-style cumulative probability threshold is the specific mechanism. Paper [12] (\"Decoding as Optimisation on the Probability Simplex: From Top-K to Top-P (Nucleus)\") explicitly covers the top-p/nucleus selection primitive — selecting the minimum set whose cumulative probability exceeds threshold p — though applied to token decoding rather than expert routing. The underlying primitive (nucleus/top-p cumulative probability thresholding) is identical. Per the instructions, cross-domain equivalence counts. Paper [12] covers the nucleus-style cumulative probability mechanism. Papers [2]/[3] cover the \"use router confidence to vary expert count\" aspect. Together, the mechanism is covered.\n\n---\n\n**EVALUATION: Inference-only modification on Qwen3-30B-A3B; perplexity penalty measurement (+0.25 vs static top-4 at matched compute).**\n\nThe evaluation design involves: (1) measuring perplexity on a language model, (2) comparing dynamic vs. static routing at matched compute. Papers [2]/[3] evaluate dynamic vs. fixed-top-k routing with performance metrics. Perplexity as a metric for LLM evaluation is standard and appears across many LM papers. The \"matched compute comparison\" between dynamic and static routing is used in [2]/[3]. This is a standard benchmark/metric design (perplexity evaluation of LM routing strategies) that appears in prior MoE routing work. The specific model (Qwen3-30B-A3B) is new, but the evaluation design (perplexity + compute-matched comparison of routing strategies) is covered by [2]/[3].\n\n---\n\n**DOMAIN: Mixture-of-Experts language models / dynamic expert routing.**\n\nPapers [1], [2], [3], [4], [6], [9], [10] all operate in the domain of Mixture-of-Experts language models with dynamic/adaptive expert routing. This is clearly covered.\n\n---\n\nVERDICT purpose = 2\nVERDICT mechanism = 12\nVERDICT evaluation = 2\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     6
+    ],
+    "mechanism": [
+     6
+    ],
+    "evaluation": [
+     3,
+     6
+    ],
+    "domain": [
+     1,
+     6
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to show that top-p routing produces emergent domain-adaptive compute allocation. This is a specific empirical relationship between the routing mechanism (top-p) and its emergent behavior (adaptive compute allocation). Paper [6] discusses top-p routing in the context of sparse Mixture-of-Experts (MoE) models and mentions that it allows confident tokens to use fewer experts and ambiguous tokens to recruit more, which aligns with the idea of adaptive compute allocation. However, it does not explicitly establish the emergent domain-adaptive behavior as a finding. Paper [24] introduces difficulty-adaptive reasoning for token-efficient LLM inference and analyzes entropy patterns in reasoning traces, which is conceptually related but does not directly address top-p routing or emergent domain-adaptive compute allocation. No prior paper explicitly establishes the same empirical relationship.  \n**Conclusion**: NONE.\n\n### Mechanism\nThe mechanism is the use of top-p routing to automatically allocate more experts to harder/reasoning tasks without task-specific tuning. Paper [6] explicitly describes top-p routing as a mechanism that selects experts until their cumulative routing probability reaches a threshold, allowing for adaptive allocation of experts based on token difficulty. This matches the underlying primitive of the mechanism described in the contribution.  \n**Conclusion**: [6].\n\n### Evaluation\nThe evaluation involves measuring the calibrated average number of experts (k=4 on WikiText-2, k=6.04 on GSM8K) and the corresponding accuracy improvement (87.87% vs. 81.88% for static top-4). Paper [6] evaluates top-p routing in sparse MoE models but does not use the same evaluation design (e.g., calibrated average k or accuracy recovery). Paper [24] evaluates difficulty-adaptive reasoning but does not use top-p routing or the same evaluation design. No prior paper uses the same evaluation design (calibrated average k and accuracy recovery).  \n**Conclusion**: NONE.\n\n### Domain\nThe domain is adaptive inference-time compute allocation for reasoning. Paper [6] discusses adaptive compute allocation in sparse MoE models, which is a general framework for reasoning tasks. Paper [24] also addresses adaptive reasoning in LLMs, focusing on token efficiency. Both papers operate in the same general application area of adaptive compute allocation for reasoning.  \n**Conclusion**: [6].\n\n---\n\n**Final Verdicts**:  \nVERDICT purpose = NONE  \nVERDICT mechanism = 6  \nVERDICT evaluation = NONE  \nVERDICT domain = 6  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 6 | reason: Paper [6] explicitly states, \"Top-$p$ routing is more adaptive because it selects experts until their cumulative routing probability reaches a threshold, allowing confident tokens to use fewer experts and ambiguous tokens to recruit more,\" which aligns with the objective of emergent domain-adaptive compute allocation.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper explicitly evaluates dynamic top-p routing calibrated for average k=4 on WikiText-2 and automatically increasing to k=6.04 on GSM8K, achieving the stated accuracy improvements."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Show that top-p routing produces emergent domain-adaptive compute allocation.**\n\nThe purpose is to demonstrate that top-p routing in MoE models *automatically* allocates more experts to harder/reasoning tasks without task-specific tuning — an emergent property. Paper [6] (DTop-p MoE) directly addresses top-p routing in MoE and discusses how \"confident tokens use fewer experts and ambiguous tokens recruit more,\" which is essentially the same emergent adaptive allocation property. Paper [1] (CODA) addresses difficulty-aware compute allocation for adaptive reasoning, but focuses on reasoning token budgets, not MoE expert routing. Paper [6] is the closest match — it explicitly discusses top-p routing's adaptive sparsity based on token difficulty, which is the same relationship being demonstrated.\n\n**MECHANISM: Automatically allocates more experts to harder/reasoning tasks without task-specific tuning.**\n\nPaper [6] explicitly describes top-p routing as selecting \"experts until their cumulative routing probability reaches a threshold, allowing confident tokens to use fewer experts and ambiguous tokens to recruit more\" — this is the same primitive. The mechanism of variable expert count based on routing probability mass is directly described in [6]. Paper [14] also discusses adaptive routing in sparse MoE but focuses on top-k variants. Paper [6] covers this mechanism substantively.\n\n**EVALUATION: Calibrated for average k=4 on WikiText-2, automatically increases to k=6.04 on GSM8K (+54%), achieving 87.87% accuracy vs 81.88% for static top-4, recovering 80% of the gap to full top-8.**\n\nThe evaluation design involves: (1) calibrating on a language modeling benchmark (WikiText-2), (2) measuring emergent expert allocation on a reasoning benchmark (GSM8K), (3) comparing accuracy against static top-k baselines. Paper [6] uses similar evaluation designs — comparing top-p MoE against static top-k baselines on standard benchmarks, measuring accuracy and compute allocation. The design of \"calibrate on one benchmark, evaluate emergent behavior on reasoning tasks, compare to static-k baseline\" is used in [6]. GSM8K and WikiText-2 are standard benchmarks used in MoE evaluation literature, and [6] uses the same benchmark family and metric semantics (accuracy vs static top-k).\n\n**DOMAIN: Adaptive inference-time compute allocation for reasoning.**\n\nPaper [6] operates in adaptive MoE routing for foundation model pre-training, which is the same general area of adaptive compute allocation in transformer/MoE models. Paper [1] operates in adaptive reasoning compute allocation. Both cover the domain of adaptive inference-time compute for reasoning tasks. Papers [4], [5], [10], [24] also work in adaptive compute for reasoning LLMs.\n\nVERDICT purpose = 6\nVERDICT mechanism = 6\nVERDICT evaluation = 6\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: COVERED by [6], which explicitly states the core finding that \"Top-$p$ routing is more adaptive because it selects experts until their cumulative routing probability reaches a threshold, allowing confident tokens to use fewer experts and ambiguous tokens to recruit more.\" The contribution demonstrates this known relationship on specific domains.\n\n**mechanism**: COVERED by [6], which introduces and analyzes \"Dynamic Top-p MoE,\" the exact technical primitive used in the contribution. The mechanism is the use of top-p routing to select a variable number of experts in a Mixture-of-Experts model.\n\n**evaluation**: COVERED by multiple papers such as [3] and [10] that use the same evaluation design: demonstrating that an adaptive compute method allocates more resources to harder inputs (e.g., complex images, difficult reasoning problems) and comparing its performance against a static baseline. The contribution applies this standard design to top-p routing.\n\n**domain**: COVERED by [1], [5], and [10], which all operate in the same application area of \"adaptive inference-time compute allocation for reasoning.\" For example, [1] is titled \"Difficulty-Aware Compute Allocation for Adaptive Reasoning.\"\n\nVERDICT purpose = 6\nVERDICT mechanism = 6\nVERDICT evaluation = 3\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     17,
+     21
+    ],
+    "mechanism": [
+     12,
+     17
+    ],
+    "evaluation": [
+     17
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 21
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to characterize the router confidence signal that the method relies on. Paper [1] conducts a comprehensive study of routers in MoEs for computer vision tasks but does not explicitly characterize the router confidence signal. Paper [2] and [3] analyze the cosine router but focus on its statistical advantages and representation collapse mitigation, not the confidence signal itself. Paper [4] provides theoretical insights into MoE training dynamics but does not address router confidence characterization. Paper [21] introduces dynamic expert selection based on input difficulty and confidence levels but does not explicitly characterize the router confidence signal. No prior paper establishes the same empirical relationship between router confidence and adaptation.\n\n### Mechanism\nThe contribution's mechanism involves analyzing router softmax entropy and layer-wise expert-count patterns. Paper [9] discusses uncertainty estimation using softmax entropy but does not apply it to MoE routers or layer-wise expert-count patterns. Paper [22] investigates softmax confidence and uncertainty but focuses on epistemic uncertainty rather than router-specific entropy. Paper [24] derives signal entropy but does not analyze router-specific entropy or expert-count patterns. No prior paper uses the same analysis method for MoE routers.\n\n### Evaluation\nThe evaluation design involves assessing router confidence (entropy) and layer-wise expert allocation patterns. Paper [1] studies MoE routers but does not evaluate entropy or layer-wise expert allocation. Paper [21] dynamically adjusts expert activation based on input difficulty but does not evaluate entropy or layer-wise patterns. Paper [17] introduces layer-wise adaptive capacity but does not evaluate router entropy or expert allocation patterns. No prior paper uses the same evaluation design.\n\n### Domain\nThe domain is MoE router confidence analysis. Paper [1] studies MoE routers in computer vision tasks, and Paper [2] and [3] analyze the cosine router in MoEs. Paper [4] provides theoretical insights into MoE training dynamics, and Paper [21] introduces dynamic routing in MoEs. All these papers operate within the general domain of MoE router analysis, covering the application area.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [1]  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 21 | reason: Paper [21] explicitly discusses dynamic expert selection based on router confidence levels, aligning with the objective of characterizing the router confidence signal. Quote: \"Our method dynamically selects experts based on the confidence level in expert selection for each input.\"\n\nFACET: mechanism | FINAL: COVERED-BY 12 | reason: Paper [12] analyzes entropy-based patterns in adaptive-depth networks, which includes layer-wise dynamics and entropy measures relevant to router softmax entropy and expert-count patterns. Quote: \"Novel Entropy-Based Bounds: We prove the first generalization bounds depending on exit-depth entropy.\"\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper explicitly evaluates router confidence as weak but sufficient for coarse-grained adaptation with consistent layer-wise expert patterns."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 21
+      },
+      "mechanism": {
+       "covered_by": 17
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Characterize the router confidence signal that the method relies on.**\n\nPaper [21] (\"Harder Tasks Need More Experts: Dynamic Routing in MoE Models\") explicitly analyzes router confidence levels to inform dynamic expert selection, stating it \"dynamically selects experts based on the confidence level in expert selection for each input.\" Paper [1] (\"Routers in Vision Mixture of Experts: An Empirical Study\") presents a comprehensive empirical study of routers in MoEs, characterizing router behavior. Both papers pursue the same objective of characterizing/understanding router confidence signals to inform routing decisions.\n\n**MECHANISM: Analysis of router softmax entropy and layer-wise expert-count patterns.**\n\nPaper [21] uses router confidence (implicitly softmax-based) to analyze routing behavior and dynamic expert counts. Paper [17] (\"DynaMoE\") explicitly addresses \"layer-wise adaptive capacity\" and analyzes how different layers require different numbers of experts, directly examining layer-wise expert-count patterns. Paper [10] (\"Layerwise Recurrent Router\") also examines layer-wise routing patterns. The combination of softmax entropy analysis + layer-wise expert-count patterns is most directly covered by [17] and [21] together, but [21] specifically uses confidence/entropy of the router softmax to drive analysis.\n\n**EVALUATION: Router confidence is weak (86% of maximum entropy) but sufficient for coarse-grained adaptation, with consistent layer-wise patterns where early layers require more experts than late layers.**\n\nPaper [17] reports findings about layer-wise expert allocation patterns, specifically that different layers need different numbers of experts. Paper [21] reports that router confidence varies by input difficulty and layer. The finding that \"early layers require more experts than late layers\" is directly reported in [17], which states it relaxes \"uniform expert allocation across all layers\" and finds layer-wise differences. The entropy quantification (86% of max) is a specific metric, but the evaluation design of measuring entropy/confidence levels and layer-wise expert counts is covered by [21] and [17].\n\n**DOMAIN: MoE router confidence analysis.**\n\nPapers [1], [2], [3], [10], [13], [17], [21] all work in MoE router analysis. This domain is clearly covered by multiple prior papers.\n\nVERDICT purpose = 21\nVERDICT mechanism = 17\nVERDICT evaluation = 17\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        17,
+        21
+       ]
+      },
+      "mechanism": {
+       "covered_by": [
+        12,
+        17
+       ]
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: COVERED by [17] and [21]. The purpose is to establish the empirical relationship that router confidence is a weak but usable signal with layer-wise structure. [21] establishes that the confidence signal is sufficient for adaptation (\"dynamically selects experts based on the confidence level\"), and [17] establishes the existence of layer-wise patterns by proposing a method for \"Layer-Wise Adaptive Capacity\" to relax the \"uniform expert allocation\" constraint.\n\n**mechanism**: COVERED by [12] and [17]. The mechanism is an analysis of softmax entropy and layer-wise patterns. This is a standard diagnostic analysis design. [12] uses the same primitive of analyzing a layer-wise process using entropy (\"exit-depth entropy\"), and [17] must analyze layer-wise expert patterns to motivate its \"Layer-Wise Adaptive Capacity\" method.\n\n**evaluation**: COVERED by [17]. The evaluation design involves measuring standard quantities like entropy and expert counts and analyzing them on a per-layer basis. This is a standard analysis protocol, and [17] must have employed this same design to justify its core proposal of needing \"Layer-Wise Adaptive Capacity\" for MoE models.\n\n**domain**: COVERED by [1]. The domain is the analysis of Mixture-of-Experts (MoE) routers and their confidence. Paper [1] is an \"Empirical Study\" of \"Routers in Vision Mixture of Experts\" and thus operates in the exact same application area.\n\nVERDICT purpose = 17, 21\nVERDICT mechanism = 12, 17\nVERDICT evaluation = 17\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

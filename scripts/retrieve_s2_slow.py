@@ -82,6 +82,24 @@ def embed(texts):
              {'model': ENV['EMBED_MODEL'], 'input': texts})
     return [d['embedding'] for d in r['data']]
 
+def cross_rerank(query, cand, bs=256):
+    """bge-reranker cross-encoder:query 对每个候选 (title. abstract) 联合打相关性分,原地写 h['sim']。
+    双塔 bge-m3 靠余弦被通用词面骗(把 CPU/STT-RAM 硬件缓存排在 LLM KV cache 前);cross-encoder
+    联合读两段文本能做领域感知判别,是本地重排逼近 S2 API 相关性的关键(docs/_local-index-report.md)。"""
+    model = ENV.get('RERANK_MODEL') or 'bge-reranker-v2-m3'
+    docs = [f"{h['title']}. {h.get('abstract','')}"[:1500] for h in cand]
+    for i in range(0, len(docs), bs):
+        chunk = docs[i:i + bs]
+        r = http(f"{ENV['RERANK_API_BASE']}/rerank",
+                 {'Authorization': 'Bearer NO_NEED', 'Content-Type': 'application/json'},
+                 {'model': model, 'query': query[:1200], 'documents': chunk,
+                  'top_n': len(chunk), 'return_documents': False})
+        for x in r['results']:
+            cand[i + x['index']]['sim'] = round(x['relevance_score'], 4)
+    for h in cand:
+        h.setdefault('sim', 0.0)
+    return cand
+
 def cos(a, b):
     s = sum(x*y for x, y in zip(a, b))
     na = math.sqrt(sum(x*x for x in a)); nb = math.sqrt(sum(y*y for y in b))
@@ -223,12 +241,28 @@ def s2_search(query, cutoff, limit=20):
     return [], False
 
 # ---- OpenAlex channel (unchanged from v0.2) ----
+_OA_KEY_DEAD = [False]
 def openalex(query, cutoff, limit=25):
     p = {'search': query, 'per-page': limit, 'filter': f'to_publication_date:{cutoff}',
-         'select': 'title,publication_date,abstract_inverted_index,doi'}
-    if ENV.get('OPENALEX_API_KEY'): p['api_key'] = ENV['OPENALEX_API_KEY']
+         'select': 'title,publication_date,abstract_inverted_index,doi',
+         'mailto': 'tan1@my.hpu.edu'}
+    # 2026-07-08 教训:premium key 配额耗尽/失效时 OpenAlex 对带 key 请求一律 429,
+    # 而无 key polite pool(带 mailto)完全正常 —— key 撞 429 就永久降级为无 key。
+    if ENV.get('OPENALEX_API_KEY') and not _OA_KEY_DEAD[0]:
+        p['api_key'] = ENV['OPENALEX_API_KEY']
     try:
-        res = http(f'https://api.openalex.org/works?{urllib.parse.urlencode(p)}')
+        res = http(f'https://api.openalex.org/works?{urllib.parse.urlencode(p)}', retries=2)
+    except urllib.error.HTTPError as e:
+        if e.code == 429 and 'api_key' in p:
+            _OA_KEY_DEAD[0] = True
+            print('    [openalex key 429 -> fallback keyless]', flush=True)
+            p.pop('api_key')
+            try:
+                res = http(f'https://api.openalex.org/works?{urllib.parse.urlencode(p)}', retries=2)
+            except Exception:
+                return []
+        else:
+            return []
     except Exception:
         return []
     out = []
@@ -242,6 +276,61 @@ def openalex(query, cutoff, limit=25):
                         'abstract': ab[:800], 'doi': w.get('doi'), 'src': 'openalex'})
     return out
 
+# ---- channel dispatch(参数硬切,无跨通道降级;Tao 2026-07-08 定)----
+# CHANNEL: 主检索通道。api=S2 线上(1req/s+429 退避);local=本地 tantivy 快照索引。
+# OA_CHANNEL: 第二通道。api=OpenAlex 线上;local=本地 OA works 索引(待交付);off=关闭。
+CHANNEL = 'api'
+OA_CHANNEL = 'api'
+DUMP_POOL = False  # --dump-pool:候选池+全 facet 相似度落盘 OUT_DIR/_pools/,供 Block A 离线消融
+# 重排口径:facet=bge-m3 per-facet 名额(默认);embed=bge-m3 全局余弦;cross=深召回+bge-reranker
+# cross-encoder(领域感知,治双塔词面混淆)。cross 模式自动深挖 BM25 召回(LOCAL_RECALL)。
+RERANK_MODE = os.environ.get('RERANK_MODE', 'facet')
+PIN_DEPTH = int(os.environ.get('PIN_DEPTH', '1'))  # 每查询保送 top-N(默认 1);跨域 seminal 常排 #2-3,历史术语查询调 3 兜住
+LOCAL_RECALL = int(os.environ.get('LOCAL_RECALL', '500'))   # cross 模式每查询每索引召回深度
+CITO_EXPAND = os.environ.get('CITO_EXPAND') == '1'  # cito 服务端跨域查询扩展(方案 #1);默认关,gate 对照用 =1 开
+SEMINAL_RESCUE = os.environ.get('SEMINAL_RESCUE', '1') == '1'  # 跨域 seminal 救援 pin(选择层修复);默认开,=0 可消融
+SEMINAL_RESCUE_CAP = int(os.environ.get('SEMINAL_RESCUE_CAP', '1'))  # 每条术语查询最多救援保送几篇(防灌水)
+
+# 词面覆盖率用的最小停用词(只去真·虚词,attack/spam 这种内容词必须留)
+_STOP = {'a', 'an', 'the', 'of', 'on', 'in', 'to', 'for', 'and', 'or', 'with', 'without',
+         'via', 'using', 'into', 'from', 'by', 'is', 'are', 'be', 'as', 'at', 'this',
+         'that', 'these', 'those', 'it', 'its', 'we', 'our'}
+
+def _content_tokens(s):
+    """标题/查询 → 内容词集合(去虚词、去 <3 字、轻量去复数尾 s),用于词面覆盖率匹配。"""
+    toks = re.findall(r'[a-z0-9]+', (s or '').lower())
+    return {t[:-1] if len(t) > 3 and t.endswith('s') else t
+            for t in toks if len(t) > 2 and t not in _STOP}
+
+def primary_search(query, cutoff):
+    if CHANNEL == 'local':
+        sys.path.insert(0, os.path.join(ROOT, 'scripts'))
+        import local_search as LS
+        if RERANK_MODE == 'cross':
+            LS.POOL = max(LS.POOL, LOCAL_RECALL * 2)         # BM25 先取更深,cutoff 过滤后仍够
+            return LS.search(query, cutoff, limit=LOCAL_RECALL), True
+        return LS.search(query, cutoff, limit=20), True
+    if CHANNEL == 'cito':
+        # cito 私有混合检索(S2 148M+SPECTER2,自托管无限流)。cutoff→published_before(服务端过滤)。
+        # 摘要默认截 800 与 s2_search 基线对齐;top-6 在题率只看标题,截断不影响 gate 指标。
+        sys.path.insert(0, os.path.join(ROOT, 'scripts'))
+        import cito_search as CS
+        depth = LOCAL_RECALL if RERANK_MODE == 'cross' else 20
+        return CS.search(query, cutoff, limit=depth, expand=CITO_EXPAND), True
+    return s2_search(query, cutoff)
+
+def oa_search(query, cutoff):
+    if OA_CHANNEL == 'off':
+        return []
+    if OA_CHANNEL == 'local':
+        sys.path.insert(0, os.path.join(ROOT, 'scripts'))
+        import oa_local_search as OLS  # 交付物(docs/_local-index-task.md 追加节);未就绪即 ImportError,不静默回 API
+        if RERANK_MODE == 'cross':
+            OLS.POOL = max(OLS.POOL, LOCAL_RECALL * 2)
+            return OLS.search(query, cutoff, limit=LOCAL_RECALL)
+        return OLS.search(query, cutoff, limit=25)
+    return openalex(query, cutoff)
+
 # ---- per-contribution retrieval ----
 def retrieve_one(pid, c, cutoff, qc, k):
     cand, seen = [], set()
@@ -250,41 +339,83 @@ def retrieve_one(pid, c, cutoff, qc, k):
     if not queries:
         return {'id': c['id'], 's2_complete': False, 'neighbors': []}
     for q in queries:
-        s2_hits, ok = s2_search(q, cutoff)
+        s2_hits, ok = primary_search(q, cutoff)
         s2_ok_all = s2_ok_all and ok
         # 每条查询保送两篇进最终近邻:相关性 top-1 + 前 5 名里引用数最高者。
         # 防止 seminal 论文(老、高引、短/无摘要,如 Lowd&Meek 2005 在"good word attack"下排第 3)
         # 被 embedding 重排或 top-1 截断切掉。
         for rank, h in enumerate(s2_hits):
-            h['pinned'] = (rank == 0)
+            h['pinned'] = (rank < PIN_DEPTH)
         top5 = s2_hits[:5]
         if top5:
             most_cited = max(top5, key=lambda x: x.get('citations') or 0)
             if (most_cited.get('citations') or 0) > 0: most_cited['pinned'] = True
-        for h in s2_hits + openalex(q, cutoff):
+        for h in s2_hits + oa_search(q, cutoff):
             key = h['title'].lower().strip()
             if key not in seen:
                 seen.add(key); cand.append(h)
             elif h.get('pinned'):
                 for e in cand:
                     if e['title'].lower().strip() == key: e['pinned'] = True; break
-        time.sleep(0.5)
+        time.sleep(0.5 if 'api' in (CHANNEL, OA_CHANNEL) else 0.02)
     if not cand:
         return {'id': c['id'], 's2_complete': s2_ok_all, 'neighbors': []}
+    # 跨域 seminal 救援 pin(选择层修复):bge-m3 facet 重排会低估跨域先例(领域/语义都远,如
+    # LLM-safety 贡献 vs 2006 垃圾邮件论文),而这类先例往往只被「字面点名」的手工术语查询召回
+    # (如 "Good word attack on spam filters")、又非任一查询 top-1/最高引 → pin 与 facet 双漏网。
+    # 修法:某查询的内容词若被池中某标题高覆盖(≥0.7),就把那篇按词面直接保送——不靠 embedding
+    # rank、不靠引用、不管来自哪个通道。阈值(query 内容词 ≥3 且覆盖 ≥0.7)保证泛概念查询不误触。
+    if SEMINAL_RESCUE:
+        cand_tok = [(_content_tokens(h['title']), h) for h in cand]
+        for q in queries:
+            qtok = _content_tokens(q)
+            if len(qtok) < 4:      # 具体术语名(≥4 内容词)才救援;泛领域名(2-3 词,如
+                continue           # "error correction codes"/"anomaly detection")会误命中该领域随机论文,跳过
+            # 覆盖率达标者按 (cov 高→低, 标题短→长) 排序:同 cov 时优先短标题
+            # ——原始 seminal 用规范简称(如 "Good Word Attacks on Statistical Spam Filters"),
+            # 衍生/防御论文加前缀更长("Combating…"/"A Multiple Instance Learning Strategy for…")。
+            scored = sorted(
+                ((len(qtok & ttok) / len(qtok), len(h['title']), h) for ttok, h in cand_tok if ttok),
+                key=lambda x: (-x[0], x[1]))
+            for cov, _, h in scored[:SEMINAL_RESCUE_CAP]:
+                if cov < 0.7:
+                    break
+                h['pinned'] = True
+                h.setdefault('pin_reason', []).append('term_match')
     htexts = [f"{h['title']}. {h['abstract']}" for h in cand]
-    if FACET_ALLOC:
+    if FACET_ALLOC and RERANK_MODE != 'cross':
         nbrs, n_pinned = select_per_facet(c, cand, htexts, k)
+        if DUMP_POOL:
+            import gzip
+            pdir = os.path.join(OUT_DIR, '_pools')
+            os.makedirs(pdir, exist_ok=True)
+            with gzip.open(os.path.join(pdir, f'{pid}_{c["id"]}.json.gz'), 'wt') as pf:
+                json.dump({'pid': pid, 'cid': c['id'], 'cutoff': cutoff, 'k': k,
+                           'candidates': cand}, pf, ensure_ascii=False)
     else:
-        ctext = f"{c['purpose']} {c['mechanism']} {c['evaluation']}"
-        vecs = embed([ctext] + htexts)
-        cv, hv = vecs[0], vecs[1:]
-        for h, v in zip(cand, hv): h['sim'] = round(cos(cv, v), 4)
+        if RERANK_MODE == 'cross':
+            # 领域锚定查询(domain 圈领域 + purpose/mechanism 定具体 idea):实测把最难的
+            # FA0002/C1 从 2→4 在题,并清掉硬件缓存误命中。
+            q_ce = f"{c.get('domain','')}. {c.get('purpose','')} {c.get('mechanism','')}".strip()
+            cross_rerank(q_ce, cand)                              # 原地写 h['sim']
+        else:
+            ctext = f"{c['purpose']} {c['mechanism']} {c['evaluation']}"
+            vecs = embed([ctext] + htexts)
+            cv, hv = vecs[0], vecs[1:]
+            for h, v in zip(cand, hv): h['sim'] = round(cos(cv, v), 4)
         cand.sort(key=lambda x: x['sim'], reverse=True)
         pinned = [h for h in cand if h.get('pinned')]
         rest = [h for h in cand if not h.get('pinned')]
         nbrs = (pinned + rest)[:max(k, len(pinned))]
         nbrs.sort(key=lambda x: x['sim'], reverse=True)
         n_pinned = len(pinned)
+        if DUMP_POOL:
+            import gzip
+            pdir = os.path.join(OUT_DIR, '_pools')
+            os.makedirs(pdir, exist_ok=True)
+            with gzip.open(os.path.join(pdir, f'{pid}_{c["id"]}.json.gz'), 'wt') as pf:
+                json.dump({'pid': pid, 'cid': c['id'], 'cutoff': cutoff, 'k': k,
+                           'candidates': cand}, pf, ensure_ascii=False)
     return {'id': c['id'], 's2_complete': s2_ok_all,
             'n_candidates': len(cand), 'n_pinned': n_pinned, 'neighbors': nbrs}
 
@@ -295,14 +426,21 @@ FACET_KEYS = ('purpose', 'mechanism', 'evaluation', 'domain')
 def select_per_facet(c, cand, htexts, k):
     """按 facet 分配名额:每个 facet 用自己的文本单独算相似度,各取 top-⌈k/n⌉,并集 + pinned。
     防止最突出的单一 facet 垄断全局 top-k、饿死其他 facet 的先行工作。
-    每个近邻打 facet_for 标签,说明它是为哪个 facet 保送进来的。"""
+    每个近邻打 facet_for 标签,说明它是为哪个 facet 保送进来的。
+    副作用(供 --dump-pool 消融复放):给每个候选原地写 facet_sims(全部 facet 的
+    相似度)与 sim_global(v5 口径 ctext 相似度)——Block A 的 k 扫描/alloc on-off/
+    pinning on-off 全部可离线纯算术重放,零检索零 embedding。"""
     facets = [(f, c[f]) for f in FACET_KEYS if c.get(f) and c[f].strip()]
-    vecs = embed([t for _, t in facets] + htexts)
-    fvecs = vecs[:len(facets)]; hv = vecs[len(facets):]
+    ctext = f"{c.get('purpose','')} {c.get('mechanism','')} {c.get('evaluation','')}"
+    vecs = embed([t for _, t in facets] + [ctext] + htexts)
+    fvecs = vecs[:len(facets)]; cvec = vecs[len(facets)]; hv = vecs[len(facets) + 1:]
+    for h, v in zip(cand, hv):
+        h['facet_sims'] = {fname: round(cos(fv, v), 4) for (fname, _), fv in zip(facets, fvecs)}
+        h['sim_global'] = round(cos(cvec, v), 4)
     per = max(1, -(-k // len(facets)))  # ceil(k/n)
     chosen = {}
-    for (fname, _), fv in zip(facets, fvecs):
-        scored = sorted(((round(cos(fv, v), 4), h) for h, v in zip(cand, hv)),
+    for fname, _ in facets:
+        scored = sorted(((h['facet_sims'][fname], h) for h in cand),
                         key=lambda x: x[0], reverse=True)
         for sim, h in scored[:per]:
             key = h['title'].lower().strip()
@@ -312,11 +450,10 @@ def select_per_facet(c, cand, htexts, k):
                 chosen[key]['facet_for'].append(fname)
                 chosen[key]['sim'] = max(chosen[key]['sim'], sim)
     # pinned(seminal 保送)一律纳入
-    hv_by_key = {h['title'].lower().strip(): v for h, v in zip(cand, hv)}
     for h in cand:
         key = h['title'].lower().strip()
         if h.get('pinned') and key not in chosen:
-            best = max((round(cos(fv, hv_by_key[key]), 4) for fv in fvecs), default=0)
+            best = max(h['facet_sims'].values(), default=0)
             h = dict(h); h['sim'] = best; h['facet_for'] = ['pinned']; chosen[key] = h
     nbrs = sorted(chosen.values(), key=lambda x: x['sim'], reverse=True)
     n_pinned = sum(1 for h in nbrs if 'pinned' in h.get('facet_for', []))
@@ -340,7 +477,7 @@ def process(pid, k):
         return 0
     out = existing or {'paper_id': pid, 'cutoff': cutoff, 'k': k,
                        'cutoff_source': CUTOFF_SOURCE, 'facet_alloc': FACET_ALLOC,
-                       'retrieval': 's2-keyless+openalex+bge-m3-rerank', 'contributions': []}
+                       'retrieval': f's2[{CHANNEL}]+oa[{OA_CHANNEL}]+rerank[{RERANK_MODE}]', 'contributions': []}
     kept = [c for c in out['contributions'] if c['id'] in done]
     for c in todo:
         print(f'  {pid}/{c["id"]} ...', flush=True)
@@ -354,7 +491,7 @@ def process(pid, k):
         kept.append(r)
         out['contributions'] = kept
         json.dump(out, open(out_path(pid), 'w'), ensure_ascii=False, indent=1)
-        n_s2 = sum(1 for h in r['neighbors'] if h['src'] == 's2')
+        n_s2 = sum(1 for h in r['neighbors'] if h['src'] in ('s2', 's2local'))  # local 通道 src=s2local
         print(f'    -> {len(r["neighbors"])} nbrs (s2 {n_s2}), s2_complete={r["s2_complete"]}', flush=True)
     return len(todo)
 
@@ -377,7 +514,20 @@ if __name__ == '__main__':
     ap.add_argument('--facet-alloc', action='store_true', help='per-facet 名额分配(等价 FACET_ALLOC=1)')
     ap.add_argument('--cutoff-source', choices=['fars', 'human', 'a4s'], default='fars',
                     help='cutoff 口径:fars=paperreview.json;human=matched_166 cdate;a4s=抽取 submission_date')
+    ap.add_argument('--gen-queries-only', action='store_true',
+                    help='只生成并缓存查询(纯 LLM,不碰 S2/OpenAlex);S2 队列排到前先预热用')
+    ap.add_argument('--channel', choices=['api', 'local', 'cito'], default='api',
+                    help='主检索通道:api=S2 线上;local=本地 tantivy 快照索引;'
+                         'cito=私有混合检索(S2+SPECTER2,自托管无限流)(参数硬切,无降级)')
+    ap.add_argument('--oa', choices=['api', 'local', 'off'], default='api',
+                    help='第二通道:api=OpenAlex 线上;local=本地 OA 索引;off=关闭')
+    ap.add_argument('--dump-pool', action='store_true',
+                    help='候选池+全 facet 相似度落盘 _pools/(Block A 消融离线重放用)')
+    ap.add_argument('--rerank', choices=['facet', 'embed', 'cross'], default=RERANK_MODE,
+                    help='重排口径:facet=bge-m3 per-facet(默认);embed=bge-m3 全局余弦;'
+                         'cross=深召回+bge-reranker cross-encoder(领域感知,治词面混淆)')
     a = ap.parse_args()
+    CHANNEL, OA_CHANNEL, DUMP_POOL, RERANK_MODE = a.channel, a.oa, a.dump_pool, a.rerank
     EXTRACT_DIR = os.path.abspath(a.extract_dir)
     OUT_DIR = os.path.abspath(a.out_dir)
     QUERY_CACHE = os.path.join(OUT_DIR, '_queries.json')
@@ -387,6 +537,19 @@ if __name__ == '__main__':
     if a.status:
         status(); sys.exit(0)
     pids = [a.pid] if a.pid else sorted(f[:-5] for f in os.listdir(EXTRACT_DIR) if f.endswith('.json'))
+    if a.gen_queries_only:
+        qc = load_query_cache()
+        n_new = 0
+        for i, pid in enumerate(pids):
+            d = json.load(open(os.path.join(EXTRACT_DIR, f'{pid}.json')))
+            for c in d['contributions']:
+                had = f'{pid}/{c["id"]}/v5' in qc
+                qs = get_queries(pid, c, qc)
+                if not had and qs:
+                    n_new += 1
+                    print(f'  [{i+1}/{len(pids)}] {pid}/{c["id"]} +{len(qs)} queries', flush=True)
+        print(f'QUERIES-DONE new={n_new}', flush=True)
+        sys.exit(0)
     t0 = time.time()
     for i, pid in enumerate(pids):
         n = process(pid, a.k)

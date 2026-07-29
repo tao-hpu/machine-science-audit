@@ -1,0 +1,389 @@
+{
+ "paper_id": "FA0191",
+ "title": "HeadRollback: Post-Task Attention Head Rollback for Replay-Free Continual LoRA Fine-Tuning",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     12
+    ],
+    "mechanism": [
+     9,
+     16
+    ],
+    "evaluation": [
+     1,
+     2
+    ],
+    "domain": [
+     1,
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to mitigate catastrophic forgetting in continual LoRA fine-tuning without relying on replay buffers or altered training. Papers [1], [2], [4], [5], [6], [12], and [28] all address catastrophic forgetting in continual learning, specifically in the context of LoRA or parameter-efficient fine-tuning. For example, [1] explicitly studies catastrophic forgetting in LoRA fine-tuning, while [5] discusses continual learning methods that avoid replay buffers. These papers share the same high-level objective of mitigating catastrophic forgetting in LoRA continual learning, even if the specific methods differ.\n\n### Mechanism\nThe mechanism, HeadRollback, involves rolling back the LoRA B-matrix rows of disrupted attention heads to the previous checkpoint at task boundaries. Papers [9], [10], [13], [16], [18], and [26] discuss rollback mechanisms in various contexts, including checkpoint-based rollback recovery for distributed systems. For example, [9] introduces rollback mechanisms for session programming, and [10] describes checkpoint-based rollback recovery for message-passing systems. While these papers operate in different domains, the underlying primitive of rollback to a prior checkpoint is substantively equivalent to HeadRollback.\n\n### Evaluation\nThe evaluation operates entirely at task boundaries with minimal state (one scalar per head plus a single checkpoint) but does not introduce a separate metric or benchmark for this contribution. Papers [1], [2], [4], [5], [6], [12], and [28] use similar evaluation designs for continual learning methods, including task-boundary-based interventions and checkpoint-based evaluations. For example, [5] evaluates continual LoRA methods at task boundaries, and [28] uses task-aware gated routing mechanisms evaluated across tasks. These designs match the evaluation framework of the contribution.\n\n### Domain\nThe domain is continual learning and parameter-efficient fine-tuning. Papers [1], [2], [4], [5], [6], [12], and [28] all operate in the same general application area of continual learning and parameter-efficient fine-tuning. For example, [1] and [4] focus on LoRA-based continual learning, while [12] emphasizes rehearsal-free continual learning methods. The contribution does not introduce a new application area but rather operates within this established domain.\n\n---\n\nVERDICT purpose = 1  \nVERDICT mechanism = 9  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 12
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Mitigate catastrophic forgetting in continual LoRA fine-tuning without replay buffers or altered training.**\n\nPapers [1], [2], [4], [5], [8], [12] all address mitigating catastrophic forgetting in continual LoRA or parameter-efficient fine-tuning settings. Paper [12] explicitly states \"Rehearsal-free Continual Language Learning\" without caching history data. Paper [2] proposes I-LoRA for continual LLM fine-tuning. Paper [4] addresses continual learning with LoRA. The \"without replay buffers\" constraint is covered by [12] (\"not caching history tasks' data\") and [2] (which doesn't rely on replay). The \"without altered training\" aspect is partially covered — most methods do alter training (regularization, orthogonality constraints), but the general purpose of replay-free catastrophic forgetting mitigation in continual LoRA is clearly covered by [2], [4], [12].\n\n**MECHANISM: HeadRollback — a post-task intervention that rolls back LoRA B-matrix rows of unintentionally disrupted attention heads to the previous checkpoint at task boundaries.**\n\nThis is a selective, parameter-level rollback applied at task boundaries to specific attention heads identified as disrupted. Paper [29] (\"Weights Reset Technique\") resets random portions of layer weights periodically, but this is random and for regularization, not selective rollback of specific heads. Papers [9], [10], [13], [16], [18], [26], [27] all involve checkpoint-based rollback recovery, but these are in distributed computing/fault-tolerance contexts — the primitive of \"roll back specific parameters to a previous checkpoint\" is present, but the selectivity (identifying disrupted heads via a scalar criterion) is not. Paper [2] (I-LoRA) uses interpolation between checkpoints rather than rollback. No prior paper combines: (1) identifying specific attention heads as disrupted, (2) selectively rolling back only those heads' LoRA B-matrix rows, (3) as a post-task intervention without altering training. The closest is [29] (weight reset) but it's random, not selective. The checkpoint rollback papers [9],[10],[13],[16] use the rollback primitive but in entirely different contexts (fault tolerance) and without the head-selection criterion. The mechanism as a whole — selective head-level LoRA parameter rollback guided by a per-head scalar at task boundaries — appears genuinely absent.\n\n**EVALUATION: Operates entirely at task boundaries with minimal state (one scalar per head plus a single checkpoint); no separate metric for this contribution itself.**\n\nThe evaluation design for the contribution itself is described as minimal — it's embedded in standard continual learning benchmarks. Papers [1], [2], [4], [5], [8], [11], [12] all evaluate on standard continual learning benchmarks (accuracy, forgetting metrics). This is a standard evaluation design used across the continual learning literature. The contribution is evaluated using the same benchmark family and metric semantics (accuracy/forgetting on sequential tasks) as papers [1], [2], [4], [8], [12].\n\n**DOMAIN: Continual learning / parameter-efficient fine-tuning.**\n\nPapers [1], [2], [4], [5], [8], [12] all operate in continual learning with parameter-efficient fine-tuning (LoRA specifically). This domain is clearly covered.\n\nVERDICT purpose = 12\nVERDICT mechanism = NONE\nVERDICT evaluation = 2\nVERDICT domain = 2",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes selectively rolling back the LoRA B-matrix rows of specific (unintentionally disrupted) attention heads to a previous checkpoint at task boundaries as a post-task intervention. The checkpoint/rollback papers ([9],[10],[13],[16],[18],[26],[27]) concern distributed systems fault tolerance, not LoRA parameter surgery. The LoRA continual learning papers ([1],[2],[4],[5],[8],[12]) use regularization, orthogonality, interpolation, or parameter isolation — none perform targeted row-level rollback of disrupted heads. No equivalent mechanism appears under any alternative terminology in the prior papers."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 12
+      },
+      "mechanism": {
+       "covered_by": 16
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: COVERED by [12], which shares the objective of \"Rehearsal-free Continual Language Learning\" to \"defy catastrophic forgetting\" without \"caching history tasks’ data,\" which is substantively equivalent to mitigating forgetting without replay buffers.\n\nmechanism: COVERED by [16], which describes \"Local rollback for resilient MPI applications.\" This is the same primitive as HeadRollback: a selective, partial rollback of a system's state to a previous checkpoint, as opposed to a global rollback of the entire system.\n\nevaluation: COVERED by [2], [5], [8], and any other paper proposing a method for continual learning. The evaluation design is the standard protocol for the field: train a model on a sequence of tasks and then measure its final performance across all tasks to quantify forgetting, which is not a new evaluation design.\n\ndomain: COVERED by [1], [2], [4], and [5], among others. These papers all operate in the same application area of \"continual learning\" for \"parameter-efficient fine-tuning\" (specifically LoRA) to address \"catastrophic forgetting.\"\n\nVERDICT purpose = 12\nVERDICT mechanism = 16\nVERDICT evaluation = 2\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     4,
+     16
+    ],
+    "mechanism": [
+     4,
+     16
+    ],
+    "evaluation": [
+     2,
+     4,
+     8
+    ],
+    "domain": [
+     1,
+     2,
+     4
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": 4
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Per-Facet Reasoning:\n\n**Purpose:**  \nThe contribution's purpose is to decide which attention heads to preserve versus roll back. Paper [10] discusses pruning attention heads in Transformers, introducing a method for subset pruning to identify heads that can be safely removed without harming performance. Paper [4] also addresses head importance scoring for pruning, focusing on identifying redundant heads. Both papers share the same objective of determining which attention heads to preserve or remove, making the purpose covered.  \n\n**Mechanism:**  \nThe contribution introduces a three-signal scoring formula combining disruption magnitude, historical importance, and new-task importance. Paper [4] proposes a unified importance-entropy score for head pruning, which combines gradient-based importance measures with entropy to identify redundant heads. Paper [7] introduces the information bottleneck principle to estimate head importance based on task relevance. While these papers use different scoring methods, they share the underlying primitive of combining multiple signals to assess head importance. Thus, the mechanism is covered.  \n\n**Evaluation:**  \nThe contribution validates its scoring formula by using it to identify heads worth preserving and measuring effectiveness via benchmark results. Paper [10] evaluates its subset pruning method on Transformer models using benchmark results, which matches the evaluation design. Paper [4] also validates its importance-entropy score via benchmark results. Both papers use the same evaluation design (benchmark-based validation of head importance scoring), making the evaluation covered.  \n\n**Domain:**  \nThe contribution operates in the domain of attention head importance scoring. Papers [4], [7], and [10] all work in the same general application area of attention head importance scoring in Transformers, even though they may target different specific tasks or datasets. The domain is therefore covered.  \n\n---\n\n### Verdicts:  \nVERDICT purpose = 4  \nVERDICT mechanism = 4  \nVERDICT evaluation = 4  \nVERDICT domain = 4  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Decide which attention heads to preserve versus roll back.**\n\nThe purpose is specifically about selecting which attention heads to keep vs. revert during some rollback/continual learning process. Paper [2] discusses \"heads that are truly irrecoverable when removed\" and introduces scoring methods for head importance in the context of pruning/architecture. Paper [13] discusses rollback in fine-tuning deep networks. Paper [2] is closest — it explicitly addresses \"which heads to preserve\" (irrecoverable vs. compensatable) using scoring methods. However, [2]'s purpose is about architecture-determined compensatability, not about a preserve-vs-rollback decision in continual/incremental learning. Paper [3] addresses dynamic head importance for NMT. None of the papers specifically target the objective of \"deciding which heads to preserve versus roll back\" in the sense of selective rollback during task adaptation. The closest is [2] but its purpose is characterizing compensatability, not guiding rollback decisions. This purpose appears uncovered.\n\n**MECHANISM: A three-signal scoring formula combining disruption magnitude, historical importance, and new-task importance.**\n\nThis is a composite scoring formula with three components: (1) disruption magnitude, (2) historical importance, and (3) new-task importance. Paper [4] introduces a \"Unified Head Importance-Entropy Score\" combining multiple signals (HIS + entropy). Paper [2] introduces two scoring methods: one measuring current usage (CE-based) and one measuring compensatability. Paper [7] uses information bottleneck for head attribution. Paper [16] combines multiple importance measures (MAS, SI, Fisher) for EWC. None of these combine exactly these three signals (disruption magnitude + historical importance + new-task importance) into a single formula. Paper [4] is the closest with a unified multi-signal score, but it combines importance and entropy, not these three specific components. The three-signal combination including \"disruption magnitude\" and \"historical importance\" as distinct signals is not found in prior work.\n\n**EVALUATION: Used to identify heads worth preserving; effectiveness validated via main benchmark results.**\n\nThis is a standard evaluation design: apply the method, measure performance on standard benchmarks. Paper [2] validates head scoring methods via benchmark results. Paper [4] validates pruning via NLP benchmark results. Paper [10] validates head pruning via benchmark performance. This is a generic \"validate on standard benchmarks\" design, which is covered by essentially all the attention head papers ([2], [3], [4], [7], [8], [10]).\n\n**DOMAIN: Attention head importance scoring.**\n\nPapers [1], [2], [3], [4], [7], [8], [10] all work directly in the domain of attention head importance scoring in transformers. This is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 2\nVERDICT domain = 2",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the specific objective of deciding which attention heads to preserve versus roll back (i.e., selectively reverting individual heads to pre-fine-tuning weights); paper [2] scores heads for pruning/compensatability and paper [13] does rollback at the whole-network level, but neither paper contains language or logic about choosing which heads to roll back versus keep in a per-head reversion scheme.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper presents a three-signal scoring formula that jointly combines disruption magnitude, historical importance, and new-task importance for head-level decisions; paper [4] combines importance and entropy, paper [2] combines current-use and compensatability, and paper [16] compares weight-importance methods for EWC, but none quote or describe a formula uniting all three of these specific signals together."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 16
+      },
+      "mechanism": {
+       "covered_by": 16
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The objective is to decide which parameters (attention heads) should be preserved from a prior state versus updated/reverted during a new learning phase. This is an instance of the general problem of selective parameter preservation in continual learning or transfer learning. Paper [16] addresses this same objective by proposing a method (EWC) to identify and preserve important weights from a previous task to prevent catastrophic forgetting when learning a new one.\n\n**mechanism**: The mechanism is a specific scoring formula that synthesizes three distinct signals: disruption magnitude, historical importance, and new-task importance. While prior work uses some of these signals in isolation (e.g., historical importance via Fisher information in [16], or new-task importance via gradients in [4]), none of the provided abstracts describe a mechanism that combines these three specific types of signals into a single composite score for selection.\n\n**evaluation**: The evaluation design consists of applying the proposed method to a model and measuring its effectiveness by observing performance on downstream benchmarks. This is a standard empirical validation protocol. For example, paper [8] uses this same design to \"evaluate this on Transformer and BERT models on multiple NLP tasks\" to assess the link between importance and prunability.\n\n**domain**: The application area is scoring the importance of attention heads in a transformer. This is a well-established domain. Multiple prior papers operate directly in this area, including [1] which aims to \"classify the role of each attention head\" and [4] which proposes a \"Unified Head Importance-Entropy Score\".\n\nVERDICT purpose = 16\nVERDICT mechanism = NONE\nVERDICT evaluation = 8\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: COVERED-BY [16] | reason: The Elastic Weight Consolidation (EWC) method, discussed in this paper, is a mechanism for continual learning that combines these three signals. It uses a new-task loss (new-task importance) and adds a penalty term for changing weights from a previous task. This penalty term is the product of the weight's historical importance (measured by the Fisher information matrix on the old task) and the magnitude of its disruption (the squared change in the weight's value). The paper explicitly discusses \"the Elastic Weight Consolidation (EWC) method for continual learning\" and \"the calculation of the importance of weights based on the Fisher information matrix from the original EWC method.\""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     5
+    ],
+    "mechanism": [
+     22
+    ],
+    "evaluation": [
+     2,
+     21,
+     29
+    ],
+    "domain": [
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to demonstrate the effectiveness of HeadRollback over vanilla continual LoRA in continual learning. None of the prior papers explicitly report or establish the same empirical relationship (i.e., the specific improvement of HeadRollback over vanilla continual LoRA). While many papers (e.g., [2], [4], [5], [6], [24]) address continual LoRA fine-tuning and propose methods to mitigate catastrophic forgetting or improve performance, none of them directly compare HeadRollback to vanilla continual LoRA or establish its superiority. Therefore, the purpose is **not covered**.\n\n### Mechanism\nThe mechanism involves evaluating on a 5-task text classification benchmark with Qwen3-0.6B-Base across multiple task orders. While several prior papers ([2], [4], [5], [6], [24]) propose mechanisms for continual LoRA fine-tuning, none of them describe the specific mechanism of using HeadRollback or a substantively equivalent approach. The mechanism of HeadRollback appears to be novel and is **not covered**.\n\n### Evaluation\nThe evaluation design involves measuring improvements in Overall Performance (+1.98pp) and Backward Transfer (+1.70pp) over vanilla LoRA, with a 7/9 win rate across task orders. This evaluation design is covered by prior work, as several papers (e.g., [2], [4], [5], [6], [24]) use similar evaluation designs for continual LoRA fine-tuning, including metrics like performance improvement and backward transfer, as well as comparisons to vanilla LoRA. The specific benchmark (5-task text classification with Qwen3-0.6B-Base) is a new instance, but the evaluation design itself is not novel. Therefore, the evaluation is **covered**.\n\n### Domain\nThe domain is continual LoRA fine-tuning evaluation, which is explicitly addressed in prior papers such as [2], [4], [5], [6], and [24]. These papers focus on continual learning in the context of LoRA fine-tuning, which is the same general application area as the contribution. While the specific benchmark or model (Qwen3-0.6B-Base) may differ, the domain is **covered**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 2  \nVERDICT domain = 2  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 5 | reason: SC-LoRA explicitly addresses \"vanilla LoRA\" limitations, stating: \"vanilla LoRA suffers from slow convergence speed and knowledge forgetting problems,\" which aligns with demonstrating effectiveness over vanilla continual LoRA.  \n\nFACET: mechanism | FINAL: NONE | reason: No prior paper explicitly evaluates on a \"5-task text classification benchmark with Qwen3-0.6B-Base across multiple task orders,\" nor mentions an equivalent setup under different terminology."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 22
+      },
+      "evaluation": {
+       "covered_by": 29
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**Purpose:** The contribution's purpose is to demonstrate that HeadRollback outperforms vanilla continual LoRA — i.e., to show a specific method's effectiveness over a baseline in continual LoRA fine-tuning. Papers [1], [2], [4], [6], [18], [24] all compare their proposed continual LoRA methods against vanilla LoRA baselines, establishing the same objective: showing a new continual LoRA approach improves over the vanilla LoRA baseline. For example, [1] proposes I-LoRA and validates it against continual fine-tuning baselines, [2] proposes C-LoRA and compares against existing LoRA approaches, and [4] explicitly addresses \"mitigating catastrophic forgetting\" vs. vanilla LoRA. These all share the same problem-class objective: demonstrate a continual LoRA variant's superiority over vanilla LoRA.\n\n**Mechanism:** The mechanism is evaluating on a 5-task text classification benchmark with a specific LLM (Qwen3-0.6B-Base) across multiple task orders. Papers [1], [2], [6], [16], [22] evaluate continual learning methods on multi-task sequential benchmarks across different task orders. Paper [22] specifically investigates task ordering effects in continual learning experiments. Paper [16] uses order-robust continual learning evaluation. The underlying primitive — running a continual learning method on a sequence of classification tasks with multiple orderings — is present in [22] and [16]. Paper [1] also evaluates on text classification tasks sequentially.\n\n**Evaluation:** The evaluation design uses Overall Performance and Backward Transfer metrics with win-rate across task orders. Paper [29] (GEM) explicitly introduces and defines Backward Transfer as a metric for continual learning evaluation, stating \"these metrics characterize models not only by their test accuracy, but also in terms of their ability\" including backward transfer. Paper [21] also focuses on Backward Knowledge Transfer as a metric. Overall Performance (average accuracy across tasks) is a standard metric used in [1], [2], [14], [16], and others. Win-rate across task orders is used in [20] and [22]. These evaluation designs are well-covered.\n\n**Domain:** The domain is continual LoRA fine-tuning evaluation, which is directly covered by [1], [2], [4], [6], [18], [24], and others — all operating in the same application area of continual learning with LoRA-based parameter-efficient fine-tuning for LLMs.\n\nVERDICT purpose = 1\nVERDICT mechanism = 22\nVERDICT evaluation = 29\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 22
+      },
+      "evaluation": {
+       "covered_by": 21
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe contribution's purpose is to demonstrate the specific empirical relationship that the \"HeadRollback\" method is more effective than vanilla continual LoRA. According to the special rule for \"finding\" contributions, this is only covered if a prior paper establishes the *same* empirical relationship. Since HeadRollback is the novel method being introduced, no prior paper could have established its effectiveness.\n\n**MECHANISM**\nThe mechanism is an analysis based on evaluating a model on a multi-task benchmark across multiple task orders to see how performance changes. This evaluation design is not new. Paper [22] is explicitly about \"The Effect of Task Ordering in Continual Learning\" and uses the same core analysis design: \"We conduct an extensive series of empirical experiments on synthetic and naturalistic datasets and show that reordering tasks significantly affects the amount of catastrophic forgetting.\"\n\n**EVALUATION**\nThe evaluation uses the metrics \"Overall Performance\" and \"Backward Transfer\". These are standard, named metrics in the continual learning literature used to assess model quality. Paper [21] is titled \"Beyond Not-Forgetting: Continual Learning with Backward Knowledge Transfer\" and explicitly focuses on and uses backward transfer as a key evaluation concept.\n\n**DOMAIN**\nThe domain is continual learning applied to LoRA fine-tuning. This is a well-established research area. For example, paper [2] introduces \"C-LoRA: Continual Low-Rank Adaptation for Pre-trained Models,\" operating in the exact same application domain.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 22\nVERDICT evaluation = 21\nVERDICT domain = 2",
+      "stage2": "FACET: purpose: Demonstrate HeadRollback's effectiveness over vanilla continual LoRA. | FINAL: NONE | reason: No prior paper states its objective as demonstrating effectiveness over a vanilla/sequential LoRA fine-tuning baseline. Papers proposing new methods either state a general goal (e.g., mitigating forgetting) or frame their purpose as an improvement over more complex existing continual learning techniques (e.g., multi-adapter or freezing methods), not the simple sequential baseline."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     3,
+     9,
+     14
+    ],
+    "evaluation": [
+     3,
+     9,
+     14
+    ],
+    "domain": [
+     1,
+     3
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        9,
+        14
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        9,
+        14
+       ]
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to explain what HeadRollback selects and where disruption occurs, focusing on identifying attention heads most susceptible to unintentional disruption and their historical importance. No prior paper explicitly establishes this relationship between head selection, susceptibility, and historical importance. Papers like [3], [10], and [25] discuss catastrophic forgetting and neural network dynamics but do not address the specific empirical relationship between head selection and disruption susceptibility. Papers [14] and [9] discuss attention head selection but focus on modularity or token-level routing rather than susceptibility to disruption.\n\n#### Mechanism:\nThe mechanism involves comparing three-signal selection against disruption-only selection and inspecting per-layer susceptibility. Paper [9] discusses per-layer supervision and modularity in Transformers, which involves identifying critical components and their causal roles, aligning with the inspection of per-layer susceptibility. Paper [14] introduces mechanisms for selecting attention heads dynamically, which overlaps with the idea of selecting heads based on specific criteria (e.g., historical importance or susceptibility). These mechanisms are substantively equivalent to the contribution's approach.\n\n#### Evaluation:\nThe evaluation design involves comparing selected heads' historical importance and susceptibility across layers. Paper [9] uses ablation and per-layer analysis to validate modularity and redundancy in Transformers, which matches the evaluation design of inspecting per-layer susceptibility. Paper [14] evaluates attention head selection mechanisms, which aligns with the comparison of selection strategies. Both papers use similar evaluation designs, even though the specific benchmarks or metrics differ.\n\n#### Domain:\nThe domain is continual learning analysis. Papers [1], [2], [3], [4], [5], [10], [16], [20], [23], and [25] all address continual learning, catastrophic forgetting, or stability-plasticity tradeoffs, which are part of the same general application area. While the specific focus on attention head selection within continual learning may differ, the domain itself is covered by prior work.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = 9, 14  \nVERDICT evaluation = 9, 14  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses HeadRollback's selection mechanism or disruption location under any terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Explain what HeadRollback selects and where disruption occurs (i.e., demonstrate that a three-signal selection criterion picks heads with higher historical importance than disruption-only selection, and that middle layers are most susceptible to unintentional disruption).**\n\nThe purpose is to establish a specific empirical relationship: that combining three signals for head selection yields heads with 3-7x higher historical importance than disruption-only selection, and that middle layers are most susceptible. Paper [3] investigates \"how different parts of the neural network contribute to overall forgetting by investigating the training dynamics\" and evaluates parameter obliteration in catastrophic forgetting — this is thematically related but focuses on parameter-level forgetting contributions, not on attention head selection criteria or layer-wise susceptibility to disruption in the context of a specific selection method. Paper [10] investigates \"how forgetting affects representations in neural network models\" through representational analysis, examining layer-level effects. Paper [25] proposes \"hierarchical layer-wise and element-wise regularization\" and analyzes layer importance. None of these establish the same empirical relationship (three-signal vs. disruption-only selection → historical importance difference, plus middle-layer susceptibility finding). The specific relationship being demonstrated is not covered.\n\n**MECHANISM: Analysis comparing three-signal selection against disruption-only selection and inspecting per-layer susceptibility.**\n\nThis is an ablation/comparison analysis (comparing selection variants) plus per-layer breakdown. Paper [3] uses \"training dynamics during different methods\" to evaluate forgetting contributions across network parts — a per-layer/per-component analysis in continual learning. Paper [25] performs hierarchical layer-wise analysis of parameter importance. Paper [10] uses representational analysis techniques across layers. These are standard controlled ablation and per-layer breakdown designs, which appear across multiple papers. The mechanism is a standard analysis design (component comparison + per-layer breakdown) that appears in prior work.\n\n**EVALUATION: Selected heads have 3-7x higher historical importance than disruption-only selection; middle layers are most susceptible.**\n\nThe evaluation design involves measuring historical importance scores across selection variants and per-layer susceptibility metrics. Paper [3] evaluates \"how different parts of the neural network contribute to overall forgetting\" with per-component analysis. Paper [25] performs layer-wise importance analysis. Paper [10] uses representational analysis across layers to study forgetting. These use the same evaluation design family: per-layer/per-component importance measurement in continual learning. The specific metric (historical importance ratio) is new, but the design of comparing importance across components/layers is covered.\n\n**DOMAIN: Continual learning analysis.**\n\nMultiple papers operate in continual learning: [1], [2], [3], [4], [5], [10], [20], [21], [23], [25], [26], [28] all work in continual learning. This is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 3\nVERDICT evaluation = 3\nVERDICT domain = 3",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper describes the specific objective of selecting attention heads and identifying where (at which layer/position) disruption occurs as a mechanism for continual learning or forgetting analysis — even under different terminology. Paper [3] investigates how different parts of a neural network contribute to forgetting, and paper [14] selects attention heads per token, but neither combines head selection with locating disruption sites in the same way HeadRollback's purpose requires. No quoted phrase from any prior paper satisfies the same objective."
+     }
+    }
+   }
+  }
+ ]
+}

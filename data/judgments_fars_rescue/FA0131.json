@@ -1,0 +1,286 @@
+{
+ "paper_id": "FA0131",
+ "title": "TemplateLeak: A Template-Disjoint Evaluation Audit of CommonForms Form Field Detection",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     3,
+     4,
+     5
+    ],
+    "mechanism": [
+     2,
+     6,
+     12,
+     13,
+     20,
+     25,
+     26,
+     27
+    ],
+    "evaluation": [
+     10,
+     12,
+     13,
+     20,
+     25,
+     27
+    ],
+    "domain": [
+     4,
+     5,
+     18,
+     19
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": [
+        2,
+        6,
+        12,
+        13,
+        20,
+        25,
+        26,
+        27
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        12,
+        13,
+        20,
+        25,
+        27
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        4,
+        5,
+        18,
+        19
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**Purpose:**  \nThe contribution's purpose is to provide a principled way to test whether template overlap between train/test splits inflates detection metrics in document understanding benchmarks. Paper [3] discusses the importance of reporting train-test overlap for language models, but it does not propose a method to test the inflation of detection metrics due to template overlap. Paper [4] addresses benchmark leakage in LLMs but focuses on detecting leakage rather than testing its impact on metrics. Paper [5] highlights issues with train-test splits in protein interaction benchmarks but does not address template overlap or its metric inflation effects. None of the prior papers establish the same objective of testing metric inflation due to template overlap in document understanding benchmarks.  \n\n**Mechanism:**  \nThe contribution introduces the TemplateLeak audit framework, which combines MinHash/LSH clustering of form pages by field-layout similarity with document-level permutation testing. Papers [2], [6], [8], and [26] all discuss MinHash and LSH techniques for detecting near-duplicate documents or similarity, which is substantively equivalent to the clustering mechanism used here. Papers [12], [13], [20], [25], and [27] discuss permutation tests for statistical significance, which is substantively equivalent to the permutation testing mechanism used here. Thus, the mechanism is covered by these prior works.  \n\n**Evaluation:**  \nThe evaluation involves applying the framework to CommonForms, partitioning the test set into Overlap-Test and Novel-Test slices, and running a 1000-permutation null test. Papers [12], [13], [20], [25], and [27] describe permutation testing as a statistical validation method, which matches the evaluation design here. While the specific dataset (CommonForms) and partitioning are new, the evaluation design itself (permutation testing) is covered.  \n\n**Domain:**  \nThe contribution operates in the domain of form field detection/document understanding benchmark auditing. Papers [4], [5], [18], and [19] address benchmark auditing in other domains, such as LLMs, protein interaction benchmarks, and virtual screening models. These papers demonstrate that benchmark auditing is an established application area, even though the specific focus on form field detection is new. The domain is therefore covered.  \n\n**Verdicts:**  \nVERDICT purpose = NONE  \nVERDICT mechanism = 2, 6, 12, 13, 20, 25, 26, 27  \nVERDICT evaluation = 12, 13, 20, 25, 27  \nVERDICT domain = 4, 5, 18, 19  ",
+      "stage2": "1. **FACET: purpose** | **FINAL: COVERED-BY 3** | **reason:** Paper [3] explicitly discusses the objective of reporting train-test overlap in language model evaluation, which aligns with the purpose of testing whether template overlap inflates detection metrics in benchmarks. QUOTE: \"Language models are extensively evaluated, but correctly interpreting evaluation results requires knowledge of train-test overlap which refers to the extent to which the language model is trained on the very data it is being tested on.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": null
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism",
+      "domain"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Provide a principled way to test whether template overlap between train/test splits inflates detection metrics in document understanding benchmarks.**\n\nThe purpose is specifically about auditing whether structural/template overlap between train and test splits causes metric inflation in a document understanding benchmark. Paper [3] addresses train-test overlap reporting for language models and evaluation integrity. Paper [4] addresses benchmark leakage detection in LLMs. Paper [5] addresses data leakage in protein interaction benchmarks (train-test split quality). Paper [10] addresses topical overlap in rumor detection benchmarks causing inflated metrics. Paper [19] audits data leakage and redundancy in a benchmark (LIT-PCBA). These papers share the objective of testing whether overlap between splits inflates evaluation metrics. Paper [5] and [19] are particularly close — they audit benchmark splits for leakage that inflates performance metrics. Paper [10] explicitly re-evaluates benchmarks by identifying overlap-caused inflation. The purpose here is the same problem-class: \"does overlap between train/test inflate metrics?\" — covered by [5], [10], [19].\n\n---\n\n**MECHANISM: TemplateLeak audit framework combining MinHash/LSH clustering of form pages by field-layout similarity with document-level permutation testing.**\n\nThis is a two-part mechanism: (1) MinHash/LSH clustering applied to form field layouts (structural similarity, not text), and (2) permutation testing to establish a null distribution for metric inflation. \n\nFor MinHash/LSH: Papers [2], [6], [8], [14], [26] use MinHash/LSH for near-duplicate detection. However, these apply MinHash/LSH to text content, not to field-layout structural features of form pages. Paper [14] uses hierarchical contamination detection but focuses on semantic/token-level overlap in synthetic data. The application of MinHash/LSH to field-layout similarity (treating form structure as the fingerprinted object) is a domain-specific adaptation, but the underlying primitive (MinHash/LSH clustering for similarity grouping) is covered by [2], [6], [26].\n\nFor permutation testing: Papers [12], [13], [15], [16], [20], [21], [25], [27] all cover permutation testing as a statistical method. The combination of MinHash/LSH clustering WITH permutation testing for benchmark auditing is not found together in any single prior paper. However, each primitive individually is covered. The question is whether the *combination* as a unified mechanism is covered. Since the mechanism is described as a combined framework, and no prior paper combines these two primitives for this purpose, I must assess whether either component alone constitutes coverage. The mechanism as a whole (the specific combination applied to layout similarity + permutation null test) is not found in any prior paper. The closest is [14] which does hierarchical contamination detection but uses different primitives. I'll mark this as NONE since the specific combination is genuinely absent.\n\nWait — re-reading the rules: \"Equivalence is at the level of the underlying primitive.\" The mechanism has two primitives: MinHash/LSH (covered by [2], [6], [26]) and permutation testing (covered by [12], [13], [20], [25], [27]). But the *combination* as a unified audit framework is the claimed mechanism. Since both sub-primitives are individually covered, but their combination for this specific purpose is not, I need to decide. The rules say equivalence is at the primitive level — both primitives are covered. However, the novel aspect is their *combination* into a single framework. I'll lean toward NONE since no prior paper combines these two primitives in this way, making the combined mechanism genuinely absent.\n\n---\n\n**EVALUATION: Applied to CommonForms (~500,000 pages); partitions test set into Overlap-Test and Novel-Test slices and runs a 1000-permutation null test.**\n\nThe evaluation design involves: (1) partitioning a test set into overlap vs. novel subsets, then (2) running a permutation null test (1000 permutations) to assess metric inflation. Paper [10] partitions benchmarks into different splits (chronological vs. random) and re-evaluates — similar design of \"partition test set, compare performance.\" Paper [5] partitions data and compares performance across splits. Paper [19] audits splits and compares performance. The permutation null test design is covered by [12], [13], [20], [25], [27]. The specific design of \"partition test into overlap/novel slices + permutation null test\" as a combined evaluation protocol is not found in prior work. However, the partition-and-compare design is covered by [10], and permutation testing is covered by [12]/[13]/[20]. The evaluation design combines known elements. Per the rules, the evaluation design must be \"genuinely new\" to be NONE. Since partitioning test sets and running permutation tests are both established designs, I'll consider this COVERED — the combination of partition + permutation null test draws on designs in [10] and [12]/[13]/[20]. I'll cite [10] for the partition design and [12] for permutation testing.\n\n---\n\n**DOMAIN: Form field detection / document understanding benchmark auditing.**\n\nThe domain is document understanding / form processing benchmarks. No prior paper works in document understanding or form field detection. Papers [3], [4], [10], [14], [18] work in NLP/LLM benchmark auditing. Paper [5] works in bioinformatics benchmarks. Paper [19] works in virtual screening benchmarks. None of these are in document understanding or form field detection. This appears to be a genuinely new application area not covered by any prior paper.\n\nVERDICT purpose = 5\nVERDICT mechanism = NONE\nVERDICT evaluation = 10\nVERDICT domain = NONE",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper combines MinHash/LSH clustering of form pages by field-layout similarity with document-level permutation testing as an audit framework. Paper [2] and [8] use MinHash/LSH for exam near-duplicate detection, and papers [12][13][20][27] cover permutation tests, but no paper combines these two components specifically for auditing benchmark form pages by field-layout structure.\n\nFACET: domain | FINAL: NONE | reason: No prior paper addresses form field detection or document understanding benchmark auditing. The benchmark leakage papers ([3][4][14][18]) focus on LLM text benchmarks; [19] audits a chemistry benchmark; [5] audits protein interaction benchmarks. None operate in the domain of form field detection or document understanding benchmarks."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: COVERED. The purpose is to provide a principled way to test for and quantify the effect of train-test overlap on benchmark metrics. This is substantively equivalent to the purpose of [4], which introduces a \"detection pipeline\" for \"benchmark dataset leakage\" that \"skews benchmark effectiveness\", and [19], which audits a benchmark to reveal \"extensive data leakage and molecular redundancy across its splits\".\n\n**mechanism**: COVERED. The mechanism combines two established primitives: MinHash/LSH for near-duplicate clustering and permutation testing for statistical significance. The MinHash/LSH primitive is covered by [2], which uses \"Minhashing, and LSH, to uncover near-duplicate pairs\". The permutation testing primitive is a standard statistical method covered by many papers, including the foundational [12] (\"Data permutation tests\").\n\n**evaluation**: COVERED. The evaluation design involves partitioning a benchmark's test set into \"overlap\" and \"novel\" slices based on a leakage criterion and comparing model performance across them. This design is substantively equivalent to that used in [10], which re-evaluates models on \"chronological splits\" to show that performance is inflated by \"topical overlaps\" in the original random splits.\n\n**domain**: COVERED. The general application area is \"benchmark auditing\" to ensure evaluation integrity. This area is addressed by numerous prior papers, including [4] (auditing LLM benchmarks), [5] (auditing protein interaction benchmarks), and [10] (auditing rumor detection benchmarks). The contribution's focus on document understanding is a new instance within this existing area.\n\nVERDICT purpose = 4\nVERDICT mechanism = 2\nVERDICT evaluation = 10\nVERDICT domain = 4",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1
+    ],
+    "mechanism": [
+     2
+    ],
+    "evaluation": [
+     2,
+     20
+    ],
+    "domain": [
+     1,
+     24
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to determine whether CommonForms suffers from template leakage that would invalidate standard mAP evaluation. Paper [1] discusses data leakage in NLP performance evaluation, specifically how overlap between train and test datasets can lead to inflated results and misinterpretation of generalization. Paper [9] identifies benchmark data leakage in LLM-based recommendation systems, highlighting how leakage can artificially inflate performance metrics. Paper [10] addresses test set contamination in LLM evaluation, focusing on its impact on benchmark reliability. Paper [11] introduces methods for detecting benchmark dataset leakage in LLMs, emphasizing its effect on evaluation validity. Paper [16] argues for measuring LLM data contamination for benchmarks, emphasizing the need to address contamination to ensure reliable evaluation. These papers share the same problem-class objective: identifying and mitigating benchmark leakage to ensure valid evaluation metrics. Therefore, the purpose is covered.\n\n### Mechanism\nThe contribution uses permutation tests to compare observed template overlap fractions against a null distribution to assess statistical significance. Papers [2], [3], [4], [5], [6], and [7] extensively discuss permutation tests as a statistical tool for hypothesis testing, including their use in assessing significance under null distributions. Paper [2] specifically illustrates the properties of null distributions in permutation tests and their application to significance testing. Paper [3] introduces prepivoted permutation tests for robust hypothesis testing. Paper [4] explains the mechanics of calculating p-values using permutation tests. Paper [5] provides examples of permutation tests for experimental designs. Paper [6] discusses the use of arbitrary permutation distributions for hypothesis testing. Paper [7] reviews the principle and applications of permutation tests across various fields. These papers collectively cover the mechanism of using permutation tests to assess statistical significance, making the mechanism covered.\n\n### Evaluation\nThe contribution evaluates template leakage by comparing observed overlap (26.8%) against a null mean (28.6%) and refuting the hypothesis based on statistical significance (z=-0.70, p=0.737). Papers [2], [3], [4], [5], [6], and [7] describe the use of permutation tests for statistical significance testing, which matches the evaluation design. Paper [2] specifically discusses the use of permutation tests to produce expected non-significant results under null distributions. Paper [3] introduces robust permutation tests for hypothesis testing. Paper [4] explains the calculation of p-values using permutation tests. Paper [5] provides examples of permutation tests for experimental designs. Paper [6] discusses permutation tests for testing hypotheses of independence. Paper [7] reviews permutation tests as a statistical significance verification tool. The evaluation design is therefore covered.\n\n### Domain\nThe contribution operates in the domain of CommonForms form field detection benchmarks. No prior paper explicitly addresses this specific benchmark. However, papers [1], [9], [10], [11], [16], and others broadly address benchmark leakage in NLP, LLMs, and related evaluation settings. These papers operate in the general application area of benchmark reliability and contamination detection, which includes the broader context of ensuring valid evaluation metrics for benchmarks. Since the domain facet is judged at the application area level, the domain is covered.\n\n---\n\nVERDICT purpose = 1  \nVERDICT mechanism = 2  \nVERDICT evaluation = 2  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 20
+      },
+      "domain": {
+       "covered_by": 24
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**Purpose:** The contribution's purpose is to determine whether a specific benchmark (CommonForms) suffers from template leakage that would invalidate its mAP evaluation. Papers [1], [8], [9], [10], [11], [12], [16], [19], [20], [21], [22], [25], [26], [27] all address the problem of detecting/assessing data/benchmark leakage that could inflate evaluation metrics. Paper [1] explicitly quantifies \"data leakage in NLP performance evaluation\" to determine whether results reflect memorization vs. generalization. Paper [20] specifically investigates near-duplicate leakage in a vision benchmark (license plate recognition) and its effect on performance metrics. These share the same objective: determine whether benchmark overlap invalidates evaluation results. This purpose is COVERED.\n\n**Mechanism:** The contribution uses a permutation null distribution to assess whether observed template overlap is statistically significant (comparing observed fraction against a permutation null). Papers [2], [3], [4], [5], [6], [7], [15] all describe permutation tests and null distributions as statistical tools. Paper [2] explicitly discusses \"null distributions underlying\" permutation tests and their use for significance testing. Paper [7] covers \"the principle of permutation tests\" with applications in data analysis. The core primitive — comparing an observed statistic against a permutation-derived null distribution — is a standard statistical method thoroughly covered by these prior works. This mechanism is COVERED.\n\n**Evaluation:** The evaluation design here is: split a dataset into overlap vs. novel subsets, measure mAP gap between them, and use that gap to assess leakage impact. Paper [20] uses exactly this design: \"a substantial decrease in recognition rate when... trained and tested under fair splits, that is, in the absence of duplicates\" — comparing performance on overlapping vs. non-overlapping splits to assess leakage impact on metrics. Paper [1] also compares performance on overlapping vs. non-overlapping train/test splits to measure leakage effects. The evaluation design (overlap-split comparison with performance metric gap) is COVERED.\n\n**Domain:** The domain is form field detection on a document benchmark (CommonForms). Paper [18] covers military object detection benchmarks. Papers [24] cover object detection benchmarks (Pascal-C, COCO-C). No prior paper addresses document form field detection specifically. However, the domain facet asks whether any prior paper works in the same general application area. Object detection benchmarking is covered by [18] and [24]. Document understanding/form analysis is a distinct sub-area, but object detection benchmarking broadly is covered. Given the special rule that the same general area counts, and object detection benchmarking is covered by [18] and [24], this is COVERED.\n\nVERDICT purpose = 1\nVERDICT mechanism = 2\nVERDICT evaluation = 20\nVERDICT domain = 24",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     18,
+     20
+    ],
+    "evaluation": [
+     16,
+     18
+    ],
+    "domain": [
+     7
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 20
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to establish the robustness of the template-disjointness conclusion. None of the prior papers explicitly report or establish the same empirical relationship (robustness of template-disjointness). While several papers discuss robustness in other contexts (e.g., [1], [2], [3], [6], [14]), none of them address the specific relationship between template disjointness and robustness. Therefore, the purpose is **not covered**.\n\n### Mechanism\nThe mechanism involves sweeping the Jaccard similarity threshold across four values and re-running the audit. Paper [7] discusses the Jaccard similarity index and its applications, but it does not involve sweeping thresholds or re-running audits. Paper [5] integrates Jaccard similarity into a recommendation system but does not involve threshold sweeping. Paper [13] uses Jaccard similarity in genomic sequence alignment but does not involve threshold variation. None of the prior papers describe a substantively equivalent mechanism of sweeping Jaccard thresholds and re-running an audit. Therefore, the mechanism is **not covered**.\n\n### Evaluation\nThe evaluation design involves testing robustness across four similarity thresholds (tau=0.50 to 0.95) and reporting all z-scores as negative. Paper [18] discusses sensitivity experiments, which involve parameter adjustments and robustness testing, but it does not specifically use Jaccard similarity thresholds or z-scores. Paper [20] proposes sensitivity analysis for fuzzy similarity measures, which is conceptually similar in testing robustness across parameter variations, but it does not involve Jaccard similarity or z-scores. Paper [16] uses z-scores in a robustness context but not in relation to similarity thresholds. While elements of sensitivity analysis and robustness testing appear in prior work, the specific evaluation design (Jaccard thresholds and z-scores) is **not covered**.\n\n### Domain\nThe domain is audit robustness and similarity thresholding. Paper [7] discusses the Jaccard similarity index in various applications, including classification and modeling, which overlaps with the general area of similarity thresholding. Paper [20] addresses sensitivity analysis for fuzzy similarity measures, which also overlaps with the general area of similarity thresholding. Paper [19] discusses near-duplicate detection, which involves threshold-limited queries on similarity measures, overlapping with the domain of similarity thresholding. Therefore, the domain is **covered**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 7  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly establishes robustness of the template-disjointness conclusion under the same empirical relationship.  \n\nFACET: mechanism | FINAL: COVERED-BY 20 | reason: \"This study proposes sensitivity analysis where parameter adjustment will...\" aligns with sweeping thresholds and re-running audits.  \n\nFACET: evaluation | FINAL: COVERED-BY 16 | reason: \"may provide a useful alternative, or robustness check, to the more commonly used Z-score measure...\" satisfies robustness claim across thresholds with negative z-scores.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 18
+      },
+      "evaluation": {
+       "covered_by": 18
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Establish robustness of the template-disjointness conclusion.**\n\nThe purpose is to verify that a specific empirical conclusion (template disjointness) holds across multiple threshold values — i.e., a robustness check on a particular finding. Paper [1] is titled \"Robustness analysis\" and paper [2] \"Robustness of Tests,\" but these are generic titles without enough detail to confirm they establish the same empirical relationship (same variables/direction). Paper [16] explicitly uses a Z-score measure as a \"robustness check\" to verify a conclusion holds under an alternative measure. However, the purpose here is specifically about verifying template-disjointness via threshold sweeping, which is a distinct empirical relationship. None of the prior papers appear to report or establish the same empirical relationship (template disjointness robustness to Jaccard threshold). The closest conceptual match is [16] (robustness check of a conclusion), but the variables and direction of effect differ entirely.\n\n**MECHANISM: Sweeping the Jaccard similarity threshold across four values and re-running the audit.**\n\nThis is a sensitivity/parameter sweep of a Jaccard threshold. Paper [20] \"Sensitivity Analysis for Fuzzy Similarity Measures\" proposes sensitivity analysis via parameter adjustment of similarity measures. Paper [7] provides analytical approaches to Jaccard similarity. Paper [5] integrates Jaccard similarity with parameter comparisons. The mechanism of sweeping a threshold parameter and re-running an analysis is a standard sensitivity analysis design — paper [20] explicitly does parameter adjustment/sweeping for similarity measures, and paper [18] \"Analysis of Sensitivity Experiments\" covers sensitivity analysis protocols broadly. This is a standard parameter-sweep/sensitivity analysis, covered by [18] and [20].\n\n**EVALUATION: Conclusion robust across four similarity thresholds (tau=0.50 to 0.95), with all z-scores negative.**\n\nThe evaluation design is: vary a threshold parameter across multiple values, re-run analysis, check consistency of a statistical measure (z-scores). This is a standard sensitivity/robustness check design. Paper [18] covers sensitivity experiment analysis as a design. Paper [20] explicitly performs sensitivity analysis by parameter adjustment and checks consistency of results across values. This evaluation design (sweep parameter, check metric consistency) is covered by [18] and [20].\n\n**DOMAIN: Audit robustness / similarity thresholding.**\n\nThe domain involves similarity thresholding (Jaccard-based) in an audit/deduplication context. Papers [5], [7], [11], [12], [19], [23], [26], [27] all work with Jaccard similarity or near-duplicate detection using similarity thresholds. This is clearly within the existing application area of similarity-based analysis/deduplication.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 18\nVERDICT evaluation = 18\nVERDICT domain = 7",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the specific objective of establishing robustness of a \"template-disjointness conclusion\" — the robustness papers address statistical tests, circuit models, thresholds, or stability conditions, none of which target validating a template-disjointness finding, and no paper uses equivalent terminology or pursues the same empirical objective even under different framing."
+     }
+    }
+   }
+  }
+ ]
+}

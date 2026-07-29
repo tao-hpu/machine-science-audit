@@ -1,0 +1,315 @@
+{
+ "paper_id": "Tb5PY5vwp6",
+ "title": "HShare: Fast LLM Decoding by Hierarchical Key-Value Sharing",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     13,
+     15
+    ],
+    "mechanism": [
+     15
+    ],
+    "evaluation": [
+     15
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": 15
+      },
+      "evaluation": {
+       "covered_by": 15
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to reveal why query-aware dynamic KV token sparsity methods result in significant redundant computation, providing a basis for cost reduction. None of the prior papers explicitly aim to analyze or reveal the redundancy in query-aware dynamic KV token sparsity methods. While several papers (e.g., [1], [2], [3], [4], [5]) address KV cache compression or sparsity, their purposes are focused on improving efficiency or reducing memory/computation costs, not on analyzing or explaining the redundancy mechanisms. Therefore, no prior paper shares the same purpose.\n\n### Mechanism\nThe mechanism involves systematically analyzing the criticality of KV cache tokens across three levels: different layers, different heads within the same layer, and adjacent queries. Paper [15] (\"Leveraging redundancy in attention with Reuse Transformers\") systematically analyzes redundancy in attention scores across heads and layers, which is substantively equivalent to analyzing criticality across layers and heads. However, no prior paper explicitly analyzes redundancy across adjacent queries, making the mechanism partially covered. Since the mechanism must be judged as a whole, and no prior paper covers all three levels, the mechanism is marked as uncovered.\n\n### Evaluation\nThe evaluation involves empirical findings on LLaMA2-7b-chat, demonstrating substantial similarity across the three levels of analysis. Paper [15] also conducts empirical analysis of redundancy across layers and heads, using a similar evaluation design (systematic empirical analysis of redundancy patterns). While the specific object (LLaMA2-7b-chat) differs, the evaluation design is substantively equivalent. Therefore, the evaluation is covered.\n\n### Domain\nThe domain is large language model (LLM) inference, specifically focusing on KV cache sparsity. Papers [1], [2], [3], [4], and [5] all operate in the same general application area of LLM inference and KV cache optimization. While the specific focus on query-aware dynamic sparsity may differ, this is a narrower instance within the same domain. Therefore, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 15  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 13 | reason: Paper [13] investigates redundancy in LLM architectures, including attention layers, and explicitly identifies inefficiencies that could justify cost-saving measures, aligning with the empirical relationship described in the facet. Quote: \"Despite some recognition of redundancy in LLMs, the variability of redundancy across different architectures in transformers, such as MLP and Attention layers, is under-explored.\"\n\nFACET: mechanism | FINAL: COVERED-BY 15 | reason: Paper [15] systematically analyzes empirical similarity across attention heads and layers, which matches the facet's focus on criticality and similarity at different levels of KV cache tokens. Quote: \"We systematically analyze the empirical similarity of these scores across heads and layers and find them to be considerably redundant, especially adjacent layers.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 15
+      },
+      "evaluation": {
+       "covered_by": 15
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: 揭示 query-aware 动态 KV token 稀疏方法为何有大量冗余计算,为降本提供依据**\n\nThe purpose is to explain *why* query-aware dynamic KV token sparsity methods have redundant computation — specifically by showing that criticality patterns are similar across layers, heads, and adjacent queries, so recomputing them per-query is wasteful. Paper [15] (\"Leveraging redundancy in attention with Reuse Transformers\") explicitly investigates redundancy in attention scores across heads and layers to motivate reuse, which is closely related. However, [15] focuses on attention score redundancy in general transformers (not KV cache token criticality in LLM inference, not the \"adjacent query\" dimension). No prior paper specifically establishes the relationship \"query-aware dynamic KV selection is redundant because criticality is similar across layers/heads/adjacent queries\" as a unified finding. The closest is [15], but it doesn't address the adjacent-query dimension or frame it as explaining redundancy in dynamic KV cache selection methods. This purpose is not substantively covered.\n\n**MECHANISM: 系统分析 KV cache token 的 criticality 在不同层、同层不同 head、相邻 query 三个层级上的相似性**\n\nPaper [15] \"systematically analyze the empirical similarity of these scores across heads and layers and find them to be considerably redundant\" — this is the same primitive: measuring similarity of attention/criticality scores across heads and layers. The adjacent-query dimension is an additional axis, but the core mechanism (systematic similarity analysis across heads and layers) is present in [15]. Paper [3] also profiles attention structure across heads. The mechanism of analyzing cross-layer and cross-head similarity of token importance is substantively covered by [15].\n\n**EVALUATION: 在 LLaMA2-7b-chat 上的实证发现**\n\nThe evaluation design is an empirical similarity analysis on a specific LLM (LLaMA2-7b-chat), measuring similarity statistics across layers/heads/queries. Paper [15] uses the same evaluation design — empirical similarity measurement across heads and layers on transformer models. This is the same design (measure similarity of attention patterns across structural dimensions), just applied to a different model instance. Per the special rule, this counts as COVERED.\n\n**DOMAIN: 大语言模型推理 / KV cache 稀疏**\n\nPapers [1], [2], [3], [4], [5], [6] all work in LLM inference with KV cache compression/sparsity. This domain is clearly covered by multiple prior papers.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 15\nVERDICT evaluation = 15\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper specifically aims to reveal *why* query-aware dynamic KV token sparsity methods contain large amounts of redundant computation as a basis for cost reduction — the closest papers (e.g., [3], [4]) propose compression methods but do not diagnose redundancy within query-aware dynamic sparse selection itself as their stated objective."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 15
+      },
+      "mechanism": {
+       "covered_by": 15
+      },
+      "evaluation": {
+       "covered_by": 15
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: Paper [15] covers this by establishing the same core empirical relationship; it aims to \"systematically analyze the empirical similarity of these [attention] scores across heads and layers and find them to be considerably redundant,\" which is substantively equivalent to the contribution's finding about token criticality similarity.\n\nmechanism: Paper [15] covers this as it uses the same analysis design, which is to \"systematically analyze the empirical similarity of... scores across heads and layers\" to find redundancy.\n\nevaluation: Paper [15] covers this as it uses the same evaluation design—an empirical analysis of attention score similarity on a transformer model—to establish its finding; applying this design to a different model (LLaMA2) does not make it novel.\n\ndomain: Paper [1] covers this as it explicitly works on \"KV Cache Quantization\" for large language models, which is the same application area of LLM inference and KV cache sparsification.\n\nVERDICT purpose = 15\nVERDICT mechanism = 15\nVERDICT evaluation = 15\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     3,
+     5,
+     8,
+     17
+    ],
+    "mechanism": [
+     2,
+     7,
+     8,
+     12,
+     14
+    ],
+    "evaluation": [
+     1,
+     3,
+     5,
+     6,
+     8,
+     14
+    ],
+    "domain": [
+     1,
+     3,
+     5,
+     6,
+     8,
+     9,
+     14
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        1,
+        3,
+        5,
+        8
+       ]
+      },
+      "mechanism": {
+       "covered_by": [
+        2,
+        7,
+        8,
+        12,
+        14
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        1,
+        3,
+        5,
+        6,
+        8,
+        14
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        3,
+        5,
+        6,
+        8,
+        9,
+        14
+       ]
+      },
+      "single_paper_covers_all": 8
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to reduce computational overhead from query-aware dynamic token selection while maintaining accuracy.  \n- **Paper [1]** discusses reducing memory bottlenecks in KV cache by pruning less important KV pairs, which aligns with the goal of reducing computational overhead.  \n- **Paper [3]** and **Paper [5]** also aim to reduce memory consumption in KV cache while preserving accuracy, which is substantively equivalent to the stated purpose.  \n- **Paper [8]** optimizes KV cache by layer-wise token sparsification, targeting computational efficiency while maintaining accuracy, which matches the purpose.  \n\n**Conclusion**: Purpose is covered by [1], [3], [5], and [8].\n\n---\n\n### Mechanism\nThe contribution introduces the HShare framework, which hierarchically shares KV token indices across layers, heads, and queries, using a greedy algorithm to determine optimal sharing configurations during prefill, with no extra cost during decoding.  \n- **Paper [2]** discusses shared query execution by exploiting overlapping computations across queries, which is conceptually similar to sharing KV token indices across queries.  \n- **Paper [7]** and **Paper [12]** explore sharing aggregate computations across queries, which aligns with the mechanism of sharing KV indices across queries.  \n- **Paper [8]** introduces layer-wise optimal KV cache management, which overlaps with the hierarchical sharing mechanism across layers.  \n- **Paper [14]** selects key tokens for KV cache reduction, which involves token selection strategies similar to the greedy algorithm for optimal sharing configurations.  \n\n**Conclusion**: Mechanism is covered by [2], [7], [8], [12], and [14].\n\n---\n\n### Evaluation\nThe evaluation involves selectively loading critical KV cache tokens while retaining the full KV cache structure, and the authors claim this is the first work to introduce \"shared critical KV cache token indices.\"  \n- **Paper [1]**, **Paper [3]**, **Paper [5]**, **Paper [6]**, **Paper [8]**, and **Paper [14]** all evaluate KV cache compression or token selection methods using similar designs, such as preserving critical tokens while reducing memory consumption.  \n- These papers use standard evaluation setups for KV cache efficiency, including ablation studies, token importance profiling, and throughput/accuracy comparisons, which match the evaluation design here.  \n\n**Conclusion**: Evaluation is covered by [1], [3], [5], [6], [8], and [14].\n\n---\n\n### Domain\nThe contribution operates in the domain of large language model inference and KV cache sparsification.  \n- **Paper [1]**, **Paper [3]**, **Paper [5]**, **Paper [6]**, **Paper [8]**, **Paper [9]**, and **Paper [14]** all address KV cache optimization or compression in the context of large language model inference, which is the same application area.  \n\n**Conclusion**: Domain is covered by [1], [3], [5], [6], [8], [9], and [14].\n\n---\n\n### Verdicts\nVERDICT purpose = [1, 3, 5, 8]  \nVERDICT mechanism = [2, 7, 8, 12, 14]  \nVERDICT evaluation = [1, 3, 5, 6, 8, 14]  \nVERDICT domain = [1, 3, 5, 6, 8, 9, 14]  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: 在保持精度的前提下削减 query-aware 动态 token 选择带来的计算开销**\n\nThe purpose is to reduce the computational overhead of query-aware dynamic token selection while maintaining accuracy. Paper [8] (SqueezeAttention) addresses \"saving the cost of inference\" via layer-wise optimal budget allocation for KV cache, which is about reducing overhead of KV cache operations while preserving quality. Paper [6] addresses \"reduces the memory footprint of generative inference\" adaptively. However, the specific purpose here is reducing the overhead of the *selection process itself* (the index computation cost), not just reducing memory/compute of attention. Paper [8] uses a greedy algorithm to find layer-wise optimal budget — this is close but targets budget allocation rather than overhead of the selection mechanism. None of the papers specifically target \"reducing the overhead of query-aware dynamic token selection\" as their primary objective — most target memory reduction or accuracy preservation under compression. This purpose appears uncovered.\n\n**MECHANISM: HShare 分层 KV 共享框架 — 层/头/query 三级共享 KV token 索引；贪心算法在线确定最优共享配置**\n\nThe mechanism involves sharing KV token *indices* across layers, heads, and queries, with a greedy algorithm to find optimal sharing configurations. Paper [8] uses a greedy algorithm to determine layer-wise optimal KV budget allocation — similar greedy search but for budget sizes, not index sharing. Paper [6] identifies per-head structures (local vs. non-local) and constructs adaptive KV caches per head. Paper [4] (RazorAttention) identifies \"retrieval heads\" vs. other heads and treats them differently — head-level differentiation. None of these papers share the specific primitive of \"sharing token selection indices across queries/layers/heads to avoid recomputing them.\" The index-sharing primitive (adjacent queries reuse the same selected token indices) is not present in any prior paper. This appears uncovered.\n\n**EVALUATION: 保留完整 KV cache 只选择性加载关键部分**\n\nThe evaluation design involves standard LLM inference benchmarks measuring accuracy/perplexity under KV cache sparsity. Papers [1], [3], [4], [6], [8], [9], [14] all evaluate KV cache compression methods on standard LLM benchmarks (perplexity, downstream tasks like LongBench, etc.) — the same evaluation design family. This is clearly covered by multiple prior papers using the same benchmark families and metric semantics.\n\n**DOMAIN: 大语言模型推理 / KV cache 稀疏**\n\nMultiple prior papers ([1], [3], [4], [5], [6], [8], [9], [14]) operate explicitly in the domain of LLM inference with KV cache compression/sparsity. This is fully covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 6\nVERDICT domain = 6",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper targets reducing the computational overhead of query-aware dynamic token selection while preserving accuracy; the closest papers (e.g., [8] SqueezeAttention, [6] FastGen) address budget allocation or compression but not the specific overhead-reduction objective of dynamic per-query index computation.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper proposes a hierarchical KV sharing framework operating at layer/head/query three levels with a greedy online algorithm that determines optimal sharing configurations post-prefill and allows adjacent queries to directly share token indices; no equivalent framing exists under any alternative terminology in the prior papers."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 17
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose:** The contribution's purpose is to reduce the computational overhead introduced by the dynamic token selection mechanism itself. This is covered by paper [17], which addresses the same problem class of reducing the performance cost of an optimization, stating its goal as \"reducing this runtime overhead\" for query optimizations.\n\n**mechanism:** The core mechanism is sharing the indices of important tokens across different queries, layers, and heads to reduce redundant work. This is a specific application of the general primitive of multi-query optimization, which is covered by paper [7], which describes \"multi-query optimizations are critical for sharing work across queries\" by identifying and exploiting overlapping computations.\n\n**evaluation:** The evaluation design consists of applying a KV cache optimization and measuring its effect on model accuracy (on standard benchmarks) and system performance (memory, throughput). This standard evaluation protocol for KV cache methods is used in prior work, such as [1], [3], [6], and [8], which all propose and validate their own KV cache compression techniques using the same design.\n\n**domain:** The contribution operates in the domain of large language model inference, specifically focusing on KV cache optimization and sparsity. This domain is explicitly addressed by numerous prior papers, including [1] (\"KV Cache Compression for Efficient LLM Inference\"), [6] (\"Adaptive KV Cache Compression for LLMs\"), and [8] (\"Management of KV-Cache in LLM Inference\").\n\nVERDICT purpose = 17\nVERDICT mechanism = 7\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1
+    ],
+    "mechanism": [
+     1,
+     2
+    ],
+    "evaluation": [
+     2,
+     5
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to validate the performance of HShare in terms of accuracy and efficiency. Papers [1], [2], and [3] all address similar objectives of improving efficiency in large language models (LLMs) by reducing redundancy in attention mechanisms. For example, [1] introduces Shared Attention to enhance efficiency, [2] discusses cross-layer attention sharing to reduce redundancy, and [3] analyzes empirical redundancy in attention scores across heads and layers. These papers share the same problem-class objective of improving efficiency and accuracy in LLMs, making the purpose facet covered.\n\n### Mechanism\nThe mechanism involves evaluating accuracy and efficiency across multiple models and tasks, varying the sharing ratio, and measuring self-attention latency and end-to-end throughput. Papers [1], [2], and [3] describe substantively equivalent mechanisms. For instance, [1] introduces Shared Attention to reduce computational overhead, [2] proposes cross-layer attention sharing to optimize efficiency, and [3] leverages redundancy in attention scores to improve performance. These mechanisms all involve optimizing attention-sharing strategies to enhance efficiency, making the mechanism facet covered.\n\n### Evaluation\nThe evaluation design uses benchmarks like GSM8K, COQA, and LongBench to compare accuracy and efficiency metrics (e.g., self-attention latency and end-to-end throughput) against state-of-the-art methods. Papers [5], [19], and [15] employ similar evaluation designs for LLM inference systems. For example, [5] emphasizes workload choice in evaluating LLM inference systems, [19] introduces a holistic performance evaluation framework for LLM inference, and [15] uses a simulation framework to model LLM inference performance. These papers share the same evaluation design principles, such as benchmarking throughput and latency, making the evaluation facet covered.\n\n### Domain\nThe domain is large language model inference and system efficiency. Papers [1], [2], [3], [5], [19], and [15] all operate in the same general application area of LLM inference and efficiency optimization. For example, [1] and [2] focus on improving attention mechanisms for LLM efficiency, [5] evaluates LLM inference systems, and [19] introduces a framework for assessing LLM inference performance. These papers address the same domain, making the domain facet covered.\n\n### Verdicts\nVERDICT purpose = 1  \nVERDICT mechanism = 1  \nVERDICT evaluation = 5  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n## Purpose: 验证 HShare 在精度与效率上的表现 (Validate HShare's accuracy and efficiency performance)\n\nThe purpose is to demonstrate that a specific attention-sharing mechanism achieves competitive accuracy while delivering significant efficiency gains (speedup, throughput). Papers [1] and [2] both introduce attention-sharing mechanisms for LLMs and validate their accuracy and efficiency. Paper [1] (\"Shared Attention\") explicitly evaluates accuracy and efficiency of shared attention. Paper [2] (\"Cross-layer Attention Sharing\") similarly validates accuracy-efficiency tradeoffs of cross-layer attention sharing. Both pursue the same objective: show that attention sharing maintains accuracy while improving efficiency.\n\n## Mechanism: 评测精度(不同 sharing ratio)与效率(self-attention 延迟、端到端吞吐) across multiple models and tasks\n\nThe analysis method involves sweeping sharing ratios, measuring task accuracy, self-attention latency, and end-to-end throughput across multiple models. Paper [2] explicitly analyzes \"sharing attention weights across layers\" with different sharing configurations and evaluates accuracy across tasks. Paper [1] similarly evaluates shared attention with varying sharing configurations. Both use the same design: vary sharing ratio, measure accuracy + efficiency metrics. This is a standard controlled ablation/substitution design for attention-sharing papers.\n\n## Evaluation: LLaMA2-7b/LLaMA3-70b/Mistral-7b on GSM8K, COQA, LongBench; self-attention vs FlashAttention-2; throughput vs GPT-fast\n\nThe evaluation design uses standard LLM benchmarks (GSM8K, LongBench are named benchmark families), compares against FlashAttention-2 as a baseline (a named system), and measures throughput against GPT-fast. Paper [2] uses similar LLM benchmarks and evaluates accuracy/efficiency of attention-sharing. Paper [10] evaluates LLM inference efficiency with throughput metrics on similar models. Paper [11] compares sparse attention against FlashAttention baselines. The benchmark families (GSM8K, LongBench) and metric semantics (latency speedup, throughput) appear across these papers. The specific combination of FlashAttention-2 comparison and GPT-fast throughput comparison is used in the LLM inference efficiency literature broadly covered by [1], [2], [10].\n\n## Domain: 大语言模型推理/系统效率 (LLM inference / system efficiency)\n\nPapers [1], [2], [10], [16], [19] all operate in the LLM inference and system efficiency domain. This is clearly covered.\n\nVERDICT purpose = 1\nVERDICT mechanism = 2\nVERDICT evaluation = 2\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

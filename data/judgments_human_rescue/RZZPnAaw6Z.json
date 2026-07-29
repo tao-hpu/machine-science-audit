@@ -1,0 +1,300 @@
+{
+ "paper_id": "RZZPnAaw6Z",
+ "title": "Self-rationalization improves LLM as a fine-grained judge",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     4
+    ],
+    "mechanism": [
+     4,
+     9
+    ],
+    "evaluation": [
+     4,
+     10
+    ],
+    "domain": [
+     1,
+     10
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to improve LLM-as-a-judge models' scoring on fine-grained customizable evaluation (Likert-scale, arbitrary criteria) without requiring extra human-annotated preference data. Paper [4] (\"Self-Taught Evaluators\") shares a substantively equivalent purpose, as it aims to improve evaluators without human annotations, using synthetic training data only. This aligns with the goal of eliminating reliance on human-annotated preference data for model improvement.\n\n### Mechanism\nThe mechanism involves Self-Rationalization Evaluators (SRE): starting from an SFT seed judge, generating N judgments (rationale + score) per input, curating preference pairs from its own judgments (Correct-Answer pairing with score margin), and iteratively fine-tuning via DPO. Paper [9] (\"Meta-Rewarding Language Models\") describes a self-rewarding mechanism where LLMs improve by judging their own responses instead of relying on human labelers, which is substantively equivalent to the self-generated preference pairs and iterative fine-tuning described here. Paper [11] (\"Iterative Reasoning Preference Optimization\") also uses iterative preference optimization with DPO, focusing on reasoning tasks, which matches the iterative fine-tuning via DPO mechanism.\n\n### Evaluation\nThe evaluation uses BigGen Bench and Reward Bench, comparing the SRE judge against larger models trained with SFT+rationale, self-consistency, or best-of-N. Paper [10] (\"Judging LLM-as-a-judge with MT-Bench and Chatbot Arena\") employs LLM-as-a-judge evaluation using benchmarks like MT-Bench and Chatbot Arena, which is substantively equivalent in evaluation design (benchmark-based comparison of LLM judges). Paper [7] (\"An Empirical Study of LLM-as-a-Judge\") also evaluates fine-tuned judge models using in-domain test sets, which matches the benchmark-based evaluation design.\n\n### Domain\nThe domain is LLM evaluation / LLM-as-a-judge alignment. Paper [1] (\"Systematic Evaluation of LLM-as-a-Judge in LLM Alignment Tasks\") explicitly addresses LLM-as-a-judge alignment tasks, making the domain covered. Paper [3] (\"Human-Centered Design Recommendations for LLM-as-a-judge\") also focuses on LLM-as-a-judge reliability and alignment with human preferences, further confirming domain coverage.\n\n---\n\nVERDICT purpose = 4  \nVERDICT mechanism = 9  \nVERDICT evaluation = 10  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 10
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Improve LLM-as-a-judge models' scoring on fine-grained customizable evaluation without requiring extra human-annotated preference data**\n\nPaper [4] \"Self-Taught Evaluators\" explicitly states: \"we present an approach that aims to improve evaluators without human annotations, using synthetic training data only.\" This directly matches the purpose of improving LLM judges without human-annotated preference data. Paper [9] \"Meta-Rewarding Language Models\" also aims to improve judgment capabilities through self-improvement. Paper [4] is the closest match — same objective (improve evaluators without human annotations).\n\n**MECHANISM: SRE — SFT seed judge → generate N judgements (rationale+score) → curate preference pairs via correct-answer pairing with score margin → iterative DPO fine-tuning**\n\nPaper [4] \"Self-Taught Evaluators\" uses a similar loop: start from an instruction-tuned model, generate synthetic preference pairs from its own outputs, and train iteratively — but uses SFT on rationales rather than DPO with score-margin-based pair curation. Paper [9] \"Meta-Rewarding\" uses LLM-as-meta-judge with iterative self-improvement and DPO. Paper [11] \"Iterative Reasoning Preference Optimization\" iteratively generates CoT candidates, selects winning/losing pairs based on correctness, and trains with DPO — this is structurally very close: generate multiple outputs, use correctness to form preference pairs, apply DPO iteratively. Paper [8] \"STaR\" bootstraps reasoning by generating rationales and filtering by correctness. Paper [12] \"V-STaR\" uses correct/incorrect solutions to train a verifier via DPO-like preference learning. The combination of (1) generating rationale+score pairs, (2) using correct-answer margin to curate preference pairs, and (3) iterative DPO is most closely matched by [4] (same domain, similar loop but SFT not DPO) and [11] (iterative DPO with correctness-based pair selection). Paper [4] covers the \"self-generated preference pairs for evaluator improvement without human labels\" primitive; paper [11] covers the \"iterative DPO with correctness-based preference pair curation\" primitive. Together these cover the mechanism, with [4] being the closest single match.\n\n**EVALUATION: LLaMA-3.1-8B seed, two DPO iterations, evaluated on BigGen Bench and Reward Bench, compared against SFT+rationale, self-consistency, best-of-N baselines**\n\nBigGen Bench and Reward Bench are named benchmarks used for LLM judge evaluation. Paper [4] \"Self-Taught Evaluators\" evaluates on RewardBench — \"RewardBench\" is explicitly a named benchmark family used here. Paper [9] also evaluates judge quality on similar benchmarks. The evaluation design (using RewardBench as a named benchmark for judge quality assessment) is covered by [4]. BigGen Bench is a different benchmark, but the design of using named judge-evaluation benchmarks with comparison baselines is the same pattern.\n\n**DOMAIN: LLM evaluation / LLM-as-a-judge alignment**\n\nPapers [1], [2], [3], [4], [5], [6], [7], [9], [10] all operate in the LLM-as-a-judge / LLM evaluation domain. This is clearly covered.\n\nVERDICT purpose = 4\nVERDICT mechanism = 4\nVERDICT evaluation = 4\nVERDICT domain = 10",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     5,
+     23
+    ],
+    "mechanism": [
+     5
+    ],
+    "evaluation": [
+     4
+    ],
+    "domain": [
+     1,
+     4
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": 5
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose:\nThe contribution aims to show that self-rationalization improves rationale quality and that better rationales causally improve scoring. Paper [7] (\"Does Self-Rationalization Improve Robustness to Spurious Correlations?\") investigates the utility of self-rationalization models, specifically asking whether training models to self-rationalize aids in learning tasks for the right reasons. While the focus is on robustness to spurious correlations, it establishes a related empirical relationship between self-rationalization and improved task performance, which overlaps with the purpose of the contribution. Paper [5] (\"Do Human Rationales Improve Machine Explanations?\") demonstrates that learning with human-provided rationales improves the quality of machine-generated explanations, which aligns with the purpose of improving rationale quality. Both papers substantively cover the purpose.\n\n### Mechanism:\nThe mechanism involves human evaluation (three annotators) comparing SRE rationales against SFT and Best-of-N baselines, including analysis of margin=0 settings where chosen and rejected scores are equal but chosen rationale is higher quality. Paper [10] (\"Evaluating and Characterizing Human Rationales\") uses human evaluation to assess the quality of machine-generated rationales, employing human rationales as a gold standard. Paper [5] also uses human judges to evaluate rationale quality, which matches the mechanism of human evaluation for rationale comparison. Both papers substantively cover the mechanism.\n\n### Evaluation:\nThe evaluation design involves win rates (e.g., 62% vs SFT-on-rationale) and annotator preferences (e.g., 55% preferred SRE rationales over SFT). Paper [4] (\"Judging LLM-as-a-judge with MT-Bench and Chatbot Arena\") uses win rates and annotator preferences to evaluate LLM performance, including biases and limitations. Paper [18] (\"Style Over Substance: Evaluation Biases for Large Language Models\") also uses win rates and annotator preferences to assess LLM outputs. Both papers employ the same evaluation design (win rates and annotator preferences), even though the specific benchmarks differ. Thus, the evaluation is covered.\n\n### Domain:\nThe domain is LLM evaluation / LLM-as-a-judge alignment. Paper [1] (\"Systematic Evaluation of LLM-as-a-Judge in LLM Alignment Tasks\") explicitly addresses LLM-as-a-judge in alignment tasks, including reliability and alignment with human preferences. Paper [4] also focuses on LLM-as-a-judge evaluation in open-ended tasks. Both papers operate in the same general application area of LLM evaluation and alignment, covering the domain.\n\n---\n\nVERDICT purpose = 5  \nVERDICT mechanism = 5  \nVERDICT evaluation = 4  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 5
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Show that self-rationalization improves rationale quality, and that better rationales causally improve scoring**\n\nThe purpose is specifically about demonstrating a causal link between self-rationalization training → better rationale quality → better scoring in an LLM-as-judge context. Paper [7] (\"Does Self-Rationalization Improve Robustness to Spurious Correlations?\") investigates whether self-rationalization training helps models learn for the right reasons, which is related but targets robustness/spurious correlations, not rationale quality improvement and its causal effect on scoring. Paper [5] (\"Do Human Rationales Improve Machine Explanations?\") shows that learning with rationales improves explanation quality as evaluated by humans — this is close but concerns human rationales improving machine explanations in classification, not self-rationalization improving LLM judge scoring. No prior paper establishes the same empirical relationship: self-rationalization → better rationale quality → causally better scoring in LLM evaluation. The closest are [5] and [7], but neither targets the same variables (rationale quality → scoring performance in LLM-as-judge).\n\n**MECHANISM: Human evaluation (three annotators) comparing SRE rationales against SFT and Best-of-N baselines; margin=0 analysis**\n\nThe mechanism involves human annotation comparison of rationale quality across training methods, plus a controlled margin=0 analysis to establish causality. Paper [5] uses human judges to evaluate machine explanation quality. Papers [13], [14], [15] involve annotator rationales for quality judgments. The margin=0 setting (isolating rationale quality from score differences) is a specific controlled ablation design. The general design of using human annotators to compare rationale quality across conditions appears in [5] and [10]. The margin=0 controlled analysis is a specific variant, but the underlying primitive (human evaluation comparing rationale quality across conditions) is present in [5] and [10].\n\n**EVALUATION: Win rate 62% on average vs SFT; annotator preference rates on BigGen + Feedback Bench**\n\nThe evaluation design uses human annotator win rates to compare model outputs — this is a standard evaluation design used in [4] (MT-Bench/Chatbot Arena uses human preference judgments), [18] (Elo ratings from human judgment), and [1], [2] (human preference alignment studies). Win-rate as a metric for comparing LLM outputs via human annotation is well-established in [4] and [18]. The specific benchmarks (BigGen, Feedback Bench) are different instances, but the design (human preference win rate comparison) is covered.\n\n**DOMAIN: LLM evaluation / LLM-as-a-judge alignment**\n\nPapers [1], [2], [3], [4], [6] all operate in the LLM-as-a-judge / LLM evaluation domain explicitly. This is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 5\nVERDICT evaluation = 4\nVERDICT domain = 4",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of showing that self-rationalization improves rationale quality AND that better rationales causally improve scoring outcomes. Paper [7] examines self-rationalization for robustness to spurious correlations, not rationale quality or scoring improvement. Paper [5] shows human rationales improve machine explanations but not in a scoring/judging context. No paper combines both causal claims in this specific framing."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 23
+      },
+      "mechanism": {
+       "covered_by": 5
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to show that self-rationalization improves rationale quality, which in turn causally improves scoring. This objective is covered by prior work that established the link between generating reasoning steps and improving task performance. For example, [23] shows that generating a \"chain of thought -- a series of intermediate reasoning steps -- significantly improves the ability of large language models to perform complex reasoning,\" which is substantively equivalent to showing self-rationalization improves scoring.\n\n**mechanism**: The mechanism is human evaluation where annotators compare rationales from the proposed model against baselines. This method is covered by prior work that uses human judges to assess the quality of machine-generated explanations. For instance, [5] states their goal is to \"improve the quality of the machine’s explanations as evaluated by human judges,\" and [22] evaluates \"computational models of explanation by comparing model predictions to human judgments.\"\n\n**evaluation**: The evaluation design uses win rates derived from pairwise human preference judgments on a benchmark. This design is covered by prior work in LLM evaluation. For example, [4] introduces \"Chatbot Arena,\" which uses pairwise comparisons and human votes to rank models, and [18] explicitly discusses the now-popular method of \"Ranking the relative performance of LLMs based on Elo ratings, according to human judgment,\" which is based on win rates from such comparisons.\n\n**domain**: The domain is LLM evaluation and LLM-as-a-judge alignment. This application area is explicitly covered by numerous prior papers. For example, [1] is titled \"Systematic Evaluation of LLM-as-a-Judge in LLM Alignment Tasks,\" and [2] is titled \"Judging the Judges: A Systematic Study of Position Bias in LLM-as-a-Judge,\" both operating in the exact same domain.\n\nVERDICT purpose = 23\nVERDICT mechanism = 5\nVERDICT evaluation = 4\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     5,
+     6,
+     7,
+     8,
+     21
+    ],
+    "evaluation": [
+     2,
+     5,
+     6,
+     10
+    ],
+    "domain": [
+     1,
+     2,
+     3,
+     4,
+     10,
+     14
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": [
+        5,
+        6,
+        7,
+        8,
+        21
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        2,
+        5,
+        6
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        2,
+        3,
+        4,
+        10,
+        14
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to understand which preference-data curation strategies and training methods drive judging gains. This is a specific empirical relationship being investigated, and none of the prior papers explicitly report or establish this same relationship. While [5] discusses self-curation of training corpora for preference learning and [6] explores annotation-efficient strategies for preference learning, neither directly investigates the relationship between preference-data curation strategies, training methods, and judging gains. Similarly, [7], [8], and [21] discuss DPO and its benefits, but they do not address the comparative impact of preference-data curation strategies or training methods on judging gains. Therefore, no prior paper covers this purpose.\n\n### Mechanism\nThe mechanism involves ablations over preference-selection heuristics (e.g., Correct-Answer pairing with margin thresholds, self-consistency/majority voting, meta-judge) and training methods (SFT vs. DPO with/without rationales). Papers [5] and [6] both discuss preference-selection heuristics, with [5] introducing a self-curation method for preprocessing preference datasets and [6] proposing strategies for selecting response pairs based on reward margins. Additionally, [7], [8], and [21] discuss DPO and its variations, including its application to preference learning. These papers collectively cover the mechanisms of preference-selection heuristics and DPO training methods, even if the specific ablations differ.\n\n### Evaluation\nThe evaluation design involves analyzing the performance of different preference-selection heuristics and training methods on Reward Bench and BigGen Bench. Papers [2], [5], and [6] all use evaluation designs that involve comparing preference-learning strategies or heuristics on specific benchmarks. For example, [5] evaluates self-curation methods on preference-learning datasets, and [6] evaluates annotation-efficient strategies for preference learning. While the specific benchmarks differ, the evaluation design of comparing preference-learning strategies on benchmarks is covered by these prior works.\n\n### Domain\nThe domain is LLM evaluation and LLM-as-a-judge alignment. Papers [1], [2], [3], [4], [10], and [14] all operate in the same general application area of LLM evaluation and alignment, particularly focusing on LLM-as-a-judge. For example, [1] discusses the challenges and recommendations for LLM-as-a-judge, [2] explores biases and limitations in LLM-as-a-judge, and [10] examines failure modes of LLM judges in alignment benchmarking. This domain is well-covered by prior work.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 5, 6, 7, 8, 21  \nVERDICT evaluation = 2, 5, 6  \nVERDICT domain = 1, 2, 3, 4, 10, 14  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 5 | reason: Paper [5] explicitly introduces \"self-curation methods\" for preference-data preprocessing and training, directly addressing strategies that enhance preference learning, aligning with the facet's objective. Quote: \"We introduce a self-curation method that preprocesses annotated datasets by leveraging proxy models trained directly on them.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Understand which preference-data curation strategies and training methods drive judging gains**\n\nThe purpose is specifically about understanding what drives performance improvements in LLM-as-a-judge training — comparing curation heuristics (margin thresholds, self-consistency, meta-judge) and training methods (SFT vs DPO with/without rationales). Paper [6] studies \"strategies to select worth-annotating response pairs for cost-efficient annotation\" and compares selection strategies for preference learning, but this is about general LM alignment, not specifically about training LLM judges. Paper [5] studies self-curation of preference data for preference learning. Neither paper targets the specific objective of understanding what drives *judging* gains. No prior paper establishes the same empirical relationship between these specific variables (curation strategies + training methods) and LLM judge performance.\n\n**MECHANISM: Ablations over preference-selection heuristics and SFT vs DPO with/without rationales**\n\nPaper [6] proposes comparing \"implicit reward margins as predictors\" for selecting preference pairs, which overlaps with the margin threshold heuristic. Paper [5] uses self-curation methods for preference data. Paper [8] combines rejection sampling with DPO. Paper [21] uses DPO implicit rewards for bootstrapping. However, none of these papers specifically ablate the combination of: (1) correct-answer pairing with margin thresholds, (2) self-consistency/majority voting, (3) meta-judge selection, AND (4) SFT vs DPO with/without rationales — all in the context of training LLM judges. The closest is [6] on margin-based selection, but the full mechanism combination is not covered.\n\n**EVALUATION: Reward Bench and BigGen Bench as evaluation benchmarks**\n\nPaper [2] introduces MT-Bench and Chatbot Arena for LLM-as-judge evaluation. Paper [10] uses alignment benchmarks to evaluate LLM judges. The contribution uses RewardBench and BigGen Bench — these are named benchmark families used in the LLM-as-judge evaluation space. Paper [10] explicitly evaluates LLM judges on alignment benchmarks. RewardBench is a named benchmark family in the LLM evaluation space. The evaluation design (using named LLM-judge benchmarks to compare training configurations) is the same design used in [2] and [10], just with different specific benchmark instances.\n\n**DOMAIN: LLM evaluation / LLM-as-a-judge alignment**\n\nPapers [1], [2], [3], [4], [10], [14] all work in the LLM-as-a-judge / LLM evaluation domain. This is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 10\nVERDICT domain = 2",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of understanding which preference-data curation strategies and training methods specifically drive judging (LLM-as-a-judge) gains; the closest papers (e.g., [2], [10]) study LLM-judge biases or benchmark validity but do not ablate curation strategies to explain judging improvements.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper performs ablations over the specific combination of preference-selection heuristics (Correct-Answer pairing with margin thresholds, self-consistency/majority voting, meta-judge) crossed with SFT vs. DPO with/without rationales evaluated on Reward Bench and BigGen Bench; [6] studies annotation-efficient pair selection for alignment but not for training judge models, and no paper matches this specific experimental design."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "VERDICT purpose = NONE\nVERDICT mechanism = 6\nVERDICT evaluation = 2\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the explicit purpose of systematically investigating which data curation strategies or training methods lead to better performance of a model *as a judge*. Papers like [5] and [6] study data curation for preference learning, but the goal is to improve the resulting *policy model*, not to create a better *judge model*. Other papers ([1], [2], [10]) analyze the behavior of LLM judges but do not study how to train them more effectively by varying data/methods."
+     }
+    }
+   }
+  }
+ ]
+}

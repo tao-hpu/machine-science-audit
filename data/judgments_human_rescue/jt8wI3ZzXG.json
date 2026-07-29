@@ -1,0 +1,250 @@
+{
+ "paper_id": "jt8wI3ZzXG",
+ "title": "Speculative Streaming: Fast LLM Inference without Auxiliary Models",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     4,
+     9
+    ],
+    "mechanism": [
+     23
+    ],
+    "evaluation": [
+     4,
+     9
+    ],
+    "domain": [
+     2,
+     4
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 23
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to accelerate LLM inference without the deployment complexity of a separate auxiliary draft model, while avoiding the weak speedups of single-model methods that lack dependency between speculated tokens. Paper [4] and [5] describe \"self-speculative decoding\" to accelerate LLM inference without an auxiliary model, which aligns with the same objective of eliminating the complexity of separate draft models. Additionally, paper [9] critiques speculative decoding methods for their reliance on auxiliary models and proposes simpler alternatives, which also aligns with the same purpose. Therefore, the purpose is **covered**.\n\n### Mechanism\nThe contribution introduces \"Speculative Streaming,\" a single-model speculative decoding method that integrates drafting into the target model via multi-stream attention (MSA layers replacing top MHA layers) and reformulates the fine-tuning objective to n-gram/future-token prediction. Paper [4] and [5] describe self-speculative decoding, which skips intermediate layers during drafting and uses the original LLM for verification, but they do not use multi-stream attention or reformulate the fine-tuning objective to n-gram prediction. Paper [23] introduces future n-gram prediction as a training objective, which matches the reformulation aspect of the mechanism. However, no prior paper combines multi-stream attention with n-gram prediction in a single-model speculative decoding framework. Therefore, the mechanism is **uncovered**.\n\n### Evaluation\nThe contribution evaluates decoding speedup on summarization, structured queries, and meaning representation tasks using metrics like Rouge1/RougeLSum and Exact Match, comparing against prior methods like Medusa, Hydra, and Lookahead. Papers [4], [5], [6], [7], [8], and [20] all evaluate speculative decoding methods using similar benchmark families (e.g., summarization tasks, structured queries) and metrics (e.g., Rouge, Exact Match). While the specific datasets and models differ, the evaluation design (benchmark family and metric semantics) is reused. Therefore, the evaluation is **covered**.\n\n### Domain\nThe contribution operates in the domain of LLM inference acceleration and speculative decoding. Papers [4], [5], [6], [7], [8], [9], [10], [11], [12], [13], [14], [15], [16], [17], [20], and others all address LLM inference acceleration and speculative decoding, which is the same general application area. While the specific tasks (e.g., summarization, structured queries) differ, the domain is not novel. Therefore, the domain is **covered**.\n\n---\n\nVERDICT purpose = 4  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 4  \nVERDICT domain = 4  ",
+      "stage2": "FACET: mechanism | FINAL: COVERED-BY 23 | reason: ProphetNet introduces \"future n-gram prediction\" and \"n-stream self-attention,\" which aligns with the speculative streaming mechanism's reformulation of the supervised fine-tuning objective to n-gram/future-token-planning prediction."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": 23
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE FACET**\n\nThe purpose is: accelerate LLM inference without a separate auxiliary draft model, while avoiding the weak speedups of single-model methods (like Medusa) that lack token dependency between speculated tokens.\n\nPaper [1] is literally titled \"Speculative Streaming: Fast LLM Inference without Auxiliary Models\" and describes the same contribution — this appears to be the same paper being audited. Setting that aside, papers [4]/[5] (self-speculative decoding via layer skipping), [9] (Medusa — multiple decoding heads, no separate draft model), [15] (Kangaroo — self-draft via sub-network), [21] (LayerSkip — self-speculative decoding) all share the purpose of accelerating LLM inference without a separate auxiliary model. Paper [9] (Medusa) is explicitly named as a baseline the contribution improves upon, and its purpose is the same class: single-model speculative decoding. Paper [4]/[5] also targets the same objective. The purpose is COVERED.\n\n---\n\n**MECHANISM FACET**\n\nThe mechanism is: (1) replace top N_s MHA layers with multi-stream attention (MSA) layers that share the KV cache for speculative streams, (2) fine-tune with n-gram/future-token-planning prediction objective (not next-token), (3) parallel tree draft speculation, verification, and pruning — all within a single model.\n\n- Paper [23] (ProphetNet) introduces \"future n-gram prediction\" and \"n-stream self-attention mechanism\" for sequence-to-sequence pre-training. This is substantively equivalent to the n-gram/future-token-planning SFT objective AND the multi-stream attention mechanism. ProphetNet explicitly uses \"n-stream self-attention\" to predict future n-grams simultaneously — the same two core primitives of the contribution's mechanism.\n- Paper [9] (Medusa) uses multiple decoding heads on a single model but without inter-token dependency — the contribution explicitly distinguishes itself here.\n- Papers [4]/[5] use layer-skipping for self-drafting, different primitive.\n- Paper [18] (multi-token prediction) uses multiple output heads for future token prediction, partially overlapping with the n-gram objective but not the multi-stream attention.\n- Paper [23] covers both the multi-stream attention primitive AND the future n-gram prediction objective in a single prior work.\n\nThe mechanism is COVERED by [23].\n\n---\n\n**EVALUATION FACET**\n\nThe evaluation uses: speedup metrics on Summarization (Dialogsum/Rouge), Structured Queries (SQL/WikiSQL/SPIDER/Exact Match), Meaning Representation (e2e-nlg/Rouge), comparing against 2-model SD, Medusa, Hydra, Lookahead, Eagle on Vicuna-7b/13b, OPT-1.3b, Phi-1.3b.\n\nThe evaluation design — measuring wall-clock speedup of speculative decoding methods against baselines (standard SD, Medusa, etc.) on NLP benchmarks with Rouge/Exact Match metrics — is used extensively in papers [9] (Medusa uses Rouge, compares speedup), [2], [11], [6], [20] (EAGLE-2 speedup comparisons). The design of \"measure decoding speedup + task quality metrics, compare against speculative decoding baselines\" is standard in this literature. Paper [9] specifically uses Rouge metrics and speedup comparisons. This evaluation design is COVERED.\n\n---\n\n**DOMAIN FACET**\n\nThe domain is LLM inference acceleration / speculative decoding. Papers [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12], [13], [14], [15], [16], [17], [20], [21], [24] all operate in LLM inference acceleration / speculative decoding. Clearly COVERED.\n\n---\n\nVERDICT purpose = 9\nVERDICT mechanism = 23\nVERDICT evaluation = 9\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     8
+    ],
+    "mechanism": null,
+    "evaluation": [
+     6,
+     11
+    ],
+    "domain": [
+     8,
+     12
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to make speculative decoding scale to many downstream tasks and operate on resource-constrained devices without requiring large draft models or extra heads. Papers [8] and [12] address similar objectives. Paper [8] proposes speculative streaming to eliminate the need for auxiliary draft models, simplifying inference systems as the number of downstream tasks grows. Paper [12] introduces staged speculative decoding to accelerate LLM inference in small-batch, on-device scenarios, addressing resource constraints. Both papers share the same high-level objective of enabling efficient speculative decoding in resource-constrained settings.\n\n### Mechanism\nThe mechanism involves a parameter-efficient design where speculative streams share the base model's key/value cache and are initialized via low-rank transformation and stream identifier embeddings, adding negligible parameters instead of full extra heads/layers. Paper [6] discusses parameter-efficient fine-tuning strategies, including LoRA and low-rank transformations, which align with the low-rank transformation aspect of the mechanism. Paper [8] introduces speculative streaming, which fuses draft and target models into a single model, reducing parameter overhead. Paper [7] (Hydra) and [23] (LoRA+) also explore low-rank adaptation techniques for parameter-efficient designs, which are substantively equivalent to the mechanism described.\n\n### Evaluation\nThe evaluation claims ~10,000X fewer extra parameters than alternative architectures (Medusa, Hydra, Eagle) while surpassing them in speedup, and positions itself as the first parameter-efficient approach scaling with increasing downstream tasks. Papers [6], [7], [8], and [23] all use similar evaluation designs, comparing parameter efficiency and performance across tasks. For example, Paper [6] evaluates parameter-efficient fine-tuning methods across multiple tasks, while Paper [8] benchmarks speculative streaming against traditional speculative decoding methods. These prior works use comparable evaluation designs, focusing on parameter efficiency and task scalability.\n\n### Domain\nThe domain is on-device/resource-constrained LLM inference. Papers [8], [12], and [14] explicitly address resource-constrained LLM inference scenarios. Paper [8] focuses on speculative decoding for application-specific settings with resource constraints. Paper [12] targets small-batch, on-device inference. Paper [14] introduces LoRAExit for dynamic modulation of LLMs in resource-limited settings. All these papers operate within the same general application area of resource-constrained LLM inference.\n\n---\n\nVERDICT purpose = 8  \nVERDICT mechanism = 6  \nVERDICT evaluation = 6  \nVERDICT domain = 8  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 12
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Make speculative decoding scale to many downstream tasks and run on resource-constrained devices where hosting draft models or large extra heads is prohibitive.**\n\nPaper [8] (Speculative Streaming) explicitly addresses scaling to downstream tasks: \"As the number of downstream tasks grows, these draft models add significant complexity to inference systems.\" It proposes a single-model method to avoid this complexity. Paper [11] (Hydra) addresses draft heads for speculative decoding but doesn't focus on resource-constrained scaling. Paper [12] addresses \"on-device scenarios.\" Paper [8] is the closest match — it directly targets the problem of speculative decoding not scaling to many downstream tasks and proposes eliminating auxiliary models. The purpose is substantively equivalent: eliminate the overhead of per-task draft models so speculative decoding scales to many tasks.\n\n**MECHANISM: Parameter-efficient design where speculative streams share the base model's key/value cache and are initialized via low-rank transformation + stream identifier embeddings, adding negligible parameters.**\n\nPaper [8] (Speculative Streaming) fuses draft tokens into the base model using future n-gram prediction via modified attention masks, sharing the base model — but does NOT use low-rank transformation + stream identifier embeddings. Paper [11] (Hydra) uses \"low-rank adaptation\" for draft heads (the paper title says \"multi-head low-rank adaptation\"), sharing the base model's hidden states. Paper [11] uses low-rank heads but doesn't share the KV cache or use stream identifier embeddings. The combination of KV-cache sharing + low-rank initialization + stream identifier embeddings as a unified primitive doesn't appear in any prior paper. Paper [8] shares the model but uses a different mechanism (attention mask modification). Paper [11] uses low-rank heads but not KV-cache sharing or stream embeddings. No prior paper combines these three elements as a unified primitive.\n\n**EVALUATION: Uses ~10000X fewer extra parameters than alternative architectures (Medusa, Hydra, Eagle) while surpassing them in speedup; parameter-efficiency comparison against named baselines.**\n\nPaper [11] (Hydra) compares against Medusa in terms of speedup benchmarks. Paper [8] (Speculative Streaming) compares against draft-model-based approaches on speedup metrics. The evaluation design of comparing speculative decoding methods on speedup metrics (tokens/second, wall-clock speedup ratio) against named baselines like Medusa is used in papers [8] and [11]. The parameter count comparison is a standard ablation/substitution design. Papers [8] and [11] use the same evaluation design: compare speedup of proposed method vs. Medusa/other baselines on standard benchmarks.\n\n**DOMAIN: On-device / resource-constrained LLM inference.**\n\nPaper [12] explicitly targets \"small-batch, on-device scenarios.\" Paper [13] surveys \"resource-constrained scenarios.\" Paper [14] addresses \"resource-limited settings\" for LLMs. Paper [15] addresses \"resource-constrained edge AI.\" The domain of resource-constrained/on-device LLM inference is clearly covered by papers [12], [13], [14].\n\nVERDICT purpose = 8\nVERDICT mechanism = NONE\nVERDICT evaluation = 11\nVERDICT domain = 12",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes speculative streams sharing the base model's KV cache combined with low-rank initialization and stream identifier embeddings as a parameter-efficient alternative to full extra heads/layers. Paper [11] (Hydra draft heads) uses sequential draft heads on base model hidden states but does not share KV cache or use low-rank + identifier embedding initialization. Paper [8] (Speculative Streaming) fuses drafting into the base model via modified attention but does not describe the specific KV-cache sharing + low-rank + stream identifier embedding mechanism. No other paper contains this combination even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 12
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The objective is to make speculative decoding practical for many tasks on resource-constrained devices by avoiding the high parameter cost of multiple draft models or large heads. Paper [8] shares this purpose, aiming to solve the problem where \"As the number of downstream tasks grows, these draft models add significant complexity to inference systems\" by proposing a \"single-model speculative decoding method.\" Paper [12] also targets the same setting, aiming to \"accelerate LLM inference in small-batch, on-device scenarios.\"\n\n**mechanism**: The technical approach is to generate multiple speculative streams using a single low-rank transformation applied to the base model, with stream identifier embeddings, sharing the main model's KV cache. While prior work introduces parameter-efficient fine-tuning like LoRA ([6], [23]) and multi-head speculative decoding ([11]), no paper combines these primitives to create multiple, parallel, parameter-efficient speculative drafts via a low-rank transformation.\n\n**evaluation**: The evaluation design consists of comparing the proposed method against alternative architectures (Medusa, Hydra) on metrics of parameter efficiency (number of extra parameters) and inference acceleration (speedup). This is a standard comparative evaluation protocol for efficient inference methods; for instance, [11] would have used the same design to compare its multi-head approach against its own predecessors.\n\n**domain**: The application area is on-device or resource-constrained LLM inference. This domain is explicitly addressed by several prior papers, including [12] which aims to \"accelerate LLM inference in small-batch, on-device scenarios\" and [14] which addresses the challenge of \"deploying LLMs on resource-limited settings.\"\n\nVERDICT purpose = 8\nVERDICT mechanism = NONE\nVERDICT evaluation = 11\nVERDICT domain = 12",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: The core of this mechanism is the specific combination of a low-rank transformation (LoRA) and stream identifier embeddings to generate multiple speculative drafts from a single model. Prior single-model speculative decoding papers use different mechanisms. [8] adds small, separate self-attention and feed-forward layers. [11] adds multiple lightweight linear heads. The facet's mechanism explicitly contrasts itself with adding heads/layers, proposing a novel and more parameter-efficient architecture using LoRA and embeddings, which is not described in any of the provided papers."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     13,
+     22
+    ],
+    "evaluation": [
+     1,
+     2
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 22
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to support generic chatbot deployment where the base model remains unchanged (lossless), avoiding application-specific fine-tuning. None of the prior papers explicitly address this purpose. While several papers discuss inference acceleration (e.g., [1], [3], [7], [12]), they focus on speculative decoding or other techniques for speedup, not on maintaining the base model's integrity in a lossless mode for generic chatbot deployment. Papers like [4] and [15] discuss instruction tuning or domain-specific customization, but these involve fine-tuning, which contradicts the lossless requirement.\n\n### Mechanism\nThe mechanism is speculative instruction tuning, where speculative stream adapters are trained while keeping the base model frozen, ensuring verification preserves the base model's output distribution. This mechanism is distinct from speculative decoding methods described in papers like [1], [3], [6], [7], [9], [12], [14], and others, which rely on draft models or parallel verification but do not involve speculative adapters or instruction tuning. None of the prior papers propose speculative tuning with adapters while keeping the base model frozen.\n\n### Evaluation\nThe evaluation reports a 2.9-3.2X speedup on generic chatbot setup using MT-Bench while maintaining the base model's output integrity. Paper [2] uses MT-Bench for evaluating chatbot performance, and several papers ([1], [3], [7], [12], [14]) evaluate inference acceleration techniques, often using benchmarks or metrics for speedup validation. The evaluation design (speedup measurement and integrity validation) aligns with prior work, particularly [2] for MT-Bench and [1], [3], [7], [12] for speedup metrics.\n\n### Domain\nThe domain is LLM inference acceleration/chatbot serving. Papers [1], [3], [7], [12], [14], and others address LLM inference acceleration, including speculative decoding and related techniques. Papers like [2], [4], [11], and [15] focus on chatbot applications or serving, making the domain well-covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 2  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly supports generic chatbot deployment with a lossless approach, keeping the base model unchanged.  \nFACET: mechanism | FINAL: COVERED-BY 22 | reason: \"Medusa decoding framework... lightweight heads, called draft heads, that operate on the base model's hidden states\" aligns with speculative instruction tuning while keeping the base model frozen.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Support generic chatbot deployment where the base model must remain unchanged (lossless), not only application-specific fine-tuned settings.**\n\nPaper [1] (Speculative Streaming) explicitly addresses \"application-specific settings\" where fine-tuning both draft and target models is needed, and proposes a single-model approach. However, its purpose is to eliminate the need for auxiliary models, not specifically to support lossless/generic chatbot deployment where the base model must remain frozen. Paper [13] (Medusa) also addresses avoiding a separate draft model but doesn't specifically target the \"lossless, base model unchanged\" constraint for generic chatbot deployment. Paper [12] (MagicDec) mentions \"losslessly\" reducing latency for chatbots. Paper [20] (EAGLE) preserves the target model's distribution. None of these specifically frame their purpose as \"support generic chatbot deployment where base model must remain unchanged (lossless) as opposed to application-specific fine-tuned settings.\" Paper [1] is closest but its purpose is eliminating auxiliary models in application-specific settings, not enabling generic/lossless deployment. No prior paper covers this exact purpose at the problem-class level.\n\nWait — re-examining: Paper [1] says \"in application-specific settings, it often involves fine-tuning both draft and target models.\" The contribution's purpose is to handle the case where the base model must remain unchanged (generic chatbot). This is a distinct objective from [1]'s purpose of fusing draft into a single model. No paper directly targets \"lossless base model preservation for generic chatbot deployment\" as its primary objective. NONE.\n\n**MECHANISM: Speculative instruction tuning — train speculative stream adapters while keeping the base model frozen, so verification preserves base-model output distribution (lossless mode).**\n\nPaper [1] (Speculative Streaming) fuses draft prediction into the base model via fine-tuning the target model itself with additional stream heads — but this modifies the base model. Paper [13] (Medusa) adds decoding heads on top of the frozen base model's hidden states, keeping the base model frozen. Paper [22] (Hydra) also uses draft heads on the base model. Paper [20] (EAGLE) trains a lightweight autoregressive head using the base model's features, keeping the base model frozen. The key primitive here is: train adapter/heads while keeping base model frozen + verification preserves base model distribution. Papers [13], [22], [20] all train auxiliary components while keeping the base model frozen and use lossless verification. Paper [1] specifically introduces \"speculative streaming\" with instruction-tuned stream heads, but modifies the base model. The mechanism of \"frozen base model + trained adapter heads + lossless verification\" is covered by [13] and [20]. COVERED by [13] and [20].\n\n**EVALUATION: 2.9-3.2X speedup on generic chatbot setup evaluated on MT-bench.**\n\nPaper [2] introduces MT-Bench as an evaluation benchmark for LLM chat assistants. Paper [13] (Medusa) evaluates speedup on MT-bench. Paper [1] (Speculative Streaming) also evaluates on MT-bench. Paper [20] (EAGLE) evaluates on MT-bench. The evaluation design — measuring speedup ratio on MT-bench for LLM inference acceleration — is clearly covered by [1], [13], [20]. COVERED by [1], [13], [20].\n\n**DOMAIN: LLM inference acceleration / chatbot serving.**\n\nPapers [1], [6], [7], [8], [9], [10], [12], [13], [14], [17], [18], [19], [20], [22], [23], [24], [26] all operate in LLM inference acceleration. Papers [12], [13], [20] specifically address chatbot serving contexts. COVERED by [1], [13], [20].\n\nVERDICT purpose = NONE\nVERDICT mechanism = 13\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly targets the objective of supporting generic chatbot deployment where the base model must remain losslessly unchanged as a primary motivation. The closest candidates (e.g., [13] Medusa, [20] EAGLE, [22] Hydra) address avoiding a separate draft model but do not frame their purpose as preserving an unmodified base model for generic/multi-purpose chatbot deployment specifically. [12] MagicDec addresses latency-throughput tradeoffs for long-context chatbots but does not frame lossless base-model preservation as its purpose. No paper quotes an equivalent objective under any alternative terminology."
+     }
+    }
+   }
+  }
+ ]
+}

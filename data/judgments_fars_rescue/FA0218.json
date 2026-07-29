@@ -1,0 +1,298 @@
+{
+ "paper_id": "FA0218",
+ "title": "Prefill Twice, Decode Once: Exploiting KV Cache Redundancy in Prompt Repetition",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": [
+     1,
+     6
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Facet Reasoning:\n\n**Purpose:**  \nThe contribution's purpose is to establish that the first-copy KV cache in prompt repetition can be discarded at decode time without losing accuracy. None of the prior papers explicitly report or establish this specific empirical relationship — that the first-copy KV cache is redundant during decoding due to full information encoding in the second copy during prefill. While many papers address KV cache compression, eviction, or optimization, none demonstrate or claim this specific redundancy mechanism tied to prompt repetition.  \n\n**Mechanism:**  \nThe mechanism observes that during prefill, the second copy's representations attend fully to the first copy and encode all necessary information, making the first-copy KV cache redundant at decode time. None of the prior papers describe this specific mechanism. Papers like [1], [5], [8], and [14] discuss token eviction or compression strategies, but these rely on attention scores, token importance metrics, or sparsity techniques rather than the redundancy of prompt repetition encoding during prefill. No paper describes the mechanism of full information transfer between prompt repetitions during prefill as the basis for decode-time KV cache redundancy.  \n\n**Evaluation:**  \nThe evaluation validates the contribution indirectly via downstream accuracy retention results (100%+ retention) and sanity checks (max abs diff = 0.0 for sliced KV, 100% first-token agreement). Papers like [6], [8], [10], and [16] use similar evaluation designs — accuracy retention, token agreement, and sanity checks — to validate KV cache compression or eviction methods. While the specific objects and benchmarks differ, the evaluation design (accuracy retention and sanity checks) is substantively equivalent to prior work.  \n\n**Domain:**  \nThe domain is LLM inference and KV cache optimization. This is a well-established application area, with numerous prior papers ([1], [2], [5], [6], [8], [10], etc.) addressing KV cache optimization for LLM inference. While the specific focus on prompt repetition is narrower, it falls within the broader domain of KV cache optimization for LLM inference.  \n\n---\n\n### Verdicts:  \nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 6  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly establishes the objective of discarding the first-copy KV cache during decode time without losing accuracy.  \nFACET: mechanism | FINAL: NONE | reason: No prior paper observes or describes the second copy's representations attending fully to the first copy during prefill, making the first-copy KV cache decode-time redundant.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "**Purpose:** The contribution's purpose is to establish that the first-copy KV cache in a prompt-repetition scenario can be discarded at decode time without accuracy loss. This is a specific claim about redundancy of one copy of a repeated prompt's KV cache during decoding. None of the prior papers address prompt repetition specifically or the question of which copy's KV cache is redundant when a prompt appears twice. Papers like [4] (KVLink) deal with reusing precomputed KV caches across different queries sharing overlapping context, and [18] (Prompt Cache) deals with reusing attention states for repeated text segments — but neither establishes the specific relationship that the first-copy KV cache becomes decode-time redundant because the second copy's representations already encode all necessary information via full attention during prefill. The closest is [18] which involves reusing cached states for repeated segments, but its purpose is acceleration via reuse, not establishing redundancy/discardability of one copy. No prior paper establishes this same empirical relationship (first-copy KV redundancy due to second-copy's full attention during prefill).\n\n**Mechanism:** The mechanism is the observation that during prefill, the second copy attends fully to the first copy and thus encodes all necessary information, making the first-copy KV cache redundant at decode time. This is a specific attention-flow argument about information absorption during prefill in a repeated-prompt setting. Paper [4] (KVLink) discusses precomputing KV caches independently and notes that cross-document attention is missing, which is actually the opposite scenario. Paper [18] (Prompt Cache) reuses KV states but does not reason about information absorption between copies. No prior paper uses this specific mechanism of reasoning about cross-copy attention during prefill to justify discarding one copy's KV cache.\n\n**Evaluation:** The evaluation design uses downstream accuracy retention metrics (percentage retention ≥ 100%) and exact numerical sanity checks (max absolute difference = 0.0, 100% first-token agreement). Accuracy retention as a metric for KV cache compression is standard across many prior papers (e.g., [1], [2], [3], [4], [6], [8], etc.), which all validate KV cache methods by measuring accuracy/performance retention on benchmarks. The \"100%+ retention\" design is the same metric family used broadly in KV cache compression papers. The sanity checks (max abs diff, first-token agreement) are essentially ablation/equivalence checks, which are generic experimental moves. The downstream accuracy retention design is covered by numerous prior papers.\n\n**Domain:** The domain is LLM inference / KV cache optimization. This is explicitly the domain of papers [1], [2], [3], [4], [5], [6], [7], [8], [10], [11], [12], [13], [14], [16], [17], [18], [19], [21], [24], [25], among others.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper establishes that the first-copy KV cache in prompt repetition can be discarded at decode time without accuracy loss. KVLink [4] and Prompt Cache [18] address KV reuse across queries but neither claims the first copy's cache is decode-time redundant and can be dropped; they instead preserve and reuse it. No quoted phrase from any paper matches this specific objective.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper observes that during prefill the second copy's attention fully attends to the first copy and thereby encodes all necessary information, rendering the first-copy KV cache redundant at decode time. KVLink [4] notes cross-document attention context is missing when caches are precomputed independently, which is the opposite insight. No paper contains a phrase describing this information-absorption mechanism as grounds for discarding the first copy's cache."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": [
+     1,
+     9,
+     10
+    ],
+    "domain": [
+     1,
+     4,
+     8,
+     10,
+     11
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": [
+        1,
+        9,
+        10
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        4,
+        8,
+        10,
+        11
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to achieve the accuracy benefit of prompt repetition while halving decode-time KV cache memory. Paper [4] explicitly states that prompt repetition improves performance for popular models without increasing latency or generated tokens, which aligns with the accuracy benefit of prompt repetition. Paper [1] addresses KV cache memory reduction but does not focus on achieving the accuracy benefit of prompt repetition. No other paper combines these two objectives. Therefore, the purpose is **covered by [4]**.\n\n### Mechanism\nThe mechanism, PTDO (Prefill Twice, Decode Once), involves prefilling P||P to build the full KV cache, slicing to retain only the second-copy KV entries, and decoding with correct RoPE position offsets. Paper [10] discusses RoPE frequency selection and low-rank projection for KV cache compression but does not involve slicing or prefilling P||P. Paper [11] introduces RoPE-aligned pruning but does not use the specific mechanism of slicing second-copy KV entries or adjusting RoPE offsets. Paper [9] addresses prefill-decoding acceleration but does not use the same primitive of prefilling P||P and slicing. No prior paper uses the exact mechanism described here. Therefore, the mechanism is **novel**.\n\n### Evaluation\nThe evaluation validates the method by showing ~50% KV cache reduction at matched accuracy. Paper [1] evaluates KV cache compression methods, including memory reduction and accuracy preservation, which matches the evaluation design. Paper [9] also evaluates KV cache compression methods with prefill acceleration, which aligns with the validation setup. Paper [10] evaluates KV cache compression methods for RoPE-based attention, which matches the evaluation design. These papers use the same evaluation design (memory reduction and accuracy preservation for KV cache compression). Therefore, the evaluation is **covered by [1], [9], and [10]**.\n\n### Domain\nThe domain is LLM inference/prompt repetition with RoPE models. Paper [4] explicitly addresses prompt repetition in LLMs, and papers [8], [10], and [11] focus on RoPE-based models in LLM inference. These papers operate in the same general application area of LLM inference with RoPE models and prompt repetition. Therefore, the domain is **covered by [4], [8], [10], and [11]**.\n\n---\n\nVERDICT purpose = 4  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 1, 9, 10  \nVERDICT domain = 4, 8, 10, 11  ",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper explicitly describes the PTDO mechanism (Prefill Twice, Decode Once) with slicing and RoPE position offsets for training-free KV cache optimization."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Achieve the accuracy benefit of prompt repetition while halving decode-time KV cache memory.**\n\nThe purpose combines two sub-goals: (1) leveraging prompt repetition for accuracy, and (2) reducing KV cache memory cost of doing so. Paper [4] establishes that prompt repetition improves performance. Papers [1], [5], [6], [9], [10], [11], [19], [24], [25], [27], [28] address KV cache compression/reduction. However, none of these papers pursue the *combined* objective of \"get the accuracy benefit of prompt repetition while halving the KV cache cost of that repetition.\" Paper [4] doesn't address KV cache cost; KV cache papers don't address prompt repetition accuracy benefits. The specific gap being closed — making prompt repetition memory-efficient — is not addressed by any prior paper.\n\n---\n\n**MECHANISM: Prefill P||P, slice to retain only second-copy KV entries, decode with corrected RoPE offsets.**\n\nThis is a three-part primitive: (a) double-prefill a concatenated prompt, (b) discard the first half of the KV cache, (c) adjust RoPE position offsets so decoding starts at position 2|P|. No prior paper proposes this. Papers on KV cache compression ([1], [5], [6], [9], [10], [11], [19], [24], [25], [27], [28]) prune/evict/quantize based on importance scores or low-rank structure — none use a \"prefill twice, slice, offset\" approach. Papers on RoPE ([8], [10], [11], [14], [15]) discuss RoPE properties but not this positional offset correction after deliberate double-prefill. Paper [12] (YOCO) reduces KV caching via architecture change, not this mechanism. No prior paper contains this primitive.\n\n---\n\n**EVALUATION: ~50% KV cache reduction (KV ratio 0.506–0.595) at matched accuracy.**\n\nThe evaluation design uses standard LLM benchmark accuracy metrics paired with KV cache memory ratio measurement. This design — measuring KV cache size reduction alongside benchmark accuracy — is used extensively in papers [1], [5], [6], [9], [10], [11], [19], [24], [25], [27], [28]. For example, paper [9] (FastKV) validates \"prefill-decoding acceleration\" with KV budget ratios and accuracy on standard benchmarks. Paper [1] similarly measures KV cache compression ratios against task accuracy. The evaluation design (KV ratio + accuracy on standard benchmarks) is well-established in prior work.\n\n---\n\n**DOMAIN: LLM inference / prompt repetition with RoPE models.**\n\nLLM inference is the domain of papers [1], [2], [5], [6], [9], [10], [11], [12], [17], [19], [24], [25], [27], [28]. Prompt repetition in LLMs is addressed by papers [3] and [4]. RoPE-based LLMs are addressed by [8], [10], [11], [14], [15]. The domain of LLM inference is clearly covered.\n\n---\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 9\nVERDICT domain = 4",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: Paper [4] establishes that prompt repetition improves accuracy, but no prior paper states the objective of achieving that accuracy benefit *while halving decode-time KV cache memory* — that specific dual goal (accuracy parity + 50% KV cache reduction) appears in no prior work under any terminology.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes prefilling a concatenated P||P, slicing away the first-copy KV entries, and decoding with corrected RoPE offsets starting at position 2|P|. Papers on KV cache compression evict tokens by importance; RoPE papers address positional encoding but not this prefill-twice-then-slice construction. No equivalent mechanism exists under any alternative framing in the prior literature."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to get the accuracy benefits of prompt repetition while specifically mitigating its associated KV cache memory cost. Prior work either establishes the accuracy benefit of prompt repetition without considering the memory cost ([3], [4]), or proposes general KV cache reduction techniques without targeting the specific overhead from prompt repetition ([1], [5], [9]). No prior paper formulates the objective of making prompt repetition memory-efficient.\n\n**mechanism**: The proposed mechanism is a training-free, three-step inference procedure: prefill with a repeated prompt (P||P), slice the KV cache to retain only the key-values from the second repetition, and then decode using RoPE position IDs offset to start after the full repeated prompt (2|P|). This specific combination of structural KV cache slicing (as opposed to importance-based pruning) and corresponding RoPE position ID manipulation to \"trick\" the model is not described in any prior paper.\n\n**evaluation**: The evaluation design consists of measuring the reduction in KV cache memory size while demonstrating that task accuracy is preserved compared to the baseline (standard prompt repetition). This is a standard validation protocol for KV cache optimization methods. For example, [1] proposes to \"dramatically reduce the memory footprint of the cache\" and evaluates the impact on task performance, and [24] proposes \"Lossless KV Cache Compression\" which is validated by measuring the compression ratio and showing performance is not degraded.\n\n**domain**: The contribution operates in the domain of Large Language Model (LLM) inference, specifically focusing on optimizing the KV cache for models using Rotary Position Embeddings (RoPE). This is a well-established application area. For instance, [1] focuses on \"Efficient LLM Inference\" by addressing the \"memory bottleneck imposed by the key-value (KV) cache\", and [11] addresses \"Long-context inference in large language models\" via \"KV-Cache Compression via RoPE-Aligned Pruning\".\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper states the combined goal of achieving the accuracy benefits of prompt repetition while also reducing the specific KV cache memory overhead that repetition introduces. Papers [3] and [4] discuss the accuracy benefit, and many others discuss general KV cache reduction, but none link the two as a combined objective.\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes the specific, training-free algorithm of prefilling with a duplicated prompt (P||P), slicing the KV cache to retain only the key-value pairs corresponding to the second copy of the prompt, and then starting decoding with position IDs offset to 2|P|. This precise sequence of operations is not present."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     14
+    ],
+    "mechanism": [
+     14
+    ],
+    "evaluation": [
+     1,
+     14
+    ],
+    "domain": [
+     6,
+     9,
+     10,
+     14,
+     19,
+     25
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": [
+        6,
+        9,
+        10,
+        19,
+        25
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to empirically validate PTDO across models and benchmarks. None of the prior papers explicitly report or establish the same empirical relationship (PTDO's accuracy retention and KV reduction across models/benchmarks). While several papers address KV cache compression or reduction (e.g., [1], [3], [5]), they focus on introducing methods or architectures rather than validating PTDO specifically. No prior paper empirically validates PTDO's effects across models and benchmarks.\n\n### Mechanism\nThe mechanism involves evaluating PTDO on Llama-3.1-8B-Instruct and Qwen2.5-7B-Instruct across NameIndex and ARC-Challenge, comparing Single P, Full P||P, and PTDO. Papers like [1], [3], [5], and [8] discuss KV cache reduction methods, but none describe PTDO or its specific comparison setup (Single P, Full P||P, PTDO). While [3] and [5] explore KV cache reduction strategies, their mechanisms differ substantively from PTDO's approach.\n\n### Evaluation\nThe evaluation design measures accuracy retention and KV cache reduction. Papers such as [1], [3], [5], and [8] evaluate KV cache reduction methods, but none use the same evaluation design (accuracy retention with KV reduction across benchmarks like NameIndex and ARC-Challenge). For example, [1] focuses on compression to 2% without reporting accuracy retention metrics, and [3] emphasizes layer-specific cache reduction without the same benchmark setup. No prior paper uses the exact evaluation design described here.\n\n### Domain\nThe domain is code/QA reasoning benchmarks (NameIndex, ARC-Challenge). Papers like [6], [9], [10], [19], and [25] address QA benchmarks, including ARC-Challenge, and [19] specifically targets retrieval tasks in semi-structured knowledge bases. These papers operate in the same general application area of QA reasoning benchmarks, even if they do not target the specific sub-problems or datasets (NameIndex, ARC-Challenge) addressed here.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [6], [9], [10], [19], [25]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper empirically validates PTDO across models and benchmarks.  \nFACET: mechanism | FINAL: NONE | reason: No prior paper evaluates on Llama-3.1-8B-Instruct and Qwen2.5-7B-Instruct across NameIndex and ARC-Challenge, comparing Single P, Full P||P, and PTDO.  \nFACET: evaluation | FINAL: COVERED-BY 1 | reason: \"compressing the KV cache to less than 2% of its original\" aligns with ~50% KV reduction and accuracy retention.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 14
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 14
+      },
+      "single_paper_covers_all": 14
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**Purpose:** The contribution's purpose is to empirically validate PTDO (a KV cache reduction method) across models and benchmarks, demonstrating that it retains accuracy while reducing KV cache memory. Prior papers [1], [3], [5], [14] all empirically validate KV cache compression methods across models and benchmarks — e.g., [14] \"SCBench: A KV Cache-Centric Analysis of Long-Context Methods\" explicitly benchmarks KV cache optimizations across models and tasks for accuracy retention. [1] validates CLLA compression to 2% with accuracy metrics. These share the same objective: demonstrate accuracy retention under KV cache reduction. This purpose is covered.\n\n**Mechanism:** The mechanism is evaluating three conditions (Single P, Full P||P, PTDO) on two specific models (Llama-3.1-8B-Instruct, Qwen2.5-7B-Instruct) across two benchmarks (NameIndex synthetic retrieval, ARC-Challenge options-first MC), comparing accuracy and KV cache size. This is a standard controlled ablation/substitution experiment design — comparing a proposed method against baselines on named benchmarks. Papers like [14] use the same design primitive: compare KV cache methods (baseline vs. variants) on multiple models and benchmarks measuring accuracy and memory. The mechanism (multi-condition comparison across models/benchmarks) is a standard evaluation protocol covered by [14] and [1].\n\n**Evaluation:** The evaluation design uses named benchmarks (ARC-Challenge) with accuracy metrics and memory reduction metrics (MB, percentage retention). ARC-Challenge is used in [9] (\"ARC 'Challenge' Is Not That Challenging\") and [25] uses MC benchmark accuracy evaluation. The design of measuring accuracy retention percentage alongside memory/cache reduction appears in [1] and [14]. The evaluation design — accuracy on named benchmarks + KV cache size measurement — is covered by [14] which explicitly does \"KV cache-centric analysis\" measuring accuracy and efficiency across benchmarks.\n\n**Domain:** The domain is QA/reasoning benchmarks (ARC-Challenge) and synthetic retrieval (NameIndex) for LLM inference evaluation. Prior papers [14], [1], [3], [5] all operate in the same general area: LLM inference with KV cache optimization evaluated on QA/reasoning tasks. [14] explicitly covers long-context QA and reasoning benchmarks. This domain is covered.\n\nVERDICT purpose = 14\nVERDICT mechanism = 14\nVERDICT evaluation = 14\nVERDICT domain = 14",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "PURPOSE: Covered. The purpose is to empirically show that a new KV cache optimization method can reduce memory usage while preserving accuracy. This is the same objective and empirical relationship established by prior work, such as [1] which introduces a method for \"Lossless KV Cache Compression\".\n\nMECHANISM: Covered. The mechanism is a standard comparative evaluation, testing a new method against baselines on a set of models and benchmarks. This analysis design is the standard protocol in the field, as exemplified by [14] which proposes \"SCBench: A KV Cache-Centric Analysis of Long-Context Methods\".\n\nEVALUATION: Covered. The evaluation design involves measuring accuracy retention and KV cache reduction on standard benchmarks. This is the canonical evaluation design for this problem, used or discussed in numerous prior works, including the benchmarking paper [14] which analyzes how to evaluate \"Long-Context Methods\" centered on the KV cache.\n\nDOMAIN: Covered. The domain is question-answering and reasoning benchmarks for LLMs. Prior work operates in this exact domain; for instance, [9] is a paper focused entirely on \"ARC 'Challenge'\", one of the specific benchmarks used in the contribution.\n\nVERDICT purpose = 1\nVERDICT mechanism = 14\nVERDICT evaluation = 14\nVERDICT domain = 9",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

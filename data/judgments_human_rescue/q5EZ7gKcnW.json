@@ -1,0 +1,264 @@
+{
+ "paper_id": "q5EZ7gKcnW",
+ "title": "Iterative Label Refinement Matters More than Preference Optimization under Weak Supervision",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     4
+    ],
+    "mechanism": [
+     10,
+     12
+    ],
+    "evaluation": [
+     4,
+     6,
+     8,
+     18
+    ],
+    "domain": [
+     1,
+     4
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": [
+        4,
+        6,
+        8,
+        18
+       ]
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nSeveral prior papers address overoptimization in RLHF or alignment under noisy supervision, but none specifically investigate whether the standard SFT+RLHF pipeline remains effective when human supervision is unreliable for hard-to-supervise tasks. Papers [4], [6], [8], and [18] discuss weak-to-strong generalization and unreliable supervision, but they focus on eliciting strong capabilities from weak supervision rather than diagnosing pipeline effectiveness or DPO failure. Papers [1], [2], [3], [12], [13], [14], [16], and [25] study overoptimization in RLHF or DPO, but they do not address the specific purpose of evaluating pipeline robustness under unreliable human supervision. No prior paper establishes the same empirical relationship between unreliable supervision and pipeline effectiveness.\n\n### Mechanism\nThe mechanism involves simulating unreliable supervision using weak LMs (p-tilde and q-tilde) and time-constrained human annotators, then analyzing SFT vs SFT+DPO performance while varying the DPO KL-regularization coefficient beta across feedback-quality levels. Papers [1], [2], [3], [10], [11], [12], [13], [14], [16], and [25] analyze overoptimization mechanisms in RLHF or DPO, including the role of KL regularization and beta tuning, but none use controlled simulations of unreliable supervision with weak LMs or human annotators. Papers [4], [6], [8], and [18] simulate weak-to-strong setups but do not vary beta or isolate overoptimization mechanisms in the same way. The mechanism is not substantively equivalent to any prior work.\n\n### Evaluation\nThe evaluation design uses GSM8K, BIRD, and SaferPaca benchmarks with weak-to-strong setups (2B->7B, 7B->70B, 2B->70B), measuring SFT vs SFT+DPO performance under varying feedback quality and beta values. Papers [4], [6], [8], and [18] use weak-to-strong setups and similar benchmarks, and papers [1], [2], [3], [10], [11], [12], [13], [14], [16], and [25] evaluate overoptimization effects using standard RLHF/DPO benchmarks and metrics. The evaluation design (weak-to-strong setups, beta variation, and performance comparison) is covered by prior work, even though the specific benchmarks and feedback setups differ.\n\n### Domain\nThe domain is LLM post-training/alignment (RLHF) under unreliable supervision. Papers [1], [2], [3], [4], [6], [8], [10], [11], [12], [13], [14], [16], [18], and [25] all operate in the same general application area of LLM alignment, RLHF, or weak-to-strong generalization under noisy or unreliable supervision. The domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = [4], [6], [8], [18]  \nVERDICT domain = [1]  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 4 | reason: Paper [4] explicitly studies the effectiveness of weak supervision (analogous to unreliable human supervision) in eliciting strong capabilities, aligning with the objective of determining the pipeline's effectiveness under unreliable supervision.  \nFACET: mechanism | FINAL: COVERED-BY 12 | reason: Paper [12] uses a synthetic human feedback setup with a \"gold\" reward model to analyze overoptimization mechanisms, which aligns with the controlled simulation approach described."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Determine whether SFT+RLHF post-training pipeline remains effective under unreliable supervision, and diagnose why DPO fails.**\n\nPaper [4] (Weak-to-Strong Generalization) studies whether weak model supervision can elicit strong capabilities, directly addressing the question of whether alignment pipelines work under unreliable/weak supervision. However, it focuses on SFT-style generalization and doesn't specifically diagnose DPO failure. Paper [6] (Improving W2SG with Reliability-Aware Alignment) addresses alignment under unreliable supervision signals. Paper [11] (Provably Robust DPO) studies DPO under noisy feedback. None of these papers specifically combine the purpose of (a) testing the full SFT+DPO pipeline under unreliable supervision AND (b) diagnosing why DPO specifically fails in this regime. Paper [4] covers the W2SG angle but not the DPO diagnosis. Paper [11] covers noisy DPO but in a different framing (noisy labels, not the W2SG/unreliable supervision framing). The specific purpose of diagnosing DPO failure under unreliable supervision as a pipeline-level question is not squarely covered by any single prior paper, but paper [4] comes closest to the \"does the pipeline work under weak supervision\" part, and [11] covers \"DPO under noisy feedback.\" Together they approach it, but the combined purpose (pipeline effectiveness + DPO failure diagnosis under unreliable supervision) is not covered as a unified objective. However, at the problem-class level, [4] + [11] together cover the components. Since I must identify a single paper: [4] covers the core question of pipeline effectiveness under weak/unreliable supervision, which is the primary purpose.\n\n**MECHANISM: Controlled simulation using weak LMs (weak generator + weak classifier) and time-constrained humans; vary DPO beta across feedback-quality levels to isolate overoptimization.**\n\nPaper [13] (Scaling Laws for Reward Model Overoptimization) uses a synthetic setup with a \"gold-standard\" reward model to simulate human feedback and measures overoptimization — this is the same primitive of using a proxy/weak model to simulate unreliable supervision. Paper [4] uses weak models as supervisors in a controlled simulation. Paper [10] (β-DPO) analyzes the impact of β and data quality on DPO, varying β across data quality levels — this is substantively equivalent to varying the KL-regularization coefficient across feedback-quality levels. The combination of (1) weak-model simulation of unreliable supervision and (2) varying beta to isolate overoptimization is partially covered: [13] covers the synthetic simulation aspect, [10] covers the beta-variation-across-quality aspect. Paper [14] (Scaling Laws for Reward Model Overoptimization in Direct Alignment Algorithms) extends [13] to DPO/direct alignment algorithms with similar synthetic setups. The mechanism of using weak models as proxies for unreliable supervision AND varying beta is covered by [13]/[14] for the simulation part and [10] for the beta-variation part.\n\n**EVALUATION: GSM8K, BIRD, SaferPaca with weak-to-strong setups; SFT vs SFT+DPO comparison; beta sweep.**\n\nPaper [4] uses NLP benchmarks in weak-to-strong setups comparing SFT-style methods. Paper [10] evaluates DPO with varying beta on standard benchmarks. Paper [14] uses scaling law evaluation on direct alignment algorithms. The evaluation design — weak-to-strong benchmark evaluation comparing SFT vs preference optimization methods — is covered by [4] (W2SG benchmark design) and [14] (overoptimization scaling in direct alignment). The specific benchmarks differ but the design (W2SG setup + SFT vs DPO comparison on NLP tasks) is covered.\n\n**DOMAIN: LLM post-training / alignment (RLHF) under unreliable supervision.**\n\nPapers [4], [6], [8], [18], [19] all work in LLM alignment under weak/unreliable supervision. Papers [1], [2], [3], [11], [12], [13], [14] work in LLM post-training/RLHF alignment. This domain is clearly covered.\n\nVERDICT purpose = 4\nVERDICT mechanism = 10\nVERDICT evaluation = 4\nVERDICT domain = 4",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     3
+    ],
+    "mechanism": [
+     4
+    ],
+    "evaluation": [
+     3,
+     8
+    ],
+    "domain": [
+     3
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to provide an alternative to RLHF that better utilizes comparison feedback under unreliable supervision, avoiding DPO's regularization dilemma while still allowing large model updates. Paper [3] discusses RS-DPO, which also aims to address limitations of DPO in the context of LLM alignment, specifically focusing on improving stability and computational efficiency. However, RS-DPO does not explicitly address the issue of unreliable supervision or propose a method to avoid DPO's regularization dilemma while enabling large model updates. Similarly, papers [8], [9], and [11] discuss DPO and its limitations but do not propose a solution to the specific problem of unreliable supervision or the regularization dilemma. Therefore, no prior paper fully covers the purpose of this contribution.\n\n### Mechanism\nThe mechanism, Iterative Label Refinement (ILR), involves splitting SFT data, training two models to cross-label held-out subsets, using comparison feedback to refine labels, and retraining a fresh SFT model iteratively. Paper [4] introduces Iterative Cross Learning (ICL), which also splits noisy training data into subsets, trains independent models, and uses their predictions to refine labels iteratively. While the specifics differ (e.g., ICL does not use comparison feedback or focus on SFT models), the underlying primitive of iterative cross-labeling and refinement is substantively equivalent. Similarly, papers [1], [5], and [18] describe iterative pseudo-labeling or learning with noisy labels, which also involve iterative refinement of labels, though they do not use comparison feedback or target the same application. Thus, the mechanism is covered by prior work.\n\n### Evaluation\nThe evaluation involves demonstrating qualitative mechanism insights and quantitative gains, such as larger KL divergence from the initial SFT model compared to DPO and improved SFT-label accuracy over rounds. Papers [3], [8], and [9] evaluate DPO and related methods using similar designs, such as KL divergence comparisons and accuracy improvements over iterations. While the specific benchmarks and datasets differ, the evaluation design (e.g., measuring KL divergence and accuracy improvements) is substantively equivalent. Therefore, the evaluation is covered.\n\n### Domain\nThe domain is LLM post-training and alignment. Papers [3], [8], [9], and [11] all operate in the same general area of LLM alignment and post-training, even though they may focus on different specific methods or datasets. Thus, the domain is covered.\n\n---\n\n**VERDICT purpose = NONE**  \n**VERDICT mechanism = 4**  \n**VERDICT evaluation = 3**  \n**VERDICT domain = 3**  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 3 | reason: RS-DPO explicitly addresses the same objective of providing an alternative to RLHF that better utilizes comparison feedback under unreliable supervision, as evidenced by the quote: \"Recently, direct preference optimization (DPO) is proposed to address those challenges. However, DPO relies on contrastive responses generated from human annotat[ions]...\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## PURPOSE\n\nThe contribution's purpose is: provide an alternative to RLHF/DPO that better uses comparison feedback under unreliable supervision, avoiding DPO's regularization dilemma while allowing large model updates.\n\nPapers [3], [8], [9], [10], [11], [14] all address LLM alignment alternatives to RLHF/DPO. Paper [3] (RS-DPO) explicitly addresses \"DPO relies on contrastive responses\" and proposes an alternative. Paper [8] compares DPO vs PPO for alignment. Paper [14] addresses online iterative RLHF. However, none of these specifically target the \"regularization dilemma\" of DPO while using comparison feedback to refine SFT labels iteratively. The closest is [3] which addresses DPO's limitations, but its purpose is rejection sampling + DPO combination, not label refinement under unreliable supervision. The specific framing of \"unreliable supervision + avoiding DPO's regularization dilemma via label refinement\" is not directly covered by any prior paper's stated objective.\n\nActually, re-examining: [3] and [8] address the same problem class — \"provide better alternatives to RLHF/DPO for LLM alignment.\" The purpose at the problem-class level (better alignment under comparison feedback, avoiding DPO limitations) is covered by [3] and [8].\n\n## MECHANISM\n\nThe ILR mechanism: split data in half, train two models that cross-label held-out halves, use comparison feedback to decide whether proposals replace original labels, retrain from base PLM, repeat K rounds.\n\nPaper [4] (Iterative Cross Learning on Noisy Labels): \"randomly partition the noisy training data into multiple separate subsets, each of which is used to train an independent network. After these independent networks predict labels for the original data, if the labels agree...\" — this is the cross-labeling primitive with data splitting and iterative refinement. The key difference is that ILR uses comparison feedback (weak LM or humans) to decide replacement, and applies to LLM SFT data, but the core primitive of splitting data, training separate models, cross-labeling, and iteratively refining labels is substantively equivalent.\n\nPaper [29] (Deep Co-Training): trains multiple networks on different views, uses disagreement to improve labels iteratively.\n\nPaper [22] (Co-Training style algorithms) and [28] also use co-training primitives.\n\nThe ILR mechanism most closely matches [4]: partition data, train separate models, cross-predict, use agreement/comparison to update labels, iterate. The comparison feedback step (using a weak LM to compare proposals) adds a preference-based selection, but the underlying primitive of iterative cross-labeling with data splitting is clearly in [4].\n\n## EVALUATION\n\nThe evaluation design includes: measuring KL divergence from initial SFT model (comparing ILR vs DPO), measuring SFT-label accuracy across rounds, and comparing to ground-truth-trained model accuracy.\n\nPapers [8] and [14] use LLM alignment benchmarks and compare methods including KL divergence measurements. Paper [8] specifically compares DPO vs PPO with various metrics. The KL divergence comparison between alignment methods is used in [8] and [14]. The \"label accuracy across rounds\" metric is more specific to iterative label refinement, similar to what [4] or [2] might track. The evaluation design of measuring KL divergence from a reference model and benchmark accuracy in LLM alignment is covered by [8] and [14].\n\n## DOMAIN\n\nThe domain is LLM post-training / alignment. Papers [3], [8], [9], [11], [14] all operate in this exact domain.\n\n---\n\nVERDICT purpose = 3\nVERDICT mechanism = 4\nVERDICT evaluation = 8\nVERDICT domain = 3",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     1,
+     12
+    ],
+    "evaluation": [
+     1,
+     14
+    ],
+    "domain": [
+     1,
+     9
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        9
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to show that SFT+ILR outperforms SFT+DPO under unreliable supervision across diverse tasks and real human feedback. Paper [9] discusses preference fine-tuning methods (including DPO) and their equivalence under offline preference datasets but does not establish a direct comparison between SFT+ILR and SFT+DPO under unreliable supervision or real human feedback. Paper [1] explores aligning LLMs using demonstration datasets but does not address the specific comparison between SFT+ILR and SFT+DPO. No prior paper establishes the same empirical relationship between these methods under unreliable supervision and real human feedback.\n\n### Mechanism\nThe contribution uses a head-to-head comparison of SFT+ILR vs. SFT+DPO across multiple rounds in simulated settings and a human study. Paper [9] evaluates preference fine-tuning methods, including DPO, but does not conduct a direct head-to-head comparison with ILR. Paper [1] formulates alignment using demonstration datasets but does not employ the specific experimental setup described here. No prior paper uses the same mechanism of multi-round comparisons across simulated and human studies for these methods.\n\n### Evaluation\nThe evaluation design involves measuring performance on GSM8K, BIRD, and SaferPaca benchmarks, as well as human studies. Paper [9] evaluates preference fine-tuning methods using offline datasets and theoretical analysis but does not use the same benchmark family or human study design. Paper [14] introduces B-Pref, a benchmark for preference-based RL, but does not evaluate ILR or DPO on the same benchmarks or human feedback. No prior paper uses the same evaluation design.\n\n### Domain\nThe contribution operates in the domain of LLM post-training/alignment. Paper [9] explicitly addresses preference fine-tuning for LLM alignment, and Paper [1] discusses aligning LLMs using demonstration datasets. Both papers work in the same general application area of LLM post-training/alignment, even though they target different specific methods or datasets.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [1], [9]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly demonstrates SFT+ILR outperforming SFT+DPO under unreliable supervision across diverse tasks and real human feedback.  \n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes a head-to-head comparison of SFT+ILR vs SFT+DPO across multiple rounds in LM-simulated settings and a CloudResearch human study with Alpaca datasets.  \n\nFACET: evaluation | FINAL: NONE | reason: No prior paper evaluates SFT+ILR consistently beating SFT+DPO across GSM8K, BIRD, SaferPaca, or human studies with detailed scaling benefits.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Show SFT+ILR outperforms SFT+DPO under unreliable supervision across diverse tasks and under real (time-constrained) human feedback.**\n\nThe purpose is to empirically demonstrate that a specific IRL-based alignment method (ILR) beats DPO when supervision is unreliable. Paper [1] (\"Supervised Fine-Tuning as Inverse Reinforcement Learning\") questions the efficacy of preference datasets and explores alignment with expert demonstrations, but its purpose is to propose/validate ILR as a framework, not specifically to show ILR beats DPO under unreliable/noisy supervision conditions. Paper [9] compares online RL (PPO) vs offline DPO theoretically and empirically, but the comparison is PPO vs DPO, not ILR vs DPO, and the focus is on data coverage rather than unreliable supervision. No prior paper establishes the same empirical relationship: ILR > DPO specifically under unreliable/time-constrained human feedback across diverse LLM tasks. The specific variables (ILR vs DPO, unreliable supervision, direction of effect) are not matched by any prior paper.\n\n**MECHANISM: Head-to-head comparison of SFT+ILR vs SFT+DPO over multiple rounds in four LM-simulated settings and a CloudResearch human study.**\n\nThis is a multi-round iterative comparison protocol with both LM-simulated and real human feedback (CloudResearch). Paper [14] (B-Pref) introduces a benchmark for preference-based RL with simulated teachers including noisy/myopic ones — a similar multi-condition evaluation design. Paper [1] uses sequential decision-making framework for LLM alignment. However, the specific mechanism of head-to-head multi-round comparison with LM-simulated feedback plus a real human study (CloudResearch, time-constrained) as an analysis method is a standard controlled ablation/comparison design. As a finding-type contribution, the mechanism (analysis method) is a standard multi-round head-to-head comparison, which appears in prior work (e.g., [14] uses simulated teacher comparisons across multiple conditions; [1] compares ILR-based methods). This is a standard controlled comparison design.\n\n**EVALUATION: GSM8K, BIRD, SaferPaca benchmarks; win rate metrics; human study on Alpaca.**\n\nThe evaluation uses named benchmark families: GSM8K (math reasoning), BIRD (text-to-SQL), SaferPaca (safety), and a human study on Alpaca. Paper [1] evaluates on similar LLM alignment benchmarks. Paper [11] (\"Imitating Language via Scalable IRL\") evaluates IRL-based LM training on standard benchmarks. The benchmark families (GSM8K, Alpaca-style evaluations) appear in the LLM alignment literature broadly. Per the special rule, reusing existing benchmark families counts as covered. Papers [1] and [11] use LLM alignment benchmarks including instruction-following evaluations. The evaluation design (standard LLM benchmark + win rate + human study) is used in prior alignment work.\n\n**DOMAIN: LLM post-training / alignment.**\n\nPapers [1], [9], [11] all operate in LLM post-training/alignment. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 1\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper compares SFT+ILR against SFT+DPO specifically under unreliable/noisy supervision across diverse tasks and real time-constrained human feedback. Paper [1] is the closest (SFT as IRL framing) but does not benchmark ILR against DPO under unreliable supervision; no other paper contains this same empirical objective even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution is a finding that SFT+ILR outperforms SFT+DPO, specifically under conditions of unreliable supervision and real-world human feedback constraints. For this purpose to be covered, a prior paper must have already established this same empirical relationship. While many papers discuss components like IRL ([1], [11]), DPO ([9]), or learning from noisy/suboptimal data ([5], [8], [21]), none appear to make the direct comparative claim between SFT+ILR and SFT+DPO under these specific conditions. Therefore, the purpose appears to be genuinely new.\n\n**mechanism**: The mechanism is the experimental design used to generate the finding: a head-to-head comparison between two algorithms (SFT+ILR vs SFT+DPO) using both simulated environments and a real human study with iterative feedback. This design of using iterative human preference feedback to compare or train systems is a well-established protocol in the field. For example, paper [12] explicitly proposes to \"learn reward functions by integrating human demonstrations and preferences\" and \"iteratively queries the user for her preferences between trajectories,\" which is substantively equivalent to the design of the human study portion of the mechanism.\n\n**evaluation**: The evaluation design involves measuring performance on standard benchmark families (reasoning benchmarks like GSM8K and BIRD), using standard metric semantics (win rate), and employing a standard validation framework (human preference study). This overall evaluation protocol is not new. Paper [14] introduces a benchmark for preference-based RL, explicitly formalizing the *design* of evaluating systems based on preferences, stating \"it is difficult to quantify the progress in preference-based RL due to the lack of a commonly adopted benchmark.\" This directly covers the design principle of the contribution's evaluation.\n\n**domain**: The application area is LLM post-training and alignment. This is explicitly covered by multiple prior papers. For instance, paper [1] states its context is \"aligning Large Language Models (LLMs),\" and paper [9] discusses \"fine-tuning large language models (LLMs).\"\n\nVERDICT purpose = NONE\nVERDICT mechanism = [12]\nVERDICT evaluation = [14]\nVERDICT domain = [1]",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the specific objective of comparing SFT+ILR against SFT+DPO, particularly under the specified conditions of unreliable supervision and real human feedback. While some papers compare DPO to other methods like PPO [9], and others investigate unreliable supervision in different contexts [5, 8, 21], none combine these elements to perform the specific empirical evaluation stated in the facet."
+     }
+    }
+   }
+  }
+ ]
+}

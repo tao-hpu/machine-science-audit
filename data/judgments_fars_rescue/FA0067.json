@@ -1,0 +1,418 @@
+{
+ "paper_id": "FA0067",
+ "title": "Delta-Prefill Switching: Adaptive Routing for Speculative Decoding in Multi-Turn LLM Serving",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": [
+     1,
+     3,
+     4,
+     7,
+     8,
+     11,
+     12,
+     13
+    ],
+    "domain": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     7,
+     8,
+     11,
+     13,
+     14
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": [
+        1,
+        3,
+        4,
+        7,
+        8,
+        11,
+        12,
+        13
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        7,
+        8,
+        11,
+        13,
+        14
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to find a routing signal that predicts when speculative decoding is beneficial in prefix-cached multi-turn serving. None of the prior papers explicitly address this specific empirical relationship or prediction task. While many papers discuss speculative decoding (e.g., [1], [2], [3], [4], [5], [7], [8], [11], [13], [14]), they focus on improving speculative decoding efficiency, scheduling, or throughput, not on identifying a predictive signal for routing decisions in prefix-cached multi-turn serving. No prior paper establishes the same empirical relationship between Delta-L and speculative decoding benefits.\n\n### Mechanism\nThe mechanism identifies incremental prompt growth (Delta-L) as the routing signal: small Delta-L favors speculation, while large Delta-L makes speculation costly under concurrency. None of the prior papers propose or analyze Delta-L as a routing signal. Papers like [1], [2], [3], [4], [5], [7], [8], [11], [13], and [14] discuss speculative decoding mechanisms, but they focus on draft model selection, scheduling, or throughput optimization rather than introducing Delta-L or an equivalent primitive for routing decisions. No paper uses a substantively equivalent mechanism.\n\n### Evaluation\nThe contribution validates its findings via DPS routing experiments on ToolBench and BFCL benchmarks. Papers like [12] and [18] discuss benchmarks for speculative decoding or multi-step LLM function calling, but they do not use ToolBench or BFCL specifically. However, the evaluation design — routing experiments with benchmarks — is a standard approach in speculative decoding research. Papers such as [1], [3], [4], [7], [8], [11], [12], and [13] use similar evaluation designs (benchmark-based validation of speculative decoding methods). The specific benchmarks (ToolBench and BFCL) are new instances, but the evaluation design itself is covered.\n\n### Domain\nThe domain is multi-turn LLM serving with speculative decoding. Many prior papers ([1], [2], [3], [4], [5], [7], [8], [11], [13], [14]) work in the same general application area of LLM inference acceleration via speculative decoding. While this contribution targets a specific sub-problem (prefix-cached multi-turn serving), the domain is not genuinely new. It falls within the broader area of speculative decoding for LLM inference.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = [1], [3], [4], [7], [8], [11], [12], [13]  \nVERDICT domain = [1], [2], [3], [4], [5], [7], [8], [11], [13], [14]  ",
+      "stage2": "1. **FACET: purpose** | **FINAL: NONE** | reason: No prior paper explicitly identifies the objective of finding a routing signal to predict when speculative decoding is beneficial in prefix-cached multi-turn serving. No equivalent objective was found under different terminology, framing, or domain vocabulary.\n\n2. **FACET: mechanism** | **FINAL: NONE** | reason: No prior paper explicitly identifies incremental prompt growth (Delta-L) as a signal for determining when speculative decoding is beneficial. No equivalent mechanism was found under different terminology, framing, or domain vocabulary."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Find a routing signal that predicts when speculative decoding is beneficial in prefix-cached multi-turn serving.**\n\nPaper [1] is about scheduling speculative decoding requests to minimize latency, and mentions estimating execution time to decide how to schedule. Paper [9] discusses cascades vs. speculative decoding with a \"deferral rule\" for routing to larger models. However, neither specifically addresses finding a routing signal for *when* speculative decoding is beneficial in *prefix-cached multi-turn* serving. Paper [1] is closest — it's about deciding which requests benefit from speculative decoding — but its focus is on scheduling/latency minimization via execution time prediction, not on identifying a routing signal tied to prefix cache dynamics in multi-turn conversations. The purpose of identifying a routing signal specifically tied to incremental prompt growth in multi-turn prefix-cached serving is not covered by any prior paper at the problem-class level. No prior paper pursues the same objective of finding a routing signal for speculative decoding benefit prediction in prefix-cached multi-turn serving.\n\n**MECHANISM: Identifies incremental prompt growth (Delta-L) as the routing signal — small Delta-L favors speculation, large Delta-L makes speculation's serialization costly under concurrency.**\n\nPaper [1] uses predicted output length as a signal for scheduling speculative decoding. Paper [9] uses a deferral rule based on input difficulty. Neither uses *incremental prompt growth* (new tokens since last turn) as the routing signal, nor connects it to serialization cost under concurrency in prefix-cached settings. The specific primitive — using Delta-L (turn-over-turn prompt increment) as a proxy for speculation benefit — is not present in any prior paper. No prior paper identifies this specific signal or the underlying reasoning about serialization cost from large prompt increments.\n\n**EVALUATION: Validated via DPS routing experiments on ToolBench and BFCL benchmarks.**\n\nToolBench and BFCL are named benchmark families used in prior work. Paper [18] discusses evaluation frameworks for tool-augmented LLMs (related to BFCL-style function calling benchmarks). Paper [23] uses algorithm selection evaluation designs. The evaluation design here — routing experiments on named tool-use benchmarks (ToolBench, BFCL) — uses existing benchmark families. BFCL (Berkeley Function Calling Leaderboard) and ToolBench are established benchmarks. The evaluation design of measuring routing/scheduling decisions on existing LLM serving benchmarks is a known design pattern (e.g., [1] validates scheduling on standard benchmarks). The use of existing named benchmarks for validation counts as COVERED per the special rule.\n\n**DOMAIN: Multi-turn LLM serving / speculative decoding.**\n\nPapers [1], [2], [3], [4], [5], [7], [8], [9], [11], [12], [13], [14] all operate in the domain of LLM inference serving with speculative decoding. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper seeks a routing signal that predicts when speculative decoding is beneficial specifically in prefix-cached multi-turn serving; [1] schedules SD requests based on execution time uncertainty but not in the multi-turn/prefix-cache context, and no other paper matches this objective even under different terminology.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper identifies incremental prompt growth (Delta-L, new tokens added since the last turn) as a routing signal for speculative decoding decisions; none of the papers discuss this specific feature or an equivalent construct under any alternative framing or domain vocabulary."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     2,
+     21
+    ],
+    "mechanism": null,
+    "evaluation": [
+     1,
+     3
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to \"accelerate sequential multi-turn inference without losing the benefit of speculation.\" This objective is not explicitly covered by any prior paper. While many prior works (e.g., [1], [2], [4], [8], [9], [15], [19]) focus on accelerating LLM inference using speculative decoding, none specifically address the challenge of sequential multi-turn inference, where routing decisions must be made dynamically for each turn to balance speed and accuracy. For example, [1] and [2] focus on optimizing speculative decoding for single-turn inference, while [4] targets small-batch scenarios. None of the prior works explicitly frame their purpose as addressing the specific problem of multi-turn inference acceleration with speculation.\n\n### Mechanism\nThe mechanism, Delta-Prefill Switching (DPS), uses a threshold-based policy to route each turn to either speculative or greedy decoding servers before decoding begins, without requiring model introspection or modifications. This mechanism is not covered by any prior paper. While many prior works (e.g., [1], [2], [4], [8], [9], [15], [19]) propose various speculative decoding methods, they all focus on optimizing the speculative decoding process itself (e.g., dynamic draft lengths, tree-based drafting, or self-speculative decoding). None of these works propose a mechanism for dynamically switching between speculative and greedy decoding servers based on a threshold policy, nor do they address the specific challenge of routing decisions for multi-turn inference.\n\n### Evaluation\nThe evaluation involves measuring the speedup achieved by DPS on ToolBench and BFCL, comparing it to greedy decoding and always-on speculation. This evaluation design is covered by prior work. For example, [1], [2], [4], [8], and [9] all evaluate speculative decoding methods by comparing their speedup against greedy decoding and other speculative decoding baselines on specific benchmarks. While the specific benchmarks (ToolBench and BFCL) are new, the evaluation design — comparing speedup and accuracy on benchmarks — is standard in speculative decoding research.\n\n### Domain\nThe domain is \"LLM inference routing policy.\" This domain is covered by prior work, as speculative decoding is a well-established area of research for LLM inference acceleration. Papers such as [1], [2], [4], [8], [9], [15], and [19] all operate in the same general application area of LLM inference acceleration, even if they target different specific problems or scenarios. The focus on routing policies for multi-turn inference is a narrower instance within this domain, not a genuinely new application area.\n\n---\n\n**VERDICT purpose = NONE**  \n**VERDICT mechanism = NONE**  \n**VERDICT evaluation = 1**  \n**VERDICT domain = 1**  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses accelerating sequential multi-turn inference while preserving the benefit of speculation.  \nFACET: mechanism | FINAL: NONE | reason: No prior paper describes a threshold-based policy routing turns to speculative or greedy decoding servers without model introspection or modifications.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Accelerate sequential multi-turn inference without losing the benefit of speculation.**\n\nThe purpose is specifically about accelerating *sequential multi-turn* inference while preserving speculative decoding benefits. Papers [1], [2], [3], [4], [5], [7], [8], [9], [10], [11], [12], [13], [15], [16], [18], [19], [24] all target LLM inference acceleration via speculative decoding, but none specifically target the *sequential multi-turn* setting as the problem being solved. Paper [3] discusses disparate speedups across tasks, which is related but its purpose is analysis, not acceleration of multi-turn inference. The multi-turn sequential inference bottleneck is a specific sub-problem, but the overarching objective — \"accelerate LLM inference without losing speculation benefits\" — is shared broadly. At the problem-class level, \"accelerate LLM inference without losing the benefit of speculation\" is covered by essentially all speculative decoding papers. The \"sequential multi-turn\" qualifier is an instance/domain detail. Paper [2] (DISCO) explicitly addresses that static speculation is suboptimal and aims to improve it, which is close. I'll call this COVERED by [1] or [2] at the problem-class level.\n\n**MECHANISM: Delta-Prefill Switching (DPS) — a threshold-based policy routing each turn to speculative or greedy decoding servers before decoding begins, with no model introspection or modifications.**\n\nThe key primitive here is: a threshold-based routing policy that selects between two decoding strategies (speculative vs. greedy) per turn, applied *before* decoding begins, without modifying models. Paper [2] (DISCO) dynamically selects speculation lookahead per iteration using a threshold-like approach. Paper [16] (BanditSpec) adaptively chooses speculative decoding configuration via online learning. Paper [21] (Online Cascade Learning) learns a cascade/deferral policy routing queries to different-capacity models. Paper [28] (Learning to Cascade) uses confidence-based routing in cascade inference systems. Paper [30] (Threshold-based Hybrid Routing Protocol for MANET) uses threshold-based routing but in networking. The closest is [21] — routing queries to different model tiers based on a learned policy — but it's not about speculative vs. greedy decoding servers. Paper [2] dynamically adjusts speculation parameters but doesn't route to separate servers. The specific primitive of \"threshold-based routing between speculative and greedy decoding servers, pre-decoding, no model modification\" is not clearly covered. However, [21] covers the cascade/routing-between-inference-tiers primitive. I'll note [21] as partially relevant but the specific server-routing-for-speculative-vs-greedy is not directly covered. NONE seems appropriate.\n\n**EVALUATION: On ToolBench and BFCL, DPS achieves 21-22% speedup over greedy decoding in sequential mode, matching always-on speculation.**\n\nThe evaluation design uses standard LLM benchmarks (ToolBench, BFCL) with speedup metrics compared to greedy decoding baseline. Speedup measurement against greedy decoding is the standard evaluation design used across virtually all speculative decoding papers [1], [2], [3], [4], [8], [9], [10], [11], [12], [15], [16], [18], [19], [24]. The metric (speedup ratio) and benchmark family (tool-use/function-calling benchmarks) are standard. Paper [3] specifically evaluates speculative decoding speedup across tasks. This evaluation design is covered.\n\n**DOMAIN: LLM inference routing policy.**\n\nLLM inference optimization is the domain of papers [1], [2], [3], [4], [5], [7], [8], [9], [10], [11], [12], [13], [15], [16], [18], [19], [24]. This is clearly covered.\n\nVERDICT purpose = 2\nVERDICT mechanism = NONE\nVERDICT evaluation = 3\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes a threshold-based pre-decoding routing policy that dispatches entire turns to either speculative or greedy decoding servers based on a scalar threshold, without any model introspection or modification. The closest candidates (cascade routing [21], threshold-based network routing [30], adaptive speculation [2][16]) either operate within a single decoding pipeline, require model modifications, or apply thresholds in entirely different domains (network routing, early exit). None quote or describe a turn-level dispatch policy selecting between speculative and greedy decoding servers before decoding begins."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 21
+      },
+      "mechanism": {
+       "covered_by": 20
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe purpose is to accelerate multi-turn inference by adaptively choosing whether to use speculation or not, thereby gaining acceleration without the potential overhead of always-on speculation. This objective is substantively equivalent to that of [21], which aims for \"efficient inference over streams\" by learning a \"deferral policy that determines the model to be used on a given input\" from a cascade of models with different costs. Both seek to accelerate inference by dynamically routing inputs to the appropriate computational path based on their properties.\n\n**MECHANISM**\nThe mechanism is a threshold-based policy that routes an inference turn to one of two different servers (speculative or greedy) before decoding. This is an instance of a threshold-based routing primitive. This mechanism is covered by [20], which proposes a \"trust-threshold based routing protocol for delay tolerant networks,\" and [30], which proposes a \"Threshold-based Hybrid Routing Protocol for MANET.\" Both use a threshold to decide on a routing policy, which is the same underlying primitive despite the different application domain.\n\n**EVALUATION**\nThe evaluation design consists of measuring the speedup of the proposed method against baselines (greedy decoding, always-on speculation) on standard benchmarks (ToolBench, BFCL). This design—measuring speedup on a benchmark—is a standard protocol for work on inference acceleration. It is covered by numerous prior papers, including [1], which evaluates its method by measuring its \"average speedup\" against other speculative decoding methods.\n\n**DOMAIN**\nThe domain is an \"LLM inference routing policy.\" This falls within the general application area of accelerating LLM inference and managing LLM inference systems. This area is covered by the many papers on speculative decoding, such as [1], which focuses on \"Faster Speculative Decoding for LLMs.\" The contribution addresses a specific problem (routing policy) within this established domain.\n\nVERDICT purpose = 21\nVERDICT mechanism = 20\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     3,
+     17
+    ],
+    "mechanism": [
+     3,
+     13
+    ],
+    "evaluation": [
+     3
+    ],
+    "domain": [
+     1,
+     3
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to show that DPS avoids speculation's serialization bottleneck under concurrent multi-tenant load. This is a specific finding about the relationship between DPS and its performance under concurrent load. None of the prior papers explicitly establish this relationship. While [3] discusses speculative decoding and its trade-offs under different system loads, it does not address the specific serialization bottleneck under concurrent multi-tenant load or demonstrate that DPS avoids it. Therefore, no prior paper covers this purpose.\n\n### Mechanism\nThe mechanism involves routing large-Delta-L requests to the concurrent-capable greedy server when concurrency \\( c \\geq 4 \\). This is a specific routing strategy for handling large-Delta-L requests under high concurrency. [13] discusses adaptive routing for speculative decoding in LLMs, but it focuses on dynamically adapting to varying complexities of user requests and system performance, not specifically on routing large-Delta-L requests to a greedy server under high concurrency. No other paper describes a substantively equivalent mechanism. Thus, the mechanism is not covered.\n\n### Evaluation\nThe evaluation design involves measuring DPS's performance under concurrent load (\\( c \\geq 4 \\)) and showing a +64-80% speedup over always-on speculation. [3] evaluates speculative decoding under varying system loads, including high-load scenarios, and measures performance improvements. [9] and [16] also evaluate speculative decoding methods under different load conditions, focusing on speedup and throughput improvements. While the specific benchmark or instance may differ, the evaluation design — measuring performance improvements of speculative decoding under varying load conditions — is covered by these prior works.\n\n### Domain\nThe domain is concurrent LLM serving performance. Several prior papers, including [1], [3], [9], [13], and [16], address LLM serving performance, including under concurrent or high-load conditions. While the specific sub-problem or instance may differ, the general application area is the same. Therefore, the domain is covered.\n\n---\n\n**VERDICT purpose = NONE**  \n**VERDICT mechanism = NONE**  \n**VERDICT evaluation = 3**  \n**VERDICT domain = 3**  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses avoiding speculation's serialization bottleneck under concurrent multi-tenant load, even under different terminology or framing.  \nFACET: mechanism | FINAL: COVERED-BY 13 | reason: SpecRouter (Paper 13) describes \"adaptive routing for multi-level speculative decoding,\" which aligns with routing large-Delta-L requests to a concurrent-capable server when concurrency c >= 4. Quote: \"Existing serving strategies often employ fixed model scales or static two-stage speculative decoding, failing to dynamically adapt to the varying complexities of user requests or fluctuations in system performance.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": 3
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Show DPS avoids speculation's serialization bottleneck under concurrent multi-tenant load.**\n\nPaper [3] (Nightjar) explicitly addresses the trade-off where speculative decoding \"degrades performance in high-load, compute-bound environments due to verification overhead\" and studies when to stop speculation. Paper [9] (SPIRe) notes \"SD can accelerate decoding with large batch sizes too if the context is sufficiently long.\" However, the specific purpose of showing that a *dynamic policy selector* avoids the serialization bottleneck *under concurrent multi-tenant load* (c >= 4) is closest to [3], which quantifies when speculation hurts and proposes adaptive switching. The purpose of demonstrating that DPS specifically routes away from speculation under concurrency to avoid its bottleneck is substantively covered by [3]'s goal of identifying when speculation degrades and adapting accordingly.\n\n**MECHANISM: Routing large-Delta-L requests to the concurrent-capable greedy server when concurrency c >= 4.**\n\nPaper [13] (SpecRouter) introduces \"adaptive routing for multi-level speculative decoding\" that \"dynamically adapt[s] to the varying complexities of user requests or fluctuations in system performance.\" Paper [3] (Nightjar) proposes dynamic adaptation of speculative decoding based on load conditions. The specific primitive of routing requests to a non-speculative (greedy) server based on a concurrency threshold is most closely matched by [3]'s adaptive switching between speculation and non-speculation based on load, and [13]'s routing mechanism. Paper [5] (Dynamic Speculative Agent Planning) also routes between inference strategies. The routing-to-greedy-under-load primitive is covered by [3] and [13].\n\n**EVALUATION: Under concurrent load (c >= 4), DPS achieves +64-80% speedup over always-on speculation.**\n\nThe evaluation design uses concurrent load benchmarking with speedup metrics comparing speculative vs. non-speculative decoding strategies. Paper [3] (Nightjar) evaluates speculative decoding under varying load conditions and measures throughput/latency tradeoffs. Paper [9] (SPIRe) evaluates SD under large batch sizes measuring speedup. The design of measuring speedup of an adaptive SD policy vs. always-on speculation under varying concurrency levels is substantively covered by [3], which uses the same evaluation design (load-varying benchmark, speedup metric, SD vs. baseline comparison).\n\n**DOMAIN: Concurrent LLM serving performance.**\n\nMultiple prior papers operate in LLM serving/inference performance: [1], [2], [3], [4], [8], [9], [10], [13], [16], [17]. This is clearly a covered domain.\n\nVERDICT purpose = 3\nVERDICT mechanism = 3\nVERDICT evaluation = 3\nVERDICT domain = 3",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 17
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "purpose: The purpose is to establish a new empirical finding: that a specific routing mechanism avoids the serialization bottleneck of speculative decoding under high load. While prior work like [3] identifies the problem that speculative decoding \"degrades performance in high-load... environments,\" no prior paper establishes or reports this specific empirical relationship for this mechanism.\n\nmechanism: The mechanism is adaptive routing of requests to different servers (speculative vs. greedy) based on system state (concurrency) and request properties. This is substantively equivalent to the mechanism in [13], which introduces \"SpecRouter: Adaptive Routing for Multi-Level Speculative Decoding\" that \"dynamically adapt[s] to the varying complexities of user requests or fluctuations in system performance.\"\n\nevaluation: The evaluation design measures performance speedup under concurrent load and compares the proposed system to a baseline of always-on speculation. This is a standard design for validating systems that adapt to load; for instance, [3] addresses performance degradation in \"high-load... environments\" and would necessarily use a similar design to compare its adaptive method against a static baseline under varying load.\n\ndomain: The application area is concurrent LLM serving performance. This is the same general domain as numerous prior papers, including [1] (\"Low-Latency, High-Throughput LLM Inference for Dynamic Workloads\") and [3] (\"Dynamic Adaptive Speculative Decoding for Large Language Models Serving\").\n\nVERDICT purpose = NONE\nVERDICT mechanism = 13\nVERDICT evaluation = 3\nVERDICT domain = 1",
+      "stage2": "FACET: purpose: Show DPS avoids speculation's serialization bottleneck under concurrent multi-tenant load. | FINAL: COVERED-BY [17] | reason: Paper [17] has the same objective, which it calls \"Breaking the Serial Barrier in LLM Inference,\" identifying that speculative decoding \"gains are capped by the cost of autoregressive draft generation,\" which is the same serialization bottleneck."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     3,
+     4
+    ],
+    "mechanism": [
+     12
+    ],
+    "evaluation": [
+     1,
+     22
+    ],
+    "domain": [
+     1,
+     3,
+     4,
+     6
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        3,
+        4,
+        6
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution aims to establish the robustness of DPS to its main hyperparameter. This is a specific empirical relationship between the hyperparameter (Delta-L routing threshold tau) and robustness. None of the prior papers explicitly report or establish this same relationship. Papers [1], [3], [4], and [6] discuss hyperparameter sensitivity or robustness in general, but they do not address DPS or the specific relationship between tau and robustness. Therefore, no prior paper covers this purpose.\n\n#### Mechanism:\nThe mechanism involves a threshold sweep over the Delta-L routing threshold tau. Paper [12] mentions \"parameter sweeps for exploring GP parameters,\" which is substantively equivalent to the primitive of sweeping a parameter to analyze its effect. Although the specific parameter (tau) and system (DPS) differ, the mechanism of threshold sweeping is covered.\n\n#### Evaluation:\nThe evaluation design involves showing that all tau >= 32 outperform the greedy baseline, with monotonic performance improvement. This is a specific validation setup for DPS robustness. None of the prior papers use the same evaluation design — no paper evaluates tau thresholds in DPS or demonstrates monotonic improvement over a baseline. Papers like [13] and [20] discuss tau thresholds in unrelated domains (e.g., cognitive decline prediction), but their evaluation designs are fundamentally different. Thus, the evaluation design is uncovered.\n\n#### Domain:\nThe domain is hyperparameter robustness analysis. Papers [1], [3], [4], and [6] all work in the general area of hyperparameter sensitivity or robustness analysis, even though they target different systems (e.g., reinforcement learning, random forests, evolutionary algorithms). Since the domain is judged at the general application area level, it is covered.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = 12  \nVERDICT evaluation = NONE  \nVERDICT domain = 1, 3, 4, 6  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 3 | reason: Paper [3] conducts a large-scale empirical analysis of hyperparameter sensitivity, including quantifying main effects, which aligns with the objective of establishing robustness to a main hyperparameter. Quote: \"Functional analysis of variance (FANOVA) is employed to quantify main and interaction effects.\"\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper explicitly claims monotonic performance improvement for all tau >= 32 outperforming a greedy baseline, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**Purpose: Establish robustness of DPS to its main hyperparameter.**\n\nThe purpose is to show that a specific system (DPS) is robust to its routing threshold hyperparameter (tau). Papers [1] and [3] address hyperparameter sensitivity analysis in RL, but their purpose is to characterize sensitivity/interactions, not to establish robustness of a specific system's hyperparameter. Paper [4] performs sensitivity analysis of random forest hyperparameters. However, none of these papers establish robustness of DPS's routing threshold specifically — but at the problem-class level, \"establish that a system's performance is robust to a key hyperparameter\" is the same objective as hyperparameter sensitivity/robustness analysis. Paper [1] explicitly proposes methods for \"characterizing these complex interactions\" in hyperparameter sensitivity, and paper [3] conducts \"large-scale empirical analysis of hyperparameter sensitivity.\" The purpose of showing robustness to a hyperparameter is the same class of objective as hyperparameter sensitivity analysis. Paper [1] covers this at the problem-class level.\n\n**Mechanism: Threshold sweep over the Delta-L routing threshold tau.**\n\nPaper [12] \"Parameter sweeps for exploring GP parameters\" directly describes sweeping parameters to explore their effect — this is the same primitive (parameter sweep) applied to a different system. Paper [22] studies \"threshold variations\" in routing protocols, which is a threshold sweep for routing. The mechanism of sweeping a threshold parameter to assess performance is covered by [12] (parameter sweep) and [22] (threshold variation study in routing).\n\n**Evaluation: All tau >= 32 outperform the greedy baseline, with monotonic performance improvement.**\n\nThis evaluation design involves comparing swept hyperparameter values against a baseline and observing monotonic improvement. Papers [1], [3], and [4] all use comparison-against-baseline designs in hyperparameter sensitivity studies. Paper [22] specifically studies \"threshold variations\" in routing and evaluates routing performance across threshold values. The design of sweeping a threshold and comparing to a baseline is covered by these prior works.\n\n**Domain: Hyperparameter robustness analysis.**\n\nPapers [1], [3], [4], and [6] all operate in the domain of hyperparameter sensitivity/robustness analysis. This is clearly covered.\n\nVERDICT purpose = 1\nVERDICT mechanism = 12\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 22
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: No prior paper has the purpose of establishing that a system is robust to its hyperparameters; papers like [1], [3], and [4] instead focus on methods for analyzing or quantifying hyperparameter *sensitivity*, which is the opposite premise.\n\n**mechanism**: The mechanism is a parameter sweep, which is explicitly described and used in [12] (\"Parameter sweeps for exploring GP parameters\") and is the core method in other sensitivity analyses like [22] (\"Performance Study of Threshold Variations\").\n\n**evaluation**: The evaluation design, comparing performance across a parameter sweep against a baseline, is a standard protocol for sensitivity analysis used in papers like [22] which \"evaluate routing performance\" across \"Threshold Variations\".\n\n**domain**: The domain of hyperparameter robustness/sensitivity analysis is explicitly addressed by multiple prior papers, including [1] (\"Evaluating Hyperparameter Sensitivity\"), [3] (\"HYPERPARAMETER SENSITIVITY ANALYSIS\"), and [4] (\"Sensitivity Analysis of Random Forest Hyperparameters\").\n\nVERDICT purpose = NONE\nVERDICT mechanism = 12\nVERDICT evaluation = 22\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY [4] | reason: This is a standard sensitivity analysis objective. Paper [4] shares the same purpose of measuring an algorithm's performance change w.r.t. its hyperparameters, stating its goal is to \"perform[] the sensitivity analysis of the random forest’s popular hyperparameters... to determine the effect of changes\"."
+     }
+    }
+   }
+  }
+ ]
+}

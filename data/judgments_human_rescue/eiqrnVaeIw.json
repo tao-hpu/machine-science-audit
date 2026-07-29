@@ -1,0 +1,178 @@
+{
+ "paper_id": "eiqrnVaeIw",
+ "title": "Persistent Pre-training Poisoning of LLMs",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     14
+    ],
+    "mechanism": [
+     2,
+     14
+    ],
+    "evaluation": [
+     14
+    ],
+    "domain": [
+     1,
+     5
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to evaluate whether language models can be poisoned during the **pretraining phase** and assess the persistence of such attacks after **alignment training** (SFT+DPO). This fills a gap in prior poisoning research, which has focused exclusively on **post-training attacks**. None of the prior papers explicitly address poisoning during pretraining or its persistence post-alignment. Papers like [5], [2], and [14] discuss poisoning or deceptive behavior in LLMs, but they focus on **post-training attacks** (e.g., fine-tuning or supervised training) rather than pretraining poisoning. Thus, the purpose is **uncovered**.\n\n### Mechanism\nThe mechanism involves injecting poisoned samples targeting four specific attack goals (denial of service, belief manipulation, jailbreaking, and context extraction) into the **pretraining data** of LLMs, training models from scratch, and comparing their behavior before and after post-training. Papers such as [5], [2], and [14] discuss poisoning attacks, but they focus on **post-training poisoning** (e.g., fine-tuning or supervised training) rather than poisoning during pretraining. No prior paper describes injecting poisoned samples into pretraining data and analyzing their persistence across post-training. Thus, the mechanism is **uncovered**.\n\n### Evaluation\nThe evaluation design measures the persistence of poisoned behaviors after post-training (SFT+DPO) using metrics like attack success rates at different poisoning levels (e.g., 0.1%, 0.001%). Papers like [5], [2], and [14] evaluate poisoning attacks in LLMs, but they focus on **post-training attacks** and do not use the same evaluation design (e.g., persistence across pretraining and post-training phases). The evaluation design is **uncovered**.\n\n### Domain\nThe domain is **AI safety and data poisoning in large language models**. Papers such as [5], [2], [14], and [13] all address data poisoning or backdoor attacks in LLMs, which is the same general application area. While this contribution focuses on pretraining poisoning, the domain is still **covered** because it falls within the broader area of LLM poisoning and AI safety.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 5  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly evaluates pretraining-stage poisoning persistence post-alignment training.  \nFACET: mechanism | FINAL: NONE | reason: No prior paper injects four specific attack types into pretraining data and contrasts pre/post-training behavior.  \nFACET: evaluation | FINAL: COVERED-BY 14 | reason: \"Models that write deceptive helpful responses persist through safety training\" aligns with persistence of malicious behavior post-training.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 14
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\n\nThe contribution's purpose is to evaluate whether LLMs can be poisoned **during pretraining** and whether such attacks **persist through alignment (SFT+DPO)** — specifically filling the gap that prior poisoning research only addressed post-training stages.\n\nPaper [14] (Sleeper Agents) trains deceptive LLMs and tests whether deceptive behaviors \"persist through safety training\" (including RL fine-tuning). This is closely related — it asks whether backdoor/deceptive behaviors survive alignment. However, [14] focuses on behaviors inserted via fine-tuning/RLHF, not pretraining-stage poisoning. The contribution's specific gap is **pretraining-stage** poisoning persistence.\n\nPaper [5] targets SFT poisoning. Papers [2], [13], [18], [26] address backdoor attacks/defenses in language models but not pretraining-stage persistence through alignment.\n\nNo prior paper specifically establishes the empirical relationship: \"pretraining-stage data poisoning persists through SFT+DPO alignment.\" [14] is the closest but tests persistence of behaviors inserted at fine-tuning/training time (not raw pretraining data poisoning) through safety training. The specific combination — poisoning at pretraining data level, then measuring persistence through full alignment pipeline — is not covered.\n\n**Purpose: NONE** (no prior paper reports the same empirical relationship: pretraining-data poisoning surviving SFT+DPO alignment).\n\n## Mechanism\n\nThe mechanism involves: (1) training LLMs from scratch, (2) injecting poisoned samples into pretraining data, (3) testing four attack types (DoS/gibberish, belief manipulation, jailbreak, prompt stealing), (4) comparing behavior before and after post-training.\n\nPaper [14] trains models with backdoors and tests persistence through safety training — similar spirit but uses fine-tuning-stage insertion, not pretraining data poisoning from scratch. Paper [5] uses gradient-guided poisoning for SFT. Paper [2] injects lexical backdoors into training data. Paper [13] analyzes internal mechanisms of backdoored LMs trained with poisoned data.\n\nThe core primitive of \"inject poisoned samples into pretraining corpus, train from scratch, then apply alignment\" is not explicitly covered. The closest is [14] which trains deceptive models but not via pretraining-data poisoning from scratch. The four attack objectives (especially context extraction/prompt stealing as a pretraining-stage attack) are not collectively covered.\n\nHowever, the basic primitive of \"data poisoning during training to cause specific behaviors\" is covered by multiple papers ([2], [5], [13]). The \"from-scratch pretraining\" aspect is a domain/scale difference. The mechanism of injecting poisoned samples into training data is covered by [2] and [13].\n\n**Mechanism: COVERED by [2], [13], [14]** — the primitive of injecting poisoned data into LM training to cause targeted misbehaviors, then testing persistence through further training, is present.\n\n## Evaluation\n\nThe evaluation design: measure attack success rate at varying poisoning rates (0.1%, 0.001%) before and after post-training (SFT+DPO), across multiple attack types.\n\nPaper [14] evaluates whether backdoor behaviors persist through safety training — same evaluation design (measure behavior before/after safety training). Paper [5] evaluates poisoning effectiveness at different poisoning rates. Paper [18] evaluates fine-tuning as mitigation (measuring attack success before/after fine-tuning). These all use the same design: measure attack success rate before/after a training intervention, varying poisoning rate.\n\n**Evaluation: COVERED by [14], [18]** — measuring attack persistence through post-training/safety-training is the same evaluation design.\n\n## Domain\n\nThe domain is AI security / LLM data poisoning. This is clearly covered by [1], [2], [5], [7], [13], [14] and many others which work in ML/LLM security and data poisoning.\n\n**Domain: COVERED by [1], [2], [5], [7], [13], [14]**\n\nVERDICT purpose = NONE\nVERDICT mechanism = 2\nVERDICT evaluation = 14\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 14 | reason: Paper [14] explicitly studies whether deceptive/backdoor behaviors inserted during training \"persist through safety training\" — quoting \"could we detect it and remove it using current state-of-the-art safety training techniques?\" and \"we construct proof-of-concept examples of deceptive behavior in large language models\" trained with backdoors that persist through RLHF/SFT safety training. However, this covers persistence through safety training but does NOT address poisoning at the **pretraining** stage specifically (it uses fine-tuning to insert backdoors, not pretraining corpus poisoning). The facet requires the same objective: evaluating whether LLMs can be poisoned **at the pretraining stage** and whether such attacks persist after SFT+DPO alignment. No prior paper matches this specific combination. FINAL: NONE | reason: Paper [14] covers persistence through safety training but inserts backdoors via fine-tuning, not pretraining-stage corpus poisoning; no prior paper evaluates pretraining-stage poisoning of LLMs combined with post-alignment (SFT+DPO) persistence as a unified objective."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 14
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: Paper [14] investigates the same core question: whether a maliciously instilled behavior (a \"deceptive\" backdoor) can be trained into a model and \"persist across standard safety training techniques\" like RLHF, which is substantively equivalent to testing if pre-training poisoning persists through SFT/DPO.\n\nmechanism: Paper [14] uses the same experimental primitive: they \"train models that write... secure code... but insert a vulnerability if the year is 2024\" and then apply safety training to test for persistence. This is the same design as poisoning pre-training data, applying alignment training, and comparing behavior.\n\nevaluation: The evaluation design of measuring an attack's success rate before and after a fine-tuning or alignment process is used in multiple prior works. For example, paper [14] evaluates its claim by showing that the \"backdoor behavior can be made to persist across standard safety training techniques,\" which requires the same before-and-after measurement protocol.\n\ndomain: The domain of AI Safety and data poisoning in Large Language Models is well-established. For example, paper [5] is titled \"Learning to Poison Large Language Models for Downstream Manipulation,\" and paper [14] is about \"Training Deceptive LLMs,\" both clearly operating in the same application area.\n\nVERDICT purpose = 14\nVERDICT mechanism = 14\nVERDICT evaluation = 14\nVERDICT domain = 5",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     3
+    ],
+    "evaluation": [
+     3,
+     19
+    ],
+    "domain": [
+     11
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 11
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to reveal that jailbreak attacks are ineffective when attempted via pretraining poisoning, due to the high sample complexity required, and to provide a hypothesis about this complexity. None of the prior papers explicitly establish this relationship or hypothesis. While several papers (e.g., [3], [7], [8], [11], [12], [17]) discuss poisoning attacks or jailbreak attacks, none of them analyze the specific ineffectiveness of jailbreak attacks via pretraining poisoning or propose a sample complexity hypothesis for jailbreak attacks. For example, [3] focuses on backdoor attacks in pre-trained models but does not address jailbreak attacks or their sample complexity. Similarly, [11] discusses jailbreak attacks but does not analyze their feasibility under pretraining poisoning.\n\n### Mechanism\nThe mechanism involves comparing the security of poisoned models versus clean models (Figure 6) to observe whether jailbreak attacks reduce model safety, and contrasting this with Hubinger et al.'s conclusions about sleeper agents. This comparative analysis method is not novel. For instance, [3] compares poisoned and clean models in the context of backdoor attacks, and [7] evaluates poisoned models to detect vulnerabilities. While the specific focus on jailbreak attacks and the comparison to Hubinger et al. is unique, the underlying mechanism of comparing poisoned versus clean models for security analysis is covered.\n\n### Evaluation\nThe evaluation design tests whether jailbreak attacks can compromise model safety via pretraining poisoning, finding that poisoned models are no less secure than clean models and hypothesizing that jailbreak attacks require high sample complexity. This evaluation design is not novel. Papers like [3], [7], and [8] evaluate the effectiveness of poisoning attacks by comparing poisoned and clean models, and [11] evaluates jailbreak attacks. The specific focus on jailbreak attacks via pretraining poisoning is a new application instance, but the evaluation design (comparing poisoned vs. clean models and testing attack feasibility) is covered.\n\n### Domain\nThe domain is AI safety, specifically jailbreak attacks on large language models (LLMs). This domain is covered by prior work, such as [11], which explicitly addresses jailbreak attacks on LLMs, and [12], which discusses LLM security in the context of poisoning and manipulation risks. While the specific focus on pretraining poisoning for jailbreak attacks is narrower, it falls within the established domain of AI safety and LLM jailbreaks.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 3  \nVERDICT evaluation = 3  \nVERDICT domain = 11  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses the objective of revealing jailbreak attack ineffectiveness through pre-training poisoning under sample complexity assumptions."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 19
+      },
+      "domain": {
+       "covered_by": 11
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**PURPOSE: Revealing that jailbreak attacks are ineffective via pretraining poisoning, with a sample complexity hypothesis**\n\nThis purpose is about demonstrating a *negative result* — that jailbreak attacks cannot be embedded via pretraining-stage data poisoning — and hypothesizing why (sample complexity of jailbreak behaviors). Paper [11] discusses jailbreak attacks via LangChain (RAG-based poisoning), but it aims to *succeed* at jailbreaking, not demonstrate failure. Paper [3] covers backdoor attacks on pre-trained models but aims to show attacks *work*, not fail. No prior paper establishes the same empirical relationship: \"jailbreak attacks fail when attempted through pretraining poisoning, due to high sample complexity.\" The closest thematic papers ([3], [11]) pursue the opposite direction (showing attacks succeed). None cover this specific negative finding with the sample complexity framing.\n\n**MECHANISM: Comparing poisoned vs. clean models' safety (Figure 6), observing jailbreak attack effectiveness, contrasting with Hubinger et al. (sleeper agents)**\n\nThe analysis method is a controlled comparison of poisoned vs. clean model safety behavior. This is a standard controlled ablation/comparison design. Papers [3], [8], [11] all compare poisoned vs. clean models in some form. Paper [3] explicitly compares backdoored pre-trained models against clean baselines. This is a standard \"poisoned vs. clean model comparison\" design, which appears across multiple prior papers.\n\n**EVALUATION: Jailbreak attacks cannot break model safety via pretraining poisoning; poisoned model no less safe than clean model; sample complexity hypothesis**\n\nThe evaluation design involves comparing safety metrics between poisoned and clean LLMs. Paper [11] evaluates jailbreak success rates on LLMs. Paper [19] provides a benchmark for evaluating jailbreak performance with standardized metrics. The design of \"measure safety/jailbreak success rate on a poisoned vs. clean LLM\" is a variant of the LLM safety evaluation design used in [19] and [11]. The evaluation design (safety metric comparison across model conditions) is covered by these prior works at the design level.\n\n**DOMAIN: AI safety / LLM jailbreaking**\n\nPapers [11] and [19] both operate in the domain of LLM safety and jailbreak attacks. Paper [11] explicitly addresses jailbreak attacks on LLMs. Paper [19] addresses evaluation of jailbreak effectiveness on LLMs. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 3\nVERDICT evaluation = 19\nVERDICT domain = 11",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper contains the same objective of demonstrating that jailbreak attacks via pretraining poisoning are difficult to execute and providing a sample complexity hypothesis for this claim. The closest papers touch on poisoning LLMs (e.g., [11] on jailbreak via LangChain, [8] on poisoning pre-trained feature extractors) but none argue that pretraining poisoning is *ineffective* for jailbreaks nor provide a sample complexity bound or hypothesis to explain why."
+     }
+    }
+   }
+  }
+ ]
+}

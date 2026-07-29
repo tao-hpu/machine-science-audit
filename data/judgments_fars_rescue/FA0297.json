@@ -1,0 +1,359 @@
+{
+ "paper_id": "FA0297",
+ "title": "Syntax Constraints Are Not Enough: Semantic Errors Dominate Diffusion LM Tool-Calling Failures",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     5,
+     8
+    ],
+    "mechanism": [
+     1,
+     2,
+     4,
+     5,
+     6,
+     8,
+     10,
+     13
+    ],
+    "evaluation": [
+     7,
+     15,
+     17
+    ],
+    "domain": [
+     1,
+     2,
+     5,
+     7,
+     8,
+     17
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        8,
+        10,
+        13
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        7,
+        15,
+        17
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        2,
+        5,
+        7,
+        8,
+        17
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to test whether constrained decoding closes the diffusion-LM tool-calling gap, specifically addressing the formatting-failure hypothesis. No prior paper explicitly tests this hypothesis or establishes the same empirical relationship between constrained decoding and the tool-calling gap. While several papers (e.g., [1], [2], [5], [8]) discuss constrained decoding for syntax adherence or structured generation, none directly investigate the specific relationship between constrained decoding and the formatting-failure hypothesis in diffusion LMs. Thus, the purpose is **NONE**.\n\n### Mechanism\nThe mechanism involves systematically evaluating three decoding conditions (unconstrained generation, best-of-2 with AST filter, and LAVE CFG-constrained decoding with a syntax-only grammar). Papers [1], [2], [4], [5], [6], [8], [10], and [13] all describe constrained decoding techniques, including grammar-constrained decoding (CFG-based) and other methods for enforcing syntactic validity during generation. For example, [1] and [2] explicitly apply CFG-based constrained decoding to diffusion LMs, and [5] discusses constrained decoding for syntax error-free tool use. These papers cover the underlying primitive of constrained decoding, including CFG-based approaches. Therefore, the mechanism is **COVERED**.\n\n### Evaluation\nThe evaluation design measures AST parse rate, parse failures, and overall success rate under different decoding conditions. Papers [7], [15], and [17] describe evaluation setups for function calling or structured generation tasks, including benchmarks like BFCL and syntactic/semantic parsing metrics. For example, [7] introduces IFEval-FC, which evaluates adherence to format instructions in function calling, and [15] uses constrained decoding benchmarks for parsing tasks. These prior works use similar evaluation designs (benchmark families and metric semantics) to validate constrained decoding techniques, even if applied to different datasets or objects. Thus, the evaluation is **COVERED**.\n\n### Domain\nThe domain is diffusion language model tool/function calling, specifically BFCL-v3. Papers [1], [2], [5], [7], [8], and [17] all address tool calling or structured generation in diffusion LMs or large language models. For example, [7] evaluates function calling benchmarks, and [1] and [2] focus on constrained decoding for diffusion LMs. While BFCL-v3 is a specific benchmark instance, the general application area of tool/function calling in diffusion LMs is well-covered. Therefore, the domain is **COVERED**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = [1, 2, 4, 5, 6, 8, 10, 13]  \nVERDICT evaluation = [7, 15, 17]  \nVERDICT domain = [1, 2, 5, 7, 8, 17]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly tests whether constrained decoding closes the diffusion-LM tool-calling gap (the formatting-failure hypothesis) under the same objective, framing, or terminology."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Test whether constrained decoding closes the diffusion-LM tool-calling gap (the formatting-failure hypothesis)**\n\nThe purpose is specifically to test whether formatting failures explain the performance gap of diffusion LMs on tool-calling benchmarks, and whether constrained decoding fixes this. Paper [1] is about \"Constrained Decoding of Diffusion LLMs with Context-Free Grammars\" and directly addresses constrained decoding for diffusion LMs. Paper [5] \"Don't Fine-Tune, Decode: Syntax Error-Free Tool Use via Constrained Decoding\" tests whether constrained decoding fixes syntax errors in tool use for autoregressive LLMs. However, neither paper specifically tests the \"formatting-failure hypothesis\" as an explanation for a performance gap in diffusion LMs on tool-calling benchmarks. Paper [1] applies CFG-constrained decoding to diffusion LLMs but doesn't specifically frame it as testing whether formatting failures explain a gap. Paper [5] is closest in spirit (testing if constrained decoding fixes tool-calling syntax errors) but targets autoregressive LLMs. The specific purpose — testing whether the diffusion-LM tool-calling gap is explained by formatting failures — is not directly covered by any prior paper. However, paper [5] pursues the same objective at the problem-class level: \"does constrained decoding eliminate syntax/format errors in tool calling?\" This is substantively equivalent even if the host model differs.\n\n**MECHANISM: Systematic controlled evaluation of three decoding conditions (unconstrained, best-of-2 with AST filter, CFG-constrained) for LLaDA-8B on BFCL-v3**\n\nPaper [1] introduces LAVE, a CFG-constrained decoding method for diffusion LLMs, which is the CFG condition used here. Paper [5] uses constrained decoding for tool use with AST-based filtering concepts. The mechanism here is a controlled comparison of decoding strategies including best-of-N reranking and CFG-constrained decoding applied to a diffusion LM. Paper [1] directly provides the LAVE CFG-constrained decoding primitive. The best-of-N with AST filter is a standard reranking approach. The combination as a controlled ablation study is the mechanism here. Paper [1] covers the CFG-constrained decoding for diffusion LLMs. Paper [5] covers constrained decoding for tool calling. Together these cover the mechanism components, but the specific three-way controlled comparison design is the analysis method — which as a \"finding\" type contribution should be judged at design level. Paper [1] performs evaluations comparing constrained vs. unconstrained decoding for diffusion LLMs.\n\n**EVALUATION: CFG raises AST parse rate but overall success improves only marginally**\n\nThe evaluation uses BFCL-v3 as the benchmark with AST parse rate and overall success metrics. Paper [7] explicitly mentions BFCL (Berkeley Function Calling Leaderboard) as an evaluation benchmark. Paper [5] evaluates tool-calling with syntax/parse success metrics. The evaluation design (BFCL benchmark + parse rate + success rate metrics) is covered by papers [7] and [5]. Paper [1] also evaluates constrained decoding for diffusion LLMs using structured generation benchmarks.\n\n**DOMAIN: Diffusion language model tool/function calling (BFCL-v3)**\n\nPaper [1] works on diffusion LLMs with structured generation (code, JSON). Paper [5] works on tool/function calling with LLMs. Paper [7] works on function calling evaluation with BFCL. The domain of diffusion LMs applied to tool calling is partially covered — paper [1] covers diffusion LMs for structured generation, paper [5] covers tool calling with LLMs. The intersection (diffusion LMs + tool calling) may be novel, but the domain facet rule says it's covered if any prior paper works in the same general application area. Tool/function calling is covered by [5] and [7]; diffusion LMs for structured generation is covered by [1].\n\nVERDICT purpose = 5\nVERDICT mechanism = 1\nVERDICT evaluation = 7\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": 5
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: [8] establishes the same empirical relationship, finding that constrained decoding can \"distort generation... pushing decoding toward locally valid yet semantically incorrect trajectories,\" which is the same finding the contribution reports for diffusion LMs in the tool-calling context.\n\n**mechanism**: [5] uses the same analysis design of a controlled comparison between constrained decoding and alternative generation strategies (e.g., unconstrained prompting) to evaluate effectiveness on a tool-use task.\n\n**evaluation**: [7] describes the same evaluation design, explicitly mentioning that \"Existing benchmarks such as the Berkeley Function Calling Leaderboard (BFCL)... evaluate argument correctness,\" which matches the contribution's use of the BFCL benchmark family and an overall success metric.\n\n**domain**: [1] works in the same general application area, applying constrained decoding to diffusion LLMs for applications like \"structured data extraction,\" which is the broader problem class that contains tool/function calling.\n\nVERDICT purpose = 8\nVERDICT mechanism = 5\nVERDICT evaluation = 7\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     11
+    ],
+    "mechanism": [
+     1,
+     3
+    ],
+    "evaluation": null,
+    "domain": [
+     3,
+     8,
+     9,
+     10,
+     11,
+     12,
+     15,
+     16,
+     19,
+     20,
+     21,
+     25
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 11
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        19,
+        20,
+        15,
+        16,
+        21,
+        25
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to identify the dominant failure mode of diffusion LM tool calling. None of the prior papers explicitly report or establish the same empirical relationship between parse failures and semantic errors in diffusion LM tool calling. While [11] discusses safety and failure modes in diffusion LLMs, it focuses on jailbreak robustness rather than structured output error analysis or dominant failure modes. Similarly, [9] evaluates multilingual robustness in tool calling but does not identify dominant failure modes. No prior paper directly addresses this purpose.\n\n### Mechanism\nThe contribution develops an error taxonomy separating parse failures from semantic errors (wrong function, wrong arguments) and tracks their distribution across decoding conditions. [1] introduces a taxonomy of log parsing errors, which is conceptually similar in separating error types, but it focuses on log parsing rather than structured tool calling in diffusion LMs. [3] discusses error analysis in meaning representation parsing, including diagnostic evaluation, but does not explicitly separate parse failures from semantic errors or track their distribution across decoding conditions. [5] focuses on error detection in text-to-SQL semantic parsing, which involves identifying semantic errors, but does not provide a taxonomy or track error distributions across decoding conditions. Thus, no prior paper contains a substantively equivalent mechanism.\n\n### Evaluation\nThe evaluation design involves tracking semantic errors (wrong function + wrong arguments) across decoding conditions and quantifying their prevalence (~60% of outputs unaffected by grammar, wrong-function errors rising from 12.86% to 15.52%, and a 50.74pp gap vs Qwen-8B AR). [8] evaluates non-determinism in diffusion LMs across conditions, but its focus is on dataset-level metrics and non-determinism rather than error distribution. [11] analyzes safety-related failure modes in diffusion LMs but does not use the same evaluation design. [9] conducts systematic evaluation of multilingual tool calling but does not track semantic error distributions across decoding conditions. No prior paper uses the same evaluation design.\n\n### Domain\nThe contribution operates in the domain of structured output error analysis for diffusion LMs. [8], [10], [11], [12], [19], and [20] all work on diffusion LMs, and [9], [15], [16], [21], and [25] address tool calling in LLMs. While none of these papers specifically focus on structured output error analysis for diffusion LMs, they collectively cover the broader domain of diffusion LMs and tool calling. Therefore, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [8, 9, 10, 11, 12, 19, 20, 15, 16, 21, 25]  ",
+      "stage2": "- **FACET: purpose** | **FINAL: COVERED-BY 11** | reason: Paper [11] explicitly identifies \"failure mode\" in diffusion LLM tool calling, stating: *\"Diffusion-style generation confers intrinsic robustness against jailbreak attacks... initial analysis of the underlying mechanism, showing that the diffusion trajectory induces a specific failure mode.\"*  \n- **FACET: mechanism** | **FINAL: COVERED-BY 1** | reason: Paper [1] develops an error taxonomy for log parsing, stating: *\"We achieve this by examining the type of parsing errors they make, separating structural parse failures from semantic misinterpretations.\"*  \n- **FACET: evaluation** | **FINAL: NONE** | reason: No prior paper quantifies semantic error rates or their invariance to grammar constraints under diffusion LLM decoding."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Identify the true dominant failure mode of diffusion LM tool calling.**\n\nThe purpose is to determine what actually causes failures in diffusion LM tool calling — specifically whether parse failures or semantic errors dominate. Paper [9] examines multilingual robustness of tool calling in LLMs and conducts systematic error analysis. Paper [11] analyzes failure modes of diffusion LLMs (safety context). Paper [8] examines non-determinism in diffusion LMs. None of these establish the same empirical relationship: that semantic errors (not parse failures) dominate diffusion LM tool-calling failures, and that grammar-constrained decoding doesn't fix the core problem. The closest is [9] which does error analysis for tool calling, but it focuses on multilingual robustness, not on parse-vs-semantic error distribution in diffusion LMs. No prior paper reports the same variables and direction of effect.\n\n**MECHANISM: Error taxonomy separating parse failures from semantic errors, tracking distribution across decoding conditions.**\n\nPaper [1] classifies log parsing errors into a taxonomy. Paper [3] proposes error analysis methodology for meaning representation parsing, separating error types. Paper [5] detects errors in text-to-SQL semantic parsing, distinguishing error types. Paper [9] conducts systematic evaluation of tool calling with error breakdowns. The mechanism of building a taxonomy that separates syntactic/parse failures from semantic errors (wrong function, wrong arguments) and tracking their distribution is a standard analysis design used in [3] (diagnostic evaluation with error taxonomy for parsing) and [5] (error detection distinguishing error types in semantic parsing). Paper [3] explicitly proposes \"a novel methodology for qualitative error analysis\" separating error types in parsing. This is substantively equivalent at the primitive level.\n\n**EVALUATION: Semantic errors stay ~60%, grammar doesn't help, 50.74pp gap vs AR baseline.**\n\nThe evaluation design involves: measuring error type distributions across decoding conditions (with/without grammar constraints), comparing to an AR baseline. Paper [9] uses benchmark-based evaluation of tool calling with error analysis across conditions. Paper [8] evaluates diffusion LMs across inference configurations. The specific design of comparing error distributions across constrained vs. unconstrained decoding conditions and against an AR baseline is a controlled ablation/substitution experiment. No prior paper uses this specific named benchmark or protocol for this claim. The evaluation design (error taxonomy distribution across decoding conditions + AR comparison) is a generic controlled comparison shape, not a named benchmark family or protocol. No prior paper validates the same claim with the same design.\n\n**DOMAIN: Structured output error analysis for diffusion LMs.**\n\nPaper [8] works on diffusion language models evaluation. Paper [11] analyzes diffusion LLM behavior/failure modes. Paper [10], [12], [19], [20] all work on diffusion language models. The domain of diffusion LMs is clearly covered. Structured output/tool calling for LLMs is covered by [9], [15], [16], [21], [25]. The combination of diffusion LMs + structured output is touched by [8] and [11]. The general area of diffusion LM analysis is covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 3\nVERDICT evaluation = NONE\nVERDICT domain = 8",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper aims to identify the dominant failure mode of diffusion LM tool calling; [11] examines diffusion LLM failure modes but in the safety/jailbreak domain, not tool calling, and no other paper shares this same objective even under different terminology.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports the specific empirical finding that semantic errors persist at ~60% unaffected by grammar constraints, that wrong-function errors rise under grammar enforcement, or that a ~50pp gap versus an AR baseline remains — none of the prior papers study diffusion LM tool-calling error composition under grammar-constrained decoding at all."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution is a finding, and its purpose is to establish a specific empirical relationship: that semantic errors are the dominant failure mode for diffusion LM tool calling, and that this is not fixed by grammar constraints. No prior paper reports or establishes this specific relationship for this system class, making the purpose uncovered under the strict rule for findings.\n\n**mechanism**: The mechanism is to develop an error taxonomy (separating parsing/syntactic errors from semantic ones) and use it to analyze the distribution of failures. This is a standard error analysis methodology, covered by [1] which proposes \"a Classification of Log Parsing Errors\" to \"understand the type of parsing errors they make\".\n\n**evaluation**: The evaluation design is a \"diagnostic evaluation\" or \"in-depth error analysis\" where an error taxonomy is used to compare failure distributions across different conditions and systems. This design is explicitly discussed and proposed as a methodology in [3], which reflects on \"diagnostic evaluation and in-depth error analysis for meaning representation parsing\".\n\n**domain**: The domain is error analysis for structured output from language models. This general application area is covered by multiple papers, including [3] on \"error analysis for meaning representation parsing\" and [9] on the \"robustness of tool calling in Large Language Models\".\n\nVERDICT purpose = NONE\nVERDICT mechanism = [1]\nVERDICT evaluation = [3]\nVERDICT domain = [3]",
+      "stage2": "FACET: purpose: Identify the true dominant failure mode of diffusion LM tool calling. | FINAL: COVERED-BY [1] | reason: The objective to systematically analyze a technology's outputs to understand its failure modes is the same as in [1], which states its purpose is to \"understand the type of parsing errors they make\"."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     9,
+     14
+    ],
+    "evaluation": [
+     9,
+     14
+    ],
+    "domain": [
+     1,
+     12,
+     14
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 12
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to show heterogeneous, sometimes harmful, effects of grammar constraints across task categories. None of the prior papers explicitly report or establish the same empirical relationship — the differential effects of grammar constraints across task categories, including harmful impacts. While several papers discuss grammar constraints (e.g., [1], [3], [7], [12], [14]), they focus on technical aspects of grammar-constrained systems or decoding methods rather than the specific empirical finding of heterogeneous effects across categories. No prior paper establishes this relationship.\n\n### Mechanism\nThe mechanism involves per-category success-rate analysis across the 7 BFCL Non-Live categories comparing unconstrained vs LAVE CFG. Papers such as [1], [3], [7], [12], [14], and [27] discuss grammar-constrained systems and decoding methods, but none describe a substantively equivalent mechanism of per-category success-rate analysis comparing unconstrained and constrained setups. While [12] and [14] explore grammar-constrained decoding, their focus is on structural equivalence and decoding guarantees rather than category-specific success-rate comparisons.\n\n### Evaluation\nThe evaluation design involves measuring the effects of grammar constraints on parallel calls (+7.33pp) and irrelevance detection (-8.00pp), as well as Java's near-zero impact across conditions. Papers such as [9], [12], [14], and [27] use evaluation setups involving grammar-constrained systems, structured outputs, or decoding tasks, but none employ the same evaluation design of category-level effects comparison across constrained and unconstrained setups. The specific metrics and validation framework used here are not covered by prior work.\n\n### Domain\nThe domain is constrained decoding category-level effects. Papers such as [12], [13], [14], and [27] address grammar-constrained decoding in structured NLP tasks, including applications to clinical trial abstracts, structured information extraction, and general structured outputs. These papers operate in the same general application area of constrained decoding effects, even though the specific sub-problem or dataset differs. Thus, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 12  ",
+      "stage2": "- **FACET: purpose** | **FINAL: NONE** | reason: No prior paper explicitly shows heterogeneous, sometimes harmful, effects of grammar constraints across task categories under any framing or terminology.  \n- **FACET: mechanism** | **FINAL: NONE** | reason: No prior paper conducts per-category success-rate analysis comparing unconstrained vs LAVE CFG across the 7 BFCL Non-Live categories or an equivalent framing.  \n- **FACET: evaluation** | **FINAL: NONE** | reason: No prior paper evaluates CFG's impact on parallel calls (+7.33pp) and irrelevance detection (-8.00pp) or Java's near-zero behavior across conditions with the same claim or named design.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 14
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Show heterogeneous, sometimes harmful, effects of grammar constraints across task categories.**\n\nThe purpose is to demonstrate that constrained decoding (CFG/grammar constraints) has differential effects across task types — helping some categories while hurting others (especially abstention/irrelevance detection). I need a prior paper that establishes the same empirical relationship: grammar constraints have heterogeneous, category-dependent effects including harmful ones. Paper [13] studies grammar-constrained decoding for structured IE and examines performance, but focuses on whether constraints help overall, not on heterogeneous harmful effects across categories. Paper [14] demonstrates GCD across multiple NLP tasks but doesn't specifically show harmful effects on abstention. No prior paper appears to report the specific relationship: \"grammar constraints help some task categories but harm others, particularly degrading abstention/irrelevance detection.\" None of the papers establish this same directional finding across task categories.\n\n**MECHANISM: Per-category success-rate analysis across 7 BFCL Non-Live categories comparing unconstrained vs LAVE CFG.**\n\nThe mechanism is a per-category breakdown comparing two conditions (constrained vs. unconstrained) on success rate. This is a standard controlled comparison with per-category breakdown. Paper [14] performs per-task evaluation of GCD across multiple NLP tasks. Paper [13] also evaluates grammar-constrained decoding across different extraction tasks. The design of \"compare constrained vs. unconstrained across multiple task categories and report per-category metrics\" is a standard analysis protocol that appears in [13] and [14], even if applied to different benchmarks/categories.\n\n**EVALUATION: CFG helps parallel calls (+7.33pp) but degrades irrelevance detection (-8.00pp); Java stays near-zero.**\n\nThe evaluation design uses a named benchmark (BFCL — Berkeley Function Calling Leaderboard) with success-rate metrics comparing constrained vs. unconstrained decoding across categories. This is a specific benchmark instance. Papers [13] and [14] use success-rate/accuracy metrics comparing constrained vs. unconstrained decoding across task categories — same evaluation design (compare conditions, report per-category accuracy). The specific finding about irrelevance detection degradation is the contribution's result, but the evaluation design (per-category accuracy comparison on a function-calling benchmark) follows the same framework as [14]'s multi-task GCD evaluation.\n\n**DOMAIN: Constrained decoding category-level effects.**\n\nThe domain is constrained decoding for LLM outputs, specifically in the function-calling/tool-use area. Papers [13] and [14] work in constrained decoding for structured NLP tasks. Paper [27] also works in constrained decoding for LLMs. This is clearly within the same general application area of grammar-constrained decoding for language models.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 14\nVERDICT evaluation = 14\nVERDICT domain = 14",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the objective of demonstrating heterogeneous, sometimes harmful, effects of grammar constraints *across task categories*. Paper [14] evaluates GCD across multiple NLP tasks but its purpose is to show GCD works without finetuning, not to characterize differential or harmful effects by task type. Paper [13] examines GCD for a specific IE task but does not compare effects across categories. No paper frames its goal as mapping out when grammar constraints help versus hurt across a taxonomy of tasks."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: COVERED. Paper [1] pursues the same objective at the problem-class level, which is to evaluate the utility of grammar constraints by \"contrast[ing] the performance of a version which included agreement constraints against a version w[ithout]\". This is the same objective as showing that the effects of such constraints are heterogeneous.\n\nmechanism: COVERED. The mechanism is a comparative analysis (constrained vs. unconstrained) with a per-category breakdown. Paper [1] uses the same comparative design, and paper [9] explicitly uses a per-category/per-aspect evaluation design to find \"strengths and shortcomings\" of different systems.\n\nevaluation: COVERED. The evaluation design is a per-category performance analysis to find heterogeneous effects. Paper [9] uses the same design, proposing \"a series of binary forced-choice tasks that each focus on a different aspect\" to evaluate systems. Reusing this evaluation design on a different domain and benchmark is covered per the special rule.\n\ndomain: COVERED. The general application area is grammar-constrained decoding for language models. Numerous prior papers operate in this domain, including [1] (\"CFG-Based Language Models\"), [7] (\"Grammar-Constrained... Decoding\"), [13] (\"Grammar-constrained decoding\"), and [14] (\"Grammar-Constrained Decoding\").\n\nVERDICT purpose = 1\nVERDICT mechanism = 9\nVERDICT evaluation = 9\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

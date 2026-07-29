@@ -1,0 +1,278 @@
+{
+ "paper_id": "FA0100",
+ "title": "Self-Anchored Temporal Filtering for LLM-Free Temporal-Aware Memory Retrieval",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     16,
+     20
+    ],
+    "mechanism": [
+     4,
+     10
+    ],
+    "evaluation": [
+     3
+    ],
+    "domain": [
+     2,
+     3
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 16
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to enable temporal-aware memory retrieval without expensive LLM calls for time-constraint extraction. This objective is not directly covered by any prior paper. While several papers address temporal reasoning or retrieval in conversational memory systems (e.g., [6], [16], [25], [26]), none explicitly aim to eliminate LLM calls or focus on cost-free temporal filtering. Papers like [6] and [16] propose methods for enhancing temporal reasoning but do not address the specific problem of avoiding LLM calls for time-constraint extraction.\n\n#### Mechanism:\nThe mechanism, Self-Anchored Temporal Filtering (SATF), uses multi-peak Gaussian kernels weighted by reciprocal rank to infer temporal relevance from the timestamp distribution of initial retrieval results, soft-boosting temporally coherent items without hard filtering. This mechanism is substantively equivalent to techniques described in [4], [7], [9], [10], and [19], which leverage kernel density estimation (KDE) or similar methods to infer temporal relevance from timestamp distributions. For example, [4] and [9] use KDE to mine temporal signals for reranking, and [19] applies time-aware KDE for movement data. The underlying primitive of using timestamp distributions and kernel-based methods for temporal relevance inference is shared across these papers.\n\n#### Evaluation:\nThe evaluation facet involves performing temporal filtering on LongMemEval with zero LLM calls or API costs. LongMemEval is introduced in [3], and its evaluation design is reused here. The evaluation design (benchmarking long-term memory abilities of chat assistants) is therefore covered by [3]. The zero-LLM-call aspect is a specific instance of the evaluation object, not a new evaluation design.\n\n#### Domain:\nThe domain is long-term conversational memory retrieval. This application area is extensively covered by prior papers, including [2], [3], [5], [6], [8], [16], [25], [26], and [27]. These papers address various aspects of long-term conversational memory retrieval, including structured memory systems, temporal reasoning, and scalable dialogue systems. While the specific sub-problem of zero-cost temporal filtering is new, the general application area is not.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = 4  \nVERDICT evaluation = 3  \nVERDICT domain = 2  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 16 | reason: Chronos explicitly addresses \"temporal-aware memory retrieval\" with structured event retrieval for long-term conversational agents, aligning with the same objective. Quoted phrase: \"We introduce Chronos, a novel temporal-aware memory framework that decomposes raw dialogue into structured events for effective retrieval.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 20
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Enable temporal-aware memory retrieval without expensive LLM calls for time-constraint extraction.**\n\nThe purpose is specifically to perform temporal filtering in conversational memory retrieval while avoiding LLM API calls. Papers [6] (SynapticRAG), [16] (Chronos), [26] (TiMem), [8] (APEX-MEM), and [25] (HingeMem) all address temporal memory retrieval for conversational agents, but none specifically frame their objective as \"achieving temporal awareness *without* LLM calls.\" Paper [20] (SmartSearch) explicitly aims to show that LLM-based structuring is unnecessary and uses deterministic pipelines — \"We show that neither is necessary\" — which is closely aligned with the purpose of avoiding expensive LLM calls while still achieving good retrieval. SmartSearch's purpose is to eliminate LLM-based overhead in conversational memory retrieval, which substantively overlaps with this contribution's purpose of temporal-aware retrieval without LLM calls.\n\n---\n\n**MECHANISM: Self-Anchored Temporal Filtering using timestamp distribution of initial retrieval results, multi-peak Gaussian kernels weighted by reciprocal rank, soft-boosting temporally coherent items.**\n\nThis mechanism combines: (1) inferring temporal relevance from the timestamp distribution of initial retrieval results (pseudo-relevance feedback style), (2) kernel density estimation with multi-peak Gaussians, (3) reciprocal rank weighting, (4) soft re-ranking (not hard filtering).\n\nPaper [4] (\"Mining the Temporal Statistics of Query Terms for Searching Social Media Posts\") explicitly describes: \"the distribution of document timestamps from the results of an initial query can be leveraged to infer the distribution of relevant documents, for example, using kernel density estimation.\" Paper [10] (\"Temporal feedback for tweet search with non-parametric density estimation\") describes exactly this: \"starting with an initial set of results from a baseline retrieval model, we estimate the temporal density of relevant documents, which is then used for result reranking\" using kernel density estimation. Paper [9] also describes: \"The distribution of document timestamps from the results of an initial query can be leveraged to infer the distribution of relevant documents, which can then be used to rerank the initial results. Previous experiments have shown that kernel density estimation is a simple yet effective implementation of this idea.\"\n\nThe core primitive — use timestamp distribution of initial retrieval results + KDE (Gaussian kernels) → rerank — is clearly present in [4], [9], [10]. The reciprocal rank weighting is an additional detail, but the fundamental mechanism is covered.\n\n---\n\n**EVALUATION: Zero LLM calls / zero API cost while performing temporal filtering on LongMemEval.**\n\nLongMemEval is introduced in paper [3] and used as a benchmark in several subsequent papers ([6], [16], [20], [25], [26], etc.). The evaluation design of measuring performance on LongMemEval is covered by [3] and papers that use it. The \"zero LLM calls\" aspect is a cost metric, but the benchmark family (LongMemEval) and the evaluation design (measuring retrieval accuracy on this benchmark) are present in [3] and used in [20], [6], [16]. The evaluation design is covered.\n\n---\n\n**DOMAIN: Long-term conversational memory retrieval.**\n\nPapers [3], [6], [8], [16], [20], [25], [26], [27], [2], [5] all operate in long-term conversational memory retrieval. This domain is clearly covered by multiple prior papers.\n\n---\n\nVERDICT purpose = 20\nVERDICT mechanism = 10\nVERDICT evaluation = 3\nVERDICT domain = 3",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     7,
+     12
+    ],
+    "evaluation": [
+     8,
+     12
+    ],
+    "domain": null
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": null
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "domain"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to demonstrate that SATF improves temporal reasoning retrieval quality over LLM-based filtering. Paper [2] introduces TempReason, a dataset for evaluating the temporal reasoning capability of LLMs, but does not establish the same empirical relationship between SATF and retrieval quality improvement. Paper [7] discusses modular retrieval frameworks for time-sensitive question answering but focuses on retrieval augmentation rather than demonstrating improvement over LLM-based filtering. Paper [11] addresses retrieval of time-sensitive information but does not empirically demonstrate SATF's improvement over LLM filtering. None of the prior papers substantively establish the same empirical relationship.\n\n### Mechanism\nThe mechanism involves evaluating SATF on LongMemEval temporal reasoning queries and comparing it against GPT-4o time-range filtering. Paper [7] discusses retrieval-augmented generation for time-sensitive question answering, which involves retrieval mechanisms integrated with LLMs, but does not describe SATF or a substantively equivalent mechanism. Paper [8] introduces a time-specifier model for temporal information retrieval, which improves retrieval for queries with explicit temporal constraints, but this mechanism is distinct from SATF's approach. No prior paper describes a substantively equivalent mechanism.\n\n### Evaluation\nThe evaluation reports a +16.9% relative NDCG@10 improvement on temporal reasoning queries, outperforming GPT-4o time-range filtering across all metrics. Paper [12] introduces TEMPO, a benchmark for temporal reasoning-intensive retrieval, which includes complex queries requiring deep temporal reasoning. This benchmark family aligns with the evaluation design used in the contribution, as both focus on temporal reasoning retrieval metrics. Paper [18] introduces TempQuestions, a benchmark for temporal question answering, which also evaluates temporal reasoning but does not focus on retrieval quality improvement. Paper [13] introduces ChronoQA, a benchmark for evaluating temporal reasoning in retrieval-augmented generation systems, which aligns with the evaluation design. Thus, the evaluation design is covered by prior work.\n\n### Domain\nThe domain is long-term conversational memory retrieval. Paper [6] discusses retrieval-augmented generation for long-text generation, which overlaps with retrieval tasks but does not focus on long-term conversational memory. Paper [7] addresses time-sensitive question answering, which involves retrieval tasks but does not specifically target long-term conversational memory. Paper [11] discusses retrieval of time-sensitive information, which overlaps with the domain but does not focus on conversational memory. Paper [12] introduces a benchmark for temporal reasoning-intensive retrieval across multiple domains, which includes retrieval tasks but does not specifically target conversational memory. None of the prior papers substantively address the same domain.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 12  \nVERDICT domain = NONE  ",
+      "stage2": "- **FACET: purpose** | **FINAL: COVERED-BY 7** | reason: MRAG explicitly evaluates time-sensitive question answering systems, integrating retrieval and reasoning to improve temporal reasoning quality, aligning with the SATF objective. Quote: \"Understanding temporal relations and answering time-sensitive questions is crucial yet a challenging task for question-answering systems powered by large language models (LLMs).\"\n  \n- **FACET: mechanism** | **FINAL: COVERED-BY 12** | reason: TEMPO evaluates temporal reasoning queries in a retrieval context, similar to LongMemEval. Quote: \"We introduce TEMPO, the first benchmark combining temporal reasoning with reasoning-intensive retrieval across 13 domains.\"\n  \n- **FACET: domain** | **FINAL: NONE** | reason: No prior work explicitly addresses long-term conversational memory retrieval; existing works focus on temporal reasoning or retrieval in other contexts, but not this specific domain."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": null
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "domain"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Demonstrate SATF improves temporal reasoning retrieval quality over LLM-based filtering.**\n\nThe purpose is to show that a specific method (SATF) outperforms LLM-based filtering for temporal reasoning in retrieval. Paper [7] (MRAG) addresses \"time-sensitive question answering\" and compares retrieval approaches including LLM-based methods. Paper [11] (TRRD) explicitly states \"conventional retrieval models exhibit limited sensitivity to temporal information, while large language models primarily focus on temporal reasoning... making them unsuitable for retrieval tasks based on temporal constraints\" — this is essentially the same empirical claim being demonstrated. Paper [8] addresses temporal information retrieval and compares against baselines. However, none of these papers specifically demonstrate that a structured/algorithmic temporal filter outperforms LLM-based time-range filtering as the primary finding. Paper [11] comes closest by arguing LLMs are unsuitable for temporal retrieval, but the specific relationship (SATF vs. GPT-4o filtering) is not established in any prior paper. This is a genuinely new empirical relationship being demonstrated.\n\n**MECHANISM: Evaluation on LongMemEval temporal reasoning queries, comparing against GPT-4o time-range filtering.**\n\nThe mechanism here is the analysis method: controlled comparison of retrieval methods on a specific benchmark with temporal reasoning queries, using a named LLM as a baseline filter. Paper [7] uses a modular retrieval framework and compares against LLM-based retrieval approaches. Paper [12] (TEMPO) introduces a benchmark for temporal reasoning-intensive retrieval and runs comparisons. Paper [11] compares retrieval models against LLM-based approaches for temporal tasks. The design of \"compare a proposed retrieval method against an LLM-based filtering baseline on temporal queries\" is present in papers [7] and [11]. This is a standard controlled comparison design used in those papers.\n\n**EVALUATION: +16.9% relative NDCG@10 improvement on temporal reasoning queries (0.584 to 0.683), outperforming GPT-4o time-range filtering across all metrics.**\n\nThe evaluation design uses NDCG@10 as the metric for retrieval quality comparison. NDCG is a standard IR metric used broadly. Papers [7], [8], [11], [12] all use standard IR metrics (NDCG, precision, recall) to evaluate temporal retrieval methods. Paper [12] explicitly uses NDCG for temporal reasoning retrieval evaluation. The evaluation design (NDCG@10 on temporal retrieval queries, comparing methods) is covered by these prior papers.\n\n**DOMAIN: Long-term conversational memory retrieval.**\n\nThe domain is long-term conversational memory retrieval — specifically retrieval from personal/conversational memory stores over extended time horizons. Papers [7], [8], [11], [12], [13] all work in temporal information retrieval, but these focus on news corpora, web documents, or general QA. None of the prior papers specifically address long-term conversational memory as the application area. This is a distinct application area from document/web/news retrieval.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 7\nVERDICT evaluation = 12\nVERDICT domain = NONE",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper demonstrates that SATF (a specific structural/architectural filtering method) improves temporal reasoning retrieval quality *over LLM-based filtering* — the closest papers (e.g., [7], [11], [8]) address temporal retrieval improvements but none compare a structural filter against LLM-based filtering as the specific objective.\n\nFACET: domain | FINAL: NONE | reason: No prior paper addresses long-term conversational memory retrieval; all temporal retrieval papers focus on document corpora, QA benchmarks, or web search — none operate in the domain of persistent conversational memory across extended dialogue history."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: NONE. No prior paper appears to establish the same empirical relationship. While many papers work on temporal retrieval ([7], [8], [11]), none seem to make the specific comparative claim that a dedicated temporal filter (like SATF) improves retrieval quality over using a large language model itself as a filter.\n\n**mechanism**: COVERED. The analysis method — a controlled comparison of a proposed system against a baseline on a benchmark — is a standard experimental design. For instance, [7] proposes a \"Modular Retrieval Framework for Time-Sensitive Question Answering\" and would necessarily use this same comparative evaluation design to validate its contribution.\n\n**evaluation**: COVERED. The evaluation design, using a standard information retrieval metric like NDCG on a benchmark, is canonical. Papers in the temporal retrieval space, such as [8] which aims to improve performance on \"queries with explicit temporal constraints,\" would use standard metric semantics like NDCG for evaluation.\n\n**domain**: COVERED. The general application area of retrieval for conversational systems has been previously explored. [6] explicitly addresses retrieval augmentation for \"scenarios involving generation of long texts, which often happens in a conversational setting,\" which covers the contribution's domain.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 7\nVERDICT evaluation = 8\nVERDICT domain = 6",
+      "stage2": "FACET: purpose: Demonstrate SATF improves temporal reasoning retrieval quality over LLM-based filtering. | FINAL: NONE | reason: No prior paper proposes a method for temporal retrieval and explicitly sets its goal as demonstrating superiority over a baseline of \"LLM-based filtering\". Papers either pre-date this architecture, propose alternatives without this specific comparison, or focus on different baselines like traditional IR or general dense retrievers."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     16
+    ],
+    "mechanism": [
+     2,
+     29
+    ],
+    "evaluation": [
+     2
+    ],
+    "domain": [
+     1,
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 16
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to demonstrate that SATF (a retrieval mechanism) can be applied universally across all query types without harming non-temporal queries. None of the prior papers explicitly address this specific empirical relationship or objective. While several papers (e.g., [1], [3], [4], [6]) discuss retrieval mechanisms for temporal memory or hierarchical conversation awareness, they do not establish or investigate the safety of applying a specific mechanism universally across query types, nor do they focus on the impact on non-temporal queries. Papers like [16] discuss robustness to irrelevant context in retrieval-augmented models, but this is a different purpose (irrelevant context ≠ universal application safety).\n\n### Mechanism\nThe mechanism involves a per-question-type analysis on LongMemEval, measuring recall changes when SATF is applied universally. Papers such as [2], [9], and [16] describe evaluation setups or retrieval mechanisms that involve recall measurement or robustness analysis, but none of them use the same mechanism of per-question-type recall analysis for universal application safety. For example, [16] focuses on retrieval robustness to irrelevant context, but does not perform per-question-type recall analysis for universal application safety. Similarly, [9] uses a dynamic test collection for retrieval evaluation but does not employ the same mechanism.\n\n### Evaluation\nThe evaluation design measures recall changes across all query types, with a maximum recall degradation of -0.014 for non-temporal queries. Papers like [2] and [9] use recall-based metrics and benchmarks for retrieval evaluation, which match the evaluation design at the level of benchmark family and metric semantics. For instance, [2] evaluates conversational memory retrieval using recall metrics, and [9] uses recall-based evaluation for retrieval systems in evolving environments. While the specific dataset (LongMemEval) and object (SATF) differ, the evaluation design itself is covered by prior work.\n\n### Domain\nThe domain is long-term conversational memory retrieval. Papers such as [1], [3], [4], and [6] all operate in the same general application area of conversational memory retrieval, particularly for long-term or temporally structured conversations. While the specific sub-problem or mechanism differs, the domain is clearly covered by these prior works.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 2  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 16 | reason: Paper [16] explicitly states the objective of ensuring retrieval methods do not harm performance when irrelevant contexts are present, aligning with the purpose of showing SATF is safe to apply universally without harming non-temporal queries: *\"retrieved information helps model performance when it is relevant, and does not harm performance when it is not.\"*  \n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes a per-question-type analysis on LongMemEval measuring recall changes when SATF is applied to all query types, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Show SATF is safe to apply universally without harming non-temporal queries.**\n\nThe purpose is to demonstrate that a temporal filtering/scoring technique (SATF) does not degrade performance on non-temporal query types — essentially a \"safety of universal application\" claim for a retrieval enhancement. None of the prior papers establish this specific empirical relationship: that a temporal augmentation method is safe to apply universally across query types without harming non-temporal ones. Papers [1], [3], [4] work on temporal memory retrieval but don't report this relationship. Papers [7], [8], [10], [14] deal with \"safe\" queries in formal database/logic senses, not empirical safety of applying a retrieval method universally. No prior paper reports the same variables (temporal method applied to all query types, measuring recall degradation on non-temporal queries) and direction of effect.\n\n**MECHANISM: Per-question-type analysis on LongMemEval measuring recall changes when SATF is applied to all query types.**\n\nThe mechanism is a per-question-type breakdown analysis on LongMemEval. This is a standard controlled ablation/breakdown by category design. Papers [2] introduces LongMemEval and uses per-question-type evaluation. However, the specific claim being validated (universal safety of SATF) is not the same as what [2] validates. The design of per-question-type breakdown on LongMemEval is present in [2], which explicitly evaluates different question types in that benchmark.\n\n**EVALUATION: SATF improves all question types with maximum recall degradation of only -0.014 on non-temporal queries.**\n\nThe evaluation design uses LongMemEval with per-question-type recall metrics. Paper [2] introduces and uses LongMemEval with per-question-type evaluation and recall metrics — the same benchmark family and metric semantics. This is a covered evaluation design (same named benchmark, same metric type), even though the specific object being evaluated differs.\n\n**DOMAIN: Long-term conversational memory retrieval.**\n\nPapers [1], [2], [3], [4], [5], [6] all work in long-term conversational memory retrieval for LLM agents. This domain is clearly covered by multiple prior papers.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 2\nVERDICT evaluation = 2\nVERDICT domain = 2",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the objective of demonstrating that a temporal adjustment factor is safe to apply universally without degrading performance on non-temporal queries. The closest candidate, [16], addresses robustness of RALMs to irrelevant context (\"does not harm performance when it is not [relevant]\"), but this concerns retrieved document relevance in RAG, not a temporal scoring modification applied to retrieval ranking across query types. No paper quotes an equivalent objective under any alternative framing."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 16
+      },
+      "mechanism": {
+       "covered_by": 29
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose:** Paper [16] has the equivalent purpose of ensuring a retrieval method is robust to irrelevant inputs, stating that an important goal is that retrieved information \"does not harm performance when it is not\" relevant. This matches the contribution's goal of showing SATF is safe for non-temporal queries.\n\n**mechanism:** The mechanism is a per-question-type performance analysis. Paper [29] uses the same analysis design, stating its \"focus on performance prediction for two types of queries in web search environments: content-based and named-page finding queries.\"\n\n**evaluation:** The evaluation design uses the LongMemEval benchmark and the recall metric. Paper [2] introduced this benchmark, as stated in its title \"Evaluating Very Long-Term Conversational Memory of LLM Agents,\" thereby establishing the evaluation design.\n\n**domain:** The domain is long-term conversational memory retrieval. Paper [1] operates in the same domain, with the title \"SynapticRAG: Enhancing Temporal Memory Retrieval in Large Language Models through Synaptic Mechanisms.\"\n\nVERDICT purpose = 16\nVERDICT mechanism = 29\nVERDICT evaluation = 2\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

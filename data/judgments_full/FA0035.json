@@ -1,0 +1,253 @@
+{
+ "paper_id": "FA0035",
+ "title": "LASCon: Loop-Aware Scratchpad Condensation for Terminal Agents",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     2
+    ],
+    "mechanism": null,
+    "evaluation": [
+     11
+    ],
+    "domain": [
+     1,
+     11
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to solve context-window overflow and unproductive action loops in long-horizon terminal agent tasks without fine-tuning. Paper [2] explicitly addresses context-window overflow in AI agents, focusing on preserving complete outputs for workflows requiring full data, which aligns with the first part of the purpose. However, no prior paper explicitly addresses unproductive action loops in terminal agent tasks. Papers like [4] and [6] discuss long-horizon task management and proactive context handling but do not target unproductive action loops specifically. Thus, the purpose is partially covered but not fully equivalent.\n\n### Mechanism\nThe mechanism combines a Deterministic CLI Condenser (rule-based extraction of commands, exit codes, error lines, truncated outputs, with full logs offloaded to disk) and a Progress-Conditioned Loop Controller (blocking specific repeated actions to force exploration). Paper [2] discusses truncation and summarization strategies for handling large outputs, which overlaps with the CLI Condenser's functionality. Paper [6] introduces proactive context management to address noisy histories, which conceptually aligns with forcing exploration by managing repeated actions, though it does not explicitly block repeated actions. No prior paper combines these two primitives into a single scaffold, making the mechanism partially covered but not fully equivalent.\n\n### Evaluation\nThe evaluation uses Terminal-Bench 2.0 with Qwen3-32B, measuring completion rate and timeout failures. Paper [11] introduces Terminal-Bench 2.0, which matches the benchmark family used in this contribution. The evaluation design (benchmarking completion rate and failure modes) is standard and covered by [11]. While the specific results differ, the evaluation design itself is not novel.\n\n### Domain\nThe domain is LLM terminal/CLI agents. Papers [1], [5], [7], [10], and [11] all work in the same general application area of LLM-based terminal/CLI agents. While this contribution targets a specific sub-problem (long-horizon tasks with context overflow and action loops), the domain itself is well-covered by prior work.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 11  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 2 | reason: Paper [2] explicitly addresses solving context-window overflow in AI agents, preserving complete outputs without fine-tuning, which aligns with the same objective. Quote: \"large tool outputs can overflow the LLMs' context window, preventing task completion. Existing solutions such as truncation or summarization fail to preserve complete outputs.\"\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes a training-free scaffold combining deterministic CLI condensation and progress-conditioned loop control under any terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 11
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Solves context-window overflow and unproductive action loops in long-horizon terminal agent tasks without fine-tuning.**\n\nPaper [2] \"Solving Context Window Overflow in AI Agents\" directly addresses context window overflow in LLM agents. Paper [4] \"Scaling Long-Horizon LLM Agent via Context-Folding\" addresses context length constraints on long-horizon tasks. Paper [6] \"AgentFold\" addresses context saturation in long-horizon web agents. Paper [15] \"ReSum\" addresses context window constraints in web agents without retraining. However, the combined purpose of addressing *both* context overflow *and* action loops specifically in terminal agents without fine-tuning is partially covered. Paper [2] explicitly covers \"context window overflow\" and paper [15] covers \"without retraining.\" The purpose at the problem-class level — eliminating context overflow in long-horizon LLM agents without fine-tuning — is covered by [2] and [15]. The \"action loop\" aspect is less directly covered, but the overall objective class (context management for long-horizon agents, training-free) is covered by [2] and [15].\n\n---\n\n**MECHANISM: LASCon — Deterministic CLI Condenser (rule-based extraction of commands, exit codes, error lines, truncated outputs, full logs to disk) + Progress-Conditioned Loop Controller (blocks repeated actions to force exploration).**\n\nThe Deterministic CLI Condenser is a rule-based, domain-specific compression primitive for CLI outputs. Paper [2] proposes offloading large tool outputs to disk and using structured extraction — \"preventing task completion... existing solutions such as truncation or summarization fail to preserve complete outputs\" — but their solution involves a different mechanism (structured storage/retrieval). Paper [25] HackSynth uses a \"Summarizer\" module to process command feedback iteratively in a CLI context, but it's LLM-based summarization, not rule-based extraction. Paper [15] ReSum uses context summarization (LLM-based). None use a purely rule-based/deterministic extraction preserving specific CLI fields (exit codes, error lines) with disk offload as described.\n\nThe Progress-Conditioned Loop Controller that blocks specific repeated actions: Paper [22] \"Penalty Decoding\" suppresses repetition in text generation via penalty mechanisms. Paper [19] \"Quark\" uses reinforced unlearning to suppress unwanted behaviors. Paper [16] \"Continuous Action Masking\" blocks irrelevant actions in RL. However, [16] is about RL action masking in continuous spaces, not about blocking repeated agent tool calls based on progress detection. The combination of a deterministic rule-based CLI condenser with a progress-conditioned loop blocker appears not to be covered as a unified primitive in any prior paper.\n\n---\n\n**EVALUATION: Terminal-Bench 2.0 with Qwen3-32B, completion rate metric, comparison to OpenHands baseline.**\n\nPaper [11] \"Terminal-Bench: Benchmarking Agents on Hard, Realistic Tasks in Command Line Interfaces\" introduces Terminal-Bench 2.0 — this is the exact benchmark used. The evaluation design (running agents on Terminal-Bench, measuring completion/pass rate, comparing to baselines) is established by [11]. The contribution uses the same benchmark family and metric semantics (task completion rate). This is covered by [11].\n\n---\n\n**DOMAIN: LLM terminal / CLI agents.**\n\nPapers [1], [7], [10], [11], [13], [25] all operate in the LLM terminal/CLI agent domain. Paper [11] is explicitly Terminal-Bench for CLI agents. Paper [7] and [10] are CLAI (Command Line AI). Paper [1] is a CLI agent powered by LLMs. This domain is clearly covered.\n\n---\n\nVERDICT purpose = 2\nVERDICT mechanism = NONE\nVERDICT evaluation = 11\nVERDICT domain = 11",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes the specific combination of a rule-based CLI log condenser (preserving commands, exit codes, error lines, truncated outputs with full logs offloaded to disk) paired with a Progress-Conditioned Loop Controller that blocks repeated actions to force exploration. Paper [25] (HackSynth) has a Summarizer module but it is LLM-based summarization, not rule-based extraction with disk offload. Paper [2] addresses context overflow but via retrieval/storage, not a deterministic CLI-specific condenser. No paper quotes any equivalent mechanism under different terminology."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     7
+    ],
+    "mechanism": [
+     1,
+     7
+    ],
+    "evaluation": [
+     1,
+     7
+    ],
+    "domain": [
+     7
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": 7
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution establishes that deterministic condensation beats LLM-based summarization for CLI contexts. This specific empirical relationship (deterministic condensation outperforming LLM summarization in CLI contexts) is not reported or established in any prior paper. While several papers address context management or summarization (e.g., [7], [8], [11]), none explicitly compare deterministic condensation against LLM summarization for CLI contexts or demonstrate this relationship.\n\n#### Mechanism:\nThe mechanism involves an ablation study running the Deterministic CLI Condenser (DCC) module alone, without the loop controller. Ablation studies are a standard experimental protocol, and prior papers such as [7] (LCM) and [8] (PAACE) use similar ablation setups to isolate the contribution of specific modules in context management systems. For example, [7] benchmarks the deterministic LCM architecture, and [8] evaluates components of its plan-aware framework. These match the design-level equivalence of the ablation study mechanism.\n\n#### Evaluation:\nThe evaluation design demonstrates that DCC alone achieves 70.0% completion (+18.8pp over baseline), showing structured context management as the primary driver of improvement. This evaluation design (isolating module performance and measuring improvement over a baseline) is covered by prior papers such as [7] (LCM) and [8] (PAACE), which similarly evaluate context management modules by benchmarking their performance against baselines. The specific benchmark instance or metric differs, but the evaluation design is equivalent.\n\n#### Domain:\nThe domain is LLM agents and context management. This application area is extensively covered by prior papers such as [7] (LCM), [8] (PAACE), and [11] (Solving Context Window Overflow in AI Agents), all of which address context management for LLM agents. While the specific CLI context may differ, the general application area of LLM agents and context management is not novel.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = 7  \nVERDICT evaluation = 7  \nVERDICT domain = 7  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 7 | reason: Paper [7] explicitly demonstrates that deterministic condensation (LCM) outperforms LLM-based summarization for long-context tasks, quoting: \"LCM-augmented coding agent, Volt, achieves higher scores than Claude Code on the OOLONG long-context eval, including at every context length between 32K and 1M tokens.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Establishes that deterministic condensation beats LLM-based summarization for CLI contexts.**\n\nThis purpose is about demonstrating a specific empirical relationship: deterministic/structured context management outperforms LLM-based summarization for CLI/coding agent contexts. Paper [7] (LCM) explicitly states \"a deterministic architecture for LLM memory that outperforms Claude Code on long-context tasks\" and demonstrates deterministic context management superiority. Paper [1] (ACON) compares compression methods for LLM agents but focuses on optimizing compression rather than establishing this specific comparative relationship. Paper [11] also compares truncation/summarization approaches. Paper [7] is the closest — it directly establishes that deterministic context management outperforms LLM-based approaches (Claude Code) on long-context coding tasks, which is substantively the same empirical relationship (deterministic > LLM-based summarization for coding/CLI contexts).\n\n**MECHANISM: Ablation study running the DCC module alone, without the loop controller.**\n\nThis is a component isolation ablation — running one module in isolation to identify its contribution. Papers [1], [7], [8] all involve multi-component systems where ablations are performed. Paper [7] describes an LCM architecture with multiple components and benchmarks them. Paper [1] (ACON) explicitly involves ablation of components. However, the specific ablation design (isolating a deterministic condenser from a loop controller) is a generic ablation pattern. As a finding-type contribution, the mechanism is the analysis method — a controlled component ablation — which appears as a standard design in [1], [7], and [8].\n\n**EVALUATION: DCC alone achieves 70.0% completion (+18.8pp over baseline).**\n\nThe evaluation design uses task completion rate as a metric on a coding/CLI agent benchmark, comparing against a baseline with percentage-point improvements. Paper [7] uses benchmark scores (OOLONG) with completion metrics for coding agents. Paper [1] uses task completion metrics for long-horizon agents. Paper [15] uses automated assessment of programming tasks with LLMs. The evaluation design (task completion rate on coding agent benchmarks, comparing variants) matches papers [1] and [7].\n\n**DOMAIN: LLM agents / context management.**\n\nMultiple prior papers operate in LLM agents with context management: [1], [7], [8], [11], [17] all work in this exact domain. This is clearly covered.\n\nVERDICT purpose = 7\nVERDICT mechanism = 1\nVERDICT evaluation = 1\nVERDICT domain = 7",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     4,
+     14
+    ],
+    "evaluation": [
+     1,
+     4
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution aims to characterize the role of loop control in terminal agent performance, specifically analyzing its impact on failure rates and safety mechanisms. None of the prior papers explicitly establish or report this empirical relationship. While papers like [1], [4], and [14] discuss failure analysis and loop vulnerabilities in LLM agents, they do not characterize the specific role of loop control in terminal agent performance. Paper [14] focuses on loop vulnerabilities but does not empirically establish the relationship between loop control and terminal agent performance.\n\n#### Mechanism:\nThe mechanism involves analyzing loop-induced failure frequency and the behavior of the Progress-Conditioned Loop Controller (PLC) in terms of block rates and deadlock avoidance. Papers [7], [10], and [29] discuss deadlock detection and avoidance mechanisms, but they do not address the specific PLC behavior or loop-induced failure frequency in LLM agents. Paper [14] discusses loop vulnerabilities but does not analyze PLC behavior or loop-induced failures. Paper [9] discusses circuit breaker patterns for cascading failures but does not address loop control mechanisms.\n\n#### Evaluation:\nThe evaluation design involves measuring loop-induced failure rates (baseline 2.5%), elimination via prompting, and PLC block rates (0.12%) with zero deadlock events. Papers [4], [9], and [14] use evaluation setups involving failure detection and mitigation, but none employ the same evaluation design for loop-induced failures or PLC behavior. Paper [7] discusses deadlock detection but does not use the same evaluation design. Paper [29] discusses virtual channels for deadlock avoidance but does not evaluate loop-induced failures or PLC block rates.\n\n#### Domain:\nThe domain is LLM agents and failure analysis. Papers [1], [4], [6], and [14] all operate within the domain of LLM agents and failure analysis, addressing cascading failures, reliability, and loop vulnerabilities. While the specific sub-problem of loop control is new, the general application area of LLM agents and failure analysis is covered.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper characterizes the role of loop control in terminal agent performance under any framing or terminology.  \n\nFACET: mechanism | FINAL: COVERED-BY 14 | reason: \"Loop vulnerabilities... degrade performance and compromise security\" aligns with analysis of loop-induced failure frequency and behavior.  \n\nFACET: evaluation | FINAL: NONE | reason: No prior paper evaluates loop-induced failures or PLC block-rate/deadlock behavior with equivalent claims or metrics.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**PURPOSE: Characterizes the actual role of loop control in terminal agent performance.**\n\nThe purpose is to empirically characterize how much loop control actually contributes to LLM agent performance — specifically whether it's a primary driver or a safety net. Papers [1] and [4] analyze LLM agent failures broadly, but neither specifically targets the role of loop control mechanisms in agent performance. Paper [1] focuses on cascading failures and modular error propagation; paper [4] focuses on validation/diagnosis frameworks. No prior paper appears to establish the same empirical relationship: \"loop control's actual contribution to terminal agent performance is minimal/safety-net-level.\" This is a specific finding about a specific mechanism's role, not covered by general failure analysis papers.\n\n**MECHANISM: Analysis of loop-induced failure frequency and PLC block-rate/deadlock behavior.**\n\nThe mechanism involves measuring how often loops cause failures, and analyzing a specific controller's block rate and deadlock behavior. Papers [1] and [4] use failure analysis on LLM agents but don't analyze loop-specific failure rates or a loop controller's block/deadlock statistics. Papers on livelock/deadlock detection ([7], [10], [11], [16], [20], [25]) operate in distributed systems/Petri nets, not LLM agents, and don't analyze loop-induced failure frequency in the same sense. The analysis design (counting failure frequencies, block rates, deadlock events for a specific controller) is a standard controlled ablation/measurement approach, but no prior paper applies this to loop control in LLM agents specifically. As a finding-type contribution, the mechanism is the analysis method — controlled frequency measurement and behavioral analysis — which is a standard design appearing broadly in prior work (e.g., [1], [4]).\n\n**EVALUATION: Loop-induced failures are rare (2.5% baseline), eliminated by prompting; PLC maintains 0.12% block rate with zero deadlocks.**\n\nThe evaluation design involves measuring failure rates, block rates, and deadlock events — standard quantitative metrics on agent benchmarks. Papers [1] and [4] use similar evaluation designs (failure rate measurement, classification of failure types on agent benchmarks). Per the special rule, the evaluation design (measuring failure/error rates on LLM agent tasks) is covered by [1] and [4], even though the specific numbers and object differ.\n\n**DOMAIN: LLM agents / failure analysis.**\n\nPapers [1] and [4] explicitly work in LLM agent failure analysis. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper characterizes the actual role of loop control in terminal agent performance — papers on agent failure ([1],[4]) address cascading/modular failures broadly, not the specific contribution of loop-handling to task completion rates in terminal agents; no equivalent objective found under any alternative framing.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper analyzes loop-induced failure frequency alongside a Progress-Conditioned Loop Controller's block-rate and deadlock behavior in LLM agents; circuit-breaker/livelock papers address different domains and none quantify PLC-style block-rate or deadlock tradeoffs in agentic task execution."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to characterize the specific empirical role of loop control in LLM agent performance, finding it to be a minor safety net. No prior paper establishes this specific relationship; papers on LLM agent failure like [1] and [4] are broad and do not focus on or report this particular finding, while papers on loops/deadlocks ([7], [10], [14]) are from different domains and have different goals like formal detection or building tools, not characterizing performance impact in agents.\n\n**mechanism**: The mechanism is the analysis of failure frequency (loops) and the behavior of a controller (block-rate, deadlocks). This is a standard analysis method for system failures and safety mechanisms, which is covered by the general mechanism of [4]'s \"comprehensive validation framework for LLM-based agentic systems that provides systematic diagnosis\" and [1]'s goal to \"comprehensively understand agent error in a modular and systemic way.\"\n\n**evaluation**: The evaluation design involves measuring failure rates under different conditions and monitoring the operational statistics of a safety controller. This design is a standard protocol for validating safety mechanisms and is covered by the \"validation framework\" proposed in [4] for diagnosing reliability failures in LLM agents.\n\n**domain**: The domain is LLM agents and their failure analysis. This is explicitly covered by multiple prior papers, including [1] (\"Where LLM Agents Fail\") and [4] (\"From Failure Detection to Fix Recommendations in LLM Agentic Systems\").\n\nVERDICT purpose = NONE\nVERDICT mechanism = 4\nVERDICT evaluation = 4\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper empirically investigates the relationship between loop control mechanisms (like circuit breakers or turn limits) and the terminal task performance of LLM agents. While many papers discuss analogous concepts like circuit breakers in microservices ([9], [13], [15]) or livelock/deadlock detection in other domains ([7], [11], [20]), none share the objective of characterizing this specific cause-and-effect relationship for LLM agent success."
+     }
+    }
+   }
+  }
+ ]
+}

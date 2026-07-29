@@ -1,0 +1,241 @@
+{
+ "paper_id": "FA0007",
+ "title": "WindowScan-Judge: Robust Safety Judging Against Benign-Padding Attacks",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     6,
+     32
+    ],
+    "evaluation": [
+     1,
+     18
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 32
+      },
+      "evaluation": {
+       "covered_by": 18
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to reveal the vulnerability of LLM safety judges to benign-padding attacks. This specific empirical relationship — that appending/prepending benign text can exploit LLM safety judges — is not established in any prior paper. While papers like [1], [3], and [4] discuss adversarial robustness and vulnerabilities of LLM safety judges, none explicitly report or establish the benign-padding vulnerability. Papers such as [6], [32], and [30] discuss padding or dilution attacks, but they target classifiers in other domains (e.g., spam filters, toxicity detection) and do not address LLM safety judges specifically. Thus, no prior paper establishes this exact empirical relationship.\n\n#### Mechanism:\nThe mechanism involves appending/prepending benign text to harmful content to dilute the signal, exploiting the classifier's vulnerability. This mechanism is substantively equivalent to the \"Good Word Attacks\" described in [32], which dilute a classifier's decision signal by padding with benign tokens. Although [32] targets spam filters, the underlying primitive — signal dilution via benign padding — is identical across domains. Papers like [6] and [30] also describe similar mechanisms for adversarial attacks on classifiers, further confirming coverage.\n\n#### Evaluation:\nThe evaluation design uses WildGuard to measure false negative rate (FNR) changes (0.0455 → 1.0). Paper [18] introduces WildGuard as a moderation tool for LLM safety, including evaluation metrics for safety risks and jailbreak detection. Since the contribution reuses WildGuard's evaluation framework, the evaluation design is covered. No new benchmark, metric, or protocol is introduced here.\n\n#### Domain:\nThe domain is LLM safety judges. Papers [1], [3], [4], [18], and [24] all address LLM safety judges as their application area, covering adversarial robustness, evaluation pipelines, and moderation tools. While the contribution targets a specific vulnerability (benign-padding), this is a narrower instance within the broader domain of LLM safety judges, which is already addressed by prior work.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = 32  \nVERDICT evaluation = 18  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly reveals benign-padding vulnerabilities in safety judges, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: 揭示安全裁判的 benign-padding 漏洞 (revealing benign-padding vulnerability in safety judges)**\n\nThis purpose is about demonstrating a specific empirical relationship: that prepending/appending benign text causes safety judges to fail (high FNR). Paper [1] studies robustness of LLM safety judges including adversarial challenges. Paper [3] shows LLM judges fail to reliably measure adversarial robustness. However, neither specifically establishes the empirical relationship \"benign padding → safety judge failure\" as their demonstrated finding. Paper [6] studies diluting toxicity signals in classifiers but targets toxicity classifiers, not LLM safety judges specifically. Paper [32] (Good Word Attacks) demonstrates that adding good words fools spam filters — same relationship (benign padding → classifier failure) but in spam domain. The specific relationship \"benign padding causes LLM safety judge FNR to spike\" is not established as a finding in any prior paper. Papers [1] and [3] discuss judge robustness broadly but don't report this specific variable-direction relationship.\n\n**MECHANISM: 有害内容前后拼接良性文本稀释信号 (prepend/append benign text to dilute signal)**\n\nPaper [32] \"Good Word Attacks on Statistical Spam Filters\" explicitly uses the primitive of adding benign/good words to harmful content to dilute a classifier's signal. Paper [6] \"Towards Robust Toxic Content Classification\" explicitly mentions \"injecting non-toxic distractor tokens\" to dilute toxicity signal. These are substantively equivalent mechanisms — same primitive of padding with benign content to dilute a classifier's decision signal, regardless of domain.\n\n**EVALUATION: WildGuard FNR 0.0455→1.0**\n\nThe evaluation uses WildGuard (a named benchmark/tool from paper [18]) as the judge being tested, measuring FNR (False Negative Rate) — a standard metric. Paper [1] evaluates LLM safety judges using adversarial perturbations and measures performance degradation. Paper [3] evaluates LLM judges on safety benchmarks measuring reliability/accuracy. The evaluation design (apply adversarial perturbation, measure FNR on a named safety judge benchmark) is used in papers [1] and [3], which evaluate safety judge robustness with similar metric semantics. WildGuard itself is introduced in [18]. The design of \"attack a safety judge, measure false negative rate\" is present in [1] and [3].\n\n**DOMAIN: LLM safety judges**\n\nPapers [1], [3], [4], [18], [24] all work in the domain of LLM safety judges/guardrails. This is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 6\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the specific objective of exposing a \"benign-padding\" vulnerability in LLM safety judges — i.e., that appending benign content to harmful outputs causes judges to misclassify them as safe. Paper [1] and [3] discuss robustness/distribution-shift issues with safety judges, and [28] addresses empty/low-quality jailbreak evaluations, but none specifically identify or target the mechanism whereby padding harmful responses with benign text exploits judge scoring. No quoted phrase from any prior paper captures this same empirical objective."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     6,
+     12
+    ],
+    "mechanism": [
+     8,
+     11,
+     17
+    ],
+    "evaluation": [
+     9,
+     23,
+     24
+    ],
+    "domain": [
+     6,
+     9,
+     12
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": [
+        8,
+        11,
+        17
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        23,
+        24
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        6,
+        9,
+        12
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to \"修复漏洞且不改基模型\" (patch vulnerabilities without modifying the base model). Paper [6] (\"Mudjacking: Patching Backdoor Vulnerabilities in Foundation Models\") explicitly addresses the same objective, as it proposes a method to patch backdoor vulnerabilities in foundation models without altering the base model. This matches the purpose at the problem-class level.\n\n### Mechanism\nThe mechanism involves \"多尺度窗口扫描(128/256/512)+ Length-Aware FPR 校准\" (multi-scale window scanning with sizes 128/256/512 and Length-Aware FPR calibration). Paper [8] (\"Multi-Scale Variable Window Attention Network for Continuous Sign Language Recognition\") and Paper [11] (\"Multi-Scale Representations by Varying Window Attention for Semantic Segmentation\") both describe multi-scale window-based mechanisms, which are substantively equivalent to the multi-scale window scanning described here. Additionally, Paper [17] (\"False positive rate control for positive unlabeled learning\") discusses false positive rate (FPR) control, which aligns with the Length-Aware FPR calibration component of the mechanism. Together, these papers cover the mechanism.\n\n### Evaluation\nThe evaluation reports \"FNR 1.0→0.0091, F1 0.9237.\" This involves standard performance metrics (false negative rate and F1 score) for assessing the effectiveness of the method. Papers [23] (\"Performance Metrics (Error Measures) in Machine Learning Regression, Forecasting and Prognostics\") and [24] (\"Bergen metrics: composite error metrics for assessing performance of climate models\") both discuss the use of performance metrics like F1 and error rates in evaluation frameworks. These papers cover the evaluation design, as the metrics and validation framework are not novel.\n\n### Domain\nThe domain is \"同上\" (same as above), which refers to the application area of vulnerability patching in foundation models. Papers [6] (\"Mudjacking: Patching Backdoor Vulnerabilities in Foundation Models\"), [9] (\"Evaluating Pre-Trained Models for Multi-Language Vulnerability Patching\"), and [12] (\"APPATCH: Automated Adaptive Prompting Large Language Models for Real-World Software Vulnerability Patching\") all operate in the same general application area of vulnerability patching in AI models. This domain is therefore covered.\n\n---\n\nVERDICT purpose = 6  \nVERDICT mechanism = 8, 11, 17  \nVERDICT evaluation = 23, 24  \nVERDICT domain = 6, 9, 12  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 12
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: 修复漏洞且不改基模型 (Patch vulnerabilities without modifying the base model)**\n\nPaper [6] (Mudjacking) explicitly proposes \"the first method to patch foundation model\" backdoor vulnerabilities without altering the base model — \"patch foundation model vulnerabilities.\" Paper [9] evaluates pre-trained models for vulnerability patching. Paper [12] (APPATCH) addresses automated vulnerability patching \"without model training/fine-tuning,\" which directly matches the purpose of patching without modifying the base model. Paper [12]'s purpose is substantively equivalent: fix vulnerabilities without changing the underlying model.\n\n**MECHANISM: 多尺度窗口扫描(128/256/512) + Length-Aware FPR 校准 (Multi-scale window scanning at 128/256/512 + Length-Aware FPR calibration)**\n\nPaper [8] presents \"Multi-scale Variable Window Attention Network\" using variable window sizes for multi-scale feature capture. Paper [11] presents \"varying window attention (VWA)\" with multi-scale window representations. However, these are in vision/segmentation domains. The primitive of multi-scale window scanning is present in [8] and [11]. For the Length-Aware FPR calibration component, paper [17] addresses \"false positive rate control\" in a learning context, and paper [19] addresses correcting false discovery/positive rates. Neither combines both primitives together as described. The multi-scale window scanning primitive is covered by [8] and [11]; the FPR calibration is partially covered by [17]. No single paper covers the combined mechanism, but the individual primitives appear in prior work. I'll note the closest matches.\n\n**EVALUATION: FNR 1.0→0.0091, F1 0.9237**\n\nThe evaluation uses standard classification metrics (FNR, F1) on a detection/patching task. Paper [25] and [26] use FPR, detection rate metrics for anomaly/intrusion detection. Paper [9] evaluates vulnerability patching with standard metrics. These are standard metric families (F1, FNR) used across many prior papers including [9], [25], [26]. The evaluation design (measuring FNR and F1 on a security detection task) is covered by prior work.\n\n**DOMAIN: 同上 (Same as above — vulnerability patching / security)**\n\nPapers [6], [9], [12], and [16] all operate in the software vulnerability patching / security domain. This domain is clearly covered.\n\nVERDICT purpose = 12\nVERDICT mechanism = 8\nVERDICT evaluation = 9\nVERDICT domain = 6",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     6
+    ],
+    "mechanism": [
+     14,
+     23
+    ],
+    "evaluation": [
+     2,
+     14
+    ],
+    "domain": [
+     1,
+     4
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 23
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to demonstrate that defenses can generalize. This specific empirical relationship — proving generalization of defenses — does not appear to be established in any prior paper. While some papers discuss defense mechanisms or vulnerabilities (e.g., [6], [8], [24]), none explicitly report or establish the empirical relationship that defenses generalize across scenarios. Therefore, the purpose is **NONE**.\n\n### Mechanism\nThe mechanism involves \"换基裁判重跑\" (changing the evaluation basis and rerunning tests). This aligns with prior work that uses cross-validation or repeated evaluation protocols to assess robustness or generalization. Papers such as [23] and [25] discuss repeated cross-validation and distributional bias in leave-one-out cross-validation, which are substantively equivalent mechanisms for re-evaluating models under different conditions. Thus, the mechanism is **COVERED** by [23] and [25].\n\n### Evaluation\nThe evaluation design involves reporting false negative rates (FNR) for Llama Guard 3, specifically showing improvement from 0.2636 to 0.0455. This design — using LLM-as-a-judge frameworks to evaluate safety metrics — is covered by prior papers such as [14], [15], and [24], which critique or employ LLM-based evaluation protocols for safety and robustness. While the specific FNR values and the object (Llama Guard 3) differ, the evaluation design itself (LLM-as-a-judge framework and safety metrics) is not novel. Therefore, the evaluation is **COVERED** by [14], [15], and [24].\n\n### Domain\nThe domain is the application area of LLM safety defenses, specifically safeguarding human-AI conversations. This domain is extensively covered by prior papers such as [4], [6], [8], and [24], which address LLM safety defenses and vulnerabilities in conversational settings. Although the contribution focuses on a specific instance (Llama Guard 3), the general domain of LLM safety defenses is not novel. Therefore, the domain is **COVERED** by [4], [6], [8], and [24].\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 23  \nVERDICT evaluation = 14  \nVERDICT domain = 4  ",
+      "stage2": "FACET: purpose: 证明防御可泛化 | FINAL: COVERED-BY 6 | reason: ProAct introduces a proactive defense framework designed to handle evolving adversarial attacks, demonstrating a generalizable approach to defense mechanisms. Quote: \"ProAct, a novel proactive defense framework designed to disrupt and mislead these iterative search jailbreak methods.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**Purpose: 证明防御可泛化 (Demonstrate that a defense generalizes)**\n\nThis is about showing that a defense mechanism generalizes across different judges/evaluators. Paper [8] \"LLM Defenses Are Not Robust to Multi-Turn Human Jailbreaks Yet\" evaluates defense generalizability. Paper [1] \"Defending Large Language Models Against Jailbreaking Attacks Through Goal Prioritization\" also evaluates whether their defense generalizes. Paper [15] \"Know Thy Judge: On the Robustness Meta-Evaluation of LLM Safety Judges\" examines whether safety judges generalize. However, the specific purpose here is demonstrating that a *defense* generalizes when evaluated with a *different judge* — this is closest to [1] which tests defense generalizability, and [8] which tests defenses across different conditions. Paper [1] explicitly defends LLMs and evaluates generalization of the defense approach.\n\n**Mechanism: 换基裁判重跑 (Swap the base judge and re-run)**\n\nThis mechanism involves substituting one judge (evaluator) with another and re-running the evaluation. Paper [14] \"A Coin Flip for Safety: LLM Judges Fail to Reliably Measure Adversarial Robustness\" explicitly discusses swapping/changing LLM judges and re-evaluating. Paper [15] \"Know Thy Judge\" also examines robustness by testing with different judges. Paper [24] \"Safer or Luckier?\" evaluates across multiple judge models. The primitive of \"swap the judge and re-run\" is directly present in [14] and [15].\n\n**Evaluation: Llama Guard 3 FNR 0.2636→0.0455**\n\nThe evaluation design uses Llama Guard 3 as a safety judge with FNR (False Negative Rate) as the metric. Paper [4] introduces Llama Guard and uses similar safety evaluation metrics. Papers [2] and [3] use Llama Guard 3 variants with safety evaluation metrics. Paper [14] uses LLM-as-judge evaluation design for safety robustness benchmarking. The specific metric (FNR) and judge (Llama Guard 3) design is present in [2], [3], and [4] which all use Llama Guard family models with safety classification metrics.\n\n**Domain: 同上 (Same as above — LLM safety/jailbreak defense)**\n\nThe domain is LLM safety evaluation and jailbreak defense. Papers [1], [4], [5], [6], [8], [14], [15], [17], [24] all operate in this same domain of LLM safety and jailbreak attack/defense.\n\nVERDICT purpose = 1\nVERDICT mechanism = 14\nVERDICT evaluation = 2\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

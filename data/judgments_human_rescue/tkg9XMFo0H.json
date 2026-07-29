@@ -1,0 +1,318 @@
+{
+ "paper_id": "tkg9XMFo0H",
+ "title": "Look Twice Before You Answer: Memory-Space Visual Retracing for Hallucination Mitigation in Multimodal Large Language Models",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     2,
+     5
+    ],
+    "mechanism": null,
+    "evaluation": [
+     5,
+     19
+    ],
+    "domain": [
+     2,
+     5
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 23
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose:\nThe contribution's purpose is to mitigate hallucinations in multimodal large language models (MLLMs) without relying on external knowledge retrieval or additional fine-tuning. Papers [2], [3], [5], [11], [15], and [20] all address hallucination mitigation in MLLMs or LVLMs, but they rely on methods such as instruction tuning, retrieval augmentation, or contrastive decoding. None of these papers explicitly target hallucination mitigation without external knowledge retrieval or fine-tuning. Therefore, the specific purpose of this contribution is **not covered**.\n\n### Mechanism:\nThe mechanism, MEMVR (Memory-space Visual Retracing), uses visual tokens as supplementary evidence and re-injects them into the model via feed-forward networks (FFNs) acting as \"key-value memory\" during intermediate layers. Papers [6], [7], [22], [23], and [27] discuss key-value memory mechanisms in various contexts, including person re-identification, question answering, efficient transformer decoding, and feed-forward layers as key-value memories. The primitive of using FFNs as key-value memory is covered by [23], which explicitly identifies feed-forward layers in transformers as operating as key-value memories. Thus, the mechanism is **covered**.\n\n### Evaluation:\nThe evaluation involves testing the method on multiple MLLMs (LLaVA-1.5-7B, Qwen-VL-Chat, GLM4V) and seven benchmark categories, with GPT-4o used for assessment. Papers [5], [11], [15], and [20] evaluate hallucination mitigation methods on LVLMs using similar benchmark families and metrics, such as visual contrastive decoding and instruction contrastive decoding. The use of GPT-based evaluation (e.g., GPT-4) is also common in prior work, such as [19]. Since the evaluation design (benchmark family and metric semantics) is reused, the evaluation is **covered**.\n\n### Domain:\nThe domain is multimodal large language models (MLLMs) and hallucination mitigation. Papers [2], [3], [5], [11], [15], and [20] all operate in the same general application area of hallucination mitigation in MLLMs or LVLMs. Although the specific models and datasets differ, the domain is **covered**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 23  \nVERDICT evaluation = 5  \nVERDICT domain = 2  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 2 | reason: Paper [2] explicitly addresses mitigating hallucinations in MLLMs without external knowledge retrieval or additional fine-tuning, as evidenced by the phrase: \"Existing methods for addressing hallucinations often rely on instruction-tuning, which requires retraining the model with specific data, which increases the cost of utilizing MLLMs further. In this paper, we introduce a novel training-free approach.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\n\nThe contribution aims to mitigate hallucinations in MLLMs (asserting content not present in images) without external knowledge retrieval or additional fine-tuning.\n\nPapers [2], [3], [5], [15], [20] all address hallucination mitigation in MLLMs/LVLMs in a training-free manner without external retrieval. Paper [5] (VCD) explicitly introduces a \"simple and training-free method\" to mitigate object hallucinations in LVLMs. Paper [3] addresses hallucinations in LVLMs without retrieval. Paper [2] introduces a \"training-free\" approach for MLLM hallucinations. The purpose is clearly covered.\n\n## Mechanism\n\nThe core mechanism is re-injecting visual tokens as supplementary evidence through FFN layers (treated as key-value memory) at intermediate trigger layers — plug-and-play, architecture-agnostic, single-pass inference.\n\nPaper [23] (\"Transformer Feed-Forward Layers Are Key-Value Memories\") directly establishes that \"feed-forward layers in transformer-based language models operate as key-value memories, where each key correlates with textual patterns.\" This is the foundational primitive being exploited. However, the contribution's mechanism goes further: it uses this FFN-as-memory insight to *re-inject visual tokens* at intermediate layers to correct hallucination. Paper [8] discusses visual token behavior in MLLMs and notes that visual information is absorbed in early layers. Paper [12] uses inter-layer contrastive decoding by comparing internal layers. None of the prior papers combine the FFN-as-key-value-memory primitive with visual token re-injection at intermediate layers for hallucination mitigation. Paper [23] covers the key-value memory interpretation of FFN, but the specific mechanism of retracing/re-injecting visual tokens through FFN memory to mitigate hallucination is not present in any prior paper. The closest is [23] for the FFN-as-memory primitive, but the re-injection of visual tokens as the corrective mechanism is absent.\n\nActually, re-examining: the mechanism primitive is \"re-inject input tokens (visual) as supplementary evidence into intermediate FFN layers.\" Paper [23] covers the FFN-as-KV-memory framing. But the act of re-injecting visual tokens mid-inference to correct output is not covered. No prior paper uses this specific primitive. NONE for mechanism.\n\n## Evaluation\n\nThe evaluation uses multiple MLLMs (LLaVA-1.5-7B, Qwen-VL-Chat, GLM4V), seven benchmark types, GPT-4o as judge, and comparison against VCD/OPERA contrastive decoding baselines with inference time analysis.\n\nPapers [2], [3], [5], [15], [20] all evaluate on MLLM hallucination benchmarks (CHAIR, POPE, MME, etc.) with similar setups comparing against VCD/OPERA. Paper [5] uses CHAIR and POPE benchmarks. Paper [20] compares against VCD and OPERA. The evaluation design (multi-MLLM evaluation on standard hallucination benchmarks, LLM-as-judge, comparison with contrastive decoding baselines) is clearly covered by these prior papers.\n\n## Domain\n\nThe domain is multimodal large language models / hallucination mitigation. Papers [2], [3], [5], [8], [11], [15], [20] all operate in this exact domain.\n\nVERDICT purpose = 5\nVERDICT mechanism = NONE\nVERDICT evaluation = 5\nVERDICT domain = 5",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper proposes reinserting visual tokens as supplementary evidence via FFN-as-key-value-memory at intermediate trigger layers in a training-free, architecture-agnostic, single-pass inference paradigm. Paper [23] establishes that FFN layers operate as key-value memories, but does not use this to reinject visual tokens into MLLMs for hallucination mitigation. No other paper combines these specific elements under any alternative terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 19
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "purpose: Papers [2], [3], and [5] all share the same purpose of mitigating hallucinations in MLLMs without requiring model retraining. For example, paper [5] aims to \"mitigate... object hallucinations\" in Large Vision-Language Models with a \"simple and training-free method.\"\n\nmechanism: No single paper contains the complete mechanism. While paper [23] establishes the conceptual basis that \"Transformer Feed-Forward Layers Are Key-Value Memories,\" it is an analysis paper and does not propose this mechanism. Other papers use intermediate layers [12] or key-value memories [6, 7] in different ways, but none describe the specific primitive of re-purposing an existing FFN to re-inject visual tokens as evidence into an intermediate layer.\n\nevaluation: The evaluation design is covered by prior work, particularly the use of an LLM as a judge. Paper [19] is entirely dedicated to the topic of \"Hallucination Generation and Detection with LLMs as Evaluators for LLMs,\" explicitly validating this evaluation protocol with models like GPT-4.\n\ndomain: The application domain is covered by numerous prior papers that explicitly work on hallucination in multimodal models. For example, paper [2] focuses on \"Hallucination Decrease for MultiModal Large Language Models,\" and paper [5] addresses \"Mitigating Object Hallucinations in Large Vision-Language Models.\"\n\nVERDICT purpose = 5\nVERDICT mechanism = NONE\nVERDICT evaluation = 19\nVERDICT domain = 2",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes the specific mechanism of re-injecting visual tokens into intermediate layers of an MLLM by treating the FFN layers as a key-value memory. While paper [23] proposes the conceptual framing of FFNs as key-value memories, it is an analysis paper and does not propose or implement a mechanism that uses this insight to re-inject information for any purpose. Other papers that interact with intermediate layers, such as [12] or [29], do so for different purposes (inter-layer contrastive decoding, early-exit inference) and via different methods (comparing logic, fine-tuning), not by re-injecting visual tokens."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     7,
+     25
+    ],
+    "evaluation": [
+     12,
+     16
+    ],
+    "domain": [
+     2,
+     3,
+     5,
+     6,
+     8,
+     10,
+     20,
+     24
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": [
+        2,
+        3,
+        5,
+        6,
+        8,
+        10,
+        20,
+        24
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to trigger visual redrawing in multimodal large language models (LVLMs) when the model exhibits uncertainty in visual memory and provide a theoretical basis for this approach. Several prior papers address hallucination mitigation in LVLMs, but none explicitly focus on triggering visual redrawing based on uncertainty. Papers like [2], [3], [5], [8], and [10] aim to mitigate hallucinations in LVLMs, but their objectives differ in that they focus on penalizing hallucinated tokens, instruction tuning, or fine-grained feedback rather than uncertainty-triggered visual redrawing. Thus, no prior paper shares the same purpose.\n\n### Mechanism\nThe mechanism involves a dynamic premature layer injection strategy, where visual redrawing is triggered based on the entropy (uncertainty) of layer outputs, and information-theoretic reasoning is used to prove that visual redrawing reduces hallucinations. Paper [7] discusses early exit strategies based on confidence levels, and [15], [16], [19], and [25] explore early-exit mechanisms in various contexts, including LVLMs. However, none of these papers use entropy-based uncertainty to trigger visual redrawing or provide an information-theoretic proof of its effectiveness. Paper [14] and [21] discuss uncertainty quantification, but they focus on Bayesian methods or last-layer uncertainty estimation rather than dynamic layer injection based on entropy. Thus, no prior paper shares the same mechanism.\n\n### Evaluation\nThe evaluation primarily involves qualitative/theoretical proof, supplemented by uncertainty analysis (e.g., entropy distribution of early-exit layer outputs in LLaVA-1.5-7B). Papers [7], [15], [16], [19], and [25] use early-exit evaluations, but their designs focus on efficiency or accuracy trade-offs rather than uncertainty analysis. Paper [14] and [21] evaluate uncertainty quantification methods, but their designs differ from the entropy-based uncertainty analysis used here. No prior paper uses the same evaluation design.\n\n### Domain\nThe domain is multimodal large language models (LVLMs). Papers [2], [3], [5], [6], [8], [10], [20], and [24] all address hallucination mitigation in LVLMs, making the domain covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [2, 3, 5, 6, 8, 10, 20, 24]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses the same objective of triggering visual re-rendering under visual memory uncertainty with theoretical grounding.  \n\nFACET: mechanism | FINAL: COVERED-BY 7 | reason: Pyramid Dynamic Inference proposes early exit strategies based on entropy to optimize inference, aligning with dynamic premature layer injection triggered by uncertainty. Quote: \"Early exit strategies are designed to speed-up the inference by routing out a subset of samples at the earlier layers of the model.\"\n\nFACET: evaluation | FINAL: COVERED-BY 16 | reason: DeeCap evaluates dynamic early exiting for image captioning, including uncertainty analysis and ablation studies, aligning with the described evaluation. Quote: \"A feasible way to reduce the time complexity is to exit the prediction early in internal decoding layers... Ablation studies show dynamic early exiting improves efficiency.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## PURPOSE: \"让视觉重描在模型对视觉记忆不确定时被触发，并给出理论依据\"\n(Trigger visual re-description when the model is uncertain about visual memory, with theoretical justification)\n\nThe purpose is to adaptively trigger a visual grounding/re-description mechanism based on model uncertainty, specifically to reduce hallucinations in MLLMs. Paper [2] (ESREAL) aims to suppress hallucinations via semantic reconstruction in VLMs — but it doesn't focus on uncertainty-triggered activation. Paper [3] (LURE) mitigates object hallucination but through post-hoc revision, not uncertainty-triggered re-description. Paper [9] (DiLa) dynamically selects internal layers to mitigate hallucinations in LLMs, but doesn't involve visual re-description triggered by uncertainty. No prior paper specifically pursues the objective of \"trigger visual re-description when uncertainty is high AND provide theoretical justification for why this reduces hallucination.\" The closest is [2] (semantic reconstruction to mitigate hallucination) but the uncertainty-triggered adaptive mechanism is absent. No paper covers this specific purpose.\n\n## MECHANISM: \"动态早熟层注入策略（dynamic premature layer injection）：按各层输出不确定性（熵）触发视觉重描；并从信息论视角理论证明视觉重描能降低幻觉\"\n\nThe mechanism combines: (1) entropy-based uncertainty measurement at intermediate layers, (2) using that entropy to trigger visual re-description injection, (3) information-theoretic proof. \n\nPaper [12] (DoLa) contrasts logits from earlier vs. later layers to reduce hallucinations — uses premature layer outputs but via contrastive decoding, not entropy-triggered injection. Paper [9] (DiLa) \"dynamically selects appropriate internal layers\" for contrastive decoding — closer, but still contrastive decoding, not entropy-triggered visual re-description. Paper [7], [15], [16], [19], [23], [25] all use early exit with confidence/entropy thresholds to decide when to exit — the entropy-based triggering at intermediate layers is present, but the triggered action is \"exit\" not \"inject visual re-description.\" None of these combine entropy-triggered intermediate-layer detection with visual re-description injection plus information-theoretic proof. The specific primitive of \"use layer-wise entropy to trigger visual context re-injection\" is not covered.\n\n## EVALUATION: \"定性/理论证明；不确定性分析（32层LLaVA-1.5-7B，早退层输出分布不确定性）；消融显示动态重描优于固定层\"\n\nThe evaluation design includes: uncertainty analysis of intermediate layer outputs in a specific MLLM, and ablation comparing dynamic vs. fixed layer strategies. Paper [12] (DoLa) analyzes layer-wise output distributions to motivate their method. Paper [9] (DiLa) performs layer selection analysis. Papers [7], [15], [16], [19], [25] use early-exit with confidence/entropy analysis across layers. The ablation design (dynamic vs. fixed layer comparison) is a generic substitution experiment. The uncertainty analysis of intermediate layers in LLMs/MLLMs appears in [12] and [9]. The evaluation design of analyzing per-layer entropy distributions and ablating dynamic vs. fixed strategies is substantively covered by [12] and [9].\n\n## DOMAIN: \"多模态大语言模型\"\n\nPapers [2], [3], [5], [6], [8], [10], [20], [24] all work in multimodal large language models / vision-language models. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 12\nVERDICT domain = 2",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of triggering visual re-description specifically when the model is uncertain about visual memory and providing a theoretical justification for that trigger condition. DoLa (12) and DiLa (9) contrast layers for factuality but do not condition on visual uncertainty nor provide theory for when re-description should occur. No quoted phrase from any paper matches this specific objective.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper designs a dynamic premature layer injection strategy driven by per-layer entropy for visual re-description in VLMs, nor provides an information-theoretic proof that visual re-description reduces hallucination. DoLa (12) contrasts later vs. earlier layer logits but does not use per-layer entropy as a trigger, does not inject visual re-description, and offers no information-theoretic proof. DiLa (9) dynamically selects layers by comparing logits but again has no entropy-based trigger, no visual re-description mechanism, and no theoretical proof. No quoted phrase from any paper covers this combined mechanism."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 25
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to mitigate hallucinations by triggering a corrective action (visual re-description) specifically when the model is uncertain about its visual memory. While many prior papers aim to mitigate hallucinations ([2], [3], [5], [8]), they typically use post-hoc correction, instruction tuning, or continuous decoding modifications rather than an explicit, uncertainty-triggered intervention. Papers on adaptive inference ([7], [25]) use uncertainty/confidence as a trigger, but for the purpose of computational efficiency (early exit), not hallucination mitigation. Therefore, the specific objective of using an uncertainty signal to conditionally trigger a hallucination-mitigation action is not present in the prior work.\n**mechanism**: The core mechanism is a \"dynamic premature layer injection\" strategy, where the trigger is the uncertainty (entropy) of a layer's output. This primitive—using a layer-wise confidence or uncertainty metric to dynamically alter the model's computational path—is the central idea of adaptive inference and early-exit networks. For example, [25] provides a survey on \"adaptive inference\" which is about \"tailoring the computation depth of each input sample\" based on confidence, which is substantively equivalent to using uncertainty to trigger a dynamic action at a specific layer.\n**evaluation**: The evaluation consists of a theoretical proof, an uncertainty analysis of layer outputs, and an ablation study comparing the dynamic strategy to a fixed one. These are all standard evaluation designs. The ablation of a dynamic mechanism against a static one is a necessary validation step for any \"dynamic\" method, as seen in [16] which proposes \"Dynamic Early Exiting\" and would inherently compare it to static baselines. The analysis of layer-wise uncertainty is a standard technique in the uncertainty quantification literature ([14], [21]).\n**domain**: The contribution operates on \"Multimodal Large Language Models\" (MLLMs). Numerous prior papers work in this exact application area, including [3] which explicitly addresses \"object hallucination in Large Vision-Language Models,\" and [2], [5], [6], [8], [10], [20], and [24] which all focus on MLLMs/LVLMs.\n\nVERDICT purpose = NONE\nVERDICT mechanism = [25]\nVERDICT evaluation = [16]\nVERDICT domain = [3]",
+      "stage2": "FACET: purpose: 让视觉重描在模型对视觉记忆不确定时被触发，并给出理论依据 | FINAL: NONE | reason: The prior papers use uncertainty for different objectives. Early-exit papers ([7], [16], [25]) use confidence/uncertainty to exit early for efficiency, not to trigger a re-description for accuracy. Contrastive decoding papers ([9], [12], [17]) use layer disagreement (a proxy for uncertainty) to directly modify next-token logits, which is a different mechanism and objective than triggering a separate, more holistic \"visual re-description\" process. No prior paper shares the specific objective of triggering a visual re-description process in response to uncertainty about visual memory."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     4
+    ],
+    "mechanism": [
+     4
+    ],
+    "evaluation": [
+     5,
+     7
+    ],
+    "domain": [
+     1,
+     3
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to empirically demonstrate that MEMVR effectively mitigates hallucinations and enhances general perception/cognition capabilities in multimodal large language models (MLLMs). None of the prior papers explicitly establish this same empirical relationship. While many papers address hallucination mitigation (e.g., [4], [6], [12]), they do not empirically demonstrate the dual effect of improving general perception/cognition capabilities alongside hallucination mitigation. This specific relationship is not covered.\n\n### Mechanism\nThe contribution uses comprehensive experiments and ablations on hallucination benchmarks (POPE, CHAIR, MME) and general benchmarks, including techniques like varying injection ratios (a) and adding Gaussian noise to visual features. Paper [4] introduces noise perturbation to alleviate hallucinations in MLLMs, which is substantively equivalent to the mechanism of adding Gaussian noise to visual features. Paper [13] discusses memory augmentation mechanisms, which involve injecting external memory, conceptually similar to varying injection ratios. Thus, the mechanism is covered by [4] and [13].\n\n### Evaluation\nThe evaluation design involves measuring accuracy and F1 improvements on hallucination benchmarks (e.g., POPE, CHAIR_I, MME subsets) and assessing inference efficiency (no extra time cost). Papers [7], [9], and [12] all use hallucination benchmarks to evaluate MLLMs, which aligns with the evaluation design here. While the specific benchmarks differ, the design of using hallucination benchmarks and metrics like accuracy/F1 is substantively equivalent. Therefore, the evaluation is covered.\n\n### Domain\nThe contribution operates in the domain of multimodal large language models (MLLMs) and hallucination benchmarks. Papers [3], [4], [6], [7], [9], and [12] all address hallucination issues in MLLMs, making this domain well-covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 4  \nVERDICT evaluation = 7  \nVERDICT domain = 3  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses the empirical objective of demonstrating MEMVR's effectiveness and efficiency in alleviating hallucinations and enhancing general perceptual/cognitive abilities."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: 实证证明 MEMVR 在缓解幻觉与提升通用感知/认知能力上有效且高效**\n\nThe purpose is to empirically demonstrate that a specific method (MEMVR) is effective and efficient at mitigating hallucinations and improving general perception/cognition in MLLMs. Papers [4] (NoiseBoost) and [5] (POPE/CHAIR evaluation) address mitigating hallucinations in MLLMs. Paper [4] explicitly states \"Alleviating Hallucination\" as its goal and demonstrates effectiveness via experiments. Paper [5] introduces CHAIR and POPE for evaluating object hallucination. However, the specific purpose here is demonstrating MEMVR's effectiveness — but at the problem-class level, \"show that method X alleviates hallucination in MLLMs\" is the same objective as paper [4]'s purpose. Paper [4] covers this purpose.\n\n**MECHANISM: 在 POPE、CHAIR、MME 等幻觉基准及通用基准上综合实验与消融（注入比例 a、视觉特征加高斯噪声等）**\n\nThe mechanism here is the analysis method: comprehensive experiments and ablations on hallucination benchmarks (POPE, CHAIR, MME) plus general benchmarks, with ablation over injection ratio and Gaussian noise on visual features. Paper [4] (NoiseBoost) uses noise perturbation on visual features as part of its approach and runs ablations. Paper [5] introduces POPE and CHAIR benchmarks and runs systematic experiments. The ablation design (varying parameters, adding noise) is a standard experimental protocol appearing in multiple papers [4], [5]. This is a standard analysis protocol covered by prior work.\n\n**EVALUATION: POPE 上平均最高 +7.0% accuracy、+7.5% F1；CHAIR_I 最高改善 15.6%；MME 子集一致提升；单次推理无额外时间开销**\n\nThe evaluation design uses POPE (accuracy, F1), CHAIR (CHAIR_I metric), and MME benchmarks — these are named benchmark families with defined metrics. Paper [5] introduces and uses POPE and CHAIR with exactly these metrics (accuracy, F1, CHAIR_I). Paper [4] also evaluates on POPE, CHAIR, and MME with the same metrics. The evaluation design is fully covered — same named benchmarks, same metric semantics.\n\n**DOMAIN: 多模态大语言模型 / 幻觉基准**\n\nThe domain is multimodal large language models and hallucination benchmarks. Papers [3], [4], [5], [6], [7], [8], [9], [12] all operate in this exact domain. This is clearly covered.\n\nVERDICT purpose = 4\nVERDICT mechanism = 4\nVERDICT evaluation = 5\nVERDICT domain = 3",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "The contribution's purpose is to empirically demonstrate that a method (MEMVR) mitigates hallucinations in MLLMs. This is substantively equivalent to the purpose of paper [4], which aims to show its \"NoiseBoost\" method is effective for \"Alleviating Hallucination... for Multimodal Large Language Models\".\n\nThe mechanism is an analysis method involving experiments on standard benchmarks with ablations. This standard protocol is used in prior work, and specifically, the ablation of \"adding Gaussian noise to visual features\" is conceptually equivalent to the core approach of paper [4], which uses \"Noise Perturbation\".\n\nThe evaluation design consists of using named benchmark families like POPE, CHAIR, and MME. Paper [5] introduced and used the POPE benchmark in its work \"Evaluating Object Hallucination in Large Vision-Language Models\", so using this benchmark design is covered.\n\nThe application area is hallucinations in Multimodal Large Language Models (MLLMs). This is the same domain as numerous prior papers, including [1] which focuses on \"Hallucination Benchmarks for Vision-Language Models\".\n\nVERDICT purpose = 4\nVERDICT mechanism = 4\nVERDICT evaluation = 5\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

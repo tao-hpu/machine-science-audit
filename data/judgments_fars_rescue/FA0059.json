@@ -1,0 +1,311 @@
+{
+ "paper_id": "FA0059",
+ "title": "Last-Write-Wins Memory: Isolating Deterministic Overwrite Semantics for Long-Context Conflict Resolution",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     13,
+     26,
+     30
+    ],
+    "evaluation": [
+     4
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to resolve conflicting fact versions in LLM agent memory at the source rather than relying on the language model during reasoning. None of the prior papers explicitly address this purpose. While papers like [2] and [7] discuss memory conflicts and reasoning in LLM agents, they focus on analyzing or mitigating the impact of conflicts during reasoning, rather than resolving conflicts at the memory source itself. Therefore, no prior paper shares this specific objective.\n\n### Mechanism\nThe mechanism, LWW-KO, applies last-write-wins deterministic overwrite semantics to structured knowledge objects, filtering stale fact versions before retrieval. Papers [13], [19], [26], and [30] discuss conflict resolution or versioning in distributed systems and databases, including optimistic replication and conflict-free replicated data types (CRDTs). These works describe mechanisms for resolving conflicts using deterministic rules, including last-write-wins semantics ([13], [19]) and conflict-free merging ([26], [30]). While these papers focus on distributed systems or databases rather than LLM memory, the underlying primitive of deterministic overwrite semantics for conflict resolution is substantively equivalent across domains.\n\n### Evaluation\nThe evaluation uses the FactConsolidation benchmark to measure multi-hop and single-hop accuracy improvements. Papers [4], [12], and [16] describe evaluation designs for memory systems in LLM agents, including benchmarks for long-term memory, multi-hop recall, and reasoning tasks. While the specific benchmark instance (FactConsolidation) is new, the evaluation design — measuring multi-hop and single-hop accuracy on memory-augmented LLM tasks — is covered by these prior works. For example, [4] and [12] evaluate memory systems on multi-hop recall and long-context question answering tasks, which share the same design logic.\n\n### Domain\nThe domain is LLM agent long-term memory and conflict resolution. Papers [1], [3], [4], [5], [6], [7], [8], [9], [11], [12], [14], [15], and [16] all operate in the general application area of LLM agent memory systems, including long-term memory and conflict resolution. While this contribution targets a specific sub-problem (conflict resolution at the memory source), the broader domain of LLM agent memory is well-covered by prior work.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 13  \nVERDICT evaluation = 4  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses resolving conflicting fact versions in LLM agent memory at the source, rather than relying on the language model during reasoning, with the same objective."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 26
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Resolve conflicting fact versions in LLM agent memory at the source rather than relying on the language model during reasoning.**\n\nThe purpose is specifically about pre-resolving memory conflicts *before* retrieval/reasoning, so the LLM doesn't have to handle contradictions. Paper [6] (\"On the Structural Memory of LLM Agents\") investigates memory structures and retrieval methods for LLM agents but doesn't focus on conflict resolution at the source. Paper [15] (\"Rethinking Memory in LLM based Agents\") defines \"Updating\" as a core operation and mentions consolidation, which touches on managing memory state, but doesn't specifically target resolving conflicting fact versions before retrieval. Paper [4] (\"Evaluating Memory Structure in LLM Agents\") mentions \"time-based changes\" in memory benchmarks, which is adjacent but not equivalent. Paper [8] (\"How Memory Management Impacts LLM Agents\") studies memory addition and deletion but not conflict resolution at source. Paper [2] (\"Task Matters: Knowledge Requirements Shape LLM Responses to Context–Memory Conflict\") studies how LLMs *respond* to conflicts during reasoning — the opposite approach (relying on the LLM to handle conflict), not resolving at source. None of the prior papers specifically pursue the objective of resolving conflicting fact versions *at the storage layer* before retrieval to prevent the LLM from encountering contradictions.\n\n**MECHANISM: LWW-KO — last-write-wins deterministic overwrite semantics applied to structured knowledge objects, filtering stale fact versions before retrieval.**\n\nLast-write-wins (LWW) is a well-known conflict resolution primitive in distributed systems. Paper [24] (\"Replication\") surveys optimistic replication algorithms including LWW-style conflict resolution. Paper [26] (\"Conflict-free Replicated Data Types: An Overview\") discusses CRDTs and mentions LWW registers as a standard CRDT primitive. Paper [30] (\"Conflict-free Replicated Data Types\") explicitly describes LWW as a conflict resolution mechanism. Paper [27] (\"Comparing Optimistic Database Replication Techniques\") covers LWW-style approaches. Paper [13] (\"Optimistic Replication with Forward Conflict Resolution in Distributed Real-Time Databases\") covers conflict resolution in distributed databases. The LWW primitive is clearly covered by distributed systems literature (papers [24], [26], [30]). The application to \"structured knowledge objects\" in LLM agent memory is a domain change, but the underlying primitive — deterministic timestamp-based overwrite to eliminate stale versions — is the same mechanism described in [26] and [30].\n\n**EVALUATION: FactConsolidation benchmark at 262K tokens, 22% multi-hop accuracy (+13pp over append-only), p=0.0003, 78% single-hop; exceeds published baselines by +15pp multi-hop and +18pp single-hop.**\n\nThe evaluation uses a named benchmark (FactConsolidation), multi-hop and single-hop accuracy metrics, and statistical significance testing. Paper [4] (\"Evaluating Memory Structure in LLM Agents\") explicitly evaluates memory structures including \"multi-hop recall\" and \"time-based changes\" — the same metric family. Paper [6] (\"On the Structural Memory of LLM Agents\") evaluates memory structures on QA tasks with similar metrics. Paper [12] (\"Evaluating Long-Term Memory for Long-Context Question Answering\") presents systematic evaluation of memory-augmented methods with multi-hop reasoning metrics. However, the FactConsolidation benchmark appears to be a newly constructed benchmark (the contribution itself), and the specific evaluation design targeting conflict resolution in memory is not present in prior work. The benchmark name doesn't appear in any prior paper. The evaluation design — measuring accuracy on a conflict-resolution-specific benchmark — is genuinely new as a protocol, though multi-hop QA evaluation is standard. Given the special rule, the *design* of evaluating memory conflict resolution with a dedicated benchmark at 262K tokens is new, but multi-hop accuracy as a metric family is covered by [4] and [12]. Since the benchmark itself appears newly constructed (FactConsolidation), this edges toward NONE, but the metric semantics (multi-hop accuracy, single-hop accuracy, baseline comparison) are standard and covered.\n\nThe key question: is FactConsolidation a newly constructed benchmark? It appears to be introduced by this contribution. The evaluation design (testing conflict resolution specifically) is new. I'll mark NONE since the benchmark and protocol are newly constructed for this specific purpose.\n\n**DOMAIN: LLM agent long-term memory / conflict resolution.**\n\nPaper [1] (\"Memory Matters\") explicitly addresses long-term memory in LLM agents. Paper [6] (\"On the Structural Memory of LLM Agents\") works directly in LLM agent memory. Paper [15] (\"Rethinking Memory in LLM based Agents\") covers the same area. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 26\nVERDICT evaluation = NONE\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper states the objective of resolving conflicting fact versions in LLM agent memory *at the source* (i.e., before reasoning time) rather than relying on the LM during inference. Paper [15] names \"Consolidation\" and \"Updating\" as operations but does not frame the purpose as pre-resolving conflicts to avoid burdening the LM. Paper [3] does consolidation for temporal cognition, not conflict resolution at the storage layer. No quoted phrase from any paper matches this specific objective.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports results on a \"FactConsolidation benchmark,\" uses a 262K-token evaluation setting, or reports the specific accuracy figures (22% multi-hop, 78% single-hop, +13pp over append-only structured memory, p=0.0003, +15pp/+18pp over published baselines). Paper [4] and [12] evaluate memory structures but on different benchmarks with different metrics and no overlapping numerical claims. The specific benchmark, scale, and numerical results are unique to this contribution."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 17
+      },
+      "mechanism": {
+       "covered_by": 30
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The objective is to resolve conflicting versions of facts within a memory store before they are passed to a reasoning model. This exact purpose is described in the data integration literature. Paper [17] states its focus is \"data conflict resolution,\" which is the same problem class, just applied to a different type of system.\n\n**mechanism**: The core technical primitive is \"last-write-wins\" (LWW), a deterministic rule for resolving state conflicts based on timestamps. This is a canonical mechanism in distributed systems, particularly within the framework of Conflict-free Replicated Data Types (CRDTs), as described in [26] and [30], which are designed to \"guarantee state convergence\" when updates occur concurrently.\n\n**evaluation**: The evaluation design involves measuring single-hop and multi-hop factual recall accuracy on a benchmark. This evaluation *design* is not new. Paper [4] explicitly identifies this as a common approach, stating that \"Most long-term memory benchmarks focus on simple fact retention, multi-hop recall, and time-based changes.\"\n\n**domain**: The application area is long-term memory for LLM agents. This is a well-established domain, explicitly addressed by numerous prior papers. For example, [1] provides a review of \"Long-Term Memory in LLM-Agents,\" and [5] proposes a \"Hierarchical Memory for High-Efficiency Long-Term Reasoning in LLM Agents.\"\n\nVERDICT purpose = 17\nVERDICT mechanism = 30\nVERDICT evaluation = 4\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     9,
+     15
+    ],
+    "evaluation": [
+     9,
+     13,
+     15
+    ],
+    "domain": [
+     1,
+     11
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to isolate the causal effect of overwrite semantics from confounding factors in memory-system performance. None of the prior papers explicitly report or establish this specific empirical relationship. While some papers (e.g., [7], [23]) discuss causal effects in memory systems, they focus on different phenomena, such as neural mechanisms or reconsolidation-dependent memory updating, rather than the causal role of overwrite semantics in system performance. No prior paper isolates this relationship.\n\n### Mechanism\nThe mechanism involves a controlled three-condition experiment separating overwrite semantics from structured extraction and retrieval quality on FactConsolidation. Papers like [7] and [9] explore controlled experiments in memory systems, but their focus is on neurocognitive processes or recognition memory, not on overwrite semantics or structured extraction/retrieval quality. Similarly, [13], [14], and [17] discuss multi-hop reasoning experiments, but these are unrelated to the specific mechanism of isolating overwrite semantics. No prior paper employs this experimental design for the stated mechanism.\n\n### Evaluation\nThe evaluation shows that the 13pp multi-hop improvement is attributable to overwrite semantics rather than structured extraction, with no single-hop trade-off. Papers such as [13], [14], and [17] use multi-hop reasoning benchmarks and metrics, which match the evaluation design at the level of benchmark family and metric semantics. Although the specific claim validated here (overwrite semantics' contribution) is new, the evaluation design itself — attributing performance improvements to specific factors using multi-hop reasoning metrics — is covered by these prior works.\n\n### Domain\nThe domain is experimental methodology for memory systems. Papers like [1], [2], [3], [5], and [6] all address memory systems broadly, including their performance, mechanisms, and extensions. While the specific focus on overwrite semantics is new, the general application area of memory systems is well-covered by prior work.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 13  \nVERDICT domain = 1  ",
+      "stage2": "- **FACET: purpose** | **FINAL: NONE** | reason: No prior paper isolates the causal effect of overwrite semantics from confounding factors in memory-system performance, even under different terminology or framing.  \n- **FACET: mechanism** | **FINAL: NONE** | reason: No prior paper describes a controlled three-condition experiment separating overwrite semantics from structured extraction and retrieval quality on FactConsolidation, even with alternative vocabulary or framing.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 15
+      },
+      "evaluation": {
+       "covered_by": 15
+      },
+      "domain": {
+       "covered_by": 11
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**PURPOSE: Isolate the causal effect of overwrite semantics from confounding factors in memory-system performance.**\n\nThe purpose is to establish a causal relationship between a specific mechanism (overwrite semantics) and performance outcomes in a memory system, isolating it from confounds. Paper [7] is about \"identifying causal subsequent memory effects\" — isolating causal neural signals from correlational ones in memory encoding. However, the specific relationship being tested (overwrite semantics → multi-hop QA improvement) is entirely different from neuroimaging SMEs. No prior paper establishes or reports the same empirical relationship (overwrite semantics causally driving multi-hop reasoning improvement). The thematic similarity to [7] is about causal isolation methodology, but the variables and direction of effect are completely different. None of the knowledge editing papers ([11],[12],[15],[18],[19],[26]) isolate overwrite semantics as a causal variable. This purpose appears uncovered.\n\n**MECHANISM: A controlled three-condition experiment separating overwrite semantics from structured extraction and retrieval quality.**\n\nThe mechanism is a controlled ablation/condition-separation experiment. Paper [7] uses causal manipulation to isolate memory effects. Papers [15] and [18] run ablation experiments on knowledge editing components. However, the specific design of a three-condition experiment separating these particular variables (overwrite semantics vs. structured extraction vs. retrieval quality) on a FactConsolidation benchmark is a controlled ablation design — a standard experimental primitive. Per the finding-type rules, the mechanism (analysis method) is judged at design level. Controlled multi-condition ablation experiments appear in [15] (\"we hypothesize that the residual single-hop knowledge after editing causes...\") and [18] (KELE ablation studies). This is a standard controlled ablation design.\n\n**EVALUATION: Shows 13pp multi-hop improvement attributable to overwrite semantics, no single-hop trade-off.**\n\nThe evaluation design involves measuring multi-hop vs. single-hop performance metrics in knowledge editing/QA settings. Papers [15] and [18] both evaluate multi-hop reasoning improvements in knowledge editing with single-hop vs. multi-hop breakdowns. Paper [19] also evaluates MHQA with consistency metrics. The FactConsolidation benchmark appears to be a newly constructed benchmark specific to this contribution, and the specific 13pp claim is novel. However, the evaluation design (multi-hop vs. single-hop accuracy comparison in knowledge editing) is used in [15] and [18].\n\n**DOMAIN: Experimental methodology for memory systems (in the context of LLM knowledge editing/QA).**\n\nThe domain is LLM knowledge editing and multi-hop QA, which is clearly covered by papers [11], [12], [15], [18], [19], [20], and others.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 15\nVERDICT evaluation = 15\nVERDICT domain = 11",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the objective of isolating the causal effect of overwrite semantics from confounding factors in memory-system performance. The closest candidates (e.g., [1] on memory system evaluation, [5] on cache coherence) address performance analysis of memory systems but do not attempt to isolate overwrite semantics as a causal variable distinct from confounds. No paper uses equivalent terminology or pursues the same empirical objective under a different framing."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe purpose is to \"isolate the causal effect\" of a specific component (\"overwrite semantics\") from confounding factors in a memory system's performance. This objective of causal attribution and disentangling components is covered by prior work. For example, [7] discusses the challenge of \"Identifying causal subsequent memory effects\" and determining if neural activity is \"causally related to future memory performance\" rather than merely associated. Similarly, [9] aims to determine if subcomponents of recollection are \"dissociable\" and to \"understand the relative contributions\" of different memory processes, which is the same class of objective.\n\n**MECHANISM**\nThe mechanism is a \"controlled three-condition experiment\" designed to separate the effects of different variables. This is a standard experimental design primitive used to isolate causal factors. This is covered by [9], which uses \"three experiments\" with different instructions to explore and dissociate the \"relative contributions of control and source memory,\" representing the same underlying mechanism of a controlled, multi-condition experiment to separate variables.\n\n**EVALUATION**\nThe evaluation design involves using a controlled experiment to attribute a performance improvement on a multi-hop task to a specific component, while also checking for trade-offs (no single-hop degradation). This design is a composite of existing practices. The core design of using a controlled experiment to attribute performance differences to specific components is covered by [9], which uses multiple experiments to \"understand the relative contributions\" of different memory processes. The practice of checking for negative side-effects or trade-offs is a standard evaluation design in related fields, such as knowledge editing, where papers like [11] evaluate edits by their ability to \"update facts precisely while preserving the model's overall capabilities.\"\n\n**DOMAIN**\nThe domain is \"Experimental methodology for memory systems.\" This general application area is extensively covered by the prior work. For instance, [1] is explicitly titled \"Evaluation of memory system extensions,\" and many other papers, such as [3], [5], and [6], are also fundamentally about the analysis, design, and behavior of memory systems.\n\nVERDICT purpose = 7\nVERDICT mechanism = 9\nVERDICT evaluation = 9\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     4,
+     7
+    ],
+    "evaluation": [
+     7
+    ],
+    "domain": [
+     1,
+     2,
+     3,
+     18,
+     20
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 22
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        2,
+        3,
+        18,
+        20
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to characterize the error mode that overwrite semantics fixes in append-only memory baselines. No prior paper explicitly characterizes this specific error mode in append-only memory systems. Papers [4], [5], [8], [12], and [25] discuss outdated facts in knowledge bases or temporal misalignment, but they focus on detecting or mitigating outdated facts rather than analyzing error modes in append-only memory systems. Paper [22] mentions overwrite semantics in distributed systems but does not characterize error modes related to append-only memory baselines. Thus, no prior paper establishes the same empirical relationship.\n\n### Mechanism\nThe contribution performs error analysis by categorizing baseline failures into stale-answer errors and tracing LWW-KO's improvement to their resolution. Paper [22] discusses overwrite semantics in distributed systems but does not perform error analysis categorizing failures into stale-answer errors or trace improvements to their resolution. Papers [4], [5], [8], and [12] address outdated facts but do not analyze errors in append-only memory systems or trace improvements to overwrite semantics. No prior paper uses the same mechanism.\n\n### Evaluation\nThe evaluation quantifies baseline errors (33% are stale-answer errors) and attributes 73% of LWW-KO's improvement to resolving these errors. Papers [4], [5], [8], and [12] evaluate outdated fact detection or mitigation but do not use the same evaluation design to quantify error modes in append-only memory systems. Paper [22] discusses overwrite semantics but does not quantify error resolution in the same way. Thus, the evaluation design is not covered.\n\n### Domain\nThe contribution operates in the domain of error analysis of LLM memory systems. Papers [1], [2], [3], [18], and [20] address LLM memory systems, including their mechanisms, retrieval, and reasoning. While these papers do not focus on error analysis of overwrite semantics, they operate in the same general application area of LLM memory systems. Therefore, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [1, 2, 3, 18, 20]  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 22 | reason: Paper [22] explicitly addresses overwrite semantics in parallel systems and characterizes error modes related to stale reads and non-atomic updates, aligning with the empirical relationship described. Quote: \"modern computing systems require...stale reads.\"\n\nFACET: mechanism | FINAL: COVERED-BY 4 | reason: Paper [4] categorizes outdated facts in knowledge bases and their resolution, which conceptually aligns with stale-answer errors and their resolution in LWW-KO. Quote: \"detect outdated facts in KBs...to keep KBs up-to-date.\"\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper provides the same quantitative breakdown (33% baseline errors as stale-answer errors, 73% improvement due to resolution) or equivalent evaluation claim."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Characterize the error mode that overwrite semantics fixes in append-only memory baselines.**\n\nThe purpose is to identify and characterize a specific failure mode (stale-answer errors) in append-only LLM memory systems, and trace how overwrite (LWW) semantics resolves it. I need a prior paper that establishes the same empirical relationship: that append-only memory produces stale-answer errors, and overwrite semantics fixes them. Paper [3] surveys LLM memory mechanisms including write/update paths, but doesn't characterize this specific error mode. Paper [22] addresses overwrite semantics in parallel/distributed systems but not LLM memory error modes. No prior paper reports the same relationship between append-only memory, stale-answer errors, and LWW resolution in LLM memory systems.\n\n**MECHANISM: Error analysis categorizing baseline failures into stale-answer errors and tracing LWW-KO's improvement to their resolution.**\n\nThe mechanism is a controlled error categorization/attribution analysis — categorizing errors by type and attributing performance gains to resolution of specific error categories. This is a standard error analysis protocol (categorize errors, attribute improvement). Paper [7] introduces \"knowledge corpus error\" and analyzes why certain QA approaches fail, categorizing error types. Paper [18] analyzes LLM failures by categorizing them (hallucination vs. submerged knowledge). However, as a finding-type contribution, the mechanism (standard error categorization/attribution analysis) is a generic analysis design that appears broadly. Paper [7] specifically categorizes knowledge corpus errors in QA and attributes performance differences to error type resolution — this is substantively the same analytical design.\n\n**EVALUATION: 33% of baseline errors are stale-answer errors, and LWW-KO's resolution of these accounts for 73% of its improvement.**\n\nThis is a specific quantitative finding from the error analysis. The evaluation design is a percentage-breakdown of error categories plus attribution of improvement to specific error type resolution. This is a standard error attribution/breakdown design. Paper [7] uses error categorization with attribution of QA performance differences to specific error types. Paper [18] uses token-level analysis to attribute failures to specific causes. These use the same evaluation design (categorize errors, measure proportion, attribute improvement).\n\n**DOMAIN: Error analysis of LLM memory systems.**\n\nThe domain is LLM memory systems. Papers [1], [2], [3], and [20] all work in LLM memory systems. Paper [3] explicitly covers \"Memory in Large Language Models\" including mechanisms, evaluation, and write/update semantics. Paper [1] addresses long-term and short-term memory architecture for LLMs. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 7\nVERDICT evaluation = 7\nVERDICT domain = 3",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper characterizes the specific error mode that overwrite semantics fixes in append-only memory baselines — i.e., the failure pattern arising from append-only accumulation that overwrite semantics resolves. Paper [22] discusses overwrite semantics in parallel/distributed fixed-point computation, not memory system error modes. No other paper addresses this objective even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to establish a specific empirical finding: that append-only memory baselines produce \"stale-answer errors\" and that overwrite semantics fixes this specific error mode. While prior work discusses the general problem of stale information ([9]) and outdated facts in LLMs ([12]), none appear to specifically characterize this error mode as a consequence of an append-only architecture and demonstrate its resolution via overwrites.\n\n**mechanism**: The mechanism is an error analysis that categorizes a baseline's failures and attributes an improved system's performance gain to the resolution of a specific, newly-defined error category. This analytical design is covered by [7], which \"introduces the concept of knowledge corpus error\" to explain \"why generated passages can be more effective than retrieved ones,\" thus using a defined error category to explain a performance difference between two systems.\n\n**evaluation**: The evaluation design is the quantitative execution of the mechanism: measuring the prevalence of a specific error type and attributing a percentage of an overall improvement to its resolution. This design is covered by [7], which must necessarily quantify the impact of its proposed \"knowledge corpus error\" to substantiate its claim, thereby matching the design of quantifying an error's impact to explain a performance delta.\n\n**domain**: The domain is the error analysis of LLM memory systems. This general application area is covered by several papers, including [1] on \"long-term and short-term memory architecture\" for LLMs, [2] on \"Memory systems... in Large Language Model (LLM) agents\", and [3] which is a survey on \"Memory in Large Language Models\".\n\nVERDICT purpose = NONE\nVERDICT mechanism = [7]\nVERDICT evaluation = [7]\nVERDICT domain = [1]",
+      "stage2": "FACET: purpose: Characterize the error mode that overwrite semantics fixes in append-only memory baselines. | FINAL: NONE | reason: No prior paper has the objective of characterizing the specific failure modes of append-only memory systems for which overwrite semantics is the direct solution. While papers discuss related problems like outdated facts ([4], [5], [8], [12]), they do not frame this as an error mode of the append-only architecture itself, nor do they propose or analyze overwrite semantics as the fix. Paper [22] discusses overwrite semantics, but its purpose is to prove convergence for parallel algorithms, not to characterize an error mode in a baseline system."
+     }
+    }
+   }
+  }
+ ]
+}

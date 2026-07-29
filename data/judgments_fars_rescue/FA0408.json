@@ -1,0 +1,306 @@
+{
+ "paper_id": "FA0408",
+ "title": "Poisoning LLM-Induced Rule Repositories via Indirect Prompt Injection",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     7,
+     9
+    ],
+    "mechanism": [
+     7,
+     21
+    ],
+    "evaluation": [
+     17
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to demonstrate the existence of a poisoning attack surface during the induction phase of LLM-based log parsing. None of the prior papers explicitly establish this specific empirical relationship or attack surface. While papers like [7], [9], [11], [21], and [30] discuss vulnerabilities in in-context learning or backdoor attacks, they do not focus on the induction phase of LLM-based log parsing or demonstrate poisoning attacks in this specific context. Similarly, papers like [8] and [20] explore adversarial attacks on log parsers but do not address the induction phase of LLM-based log parsing.\n\n### Mechanism\nThe contribution's mechanism involves injecting indirect prompt injection payloads into induction examples. Papers like [7], [9], [11], [21], and [30] discuss poisoning attacks in the context of in-context learning, where malicious examples are injected to manipulate LLM behavior. These mechanisms are substantively equivalent to the described mechanism, as they involve poisoning the input examples to alter the model's behavior during inference. The specific focus on induction examples in log parsing does not break equivalence, as the underlying primitive (poisoning via example injection) remains the same.\n\n### Evaluation\nThe evaluation design involves testing the attack across three Loghub datasets and four poisoning budgets, measuring parsing accuracy drops. Papers like [17] and [13] use Loghub datasets for benchmarking log parsing techniques, and papers like [7], [9], [21], and [30] evaluate poisoning attacks by measuring performance degradation under varying attack budgets. The evaluation design (benchmarking parsing accuracy under poisoning conditions) is substantively equivalent to prior work, even though the specific datasets and metrics differ.\n\n### Domain\nThe contribution operates in the domain of LLM-based log parsing. Papers [1], [2], [3], [4], [5], [13], and [17] all address LLM-based log parsing as an application area. While this contribution targets a specific sub-problem (poisoning attacks during induction), the general domain of LLM-based log parsing is well-covered by prior work.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 7  \nVERDICT evaluation = 17  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 7 | reason: Paper [7] explicitly discusses \"poisoning a few ICL demonstrations\" to manipulate LLM behavior, which aligns with the objective of proving the existence of a poisoning attack surface in the induction phase of LLM log parsing. Quoted phrase: \"adversaries can manipulate LLM behaviors by simply poisoning a few ICL demonstrations.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 21
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: 证明 LLM 日志解析的 induction 阶段存在投毒攻击面**\n\nThe purpose is to demonstrate that the induction (in-context example) stage of LLM-based log parsing is vulnerable to poisoning attacks. Paper [8] (LogBug) takes the first step to reveal security vulnerabilities of log parsers via adversarial attacks, but targets anomaly detection evasion rather than poisoning the induction/ICL demonstration stage of an LLM-based parser. Papers [9]/[11]/[21] address poisoning ICL demonstrations in LLMs for NLP tasks, but not log parsing specifically. Paper [20] examines poisoning attacks on ML models for firewall log classification, not LLM-based log parsing. No prior paper specifically targets the purpose of demonstrating a poisoning attack surface in the induction/demonstration stage of LLM-based log parsing — this is a distinct combination of ICL poisoning + log parsing security that none of the prior papers address at the problem-class level.\n\n**MECHANISM: 间接 prompt injection payload 注入 induction 样例**\n\nThe mechanism is injecting indirect prompt injection payloads into ICL demonstration examples to poison LLM behavior. Papers [9]/[11]/[21] poison ICL demonstrations to manipulate LLM outputs — paper [21] (ICLPoison) explicitly introduces \"data poisoning for in-context learning\" by manipulating example data. Paper [23] (AgentPoison) poisons memory/knowledge bases used by LLM agents. Paper [30] covers backdoor attacks for ICL. The core primitive — injecting malicious content into ICL demonstrations to alter LLM behavior — is substantively equivalent to what papers [9], [11], [21], and [30] describe, even though the application domain (log parsing) differs. Paper [6] covers taxonomy of prompt injections including indirect injection. The mechanism of poisoning ICL examples via injected payloads is covered.\n\n**EVALUATION: 3 个 Loghub 数据集 × 4 个投毒预算,解析准确率最高降 15.1pp**\n\nThe evaluation uses Loghub benchmark datasets (a named benchmark family used in log parsing) with accuracy metrics under varying poisoning budgets. Papers [13] and [17] explicitly use Loghub datasets for log parsing evaluation with accuracy metrics. The design of evaluating on Loghub with parsing accuracy is covered by [13]/[17]. The poisoning budget sweep is a standard sensitivity/ablation design. The combination of Loghub + accuracy metric is a covered evaluation design.\n\n**DOMAIN: LLM-based log parsing**\n\nPapers [1], [2], [3], [4], [5] all work in LLM-based log parsing. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 21\nVERDICT evaluation = 17\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper demonstrates or claims that the induction (cache/demonstration-building) stage of LLM-based log parsing constitutes a poisoning attack surface. [8] (LogBug) attacks log parsers for anomaly detection evasion but not LLM-based parsers and not the induction/cache stage. [21] addresses ICL data poisoning for general NLP tasks but not log parsing's induction stage specifically. No paper combines these two elements under any terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: COVERED by [7, 9, 11, 21, 30]. The contribution's purpose is to demonstrate a poisoning attack surface in the induction phase of LLM-based log parsing, which is an instance of the broader purpose of demonstrating that in-context learning (ICL) is vulnerable to poisoning attacks, as established by prior work like [9] which shows \"an attacker can manipulate the behavior of large language models by poisoning the demonstration context\".\n\nmechanism: COVERED by [7, 9, 11, 21, 30]. The mechanism of injecting a payload into induction/demonstration examples to manipulate model behavior is the core mechanism of in-context learning backdoor/poisoning attacks, as described in papers like [7] where \"adversaries can manipulate LLM behaviors by simply poisoning a few ICL demonstrations\".\n\nevaluation: COVERED by [17, 22]. The evaluation design combines two standard elements: using a standard benchmark family for the domain (Loghub, established as standard by [17]: \"Loghub serves as a commonly used dataset for benchmarking log parsers\") and using a standard attack evaluation protocol (varying poison budget and measuring metric degradation, a design whose components are discussed in [22]).\n\ndomain: COVERED by [1, 2, 3, 4, 5]. Multiple prior papers work in the exact same application area, for example [1] \"LILAC: Log Parsing using LLMs\" and [5] \"System Log Parsing with Large Language Models: A Review\".\n\nVERDICT purpose = 9\nVERDICT mechanism = 7\nVERDICT evaluation = 17\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     10,
+     18
+    ],
+    "mechanism": [
+     10,
+     18,
+     19
+    ],
+    "evaluation": [
+     10,
+     18
+    ],
+    "domain": [
+     2,
+     14,
+     18
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 19
+      },
+      "evaluation": {
+       "covered_by": 18
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to determine the most effective payload format for prompt injection attacks. None of the prior papers explicitly report or establish the same empirical relationship (i.e., comparing the effectiveness of different payload formats). While several papers discuss prompt injection attacks (e.g., [2], [14], [18], [20]), their focus is on attack mechanisms, defenses, or benchmarks, not on systematically identifying the most effective payload format. Therefore, no prior paper covers this purpose.\n\n### Mechanism\nThe mechanism involves comparing three payload formats: instruction-style HTML comments, JSON, and delimiters. While several papers discuss payload injection or prompt injection attacks ([2], [14], [18], [20]), none of them explicitly compare or analyze the effectiveness of different payload formats. The mechanism of systematically comparing payload formats is not present in any prior work.\n\n### Evaluation\nThe evaluation design involves demonstrating that instruction-style payloads are significantly stronger and that their effectiveness decreases monotonically with budget. This evaluation design is not novel. For example, [18] introduces a framework for formalizing and benchmarking prompt injection attacks, which includes systematic evaluations of attack effectiveness. Similarly, [20] introduces a benchmark for indirect prompt injection attacks, which involves evaluating attack success rates under different conditions. These prior works use comparable evaluation designs (e.g., systematic benchmarking of attack effectiveness), even if the specific payload formats or metrics differ.\n\n### Domain\nThe domain is prompt injection attacks on large language models (LLMs). This domain is extensively covered in prior work, including [2], [14], [18], [20], and others. While this contribution may target specific payload formats, the general application area of prompt injection attacks on LLMs is well-established.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 18  \nVERDICT domain = 2  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses determining the most effective payload format for injection attacks, even under different terminology or framing.  \nFACET: mechanism | FINAL: COVERED-BY 19 | reason: Paper [19] discusses delimiter use as a defense strategy, quoting: \"Traditional defense strategies, including output and input filtering, as well as delimiter use, have proven inadequate.\" This aligns with the comparison of payload formats involving delimiters."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 18
+      },
+      "mechanism": {
+       "covered_by": 18
+      },
+      "evaluation": {
+       "covered_by": 18
+      },
+      "domain": {
+       "covered_by": 18
+      },
+      "single_paper_covers_all": 18
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**Purpose: 确定最有效的 payload 格式 (Determine the most effective payload format)**\n\nThis is about empirically establishing which format of injected payload (instruction-style HTML comment vs. JSON vs. delimiter) is most effective for prompt injection attacks. Paper [18] \"Formalizing and Benchmarking Prompt Injection Attacks and Defenses\" explicitly benchmarks different attack formats/strategies to determine which are most effective. Paper [26] \"A test suite of prompt injection attacks for LLM-based machine translation\" also compares different prompt injection attack formulations. Paper [20] similarly benchmarks indirect prompt injection attacks. These papers share the same objective: determining which attack formulation/format is most effective.\n\n**Mechanism: 三种 payload 格式对比 (Comparison of three payload formats: instruction-style HTML comment / JSON / delimiter)**\n\nThe mechanism is a controlled comparison of three specific payload formatting styles. Paper [18] explicitly proposes a framework comparing different prompt injection attack formats and evaluates them systematically. Paper [26] also compares different PIA (Prompt Injection Attack) formats including structural variations. Paper [20] compares different injection strategies. The underlying primitive — \"compare multiple payload/attack format variants to find the strongest\" — is present in these papers.\n\n**Evaluation: instruction-style 显著更强，降幅随预算单调 (instruction-style significantly stronger, reduction monotone with budget)**\n\nThe evaluation design here is a comparative benchmark across attack format variants measuring attack success rate, with a monotone relationship to a budget parameter. Paper [18] uses attack success rate comparisons across different attack strategies. Paper [21] uses adaptive attack success rate comparisons across defenses. The design of \"compare attack variants by success rate metric\" is a standard evaluation design present in [18] and [20]. The monotone-with-budget aspect is a sensitivity/ablation analysis, which is a generic experimental shape, but the named metric (attack success rate across format variants) matches [18] and [20].\n\n**Domain: 同上 (Same as above — prompt injection attacks on LLMs)**\n\nPapers [18], [20], [21], [25], [26] all operate in the domain of prompt injection attacks on LLM-integrated applications, which is exactly the same application area.\n\nVERDICT purpose = 18\nVERDICT mechanism = 18\nVERDICT evaluation = 18\nVERDICT domain = 18",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 10
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 14
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to establish a new empirical finding: determining the most effective format for a malicious payload in prompt injection attacks. This is covered only if a prior paper reports the same relationship. No prior paper listed compares the effectiveness of different payload formats (e.g., HTML, JSON, delimiters) for attacks, so this specific finding is not covered.\n\n**mechanism**: The mechanism is a comparative study of different input formats (HTML comment, JSON, delimiter) to measure their effectiveness for a task. This is covered by paper [10], which \"explores various input representations, including sequences of tokens and structured formats such as HTML, LaTeX, and P...\". Both use the same primitive of systematically varying the input's structural format to test for performance differences.\n\n**evaluation**: The evaluation design involves comparing the success rates of attacks using different payload formats. This design is covered by paper [10], which also compares the performance of an LLM given \"various input representations\" to determine which is most effective for its task. The design of \"compare efficacy of different structured input formats\" is the same, even though the task (attack vs. generation) differs.\n\n**domain**: The domain is prompt injection attacks on large language models. This general application area is extensively covered by numerous prior papers. For example, paper [14] is a tutorial on \"Direct & Indirect Prompt Injection Attacks on LLM\", and paper [18] aims to \"Formalizing and Benchmarking Prompt Injection Attacks and Defenses\", both clearly operating in the same domain.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 10\nVERDICT evaluation = 10\nVERDICT domain = 14",
+      "stage2": "FACET: purpose: 确定最有效的 payload 格式 | FINAL: COVERED-BY [10] | reason: The paper's purpose is to compare input formats for a data-to-text task: \"this study explores various input representations, including sequences of tokens and structured formats such as HTML, LaTeX, and P...\""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     6,
+     11
+    ],
+    "mechanism": [
+     5,
+     12,
+     19
+    ],
+    "evaluation": [
+     5,
+     14,
+     26
+    ],
+    "domain": [
+     14
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 5
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 14
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is \"防御 induction 投毒\" (defense against induction poisoning). Several prior papers address defenses against poisoning attacks, but none specifically target induction poisoning. For example, [3], [6], [7], [8], and [18] focus on reward poisoning, data poisoning, or clean-label poisoning in machine learning, but induction poisoning is not explicitly covered. Therefore, no prior paper establishes the same objective.\n\n### Mechanism\nThe contribution's mechanism is \"canary-based admission control.\" Papers [5], [10], and [12] discuss canary tokens or files as deception-based mechanisms for detecting unauthorized access or breaches. Specifically, [5] proposes a Canary Token Fabrication and Identification system, and [12] emphasizes the strategic use of canary tokens in cybersecurity defense. These mechanisms are substantively equivalent to the contribution's use of canary-based admission control, as they rely on lightweight decoy artifacts to detect adversarial activity.\n\n### Evaluation\nThe evaluation reports detection rates (总检出率 42.6%, Linux 61.1% 恢复, BGL 全漏检). Papers [5], [12], and [19] use similar evaluation designs for intrusion detection systems, including metrics like detection rates and recovery rates. For example, [5] validates its canary token system by capturing unauthorized access in real time, and [19] evaluates honeypot-based intrusion detection systems using detection metrics. These prior papers employ equivalent evaluation designs, even if applied to different datasets or systems.\n\n### Domain\nThe domain is cybersecurity, specifically defending against poisoning attacks in system logs or runtime environments. Papers [6], [7], [14], [16], [19], and [26] all operate in the same general application area of cybersecurity and anomaly detection in system logs or runtime environments. For instance, [14] investigates black-box attacks on log-based anomaly detection, and [26] compares log-based anomaly detection methods in real-world systems. While the specific focus of the contribution may differ, the general domain is covered.\n\n### Verdicts\nVERDICT purpose = NONE  \nVERDICT mechanism = 5  \nVERDICT evaluation = 5  \nVERDICT domain = 14  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses the objective of 防御 induction 投毒 (defense against induction poisoning) under the same or equivalent terminology, framing, or domain vocabulary."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 11
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 14
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Defend against induction poisoning attacks**\n\nThe contribution's purpose is to defend against a specific type of poisoning attack called \"induction poisoning\" (likely in the context of log-based anomaly detection systems). Papers [3], [6], [7], [8], [18] all address defense against poisoning attacks in ML systems. Paper [11] specifically addresses \"training attacks\" on anomaly detection systems (IDS) where \"injecting small portions of abnormal data\" causes harmful data to pass unnoticed — this is essentially induction poisoning in IDS. Paper [6] proposes \"a defense mechanism to minimize the degradation caused by the poisoned training data on a learner's model in online learning.\" The purpose of defending against poisoning in anomaly detection/IDS is covered by [11] and [6].\n\n**MECHANISM: Canary-based admission control**\n\nThe mechanism uses \"canary\" artifacts as a form of admission control — inserting known sentinel/decoy items to detect when poisoned data is being admitted. Papers [5] and [12] explicitly discuss canary tokens as deception-based detection mechanisms. Paper [10] discusses \"canary files\" to detect data loss. Paper [9] discusses \"admission control\" for Sybil resilience. However, the specific combination of canary-based admission control for filtering poisoned training data is most directly addressed by [5] and [12] (canary tokens for detection) and [9] (admission control). Paper [12] states canary tokens are \"silent tripwires in digital environments\" for \"early detection of breaches.\" The primitive of using canary/decoy artifacts to detect malicious activity is covered by [5] and [12].\n\n**EVALUATION: Detection rate 42.6%, Linux 61.1% recovery, BGL full miss**\n\nThe evaluation uses specific log datasets (Linux, BGL) which are standard benchmarks in log-based anomaly detection. Papers [22], [26], and [14] use log-based anomaly detection benchmarks including BGL and similar datasets. Paper [26] is \"A Comparative Study of Log-Based Anomaly Detection Methods in Real-World System Logs\" and paper [22] uses log datasets for anomaly detection. Paper [14] evaluates \"black-box attacks on log-based anomaly detection\" using various log datasets. The evaluation design (measuring detection/recovery rates on standard log anomaly detection benchmarks like BGL and Linux) is covered by [14] and [26].\n\n**DOMAIN: Log-based anomaly detection / IDS**\n\nThe domain is log-based anomaly detection systems (specifically using Linux and BGL logs). Papers [14], [22], [26], [11] all work in log-based anomaly detection. Paper [14] explicitly studies \"attacks on log-based anomaly detection.\" Paper [22] is \"Log-based Anomaly Detection Without Log Parsing.\" This domain is clearly covered.\n\nVERDICT purpose = 11\nVERDICT mechanism = 12\nVERDICT evaluation = 14\nVERDICT domain = 14",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 19
+      },
+      "evaluation": {
+       "covered_by": 26
+      },
+      "domain": {
+       "covered_by": 14
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: COVERED. The objective of defending against data poisoning attacks is explicitly stated in multiple prior works. For example, paper [6] proposes a \"defense mechanism to minimize the degradation caused by the poisoned training data,\" and paper [7] proposes an \"Attack-Agnostic Defense against Data Poisoning Attacks.\"\n\nmechanism: COVERED. The primitive of using a decoy to trigger a defensive action is present in prior work. Paper [19] describes a \"Honeypot based intrusion detection system\" designed to \"detect, deflect or counteract\" unauthorized use, where the honeypot is a decoy (a large-scale canary) and \"counteract\" is the control action.\n\nevaluation: COVERED. The evaluation design—measuring performance metrics like detection rate on standard, named benchmarks from the log analysis domain—is the standard protocol for the field. Paper [26], a \"Comparative Study of Log-Based Anomaly Detection Methods,\" necessarily employs this same evaluation design to compare different methods.\n\ndomain: COVERED. The application area of log-based anomaly detection is explicitly addressed in prior work. Paper [14] focuses on \"Black-box Attacks to Log-based Anomaly Detection,\" and paper [22] is titled \"Log-based Anomaly Detection Without Log Parsing.\"\n\nVERDICT purpose = 6\nVERDICT mechanism = 19\nVERDICT evaluation = 26\nVERDICT domain = 14",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

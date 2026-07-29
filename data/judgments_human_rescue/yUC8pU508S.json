@@ -1,0 +1,326 @@
+{
+ "paper_id": "yUC8pU508S",
+ "title": "APE: Faster and Longer Context-Augmented Generation via Adaptive Parallel Encoding",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     7,
+     8,
+     19
+    ],
+    "evaluation": [
+     7,
+     18
+    ],
+    "domain": [
+     1,
+     18
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 20
+      },
+      "mechanism": {
+       "covered_by": [
+        8,
+        19
+       ]
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to explain why parallel encoding of context (independent KV budgets with cross-context positional reuse) significantly degrades performance and to identify sources of alignment/mismatch that can be improved. None of the prior papers explicitly address this purpose. While some papers (e.g., [7], [8], [18], [20]) discuss attention sinks, parallel encoding, or context window limitations, they do not aim to explain the performance degradation of parallel encoding or identify specific alignment/mismatch sources. These papers focus on different objectives, such as improving efficiency ([7], [20]) or understanding attention sinks ([8], [19]), but do not share the same explanatory purpose.\n\n### Mechanism\nThe mechanism involves systematically analyzing the distributional properties of attention weights in parallel vs. sequential encoding, focusing on KV state alignment and residual mismatches (e.g., initial token distribution anomalies, attention sink effects, proximal position anomalies). Paper [8] discusses attention sinks and their impact on attention distributions, which overlaps with part of the mechanism. Paper [19] also explores attention sinks and their spectral properties, which partially aligns with the analysis of KV state alignment. However, no prior paper systematically analyzes the comparative distributional properties of parallel vs. sequential encoding or identifies residual mismatches across samples/positions. Thus, the mechanism is partially covered but not fully equivalent.\n\n### Evaluation\nThe evaluation involves qualitative analysis (Figures 3/4/5) showing that most KV directions/magnitudes naturally align due to attention sinks, with residual mismatches concentrated in initial and proximal positions. It also quantifies performance degradation: parallel encoding drops 4.9% (RAG, even with 2-10x more context) and 49.0% (ICL) compared to sequential encoding. Paper [18] evaluates parallel context windows for in-context learning (ICL) but does not include qualitative analysis of KV alignment/mismatch or attention sink effects. Paper [8] qualitatively analyzes attention sinks but does not evaluate parallel vs. sequential encoding. No prior paper uses the same evaluation design (qualitative KV alignment analysis + quantitative performance comparison across RAG/ICL). Thus, the evaluation is uncovered.\n\n### Domain\nThe domain is large language models (LLMs) with context-augmented generation (RAG/ICL) and inference efficiency. Papers [1]-[6], [7], [8], [18], and [20] all operate in the same general domain of LLMs with context augmentation (RAG/ICL) or efficiency improvements. While this contribution targets specific sub-problems (parallel encoding and alignment/mismatch), the domain is well-covered by prior work.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = [8], [19]  \nVERDICT evaluation = NONE  \nVERDICT domain = [1]  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 20 | reason: Paper [20] explicitly introduces \"Context Expansion with Parallel Encoding (CEPE)\" to address the limitations of parallel context encoding, aligning with the same objective of explaining and improving parallel encoding mechanisms.  \nFACET: evaluation | FINAL: COVERED-BY 7 | reason: Paper [7] provides qualitative analysis of attention sinks and their alignment across positions, which conceptually overlaps with the evaluation of alignment and residual mismatches in parallel encoding."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 18
+      },
+      "domain": {
+       "covered_by": 18
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE:**\nThe purpose is to explain *why* parallel encoding of contexts (with independent KV budgets and reused positional encodings) causes significant performance drops, by identifying alignment/mismatch sources. Paper [18] (Parallel Context Windows) introduces PCW and evaluates it, but its purpose is to *propose* the method, not to *diagnose why it underperforms* sequential encoding. Paper [20] (CEPE) similarly proposes parallel context encoding. Neither paper's purpose is to diagnose the failure modes of parallel encoding by analyzing KV alignment/mismatch. No prior paper establishes the same empirical relationship: \"parallel encoding degrades performance because of KV direction/magnitude misalignment at initial tokens, attention sink effects, and proximal position anomalies.\" This specific diagnostic purpose is not covered.\n\n**MECHANISM:**\nThe mechanism is systematic analysis of attention weight distributions comparing parallel vs. sequential encoding, specifically examining KV state alignment (direction and magnitude) across samples/positions, and identifying anomalies at initial tokens, attention sinks, and proximal positions. Paper [7] (Attention Sinks) identifies the attention sink phenomenon (initial tokens receiving disproportionate attention). Paper [19] (Spectral Filters) analyzes attention sinking via spectral decomposition. Paper [16] (Prompt Cache) discusses reusing KV states across prompts. However, none of these papers perform a systematic comparative analysis of KV direction/magnitude alignment between parallel and sequential encoding to diagnose performance gaps. The specific analytical primitive — comparing KV state alignment distributions between two encoding regimes to localize mismatch sources — is not present in any prior paper.\n\n**EVALUATION:**\nThe evaluation involves qualitative analysis (figures showing KV alignment distributions) and quantitative comparison of parallel vs. sequential encoding performance on RAG (−4.9%) and ICL (−49.0%) benchmarks. Paper [18] (PCW) evaluates parallel context windows on ICL benchmarks and compares against sequential baselines — this is the same evaluation design (parallel vs. sequential encoding, ICL benchmarks, performance gap measurement). Paper [20] (CEPE) also evaluates parallel encoding on RAG-style tasks with performance comparisons. The evaluation design (comparing parallel vs. sequential encoding on RAG/ICL benchmarks with accuracy metrics) is covered by [18] and [20].\n\n**DOMAIN:**\nThe domain is LLMs / context-augmented generation (RAG/ICL) / inference efficiency. Papers [1], [3], [4], [5], [6] cover RAG with LLMs. Paper [18] covers ICL with parallel context windows. Paper [20] covers long-context LLM inference with parallel encoding. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 18\nVERDICT domain = 18",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper examines why parallel encoding with independent KV budgets and reused positional indices causes performance degradation by identifying alignment/mismatch sources. Paper [18] (PCW) and [20] (CEPE) use parallel context encoding but do not analyze or explain the degradation mechanism — they propose methods without diagnosing why naive parallel encoding fails in terms of KV alignment or positional mismatch sources.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper systematically analyzes the distributional properties of attention weights under parallel vs. sequential encoding, examines KV state directional and magnitude alignment across samples/positions, or identifies specific anomalies such as initial token distribution irregularities, attention sink effects on parallel encoding, or proximal position anomalies. Papers [7] and [8] discuss attention sinks but not in the context of comparing parallel vs. sequential encoding KV alignment distributions."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "purpose: The contribution's purpose is to establish a specific empirical relationship: that parallel context encoding causes a performance drop, and that this drop is attributable to misalignment of KV states, particularly for initial and proximal tokens. No prior paper establishes or reports this specific causal chain and empirical finding. While other papers analyze attention, none identify this particular failure mode for this specific technique.\n\nmechanism: The mechanism is an analysis of attention weight distributions, specifically the alignment of KV states in direction and magnitude, to identify sources of mismatch between parallel and sequential encoding. This type of diagnostic analysis, where attention patterns are scrutinized to explain a model's behavior, is a standard method. For example, [7] analyzes attention distributions to identify \"attention sinks\" and explain the failure of naive windowed attention, and [12] analyzes attention patterns to identify \"token overfocusing\".\n\nevaluation: The evaluation design consists of two parts: qualitative visualizations of internal model states (KV alignment plots) to support the mechanistic explanation, and quantitative measurement of performance degradation on standard benchmark tasks (RAG and ICL). This combined design—visualizing internals to support a hypothesis and measuring impact on downstream benchmarks—is a standard evaluation protocol. For instance, [7] uses plots of attention scores to demonstrate the attention sink phenomenon and then measures perplexity to show the performance impact.\n\ndomain: The contribution operates in the domain of large language models, specifically focusing on context-augmented generation (RAG/ICL) and inference efficiency. This is a well-established application area covered by numerous prior papers. For example, [1], [2], and [6] all work on RAG; [10] and [13] work on ICL; and [7], [16], and [17] work on LLM inference efficiency and long context.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 7\nVERDICT evaluation = 7\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: The purpose is to diagnose why a specific parallel encoding strategy (independent KV budgets, reused positions) fails and to identify the sources of mismatch. The most relevant prior papers, [18] and [20], propose new methods for parallel context encoding to extend the context window. Their purpose is constructive (proposing a working solution), not diagnostic (analyzing a specific failure mode in detail). No prior paper shares the specific objective of explaining this performance degradation."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     4,
+     13
+    ],
+    "mechanism": [
+     11,
+     14,
+     15,
+     20
+    ],
+    "evaluation": [
+     4,
+     5,
+     13
+    ],
+    "domain": [
+     4,
+     6,
+     13
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 20
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to restore the accuracy of parallel encoding without training the model, achieving fast, long, and accurate CAG. This objective is not explicitly covered by any prior paper. While [4] discusses extending LLMs for long-context processing, its focus is on computational cost and positional encoding generalization rather than restoring accuracy in parallel encoding without training. Similarly, [6] and [20] address parallelization schemes for LLM inference but do not target accuracy restoration in parallel encoding. No prior paper explicitly addresses this purpose.\n\n### Mechanism\nThe mechanism involves Adaptive Parallel Encoding (APE) with three training-free alignment steps: (i) adding a shared prefix to avoid abnormal initial token distribution repetition, (ii) lowering attention temperature to sharpen token distribution focus, and (iii) adding a scaling factor to counteract the LogSumExp magnitude increase in context attention scores. [20] introduces shared prefixes for efficient LLM inference, which aligns with step (i). [14], [16], and [23] discuss temperature scaling for calibration, which aligns with step (ii). [15] and [16] address scaling factors for logits or attention scores, which aligns with step (iii). Thus, the mechanism is covered across these papers.\n\n### Evaluation\nThe evaluation involves ablation studies (Table 4) showing the average improvement from shared prefix, temperature, and scaling factor adjustments. Ablation studies are a generic experimental move, but the specific evaluation design here — measuring accuracy improvements across multiple models and components — aligns with standard ablation setups in prior work. For example, [4], [6], and [20] conduct similar ablation studies to validate their methods. Therefore, the evaluation design is covered.\n\n### Domain\nThe domain is large language models (LLMs) with applications in retrieval-augmented generation (RAG), in-context learning (ICL), and KV cache optimization. This domain is broadly covered by prior papers such as [4], [6], [13], [18], and [20], which address LLMs, RAG, ICL, and KV cache optimization. While the specific sub-problems or datasets may differ, the general application area is the same.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 20  \nVERDICT evaluation = 4  \nVERDICT domain = 4  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 4 | reason: Paper [4] introduces CEPE, which aims to extend context window accuracy without retraining models, aligning with the objective of \"在不训练模型的前提下恢复并行编码的准确率,实现快速、长、准的 CAG\". Quoted phrase: \"CEPE employs a small encoder to process long inputs chunk by chunk, enabling the extension of context window without retraining.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 13
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: 在不训练模型的前提下恢复并行编码的准确率,实现快速、长、准的 CAG**\n\nThe purpose is to recover accuracy lost from parallel context encoding without any model training (training-free alignment for parallel encoding in LLMs). Paper [13] (PCW) introduces parallel context windows for LLMs without further training, addressing the same goal of enabling long-context processing via parallel encoding without retraining. Paper [4] (CEPE) also addresses parallel context encoding for long-context LLMs, though it does involve training a small encoder. Paper [13] is the closest — it explicitly does parallel context windows \"without further training\" for off-the-shelf LLMs. However, the specific purpose of *recovering accuracy degradation* caused by parallel encoding (as opposed to simply introducing parallel encoding) is more specific. Still, [13] pursues the same objective: make parallel encoding work accurately without training. This is substantively equivalent at the problem-class level.\n\n**MECHANISM: APE三步 training-free 对齐 — (i) 共享前缀, (ii) 注意力温度调低, (iii) 缩放因子抵消 LogSumExp 幅度增大**\n\n- Shared prefix to fix anomalous initial token distribution: Paper [13] (PCW) uses position IDs reuse and restricts attention within windows, but does not use a shared prefix to fix initial token anomalies. Paper [20] (Hydragen) handles shared prefixes for batched inference efficiency, not for fixing attention distribution anomalies. No prior paper uses a shared prefix specifically to normalize the initial token attention sink in parallel encoding.\n- Attention temperature reduction to sharpen distribution: Papers [14],[16],[23],[24],[25],[26],[28] all discuss temperature scaling for calibration of classifiers/softmax outputs, but these are post-hoc calibration methods for classification confidence, not attention score sharpening in transformer self-attention for parallel encoding alignment.\n- Scaling factor to counteract LogSumExp magnitude increase from parallel context: This is a specific mathematical correction for the attention score normalization issue in parallel encoding. No prior paper addresses this specific primitive.\n\nThe combination of these three steps as a training-free correction mechanism for parallel encoding accuracy is not found in any prior paper.\n\n**EVALUATION: 消融(Table 4,4模型均值):各组件分别提升 5.19%/0.59%/2.07%**\n\nThis is a component ablation study measuring the contribution of each sub-component (shared prefix, temperature, scaling factor) to overall accuracy. Ablation studies are generic experimental moves. The question is whether any prior paper uses the same ablation design validating the same claim. Paper [13] (PCW) does ablations on its components. However, per the special rule, generic ablation shapes don't count unless they validate the same claim. The specific claim (each of three alignment components contributes to recovering parallel encoding accuracy) is not validated in any prior paper. This is a newly constructed evaluation of a new mechanism — but ablation as a design is generic. Since no prior paper uses this specific ablation protocol on parallel encoding alignment components, and the evaluation design itself (component-wise ablation of training-free alignment steps for parallel encoding) is not found elsewhere, I'll check if any paper uses the same benchmark family. The contribution uses standard QA/RAG benchmarks with accuracy metrics — this design appears in [13] and [4]. The evaluation design (accuracy on standard benchmarks + ablation) is covered by [13].\n\n**DOMAIN: 大语言模型 / RAG/ICL / KV cache**\n\nPapers [13], [4], [6], [8], [18], [20] all work in the domain of large language models with long-context processing, KV cache, and RAG/ICL settings. This domain is clearly covered.\n\nVERDICT purpose = 13\nVERDICT mechanism = NONE\nVERDICT evaluation = 13\nVERDICT domain = 13",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes the specific three-step training-free alignment combining (i) shared prefix to fix anomalous initial token distributions, (ii) attention temperature reduction to sharpen distributions, and (iii) scaling factor to counteract LogSumExp magnitude growth in parallel context encoding. Paper [13] (PCW) does parallel context windows but without these specific corrective mechanisms. Paper [4] (CEPE) uses parallel encoding but requires training. None of the temperature scaling papers (e.g., [14],[23],[26]) address attention score calibration in parallel LLM encoding contexts. No equivalent mechanism found under any alternative terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": [
+        11,
+        14,
+        15
+       ]
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": [
+        4,
+        6
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "purpose: The contribution's purpose is to recover accuracy lost from parallel context encoding in a training-free manner. Prior papers like [4], [6], and [13] introduce methods for parallel encoding to extend context length or accelerate inference, but their stated purpose is to *enable* this capability, not to *fix* a subsequent accuracy degradation. They create the problem setting, but do not share the corrective purpose of the contribution.\n\nmechanism: The mechanism is a three-part training-free intervention: (i) adding a shared prefix, (ii) lowering attention temperature, and (iii) adding a scaling factor. Each of these is a known primitive. [11] uses prefixes to cue a model (\"prefixing language tokens onto the source or target sequence\"). [14] and others use temperature scaling to adjust a softmax distribution (\"learn a single corrective multiplicative factor for inputs to the last softmax layer\"), which is the same primitive as attention temperature. [15] proposes a method to counteract large output scores (\"make output scores (logits) and network weights large\"), which is analogous to the contribution's scaling factor that counteracts the increased magnitude of attention scores.\n\nevaluation: The evaluation design is a standard ablation study, where the three components of the proposed mechanism are individually removed to measure their impact. This is a standard analysis protocol, not a novel evaluation design. For example, [5] proposes a \"repair-filter-use methodology\" and would almost certainly use a similar ablation to validate the contribution of each stage.\n\ndomain: The contribution operates on Large Language Models (LLMs), specifically addressing issues in long-context processing related to RAG, ICL, and the KV cache. This general application area is explicitly addressed by numerous prior papers. For instance, [4] aims to \"extend large language models (LLMs) to process longer inputs\", and [6] works on \"LLM inference... key-value cache (KV-cache)\".\n\nVERDICT purpose = NONE\nVERDICT mechanism = 11, 14, 15\nVERDICT evaluation = 5\nVERDICT domain = 4, 6",
+      "stage2": "FACET: purpose: 在不训练模型的前提下恢复并行编码的准确率,实现快速、长、准的 CAG | FINAL: COVERED-BY [13] | reason: The objective is identical: to process long contexts in existing LLMs without training by chunking the input (parallel encoding) and applying a method to mitigate the resulting accuracy loss. Paper [13] states its method \"alleviates the context window restriction for any off-the-shelf LLM without further training. The key to the approach is to carve a long context into chunks (“windows”)\"."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     4,
+     11,
+     14,
+     18,
+     25
+    ],
+    "mechanism": [
+     3,
+     9,
+     14,
+     15,
+     21
+    ],
+    "evaluation": [
+     3,
+     9,
+     14,
+     15,
+     18
+    ],
+    "domain": [
+     4,
+     11,
+     18
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        4,
+        11,
+        18,
+        25
+       ]
+      },
+      "mechanism": {
+       "covered_by": [
+        3,
+        9,
+        15,
+        21
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        3,
+        9,
+        15,
+        18
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        4,
+        11,
+        18
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to validate the effectiveness and scalability of APE across RAG, ICL, many-shot, and efficiency dimensions. Paper [18] (\"Many-Shot In-Context Learning\") and paper [25] (\"Many-Shot In-Context Learning in Multimodal Foundation Models\") both explore many-shot ICL performance scaling, which aligns with the purpose of validating ICL scalability. Paper [4] (\"Accelerating Inference of Retrieval-Augmented Generation via Sparse Context Selection\") and paper [11] (\"Towards Flexible Context Adaptation For Retrieval Augmented Generation\") address efficiency improvements in RAG systems, which aligns with the purpose of validating efficiency in RAG. Thus, the purpose is covered by these prior works.\n\n### Mechanism\nThe contribution evaluates APE using ChatRAG-Bench, LongBench, CRAG, GSM8K, TriviaQA, MMLU, and multiple models, while also conducting prefilling efficiency tests for 128K long contexts. Paper [15] (\"Long-Context Language Modeling with Parallel Context Encoding\") introduces a parallel encoding mechanism for long-context modeling, which is substantively equivalent to the mechanism of evaluating prefilling efficiency for long contexts. Paper [21] (\"Parallel Context Windows for Large Language Models\") also proposes a method for parallel context processing, which matches the mechanism of evaluating many-shot ICL scalability. Paper [3] (\"CacheBlend\") and paper [9] (\"CORM\") discuss KV cache optimization for prefilling acceleration, which aligns with the mechanism of evaluating prefilling efficiency. Thus, the mechanism is covered by these prior works.\n\n### Evaluation\nThe contribution evaluates APE's performance using metrics like order-preserving encoding retention (98% for RAG, 93% for ICL), improvements over baselines (e.g., LongBench +3.3% over sequential RAG, +5.6% over base), scalability in many-shot contexts, and prefilling efficiency (28x reduction, 4.5x end-to-end speedup). Paper [15] (\"Long-Context Language Modeling with Parallel Context Encoding\") uses LongBench for evaluation, which matches the benchmark family. Paper [18] (\"Many-Shot In-Context Learning\") evaluates many-shot ICL scalability using similar metrics. Paper [3] (\"CacheBlend\") and paper [9] (\"CORM\") evaluate prefilling efficiency using KV cache optimization metrics, which align with the evaluation design. Thus, the evaluation design is covered by these prior works.\n\n### Domain\nThe contribution operates in the domain of large language models (LLMs), specifically focusing on RAG, ICL, and inference efficiency. Paper [4] (\"Accelerating Inference of Retrieval-Augmented Generation via Sparse Context Selection\"), paper [11] (\"Towards Flexible Context Adaptation For Retrieval Augmented Generation\"), and paper [18] (\"Many-Shot In-Context Learning\") all address RAG, ICL, and efficiency improvements in LLMs. These papers operate in the same general application area, even if the specific datasets or sub-problems differ. Thus, the domain is covered by these prior works.\n\n### Verdicts\nVERDICT purpose = 4, 11, 18, 25  \nVERDICT mechanism = 3, 9, 15, 21  \nVERDICT evaluation = 3, 9, 15, 18  \nVERDICT domain = 4, 11, 18  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 14
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: 在 RAG、ICL、many-shot 及效率维度上验证 APE 的有效性与可扩展性**\n\nThe purpose is to demonstrate that a specific method (APE — likely \"Augmented Parallel Encoding\" or similar) retains near-sequential performance while enabling parallel encoding across RAG, ICL, many-shot, and long-context efficiency settings. Paper [21] (PCW) validates parallel context windows for LLMs across ICL and RAG-like settings. Paper [14] (CEPE) validates parallel context encoding for long-context LLMs across RAG and ICL. Paper [4] (Sparse RAG) validates parallel encoding of retrieved documents for RAG efficiency. The closest match is [14] (CEPE), which explicitly validates parallel context encoding on RAG and ICL tasks with efficiency measurements — the same empirical relationship being established (parallel encoding retains/improves performance vs. sequential). Paper [21] also covers this relationship for ICL. These papers establish the same empirical relationship: parallel encoding of contexts achieves competitive performance with sequential encoding in RAG/ICL settings.\n\n**MECHANISM: Multi-model evaluation on ChatRAG-Bench/LongBench/CRAG, GSM8K/TriviaQA/MMLU across LLaMA/Mistral/Gemma, plus 128K prefilling efficiency evaluation**\n\nThe mechanism here is the analysis method: multi-benchmark, multi-model evaluation covering RAG benchmarks (ChatRAG-Bench, LongBench, CRAG), reasoning/knowledge benchmarks (GSM8K, TriviaQA, MMLU), and prefilling latency measurement at long context. Paper [14] (CEPE) uses LongBench and other benchmarks across multiple models with efficiency measurements. Paper [4] uses RAG-specific benchmarks with latency evaluation. Paper [21] (PCW) evaluates on multiple ICL benchmarks across models. Paper [16] evaluates many-shot ICL across multiple datasets and models. These are standard multi-benchmark, multi-model evaluation protocols used across multiple prior papers — [14] is the closest match using LongBench + efficiency metrics for parallel context encoding.\n\n**EVALUATION: APE retains 98%/93% of sequential performance, outperforms parallel by 3.6%/7.9%; LongBench improvements; many-shot scaling; 28x prefilling reduction, 4.5x end-to-end speedup**\n\nThe evaluation design uses: (1) named benchmarks (LongBench, GSM8K, TriviaQA, MMLU, ChatRAG-Bench), (2) performance retention metrics comparing parallel vs. sequential encoding, (3) prefilling latency/speedup measurements. Paper [14] (CEPE) uses LongBench and measures performance vs. sequential baselines with efficiency comparisons. Paper [4] measures latency reduction for parallel RAG encoding. Paper [21] (PCW) compares parallel vs. sequential context performance on standard benchmarks. The evaluation design (named benchmarks + parallel-vs-sequential comparison + latency speedup) is covered by [14] and [21].\n\n**DOMAIN: 大语言模型 / RAG/ICL 推理效率**\n\nMultiple prior papers work in LLM inference efficiency for RAG and ICL: [1], [3], [4], [11], [14], [19], [21]. This is clearly a covered domain.\n\nVERDICT purpose = 14\nVERDICT mechanism = 14\nVERDICT evaluation = 14\nVERDICT domain = 4",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

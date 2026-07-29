@@ -1,0 +1,335 @@
+{
+ "paper_id": "FA0233",
+ "title": "PhaseGuard-KL: Output-Dissimilarity-Triggered KL Regularization for Emergent Misalignment Defense",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     10,
+     11,
+     18,
+     22,
+     23,
+     24,
+     28
+    ],
+    "evaluation": [
+     1,
+     2,
+     3,
+     7,
+     8
+    ],
+    "domain": [
+     1,
+     2,
+     3,
+     7,
+     8
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        10,
+        11,
+        18,
+        22,
+        23,
+        24,
+        28
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        1,
+        2,
+        3,
+        7,
+        8
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        2,
+        3,
+        7,
+        8
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to design a selective defense that applies KL regularization only to malicious fine-tuning while preserving benign learning. Papers [1], [2], [3], and [7] all address defenses against malicious fine-tuning or backdoor attacks in LLMs, but none explicitly propose selective KL regularization as the defense mechanism. Paper [4] discusses KL-regularized fine-tuning but focuses on analyzing its effects rather than designing a selective defense. Therefore, no prior paper shares the same objective of selectively applying KL regularization to malicious fine-tuning while preserving benign learning.\n\n### Mechanism\nThe mechanism involves monitoring truncated Jensen-Shannon divergence (top-k=256 tokens) between the fine-tuned and reference model on 24 safety-relevant canary prompts every 5 steps, with a level-shift trigger (threshold tau=0.15, 2 consecutive points after warmup) activating KL regularization for the rest of training. Papers [10], [11], [18], [23], [24], and [28] discuss change-point detection methods, which are conceptually similar to the level-shift trigger mechanism here. Paper [22] introduces generalized Jensen-Shannon divergence, which overlaps with the divergence monitoring aspect. Paper [4] uses KL-regularized fine-tuning but does not combine it with change-point detection or truncated divergence monitoring. Thus, the mechanism is partially covered by prior work on change-point detection and divergence monitoring but not in this specific combination.\n\n### Evaluation\nThe evaluation uses pre-registered safety and utility criteria applied to Qwen2.5-7B-Instruct with rs-LoRA. Papers [1], [2], [3], [7], and [8] evaluate defenses against malicious fine-tuning using similar safety and utility criteria, albeit on different models and setups. Paper [4] evaluates KL-regularized fine-tuning but focuses on its effects across objectives rather than safety-specific criteria. The evaluation design (pre-registered safety and utility criteria) is covered by these prior works, even though the specific benchmark instance differs.\n\n### Domain\nThe domain is LLM safety, specifically emergent misalignment defense during fine-tuning. Papers [1], [2], [3], [7], and [8] all operate in the same general application area of LLM safety and defenses against malicious fine-tuning. While the specific sub-problem or dataset may differ, the domain is clearly covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = [10], [11], [18], [22], [23], [24], [28]  \nVERDICT evaluation = [1], [2], [3], [7], [8]  \nVERDICT domain = [1], [2], [3], [7], [8]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses the objective of designing a selective defense that applies KL regularization only to malicious fine-tuning while preserving benign learning, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Design a selective defense that applies KL regularization only to malicious fine-tuning while preserving benign learning.**\n\nPaper [4] explicitly studies \"KL-regularized fine-tuning\" as one of six objectives in the context of fine-tuning safety, but its purpose is comparative analysis of objectives, not designing a selective/triggered defense. Papers [1]/[2] address defending against fine-tuning-based jailbreak attacks, but use backdoor-enhanced alignment, not selective KL regularization. Paper [3] (SDD) defends against malicious fine-tuning but via a self-degradation mechanism. None of the prior papers specifically pursue the objective of \"apply KL regularization selectively only when malicious fine-tuning is detected, while leaving benign learning unaffected.\" The closest is [4] which uses KL regularization for safety but not selectively triggered. No paper covers the combined purpose of selective/triggered KL regularization as a defense primitive.\n\n**MECHANISM: PhaseGuard-KL — monitor truncated Jensen-Shannon divergence on safety canary prompts every N steps; level-shift trigger activates KL regularization for remainder of training.**\n\nThis combines: (a) monitoring JS divergence on canary prompts, (b) a sequential change-point/level-shift detection trigger (papers [10],[11],[18],[23],[24],[26],[28] cover change-point detection methods), (c) activating KL regularization conditionally. Paper [22] covers Jensen-Shannon divergence theory. Papers [10],[11],[18],[26] cover sequential change detection. Paper [4] uses KL regularization in fine-tuning. However, no single prior paper combines JS divergence monitoring on safety canaries with a level-shift trigger to conditionally activate KL regularization. The change-point detection papers ([10],[11],[18],[26]) cover the trigger design at a primitive level, and [4] covers KL regularization in fine-tuning, but the specific combination — using truncated JSD on canary prompts as a monitoring signal feeding a level-shift detector that gates KL regularization — is not covered as a unified mechanism. The change-point detection primitive (level-shift trigger with consecutive-point threshold) is covered by [10]/[11]/[26], and KL regularization is covered by [4], but the integrated mechanism is not present.\n\n**EVALUATION: Event-triggered method on Qwen2.5-7B-Instruct with rs-LoRA; evaluated against pre-registered safety and utility criteria.**\n\nPapers [1]/[2]/[3] evaluate defenses against malicious fine-tuning using safety and utility metrics on LLMs — the same evaluation design (safety benchmark + utility benchmark on fine-tuned LLMs). Paper [4] also evaluates fine-tuning objectives using safety and utility criteria. The evaluation design (safety + utility metrics on fine-tuned LLMs) is well-established in this literature. The specific model/adapter differs but the design is covered.\n\n**DOMAIN: LLM safety / emergent misalignment defense during fine-tuning.**\n\nPapers [1]/[2] explicitly address \"Fine-tuning based Jailbreak Attack\" defense in LLMs. Paper [3] addresses \"malicious fine-tuning\" defense. Paper [4] addresses fine-tuning safety. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper describes the objective of selectively applying KL regularization *only when malicious fine-tuning is detected* while leaving benign fine-tuning unaffected. Paper [4] uses KL-regularized fine-tuning as one of six objectives but applies it uniformly, not selectively triggered by detection of malicious activity. No other paper matches this conditional/selective application objective.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes anything resembling the specific PhaseGuard-KL mechanism: monitoring truncated Jensen-Shannon divergence over a fixed top-k token vocabulary on canary safety prompts at fixed step intervals, combined with a level-shift trigger using a threshold and consecutive-point rule to activate KL regularization for the remainder of training. The change-point detection papers ([10],[11],[16],[18],[23],[24],[26],[28]) do not apply to LLM safety monitoring, and no LLM safety paper describes this canary-based JS-divergence monitoring pipeline."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**REASONING:**\n\n**purpose:** The contribution's purpose is to design a *selective* defense that applies a penalty (KL regularization) *only when malicious fine-tuning is detected*, in order to preserve the model's utility on benign tasks. While prior papers [1], [2], and [3] also aim to defend against malicious fine-tuning, they propose static defenses that are always active. The specific objective of creating a *dynamic, triggered* defense that activates conditionally based on monitoring training dynamics is not present in the cited prior work.\n\n**mechanism:** The core technical primitive is monitoring a time-series signal (JSD on canary prompts) and triggering an action (activating KL regularization) when a statistical shift is detected. This is a direct application of the \"sequential change detection\" problem. This primitive is extensively covered in prior work, such as [10] which describes a \"scheme for detecting any changes in a parameter... of the data stream distribution\" and [11] which introduces a \"general framework\" for \"sequential change detection\".\n\n**evaluation:** The evaluation design consists of applying a defense during fine-tuning and then measuring its performance on both safety criteria (e.g., attack success rate) and utility criteria (e.g., standard benchmarks). This is the standard evaluation protocol for any LLM safety defense. Prior papers proposing defenses in the same domain, such as [1] (\"Mitigating Fine-tuning based Jailbreak Attack\"), necessarily use this same evaluation design to demonstrate their method's effectiveness and trade-offs.\n\n**domain:** The contribution's domain is LLM safety, specifically creating a defense against emergent misalignment during the fine-tuning process. This is the exact application area of several prior papers. For example, [1] addresses \"Fine-tuning based Jailbreak Attack (FJAttack)\" and [3] proposes a \"Defense against Malicious Fine-tuning\".\n\nVERDICT purpose = NONE\nVERDICT mechanism = 10\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: purpose: Design a selective defense that applies KL regularization only to malicious fine-tuning while preserving benign learning. | FINAL: COVERED-BY 3 | reason: The objective of a selective defense that activates only upon detecting malicious fine-tuning is the same. Paper [3] states its method \"encourages LLMs to produce high-quality but irrelevant responses when malicious fine-tuning is detected,\" which is a selective defense designed to counter malicious updates while implicitly preserving benign ones."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     2,
+     6,
+     12,
+     14
+    ],
+    "mechanism": [
+     12,
+     16
+    ],
+    "evaluation": [
+     20,
+     24
+    ],
+    "domain": [
+     12,
+     16
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        2,
+        6,
+        14
+       ]
+      },
+      "mechanism": {
+       "covered_by": [
+        12,
+        16
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        20,
+        24
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        12,
+        16
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**Purpose:**  \nThe contribution's purpose is to enable rigorous, falsifiable hypothesis testing of the selectivity claim. Paper [2] discusses improving transparency and rigor in hypothesis testing by making tests machine-readable, which aligns with the broader goal of enabling falsifiability and rigor. Paper [6] explicitly addresses falsifiability in statistical hypotheses, emphasizing methodological decisions to rule out improbable events, which is substantively equivalent to the contribution's purpose. Paper [14] establishes guidelines for testing hypotheses, including the development of falsifiable hypotheses, which also aligns with the purpose.  \n\n**Mechanism:**  \nThe contribution's mechanism involves pre-registering two success criteria (Security EM misaligned rate <=24.3% and OpSwap exact match >=43.7%) that must both hold for the hypothesis to be supported. Paper [12] explores pre-registration for predictive modeling, emphasizing the benefits of pre-registering protocols, analysis plans, and evaluation criteria to enhance trust and rigor, which is substantively equivalent to the mechanism. Paper [16] discusses pre-registration of mathematical models, including the specification of analysis plans and performance evaluation criteria, which matches the mechanism's underlying primitive.  \n\n**Evaluation:**  \nThe evaluation framework derives thresholds from always-on KL and no-defense baselines. Paper [24] discusses deriving metric thresholds from benchmark data, which is substantively equivalent to the evaluation design of using benchmark-derived thresholds. Paper [20] addresses robust benchmark design, which includes deriving meaningful thresholds for evaluation, aligning with the contribution's evaluation framework.  \n\n**Domain:**  \nThe contribution operates in the domain of experimental methodology for safety defenses. Paper [12] applies pre-registration to predictive modeling, which overlaps with experimental methodology for safety defenses as both involve methodological rigor in validating models. Paper [16] discusses pre-registration in mathematical models, which similarly overlaps with experimental methodology.  \n\n**Verdict Lines:**  \nVERDICT purpose = 2, 6, 14  \nVERDICT mechanism = 12, 16  \nVERDICT evaluation = 20, 24  \nVERDICT domain = 12, 16  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 12
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 24
+      },
+      "domain": {
+       "covered_by": 12
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Enable rigorous, falsifiable hypothesis testing of the selectivity claim.**\n\nThe purpose is to make a specific empirical claim (about a safety defense's selectivity) falsifiable through pre-specified criteria. Papers [2] and [12] are most relevant. Paper [2] discusses \"Making hypothesis tests machine-readable\" to improve \"Transparency, Falsifiability, and Rigor.\" Paper [12] discusses \"Pre-registration for Predictive Modeling\" to address \"data-dependent decision-making\" and improve integrity. Paper [6] addresses \"Falsifiable Statistical Hypotheses.\" These papers share the objective of enabling rigorous, falsifiable hypothesis testing — the same problem-class objective, even if applied to different domains. Paper [12] is particularly close: pre-registering criteria before seeing results to enable falsifiable claims.\n\n**MECHANISM: Pre-register two success criteria with specific numeric thresholds (both must hold).**\n\nThe mechanism is pre-registration of conjunctive numeric thresholds derived from baselines. Paper [12] explicitly proposes \"pre-registration\" for predictive modeling with pre-specified criteria. Paper [2] proposes making hypothesis tests machine-readable with specified statistical predictions. Paper [16] discusses \"Pre-registration of mathematical models\" including \"analysis plan, outcomes, and/or information about how evaluation of performance will be made.\" The specific primitive — pre-specifying numeric thresholds before running experiments — is covered by [12] and [16]. The conjunctive \"both must hold\" structure is a minor variant of pre-registered multi-criterion testing covered by [2].\n\n**EVALUATION: Framework only; thresholds derived from always-on KL and no-defense baselines.**\n\nThe evaluation design here is deriving thresholds from baseline comparisons. Paper [24] \"Deriving metric thresholds from benchmark data\" is directly relevant — it addresses deriving meaningful thresholds from empirical data (benchmarks/baselines). This matches the design of computing thresholds from baseline conditions. No other paper more precisely matches, but [24] covers the design of empirically-derived thresholds.\n\n**DOMAIN: Experimental methodology for safety defenses.**\n\nThe domain is experimental/scientific methodology applied to AI safety defenses. Papers [2], [12], [16] all operate in the domain of scientific/experimental methodology for machine learning or computational systems. Paper [12] specifically addresses predictive modeling methodology. The general area of \"experimental methodology for ML/AI systems\" is covered by these papers.\n\nVERDICT purpose = 12\nVERDICT mechanism = 12\nVERDICT evaluation = 24\nVERDICT domain = 12",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     29
+    ],
+    "evaluation": null,
+    "domain": [
+     6,
+     10,
+     18,
+     22,
+     23,
+     28
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 29
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": [
+        6,
+        10,
+        22,
+        18,
+        23,
+        28
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "**Purpose:**  \nThe purpose of the contribution is to test and refute the output-dissimilarity selectivity hypothesis. None of the prior papers explicitly report or establish the same empirical relationship or hypothesis. While several papers address related topics such as concept drift ([1], [19], [25], [27], [29]) or distribution shift ([3], [5], [9], [14], [16], [18], [23]), none of them test or refute the specific hypothesis of output-dissimilarity selectivity.  \n\n**Mechanism:**  \nThe mechanism involves running PhaseGuard-KL and baselines on Security EM (malicious) and OpSwap Tier 2 (benign), sweeping the KL coefficient lambda, and analyzing JS divergence trajectories to root-cause the trigger's non-discriminative behavior. Paper [29] uses Jensen–Shannon divergence for concept drift detection, and paper [21] generalizes the Jensen–Shannon divergence, but neither applies these techniques to root-cause analysis of trigger behavior or sweeping KL coefficients. No prior paper employs substantively equivalent mechanisms across domains.  \n\n**Evaluation:**  \nThe evaluation design involves measuring trigger firing at step 20 for both tasks, PhaseGuard-KL's safety and utility performance, and JS divergence trajectories over steps. Paper [29] uses Jensen–Shannon divergence for drift detection, but its evaluation design does not match the contribution's specific setup of sweeping lambda and analyzing divergence trajectories for trigger behavior. No prior paper uses the same evaluation design.  \n\n**Domain:**  \nThe domain is emergent misalignment (Security EM) versus benign arithmetic (OpSwap). Papers [6], [10], and [22] address backdoor detection and misalignment in NLP models, which overlaps with the Security EM domain. Papers [18], [23], and [28] address anomaly detection under distribution shift, which overlaps with the OpSwap domain. These papers collectively cover the general application areas of misalignment and benign anomaly detection, even though they do not target the specific sub-problems or datasets in this contribution.  \n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [6, 10, 22, 18, 23, 28]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly tests and refutes the output-dissimilarity selectivity hypothesis under any framing or terminology.  \nFACET: mechanism | FINAL: COVERED-BY 29 | reason: \"A concept drift detection approach based on Jensen–Shannon divergence\" aligns with JS divergence trajectories for root-cause analysis.  \nFACET: evaluation | FINAL: NONE | reason: No prior paper reports evaluation results matching both safety and utility failure criteria or lambda cliff behavior."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**PURPOSE: Test and ultimately refute the output-dissimilarity selectivity hypothesis.**\n\nThe purpose is to empirically test whether a specific hypothesis holds — that output dissimilarity between tasks can serve as a selective trigger for safety interventions. This is a very specific claim about a particular mechanism in emergent misalignment / backdoor defense research. None of the prior papers pursue this objective. Papers [6], [10], [22] deal with backdoor detection but none test an \"output-dissimilarity selectivity hypothesis.\" Paper [26] discusses safety/utility tradeoffs in access control but not this hypothesis. No prior paper establishes or refutes this specific empirical relationship between output dissimilarity and trigger selectivity in LLM safety contexts.\n\n**MECHANISM: Sweep KL coefficient lambda; root-cause via JS divergence trajectories across two task types.**\n\nThe mechanism involves using JS divergence trajectories to diagnose non-discriminative behavior, sweeping a regularization coefficient, and comparing behavior across two task types. Paper [29] uses Jensen-Shannon divergence for concept drift detection in network traffic, which is a related primitive (JS divergence as a distributional distance measure). Paper [19] discusses metric choices for concept drift detection including JS divergence. However, these apply JS divergence to data stream monitoring, not to diagnosing trigger selectivity in LLM safety. The specific use of JS divergence trajectories to root-cause a trigger's non-discriminative behavior is not covered. No paper uses this exact analytical primitive in this way.\n\n**EVALUATION: Specific quantitative results about trigger firing, PhaseGuard-KL performance, lambda sweep cliff, JS trajectories.**\n\nThe evaluation design involves: measuring trigger activation across two task types, sweeping a hyperparameter (lambda), reporting utility/safety metrics, and tracking divergence trajectories over training steps. Paper [22] evaluates backdoor detection methods on language models using accuracy metrics. Paper [6] evaluates trigger inversion methods. The lambda sweep is a standard hyperparameter sensitivity analysis. The JS divergence trajectory tracking over steps resembles monitoring approaches in [29] and [19]. However, the specific evaluation design — simultaneously measuring safety and utility metrics across a hyperparameter sweep to identify a cliff, combined with divergence trajectory analysis — is not a named benchmark family or standard protocol from prior work. This appears to be a newly constructed evaluation protocol specific to this contribution.\n\n**DOMAIN: Emergent misalignment (Security EM) vs benign arithmetic (OpSwap).**\n\nThe domain is LLM safety / backdoor behavior, specifically emergent misalignment. Papers [6], [10], [22] work in backdoor attacks/defenses for language models, which is the same general application area. This contribution operates within the LLM security/backdoor domain, which is covered by these papers.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 6",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper contains the objective of testing and refuting an \"output-dissimilarity selectivity hypothesis\" or any equivalent framing under different terminology; the closest papers (e.g., [6], [10], [22]) address backdoor detection but none formulate or attempt to refute a hypothesis specifically about output dissimilarity as the basis for trigger selectivity.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes running a KL-regularized safety guard against both a malicious and benign task benchmark while sweeping a KL coefficient and diagnosing non-discriminative trigger behavior via JS divergence trajectories; [29] uses JS divergence for drift detection but in an entirely different context with no safety/utility guard or lambda sweep.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports the specific empirical constellation of a trigger firing identically on both task types, a safety-utility tradeoff cliff between two lambda values with exact percentage figures, and JS divergence trajectories converging to the same range for both tasks within a fixed number of steps; none of the backdoor or distribution-shift papers ([6], [10], [22]) contain any equivalent quantitative finding."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 29
+      },
+      "evaluation": {
+       "covered_by": 26
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to test and refute the \"output-dissimilarity selectivity hypothesis,\" an empirical claim that a certain class of defense is selective for malicious behavior. None of the prior papers appear to address, test, or refute this specific hypothesis; papers on concept drift ([1], [19], [29]) use dissimilarity metrics to detect any change, but do not frame their work as a test of selectivity between malicious and benign changes.\n\n**mechanism**: The mechanism is an analysis protocol: running experiments on malicious and benign tasks and root-causing the behavior by analyzing the trajectory of a divergence metric (JS divergence). This analysis design is covered by prior work; for example, [29] uses Jensen-Shannon divergence over time windows to analyze network traffic changes, which is \"a concept drift detection approach based on Jensen–Shannon divergence\".\n\n**evaluation**: The evaluation design demonstrates a trade-off between a safety metric (misalignment rate) and a utility metric (benign task performance), showing that no hyperparameter setting satisfies both. This design is covered by [26], which formalizes and examines the \"inconsistency resolving of safety and utility\" as its central theme.\n\n**domain**: The contribution operates in the domain of LLM safety, specifically \"emergent misalignment.\" This falls into the general application area of safety and security for NLP/language models, which is covered by prior work such as [6] on \"detecting backdoored language models\" and [22] on \"backdoor detection evaluation for language models\".\n\nVERDICT purpose = NONE\nVERDICT mechanism = 29\nVERDICT evaluation = 26\nVERDICT domain = 6",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the explicit objective to test and refute a specific, named hypothesis about the \"selectivity\" of output-based dissimilarity metrics. Papers [1] and [19] perform broad comparisons of such metrics, but their purpose is evaluative analysis, not the targeted refutation of a pre-existing hypothesis."
+     }
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,297 @@
+{
+ "paper_id": "HmwneoGoy9",
+ "title": "SeerAttention: Learning Intrinsic Sparse Attention in Your LLMs",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     4,
+     11
+    ],
+    "mechanism": [
+     13
+    ],
+    "evaluation": [
+     4
+    ],
+    "domain": [
+     1,
+     4
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to reduce the quadratic cost of attention for long-context LLMs by exploiting attention sparsity, without relying on predefined or heuristic sparsity patterns that fail to capture dynamic sparsity. This purpose is **covered** by [4] (\"SampleAttention\"), which explicitly aims to reduce the quadratic complexity of attention in long-context LLMs by dynamically capturing sparse patterns at runtime, avoiding the limitations of static or predefined sparsity patterns. Additionally, [19] (\"Quest\") also addresses the same purpose by focusing on query-aware sparsity to reduce the computational burden of long-context LLM inference. Both papers share the same high-level objective of reducing quadratic attention costs while dynamically adapting to sparsity.\n\n### Mechanism\nThe mechanism, SeerAttention, introduces a learnable gate (AttnGate) that pools Q and K along the sequence dimension, applies a linear layer, and identifies significant blocks via Top-k, skipping the rest using a block-sparse FlashAttention kernel. This mechanism is **covered** by [13] (\"Smart Bird\"), which proposes a learnable sparse attention mechanism that dynamically selects tokens based on their importance, avoiding static or random sparsity patterns. Additionally, [7] (\"Sparse Sinkhorn Attention\") introduces a learnable sorting mechanism to identify and attend to significant regions, which is conceptually similar to the learnable gating and Top-k selection in SeerAttention. Both prior works involve learnable mechanisms for dynamically identifying sparse attention patterns, making the underlying primitive equivalent.\n\n### Evaluation\nThe evaluation design involves extending Llama-3-8B and Mistral-7B to longer contexts (e.g., 32k tokens) and measuring perplexity, sparsity, and kernel speedup. This evaluation design is **covered** by [4] (\"SampleAttention\"), which evaluates sparse attention mechanisms on long-context LLMs using similar metrics (e.g., perplexity, sparsity, and runtime speedup). Additionally, [10] (\"FlashAttention-2\") and [18] (\"FlashAttention\") use comparable evaluation setups to measure speedup and efficiency improvements in attention mechanisms for long-context LLMs. The specific benchmarks and models differ, but the evaluation design (e.g., measuring sparsity, perplexity, and speedup) is not novel.\n\n### Domain\nThe domain of the contribution is efficient LLM inference and sparse attention. This domain is **covered** by numerous prior works, including [4] (\"SampleAttention\"), [13] (\"Smart Bird\"), and [19] (\"Quest\"), all of which operate in the same general area of efficient LLM inference with sparse attention mechanisms. While the specific models or datasets may differ, the application area remains the same.\n\n---\n\nVERDICT purpose = 4  \nVERDICT mechanism = 13  \nVERDICT evaluation = 4  \nVERDICT domain = 4  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Reduce quadratic attention cost by exploiting dynamic/input-dependent sparsity, without predefined/heuristic patterns**\n\nPapers [1], [4], [11], [13], [16], [19], [20] all pursue reducing attention's quadratic cost via dynamic/learned sparsity rather than fixed patterns. Paper [1] (\"Deja Vu\") explicitly targets \"contextual sparsity, which are small, input-dependent sets of attention heads.\" Paper [4] (\"SampleAttention\") explicitly states \"dynamically capturing head-specific sparse patterns at runtime\" to avoid predefined patterns. Paper [11] (\"Routing Transformers\") proposes \"dynamic sparse attention patterns that avoid allocating computation and memory to attend to content unrelated to the query.\" Paper [13] (\"Smart Bird\") addresses \"manually selected or random tokens may be uninformative\" and proposes learnable sparse attention. The purpose is clearly covered.\n\n---\n\n**MECHANISM: Learnable gate (AttnGate) that pools Q and K along sequence dimension, passes through linear layer, identifies significant blocks via Top-k; block-sparse FlashAttention kernel; separate RoPE inside gate for extrapolation**\n\nThe specific combination is: (1) a learned gating module that compresses Q/K via pooling + linear layer to predict block-level sparsity, (2) Top-k block selection, (3) block-sparse FlashAttention execution, (4) a modified RoPE inside the gate for length extrapolation.\n\n- Paper [13] (\"Smart Bird\") uses a \"learnable sparse attention\" with a small attention network to predict which tokens to attend to — similar in spirit but operates at token level, not block level with pooled Q/K.\n- Paper [4] (\"SampleAttention\") dynamically captures sparse patterns at runtime using local windows + column stripe patterns, not a learned gate with pooled Q/K.\n- Paper [14] (\"Faster Causal Attention via Sparse Flash Attention\") uses block-sparse FlashAttention kernels, but with heuristic/fixed patterns.\n- Paper [20] (\"Dynamic N:M Fine-Grained Structured Sparse Attention\") uses dynamic sparsity with a predictor, but at fine-grained N:M level, not block-level pooled Q/K gate.\n- Paper [2] (\"Adaptive Attention for Sparse-based Long-sequence Transformer\") — title suggests adaptive sparse attention for long sequences, potentially relevant, but limited abstract info.\n- Paper [16] (\"Learning Adaptive Axis Attentions in Fine-tuning\") learns sparse patterns during fine-tuning, but uses axis-based patterns, not a pooling-based gate.\n\nThe specific primitive of **pooling Q and K along the sequence dimension into a compact representation, passing through a linear layer to predict block importance, then using Top-k block selection with a block-sparse FlashAttention kernel** — combined with a **modified RoPE inside the gate** for extrapolation — does not appear as a substantively equivalent mechanism in any prior paper. The closest is [13] (learnable sparse attention via a small network), but the pooling-of-Q/K-into-linear-gate-for-block-selection primitive is distinct. No prior paper combines the pooled-Q/K linear gate + block-sparse FlashAttention + modified RoPE for extrapolation.\n\nThis mechanism is **not covered**.\n\n---\n\n**EVALUATION: Perplexity on long-context benchmarks (YaRN-extended Llama/Mistral), sparsity-vs-quality tradeoff, kernel speedup vs FlashAttention-2**\n\n- Paper [4] (\"SampleAttention\") evaluates near-lossless sparse attention with perplexity metrics and latency speedup comparisons — same evaluation design (perplexity at various sparsity levels, speedup vs dense baseline).\n- Paper [1] (\"Deja Vu\") evaluates wall-clock speedup and model quality under contextual sparsity.\n- Paper [14] evaluates sparse attention with speedup vs FlashAttention baseline and perplexity.\n- Paper [19] (\"Quest\") evaluates long-context LLM inference with perplexity and speedup metrics.\n\nThe evaluation design (perplexity at varying sparsity ratios + kernel speedup vs FlashAttention-2 baseline on long-context LLMs) is substantively equivalent to what papers [4], [14], [19] use. Covered.\n\n---\n\n**DOMAIN: Efficient LLM inference / sparse attention**\n\nPapers [1], [4], [6], [9], [14], [19], [20] all operate in efficient LLM inference with sparse attention. Clearly covered.\n\n---\n\nVERDICT purpose = 1\nVERDICT mechanism = NONE\nVERDICT evaluation = 4\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes the specific combination of a learnable gate (AttnGate) that pools Q and K along the sequence dimension, passes them through a linear layer, applies Top-k block selection, and feeds results to a block-sparse FlashAttention kernel, with a separate RoPE (theta'=theta/B) inside the gate for length extrapolation, supporting both post-training (gate-only) and joint fine-tuning modes. Deja Vu ([1]) uses a small MLP to predict contextual sparsity but not block-level Q/K pooling with a modified RoPE gate. SampleAttention ([4]) captures sparse patterns at runtime but without a learnable gate or modified positional encoding. No quoted passage from any prior paper matches this mechanism."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 11
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The objective of reducing the quadratic cost of attention by learning dynamic, content-aware sparsity patterns rather than using fixed or heuristic ones is covered. Multiple prior works share this exact goal, for instance [11] which \"proposes to learn dynamic sparse attention patterns that avoid allocating computation and memory to attend to content unrelated to the query,\" and [13] which \"learns to generate sparse attention patterns in a data-driven way\" to avoid uninformative tokens.\n\n**mechanism**: The core mechanism is a small, learnable gating module that predicts a sparse computation pattern for the main attention operation based on a compressed representation of the inputs. This primitive is covered by [13], which proposes a \"sparse attention pattern generator\" that is a \"lightweight network that predicts the attention pattern for each input instance.\" While the specific architecture of the gate (pooling, linear layer, Top-k) may differ, the underlying primitive of a lightweight, data-driven predictor for the attention mask is the same.\n\n**evaluation**: The evaluation design, which involves applying the method to a standard LLM, extending its context, and then measuring perplexity and kernel speedup against a strong baseline like FlashAttention-2, is covered. This is a standard validation protocol in this field, used by [4] which evaluates by measuring \"both perplexity on standard benchmarks... and accuracy on a suite of long-context tasks\" and also demonstrates \"speedup in TTFT\".\n\n**domain**: The application area of efficient LLM inference and sparse attention for long-context models is covered. Numerous papers operate in this domain, including [1] \"Contextual Sparsity for Efficient LLMs at Inference Time\" and [4] \"Near-Lossless Acceleration of Long Context LLM Inference with Adaptive Structured Sparse Attention.\"\n\nVERDICT purpose = 11\nVERDICT mechanism = 13\nVERDICT evaluation = 4\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": [
+     1,
+     2,
+     5,
+     6,
+     8
+    ],
+    "domain": [
+     1,
+     2,
+     5,
+     6,
+     8
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": [
+        1,
+        2,
+        5,
+        6,
+        8
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        2,
+        5,
+        6,
+        8
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to enable scalable learning of the sparse-attention gate despite FlashAttention fusing away the explicit attention map needed as training ground truth. None of the prior papers explicitly address this problem. While papers like [1], [2], [5], [6], and [8] focus on improving the efficiency of attention mechanisms, they do not address the specific issue of enabling sparse-attention gate learning when the explicit attention map is unavailable due to FlashAttention's design. Therefore, no prior paper shares this purpose.\n\n### Mechanism\nThe mechanism involves a customized FlashAttention kernel that extracts the block-level (2D max-pooled) attention-map ground truth with minimal overhead by storing/rescaling running row-max values, enabling AttnGate training via MSE against the row-normalized max-pooled map. None of the prior papers describe a substantively equivalent mechanism. Papers like [1], [2], [5], [6], and [8] focus on optimizing FlashAttention for memory efficiency, distributed training, or hardware utilization, but do not introduce a mechanism for extracting block-level attention maps or training sparse-attention gates via MSE against max-pooled maps. This mechanism appears novel.\n\n### Evaluation\nThe evaluation involves analyzing negligible overhead compared to naive manual attention and demonstrating the ability to train on long-context sequences (e.g., 8k+). Papers [1], [2], [5], [6], and [8] all evaluate attention mechanisms in terms of memory efficiency, runtime, and scalability to long-context sequences, using similar benchmark families and metrics (e.g., overhead analysis, sequence length scalability). While the specific benchmarks or objects differ, the evaluation design (overhead analysis and long-context scalability) is substantively equivalent to prior work. Therefore, the evaluation facet is covered.\n\n### Domain\nThe domain is efficient LLM training and attention kernels. Papers [1], [2], [5], [6], and [8] all operate in the same general application area of efficient LLM training and attention mechanisms. Although this contribution targets a specific sparse-attention gate problem, the domain itself is not new. Therefore, the domain facet is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = [1, 2, 5, 6, 8]  \nVERDICT domain = [1, 2, 5, 6, 8]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses enabling scalable learning of sparse-attention gates despite FlashAttention fusing away the explicit attention map needed as training ground truth. No equivalent objective found under different terminology or framing.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes a customized FlashAttention kernel extracting block-level attention-map ground truth with minimal overhead using row-max storage/rescaling. No equivalent mechanism identified under alternate vocabulary or domain."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Enable scalable learning of the sparse-attention gate despite FlashAttention fusing away the explicit attention map needed as training ground truth.**\n\nThe purpose is specifically about obtaining attention-map ground truth for training a sparse-attention gate when FlashAttention hides the intermediate attention matrix. Paper [7] learns adaptive sparse attention patterns, but doesn't address the problem of FlashAttention fusing away the attention map. Paper [20] addresses dynamic sparse attention but doesn't tackle the FlashAttention kernel modification problem. No prior paper addresses the specific objective of recovering/extracting attention-map ground truth from within a fused FlashAttention kernel to supervise a sparsity gate. This is a genuinely new problem objective.\n\n**MECHANISM: Customized FlashAttention kernel that extracts block-level (2D max-pooled) attention-map ground truth by storing/rescaling running row-max, avoiding materializing the full attention map; AttnGate trained via MSE against row-normalized max-pooled map.**\n\nPapers [1], [5], [8] describe FlashAttention kernels that use running row-max/softmax rescaling for numerical stability, but none extract or expose block-level max-pooled attention statistics as a training signal. Paper [6] modifies FlashAttention for INT8 quantization but doesn't extract attention maps. Paper [2] extends FlashAttention for distributed settings. None of these papers use the running row-max to reconstruct a block-level attention map for supervising a downstream gate via MSE. The specific primitive of piggybacking block-level max-pooled attention extraction onto the existing row-max bookkeeping is not present in any prior paper.\n\n**EVALUATION: Negligible overhead vs naive manual attention (overhead analysis); enables training on long-context (8k+) sequences that naive implementations cannot handle efficiently.**\n\nThis evaluation design — comparing computational overhead/memory of a custom attention kernel variant against a baseline implementation, and demonstrating scalability to long sequences — is a standard evaluation design used in [1], [5], [8], and [2]. Paper [5] explicitly benchmarks FlashAttention overhead vs standard attention. Paper [2] evaluates long-context training efficiency. The design of \"measure overhead, show long-sequence scalability\" is well-established in this literature.\n\n**DOMAIN: Efficient LLM training / attention kernels.**\n\nPapers [1], [5], [8], [2], [3] all operate in the domain of efficient LLM training and attention kernel optimization. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 5\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper addresses the specific objective of enabling sparse-attention gate training when FlashAttention fuses away the explicit attention map needed as ground truth. Papers on FlashAttention (1,5,8) focus on speed/memory, not on extracting intermediate attention maps for training a gating network; no other paper addresses this problem even under different terminology.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes a customized FlashAttention kernel that extracts block-level max-pooled attention-map ground truth via stored/rescaled running row-max statistics, nor trains an AttnGate via MSE against a row-normalized max-pooled map. INT-FlashAttention (6) modifies the kernel for quantization but does not extract attention-map statistics for gate supervision; no other paper comes close even under different framing."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     6
+    ],
+    "mechanism": [
+     6,
+     12,
+     15
+    ],
+    "evaluation": [
+     6,
+     12,
+     15
+    ],
+    "domain": [
+     4,
+     6,
+     15
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": 6
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to demonstrate that SeerAttention outperforms existing sparse-attention methods and adapts flexibly to context lengths and sparsity ratios. Papers [6], [8], [10], [15], and [29] all address improving sparse attention mechanisms for efficient LLM inference, focusing on performance improvements and adaptability to long contexts. For example, [6] explicitly claims \"near-lossless sparse attention\" and runtime adaptability, while [8] introduces SPARSEK Attention to overcome computational and memory obstacles while maintaining performance. These papers share the same objective of improving sparse attention efficiency and adaptability, making the purpose covered.\n\n### Mechanism\nThe mechanism involves empirical comparison against static (MoA) and heuristic-dynamic (MInference) sparse attention methods using a single trained AttnGate with adjustable Top-k, and demonstrating learned patterns like A-shape and Vertical-Slash. Papers [6], [8], [10], [15], and [18] describe dynamic sparse attention mechanisms that adapt to runtime conditions or learned patterns. For instance, [6] dynamically captures head-specific sparse patterns, and [15] uses dynamic sparse attention for pre-filling in long-context LLMs. These mechanisms are substantively equivalent to SeerAttention's approach of runtime adaptability and learned sparse patterns, making the mechanism covered.\n\n### Evaluation\nThe evaluation involves post-training on Llama-3.1-8B-Instruct and benchmarking against PG19 perplexity and LongBench, showing consistent outperformance at similar/higher sparsity. Papers [6], [8], [15], and [29] use similar evaluation designs, including benchmarking sparse attention methods on long-context tasks. For example, [29] introduces LongBench, a multitask benchmark for long-context understanding, and [6] evaluates sparse attention methods on long-context LLM inference. The evaluation design (benchmarking sparse attention methods on long-context tasks) is covered.\n\n### Domain\nThe domain is efficient LLM inference with sparse attention. Papers [6], [8], [10], [15], and [29] all operate in the same general application area of efficient LLM inference and sparse attention. For example, [6] focuses on accelerating long-context LLM inference with sparse attention, and [29] evaluates sparse attention methods for long-context understanding. The domain is covered.\n\n---\n\nVERDICT purpose = 6  \nVERDICT mechanism = 6  \nVERDICT evaluation = 6  \nVERDICT domain = 6  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 15
+      },
+      "evaluation": {
+       "covered_by": 15
+      },
+      "domain": {
+       "covered_by": 15
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**Purpose:** The contribution's purpose is to demonstrate that SeerAttention outperforms existing sparse-attention methods (specifically MoA and MInference) and adapts flexibly to context lengths and sparsity ratios. Paper [12] introduces MoA (Mixture of Attention Spans) as a static sparse attention method, and paper [15] introduces MInference as a dynamic sparse attention method — both are the exact baselines being compared against. However, the purpose here is to show superiority over these methods, not to introduce them. No prior paper establishes the same empirical relationship (SeerAttention > MoA and MInference across these conditions), since SeerAttention itself is the contribution. The purpose is to demonstrate a specific comparative result that no prior paper could have reported.\n\n**Mechanism:** The mechanism involves empirical comparison using perplexity on PG19/Proof-pile and LongBench, with a single trained AttnGate with adjustable Top-k, against MoA [12] and MInference [15]. Paper [15] uses LongBench and perplexity benchmarks to evaluate MInference against baselines. Paper [12] uses similar evaluation setups for MoA. The analysis of learned patterns (A-shape, Vertical-Slash) echoes [15]'s identification of such patterns. The mechanism of empirical comparison via controlled ablation/substitution with adjustable sparsity is a standard design present in [15] and [12].\n\n**Evaluation:** The evaluation uses PG19 perplexity, Proof-pile perplexity, and LongBench — these are named benchmark families. Paper [15] (MInference) explicitly uses PG19 perplexity and LongBench as evaluation benchmarks. Paper [12] (MoA) also uses perplexity and LongBench-style evaluations. The evaluation design (same named benchmarks, same metric semantics) is covered by [15] and [12].\n\n**Domain:** The domain is efficient LLM inference / sparse attention. This is directly covered by [15] (MInference for long-context LLM inference), [12] (MoA for LLM inference efficiency), [6] (SampleAttention for long-context LLM inference), and many others.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 15\nVERDICT evaluation = 15\nVERDICT domain = 15",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of demonstrating that a learned-mask sparse attention method simultaneously outperforms existing sparse-attention methods AND flexibly adapts to variable context lengths and sparsity ratios. Papers like [15] (MInference) and [6] (SampleAttention) address dynamic sparse attention for long contexts but do not frame their purpose as beating a field of sparse-attention competitors while demonstrating joint flexibility across both context length and sparsity ratio dimensions. No quoted phrase from any prior paper captures this combined objective."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to establish a new empirical finding: that the SeerAttention method outperforms existing methods like MoA and MInference. According to the special rule for \"finding\" contributions, the purpose is only covered if a prior paper establishes the *same empirical relationship*. Since SeerAttention is a new method introduced in this contribution, no prior paper could have possibly demonstrated its superiority, making this specific finding novel.\n\n**mechanism**: The mechanism is the analysis method used to generate the finding: an empirical comparison of a new sparse attention method against existing baselines (MoA, MInference) on standard benchmarks (PG19, LongBench). This is a standard analysis design. For example, [12] introduces MoA and validates it by comparing its performance on perplexity and \"downstream tasks from the LongBench\" against other methods, which is the same analysis design.\n\n**evaluation**: The evaluation design involves measuring perplexity on standard datasets (PG19) and performance on the LongBench benchmark suite. This design is not new. Paper [12] explicitly uses the same design to validate its own method, stating it measures \"perplexity on the PG-19 and Proof-Pile datasets\" and performance on \"the LongBench and ZeroSCROLLS benchmarks\".\n\n**domain**: The application domain is efficient LLM inference via sparse attention. This is a well-established research area. Numerous prior papers operate in this exact domain, such as [4] which proposes \"static, structured, sparse attention masks\" to \"reduce the computational burden of self-attention on Transformer inference\".\n\nVERDICT purpose = NONE\nVERDICT mechanism = 12\nVERDICT evaluation = 12\nVERDICT domain = 4",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY [1] | reason: The objective to demonstrate that a new, flexible/adaptive sparse attention method outperforms existing ones is not novel. Paper [1] has the same objective, proposing an adaptive method and showing it beats prior work. The facet's \"adapts flexibly to context lengths\" is equivalent to paper [1]'s goal. Quote: \"we propose an adaptive attention mechanism that can automatically adjust the attention range for each head based on the input sequence... Experimental results on various long-sequence language modeling tasks show that our proposed method outperforms existing sparse attention methods\""
+     }
+    }
+   }
+  }
+ ]
+}

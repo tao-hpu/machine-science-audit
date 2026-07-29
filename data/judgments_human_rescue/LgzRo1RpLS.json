@@ -1,0 +1,249 @@
+{
+ "paper_id": "LgzRo1RpLS",
+ "title": "MambaExtend: A Training-Free Approach to Improve Long Context Extension of Mamba",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     11
+    ],
+    "mechanism": null,
+    "evaluation": [
+     11
+    ],
+    "domain": [
+     9,
+     11
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 11
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to diagnose why Mamba state-space models fail to generalize to contexts longer than their pre-training length. Paper [11] (\"DeciMamba: Exploring the Length Extrapolation Potential of Mamba\") explicitly investigates the length-generalization limitations of Mamba models, identifying and analyzing their shortcomings in handling long contexts. This aligns with the same problem-class level objective of diagnosing Mamba's long-context generalization failures. Paper [4] (\"ReMamba\") also addresses Mamba's limitations in comprehending long contexts but focuses on proposing enhancements rather than diagnosing the root cause. Paper [24] (\"From Generalization Analysis to Optimization Designs for State Space Models\") theoretically studies generalization in SSMs, but its focus is broader and does not specifically diagnose Mamba's long-context generalization failures. Thus, [11] is the closest match.\n\n### Mechanism\nThe mechanism involves empirical analysis of discretization step sizes (Delta_t) across layers as context length grows, measuring the l2-norm of accumulated Delta_t on Pile samples and relating exp(-sum Delta_t) to token-retention/decay behavior. No prior paper explicitly analyzes discretization step sizes (Delta_t) in Mamba models or relates exp(-sum Delta_t) to token-retention/decay behavior. Papers [11] and [4] explore Mamba's long-context limitations but do not use this specific mechanism. Paper [25] (\"Sparse shooting at adaptive temporal resolution for time-optimal model predictive control\") discusses adaptive temporal discretization but in the context of control tasks, not Mamba or long-context generalization. Thus, the mechanism appears novel.\n\n### Evaluation\nThe evaluation involves two empirical findings: (1) minimizing the sum of Delta_t across tokens enhances generalization at longer inference contexts, and (2) fixed down-scaling of Delta_t does not yield optimal generalization, with degradation traced to OOD discretization steps. Paper [11] conducts visualizations and analyses of Mamba's length-generalization capabilities but does not use the same evaluation design involving Delta_t minimization or fixed down-scaling. Paper [4] proposes enhancements to Mamba but does not evaluate discretization step scaling. Paper [25] evaluates adaptive discretization but in a different domain (control tasks). No prior paper uses the same evaluation design, so this facet is uncovered.\n\n### Domain\nThe domain is state-space models applied to long-context language modeling. Papers [9], [11], [4], and [24] all work within the same general application area of state-space models and long-context language modeling. While this contribution targets a specific sub-problem (discretization step scaling), the domain itself is covered by prior work.\n\n---\n\nVERDICT purpose = 11  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 9",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper empirically analyzes discretization step sizes (Delta_t) across layers, their l2-norm accumulation, or relates exp(-sum Delta_t) to token-retention/decay behavior.  \nFACET: evaluation | FINAL: COVERED-BY 11 | reason: DeciMamba empirically analyzes length extrapolation limitations and degradation due to OOD discretization steps, aligning with findings on Delta_t scaling and generalization. Quote: \"Through a series of visualizations and analyses we identify that the limitations are linked to out-of-distribution discretization steps.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 11
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 11
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Diagnose why Mamba SSMs fail to generalize to contexts longer than their pre-training length.**\n\nPaper [11] (DeciMamba) explicitly states: \"we explore the length-generalization capabilities of Mamba, which we find to be relatively limited. Through a series of visualizations and analyses we identify that the limitations a...\" — this is directly about diagnosing why Mamba fails at length generalization. Paper [4] (ReMamba) also investigates \"the long-context efficiency issues of the Mamba models.\" Both share the same diagnostic objective at the problem-class level. Paper [11] is the closest match as it explicitly diagnoses the failure mode.\n\n**MECHANISM: Empirical analysis of discretization step sizes (Delta_t) across layers as context length grows, measuring l2-norm of accumulated Delta_t and relating exp(-sum Delta_t) to token-retention/decay behavior.**\n\nPaper [11] (DeciMamba) mentions \"visualizations and analyses\" to identify limitations, but the specific mechanism of analyzing Delta_t distributions, computing l2-norms of accumulated Delta_t, and linking exp(-sum Delta_t) to token decay is a specific internal diagnostic primitive. Paper [9] (Mamba) introduces Delta_t as the discretization parameter but doesn't analyze it across context lengths. Paper [4] investigates long-context issues but focuses on compression/adaptation rather than Delta_t analysis. No prior paper appears to use this specific analytical primitive — measuring accumulated Delta_t norms across layers as a diagnostic for OOD generalization failure in SSMs. This appears genuinely absent.\n\n**EVALUATION: Two empirical findings about minimizing sum of Delta_t and fixed down-scaling not being optimal, traced to OOD discretization steps.**\n\nThe evaluation design involves controlled empirical measurements on Pile samples with l2-norm metrics and OOD analysis. Paper [11] uses visualizations and analyses on Mamba for length generalization — a similar empirical validation design (measuring internal model quantities across context lengths). Paper [13] and [15] analyze OOD positional encodings in Transformers using similar empirical frameworks. The general design of \"measure internal model quantities at varying context lengths, identify OOD behavior\" appears in [11] and [15]. However, the specific claim being validated (Delta_t minimization enhances generalization; fixed scaling suboptimal) is new, but the evaluation design (empirical measurement of internal quantities + OOD analysis) is covered by [11] and [15].\n\n**DOMAIN: State-space models / long-context language modeling.**\n\nPapers [9], [11], [4], [3], [8] all work in the domain of state-space models for sequence/language modeling. Paper [11] specifically addresses long-context language modeling with Mamba SSMs. This domain is clearly covered.\n\nVERDICT purpose = 11\nVERDICT mechanism = NONE\nVERDICT evaluation = 11\nVERDICT domain = 11",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper measures the l2-norm of accumulated Delta_t across layers on Pile samples or relates exp(-sum Delta_t) to token-retention/decay behavior as context length grows. DeciMamba [11] analyzes Mamba's length limitations with visualizations but does not perform this specific empirical measurement of discretization step sizes. No other paper contains equivalent terminology or framing."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     9
+    ],
+    "mechanism": [
+     19,
+     20
+    ],
+    "evaluation": [
+     2
+    ],
+    "domain": [
+     1,
+     10
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 20
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to extend Mamba's usable context length without retraining model weights, specifically targeting resource-limited edge devices. This is distinct from fine-tuning approaches like DeciMamba. Several prior papers address context length extension, but none explicitly focus on achieving this without retraining weights or in a way specifically feasible for resource-limited edge devices. For example, [2], [3], [5], [6], and [7] propose methods for context extension but rely on fine-tuning or additional training steps, which contradicts the stated purpose of this contribution. Similarly, [8] and [9] explore training-free methods, but they do not explicitly address the resource constraints of edge devices. Therefore, no prior paper fully matches the purpose.\n\n### Mechanism\nThe mechanism involves the MambaExtend framework, which uses a calibration function (CF) with per-layer learnable scaling factors for the discretization matrix, keeping pre-trained weights frozen. It provides both gradient-based and gradient-free (SPSA-based) CFs. Gradient-free optimization using SPSA is a well-established technique, as seen in [20], [25], [27], and [28], which describe SPSA-based optimization methods. Additionally, zeroth-order optimization for LLMs is discussed in [15], [16], [19], and [22], though not specifically for the same application. The use of learnable scaling factors for discretization matrices in state-space models is not explicitly covered in prior work, including [10] and [11], which focus on state-space models but do not describe this specific mechanism. Thus, the mechanism is partially covered but not fully equivalent.\n\n### Evaluation\nThe evaluation involves training-free context extension up to 32x (2k to 64k tokens) with minimal perplexity increase, requiring significantly fewer parameter updates and lower memory than fine-tuning. Several prior papers, such as [2], [3], [5], [6], [7], [8], and [12], evaluate context extension methods using perplexity on benchmarks like PG-19. While the specific results (e.g., 32x extension, ~5.42e6x fewer updates) differ, the evaluation design — measuring perplexity and resource efficiency for context extension — is consistent with prior work. Therefore, the evaluation facet is covered.\n\n### Domain\nThe domain is state-space models and efficient long-context extension. State-space models are explicitly addressed in [1], [10], and [11], while long-context extension is the focus of [2], [3], [5], [6], [7], [8], [9], [12], and others. Although this contribution applies to a specific instance (Mamba), the general domain of state-space models and long-context extension is well-covered in prior work.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 20  \nVERDICT evaluation = 2  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses extending Mamba's usable context length without retraining model weights, specifically for resource-limited edge devices, as opposed to fine-tuning approaches like DeciMamba."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 10
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## PURPOSE\n\nThe purpose is: extend Mamba's (SSM) usable context length **without retraining weights**, feasible on **resource-limited edge devices**.\n\n- [9] (SelfExtend) proposes extending LLM context window **without fine-tuning** — \"extend the context window of LLMs... without fine-tuning.\" This is training-free context extension, same objective class.\n- [8] (ReAttention) is \"Training-Free Infinite Context\" — same objective of training-free context extension.\n- [10] (LongSSM) investigates length extension of **state-space models** specifically, but uses training (changing hidden state initialization), not training-free.\n- [2],[3],[5],[7],[12] all involve fine-tuning/training, so they don't match the \"no retraining\" purpose.\n\nPapers [9] and [8] both pursue training-free context extension. The \"edge device\" constraint is an additional nuance, but the core objective — training-free context length extension — is covered by [9] and [8]. The SSM-specific aspect is domain, not purpose.\n\n## MECHANISM\n\nThe mechanism is: **learnable per-layer scaling factors for the discretization parameter Delta_t in SSMs, kept frozen pre-trained weights; includes both gradient-based and gradient-free (ZO/SPSA) calibration**.\n\n- [10] (LongSSM) modifies SSM hidden state initialization for length extension — different primitive (initialization, not Delta_t scaling factors).\n- [19] (MeZO) uses zeroth-order optimization (ZO-SGD) with only forward passes for fine-tuning LLMs — covers the ZO/SPSA forward-pass-only optimization primitive.\n- [16] (Sparse MeZO) extends MeZO with sparse parameter selection — also ZO-based.\n- [26] (HiZOO) uses Hessian-informed ZO optimizer — ZO-based.\n- [20] (SPSA) is the foundational SPSA algorithm.\n- [25],[27],[28] are SPSA variants.\n\nThe **specific** mechanism of learning per-layer Delta_t scaling factors for SSM discretization is not present in any prior paper. [10] addresses SSM length extension but via initialization changes, not Delta_t scaling. The ZO/SPSA component is covered by [19]/[20], but the combined mechanism (Delta_t calibration scaling factors for SSMs) is not found. However, the question is whether any paper covers the **underlying primitive** equivalently. The core primitive is \"learn lightweight scaling parameters on a specific internal parameter (Delta_t) while keeping weights frozen.\" No prior paper does this for SSMs or analogously for context extension. The ZO aspect alone is covered by [19], but the full mechanism combining Delta_t scaling + frozen weights + ZO for context extension is not covered as a unified primitive.\n\nThe closest is [19] for the ZO/SPSA forward-pass component, but the Delta_t scaling calibration function is genuinely absent.\n\n## EVALUATION\n\nThe evaluation uses: perplexity on long sequences (PG-19), measuring context extension up to 32x, comparing parameter update counts and peak memory vs. fine-tuning baselines.\n\n- [2] (LongQLoRA) evaluates on **PG-19** perplexity for context extension — same benchmark family and metric semantics.\n- [5] (LongLoRA) evaluates perplexity on long-context benchmarks including PG-19.\n- [10] (LongSSM) evaluates SSM length extension with perplexity.\n- [19] (MeZO) compares memory usage vs. fine-tuning baselines.\n\nPG-19 perplexity for context extension evaluation is used in [2] and [5]. Memory comparison vs. fine-tuning is used in [19]. These evaluation designs are covered.\n\n## DOMAIN\n\nThe domain is: **State-space models / efficient long-context extension**.\n\n- [10] (LongSSM) works directly on SSMs for language modeling length extension — same domain.\n- [11] (Mamba) introduces Mamba SSM — same domain area.\n\nVERDICT purpose = 9\nVERDICT mechanism = NONE\nVERDICT evaluation = 2\nVERDICT domain = 10",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes a calibration function that learns per-layer learnable scaling factors specifically for the SSM discretization matrix Delta_t while keeping pre-trained weights frozen, nor the combination of gradient-based and ZO-SPSA variants of such a mechanism. Paper [10] addresses SSM length extension but via hidden state initialization changes, not learnable scaling of Delta_t. Papers [19]/[16]/[26] cover ZO fine-tuning of LLMs but not Delta_t-specific scaling factors for SSMs. No paper contains an equivalent element even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": 19
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 10
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: Covered by [9]. The contribution's purpose is to \"Extend Mamba's usable context length without any retraining of model weights,\" which is substantively equivalent to the objective of [9] to \"Self-Extend LLM Context Window Without Tuning.\" Both aim to achieve context extension in a training-free manner, with the difference in model architecture (Mamba vs. Transformer) being a domain detail. Paper [8] also shares this purpose with its goal of \"Training-Free Infinite Context.\"\n\n**mechanism**: Covered by [19]. The contribution's mechanism includes a \"gradient-free zeroth-order (ZO) CF based on SPSA using only forward passes\" to learn scaling factors. This is an application of the technical primitive introduced in [19], which proposes a \"memory-efficient zerothorder optimizer (MeZO)... fine-tuning LMs with only forward passes.\" Using a ZO method to tune model parameters via forward passes is the same underlying approach.\n\n**evaluation**: Covered by [2]. The contribution's evaluation design involves measuring perplexity on the PG-19 benchmark to validate context extension. This is the same evaluation design used in [2], which reports \"competitive perplexity performance on PG19 and Proof-pile datasets\" for the same purpose. Reusing a standard benchmark family and metric for the same class of problem means the evaluation design is covered.\n\n**domain**: Covered by [10]. The contribution's domain is \"State-space models / efficient long-context extension.\" This is the explicit focus of [10], titled \"On the Length Extension of State-space Models in Language Modelling.\" Paper [11], which introduces the Mamba SSM, also operates within this domain.\n\nVERDICT purpose = 9\nVERDICT mechanism = 19\nVERDICT evaluation = 2\nVERDICT domain = 10",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     2
+    ],
+    "mechanism": [
+     2,
+     6
+    ],
+    "evaluation": [
+     1,
+     5
+    ],
+    "domain": [
+     1,
+     6
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to demonstrate MambaExtend's effectiveness across long-context understanding and retrieval tasks, specifically comparing it to the fine-tuning baseline DeciMamba. Paper [2] (\"DeciMamba: Exploring the Length Extrapolation Potential of Mamba\") shares a substantively equivalent purpose, as it investigates Mamba's length-generalization capabilities and its limitations, which aligns with the objective of evaluating MambaExtend's performance in long-context tasks. Paper [1] (\"ReMamba: Equip Mamba with Effective Long-Sequence Modeling\") also addresses improving Mamba's long-context comprehension, but its focus is on enhancing the model rather than demonstrating effectiveness, making it less directly aligned.\n\n### Mechanism\nThe contribution uses extensive experiments on perplexity (Pile, PG-19), LongBench (7 tasks), and passkey/long-context retrieval with Mamba variants, comparing to pre-trained baselines and DeciMamba. Paper [6] (\"An Empirical Study of Mamba-based Language Models\") employs controlled experiments to evaluate Mamba's language modeling capabilities, including comparisons to baselines, which is substantively equivalent in mechanism. Paper [4] (\"Effective Long-Context Scaling of Foundation Models\") also uses perplexity and downstream benchmarks to evaluate long-context LLMs, but it focuses on scaling recipes rather than Mamba-specific comparisons, making it less directly equivalent.\n\n### Evaluation\nThe evaluation design involves perplexity improvements, parameter update reductions, memory efficiency, and retrieval performance across sequences of varying lengths. Paper [5] (\"L-Eval: Instituting Standardized Evaluation for Long Context Language Models\") introduces standardized evaluation for long-context LLMs, including perplexity and retrieval tasks, which matches the evaluation design. Paper [10] (\"∞Bench: Extending Long Context Evaluation Beyond 100K Tokens\") also evaluates long-context capabilities using perplexity and retrieval tasks, aligning with the evaluation design. Both papers cover the evaluation facet.\n\n### Domain\nThe domain is long-context LLM evaluation, specifically focusing on selective state-space models (SSMs). Paper [6] (\"An Empirical Study of Mamba-based Language Models\") explicitly addresses SSMs like Mamba in the context of long-context LLM evaluation, making it substantively equivalent. Paper [1] (\"ReMamba: Equip Mamba with Effective Long-Sequence Modeling\") also operates in the same domain, as it evaluates Mamba's long-context capabilities. Paper [4] (\"Effective Long-Context Scaling of Foundation Models\") addresses long-context LLMs broadly but does not focus on SSMs, making it less directly aligned.\n\n---\n\nVERDICT purpose = 2  \nVERDICT mechanism = 6  \nVERDICT evaluation = 5  \nVERDICT domain = 6  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Demonstrate MambaExtend's effectiveness across long-context understanding and retrieval tasks and against the fine-tuning baseline DeciMamba.**\n\nPaper [2] (DeciMamba) explores length-generalization capabilities of Mamba and evaluates it, but its purpose is to *introduce* DeciMamba, not to demonstrate a competing method's superiority over it. Paper [1] (ReMamba) demonstrates a method's effectiveness on long-context Mamba tasks. However, the specific purpose of benchmarking *against DeciMamba as a fine-tuning baseline* while showing efficiency gains is unique to MambaExtend's framing. Still, at the problem-class level, the purpose \"demonstrate a method's effectiveness on long-context Mamba understanding and retrieval\" is covered by [1] and [2], which pursue the same objective of validating long-context Mamba improvements. Paper [2] explicitly evaluates against baselines including perplexity and retrieval tasks for Mamba length extrapolation.\n\n**MECHANISM: Extensive experiments on perplexity (Pile, PG-19), LongBench (7 tasks), and passkey/long-context retrieval with Mamba variants, comparing to pre-trained baselines and DeciMamba.**\n\nThis is a finding-type contribution, so mechanism = the analysis method. The mechanism involves running perplexity evaluations on Pile/PG-19, LongBench tasks, and passkey retrieval across multiple model sizes. Paper [2] uses perplexity evaluation and passkey retrieval for Mamba models. Paper [1] uses LongBench and perplexity for Mamba evaluation. Paper [4] uses \"language modeling, synthetic context probing tasks, and a wide range of downstream benchmarks.\" The combination of these standard evaluation protocols (PPL + LongBench + passkey retrieval) is well-established across [1], [2], [4], [17].\n\n**EVALUATION: Up to ~8145x PPL improvement, vs DeciMamba comparisons with parameter/memory efficiency metrics, retrieval on 1K-64K tokens.**\n\nThe evaluation design uses perplexity on Pile/PG-19 (used in [2], [6]), LongBench (used in [1]), and passkey retrieval (used in [2], [17]). These are named benchmark families appearing in prior work. Paper [2] explicitly uses passkey retrieval and perplexity for Mamba length extrapolation. Paper [1] uses LongBench for Mamba evaluation. The evaluation design (PPL + LongBench + passkey retrieval) is covered by [1] and [2] combined.\n\n**DOMAIN: Long-context LLM evaluation (SSMs)**\n\nPapers [1], [2], [6], and [15] all work in the domain of long-context evaluation of SSMs/Mamba models. This is clearly covered.\n\nVERDICT purpose = 2\nVERDICT mechanism = 2\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

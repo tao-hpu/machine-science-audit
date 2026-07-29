@@ -1,0 +1,373 @@
+{
+ "paper_id": "FA0004",
+ "title": "Anytime-CBU: Adaptive Rollout Allocation for Consequence-Based Utility Scoring",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     19
+    ],
+    "mechanism": [
+     4,
+     6,
+     7,
+     8,
+     9,
+     27
+    ],
+    "evaluation": [
+     10,
+     13,
+     14,
+     19
+    ],
+    "domain": [
+     10,
+     13,
+     14,
+     19
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 19
+      },
+      "mechanism": {
+       "covered_by": [
+        4,
+        6,
+        7,
+        8,
+        9,
+        27
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        10,
+        13,
+        14,
+        19
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        10,
+        13,
+        14,
+        19
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to reduce the computational cost of Consequence-Based Utility (CBU) scoring by addressing inefficiencies in uniform rollout allocation, which wastes compute on candidates whose quality is clear after few rollouts. Prior paper [19] explicitly formulates test-time search as a resource allocation problem and derives an optimal strategy to maximize the probability of obtaining the best result under a fixed rollout budget. This aligns with the purpose of reducing computational cost in test-time scaling by optimizing rollout allocation. Therefore, the purpose is **covered** by [19].\n\n### Mechanism\nThe contribution reformulates CBU scoring as a best-arm identification (BAI) problem and applies LUCB-style adaptive allocation with Beta-posterior confidence bounds, arm elimination, and early stopping. Prior papers [1], [4], [6], [7], [8], [9], and [27] all address BAI problems and propose LUCB-style algorithms with adaptive confidence bounds, arm elimination, and early stopping. For example, [4] generalizes the LUCB algorithm for linearly parameterized bandits, while [6] introduces a novel arm elimination scheme with adaptive confidence bounds. These mechanisms are substantively equivalent to the contribution's mechanism, as they share the same underlying primitives (LUCB-style adaptive allocation, arm elimination, and early stopping). Therefore, the mechanism is **covered** by [4], [6], [7], [8], [9], and [27].\n\n### Evaluation\nThe contribution evaluates Anytime-CBU on RealMath with two solver models (Qwen2.5-Math-7B and DeepSeek-R1-7B) against Uniform-CBU. Prior papers [10], [13], [14], and [19] evaluate test-time compute optimization methods for LLM reasoning tasks using similar evaluation designs, including comparisons against baseline methods (e.g., uniform allocation) and performance metrics on mathematical reasoning tasks. For example, [19] evaluates its optimal rollout allocation strategy on test-time scaling for LLM reasoning tasks, which is substantively equivalent to the evaluation design used in the contribution. Therefore, the evaluation is **covered** by [10], [13], [14], and [19].\n\n### Domain\nThe contribution operates in the domain of LLM evaluation and test-time compute for mathematical reasoning. Prior papers [10], [13], [14], and [19] also address LLM evaluation and test-time compute optimization for reasoning tasks, including mathematical reasoning. For example, [13] focuses on improving LLM reasoning quality in mathematical domains, and [14] introduces a metric for answer stabilization in test-time reasoning algorithms for LLMs. These papers clearly operate in the same general application area. Therefore, the domain is **covered** by [10], [13], [14], and [19].\n\n---\n\nVERDICT purpose = 19  \nVERDICT mechanism = 4, 6, 7, 8, 9, 27  \nVERDICT evaluation = 10, 13, 14, 19  \nVERDICT domain = 10, 13, 14, 19  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 19
+      },
+      "mechanism": {
+       "covered_by": 27
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 10
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\n\nThe purpose is to reduce computational cost of CBU scoring by avoiding wasted compute on candidates whose quality is clear after few rollouts — i.e., adaptive allocation to avoid uniform waste in a rollout-based scoring system.\n\n- Paper [16] (VIP): \"allocates a given rollout budget to the prompts\" adaptively for RL training, addressing \"uniform allocation implicitly treats all prompts as equally informative.\" This is about training-time rollout allocation, not test-time CBU scoring.\n- Paper [19] (Every Rollout Counts): \"formulate test-time search as a resource allocation problem and derive the optimal allocation strategy\" — very close, about efficient test-time scaling via optimal rollout allocation.\n- Paper [17] (OptPO): \"adaptively allocates inference budgets\" for test-time policy optimization, addressing \"fixed-budget majority voting\" redundancy.\n- Paper [14] (Certaindex): addresses \"wastefully generate many tokens without improving accuracy\" at test time.\n- Paper [13]: \"early rejection\" to reduce compute in reasoning with PRMs.\n\nPaper [19] most directly covers the purpose: reducing wasted compute from uniform rollout allocation at test time by adaptive allocation. Paper [17] (OptPO) also covers this — \"fixed-budget majority voting to estimate rewards, incurring substantial computational redundancy\" and proposes adaptive allocation. Both cover the purpose at the problem-class level.\n\n## Mechanism\n\nThe mechanism is: reformulate scoring as a BAI problem, apply LUCB-style adaptive allocation with Beta-posterior confidence bounds, arm elimination, and early stopping.\n\n- Paper [27] (AT-LUCB): introduces \"AT-LUCB (AnyTime Lower and Upper Confidence Bound)\" for anytime explore-m in MAB — directly uses LUCB-style adaptive allocation with anytime properties. This is the closest match to the LUCB-style mechanism.\n- Papers [1], [4], [7], [8], [11]: all use LUCB-style algorithms for BAI with confidence bounds and arm elimination.\n- Paper [17] (OptPO): \"formulating the voting process as a Bayesian sequential probability ratio test\" with Beta posteriors — uses Beta-posterior confidence bounds for adaptive stopping in rollout allocation. This is very close to the mechanism described.\n- Paper [19]: derives optimal allocation for test-time search as resource allocation, but doesn't specifically use LUCB/BAI framing.\n- Paper [33] (Faster Hoeffding Racing): Bernstein races for arm elimination — covers arm elimination with confidence bounds.\n\nPaper [27] covers LUCB-style adaptive allocation with anytime properties. Paper [17] covers Beta-posterior confidence bounds with early stopping for rollout allocation. Paper [8]/[31] covers KL-LUCB with anytime confidence bounds. The combination of BAI + LUCB + Beta posteriors + arm elimination + early stopping applied to rollout scoring is most directly covered by [27] (LUCB anytime) and [17] (Beta posteriors for rollout allocation).\n\n## Evaluation\n\nThe evaluation uses RealMath benchmark with two solver models (Qwen2.5-Math-7B, DeepSeek-R1-7B) compared against Uniform-CBU baseline.\n\n- Paper [10]: evaluates LLM test-time compute scaling on math benchmarks with multiple models — same design (math benchmark + multiple LLM models + baseline comparison).\n- Paper [19]: evaluates test-time scaling on math reasoning benchmarks with LLM models.\n- Paper [14]: evaluates on reasoning benchmarks with LLM models.\n- Paper [16]: evaluates rollout allocation with math reasoning models.\n\nThe evaluation design (math reasoning benchmark + multiple LLM solver models + comparison against uniform baseline) is covered by papers [10], [16], [19] which all use the same evaluation design in the LLM math reasoning space.\n\n## Domain\n\nThe domain is LLM evaluation / test-time compute for mathematical reasoning.\n\n- Paper [10]: \"scaling of inference-time computation in LLMs\" for challenging prompts — directly in test-time compute for LLM reasoning.\n- Paper [14]: test-time reasoning algorithms for LLMs.\n- Paper [16]: test-time rollout allocation for LLM reasoning.\n- Paper [19]: test-time scaling for LLM reasoning.\n\nThis domain is clearly covered by multiple papers [10], [14], [16], [19].\n\nVERDICT purpose = 19\nVERDICT mechanism = 27\nVERDICT evaluation = 10\nVERDICT domain = 10",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     2,
+     3
+    ],
+    "mechanism": [
+     7,
+     18
+    ],
+    "evaluation": [
+     4,
+     7
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 18
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to empirically establish whether adaptive allocation delivers the intended cost reduction for CBU scoring. Paper [2] (\"Budget-Aware Anytime Reasoning with LLM-Synthesized Preference Data\") shares a substantively equivalent purpose, as it studies reasoning behavior under limited computation budgets and introduces an anytime reasoning framework to quantify solution quality under budget constraints. This aligns with the objective of evaluating adaptive allocation for cost reduction. \n\n### Mechanism\nThe mechanism involves comprehensive experiments comparing Anytime-CBU with Uniform-CBU on selection quality and rollout budget across two solver models. Paper [18] (\"OptPO: Optimal Rollout Allocation for Test-time Policy Optimization\") employs a similar mechanism, as it adaptively allocates inference budgets for test-time policy optimization, focusing on rollout allocation efficiency. Both mechanisms involve adaptive allocation strategies for computational resources during test-time reasoning.\n\n### Evaluation\nThe evaluation design measures selection quality (via overlapping 95% confidence intervals) and rollout reduction percentages. Paper [4] (\"Efficiently Scaling LLM Reasoning with Certaindex\") uses a similar evaluation design, as it quantifies answer stabilization and efficiency gains in test-time reasoning algorithms. Both contributions assess computational efficiency and solution quality using overlapping confidence intervals and rollout metrics, making the evaluation design covered.\n\n### Domain\nThe domain is LLM evaluation/test-time compute for mathematical reasoning. Paper [1] (\"Scaling LLM Test-Time Compute Optimally can be More Effective than Scaling Model Parameters\") operates in the same general domain of LLM test-time compute optimization, even though it focuses on natural language tasks rather than mathematical reasoning. The application area of optimizing test-time compute for LLMs is shared.\n\n---\n\nVERDICT purpose = 2  \nVERDICT mechanism = 18  \nVERDICT evaluation = 4  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Establishes empirically whether adaptive allocation actually delivers the intended cost reduction for CBU scoring.**\n\nThe purpose is to empirically validate whether an adaptive (anytime) allocation scheme achieves its promised computational savings compared to uniform allocation, specifically for CBU scoring. Paper [4] (Certaindex) studies whether adaptive compute allocation reduces wasted tokens in LLM reasoning. Paper [13] (CoBA-RL) empirically evaluates whether adaptive rollout budget allocation improves efficiency over uniform allocation in RL for LLMs. Paper [3] (LLM-as-Judge on a Budget) examines whether adaptive query allocation reduces estimation error versus uniform allocation. However, none of these specifically ask \"does the adaptive scheme deliver the *promised cost reduction* (e.g., 50% rollout reduction) for CBU scoring\" — this is a specific empirical validation of a gap between intended and actual savings. Paper [13] is closest: it evaluates \"resource inefficiency\" of uniform vs. adaptive rollout budgets, but it's about RL training, not CBU scoring evaluation. The purpose of checking whether adaptive allocation *actually delivers* the claimed savings (finding it falls short) is not directly covered by any prior paper at the same variable/direction level.\n\n**MECHANISM: Comprehensive experiments on RealMath comparing Anytime-CBU with Uniform-CBU on selection quality and rollout budget across two solver models.**\n\nThe mechanism is a controlled comparison experiment: run two variants (adaptive vs. uniform) on a benchmark, measure selection quality and compute cost across multiple models. Paper [13] uses \"a uniform rollout budget\" vs. adaptive allocation and measures efficiency — same design of comparing uniform vs. adaptive rollout allocation. Paper [4] compares adaptive compute stopping vs. exhaustive generation. Paper [1] compares different test-time compute strategies. These are all standard controlled ablation/comparison designs (swap a component, measure quality + cost). Per the rules, this is a generic experimental shape (compare two variants on a benchmark), not a named protocol family. No prior paper uses a named protocol that matches this specific design. However, the design is a standard controlled comparison — this is a generic experimental move. Per the special rule, generic experimental moves don't establish coverage unless validating the same claim. I'll mark this NONE.\n\n**EVALUATION: Anytime-CBU preserves selection quality (overlapping 95% CIs with Uniform-CBU) but achieves only 0-2% rollout reduction.**\n\nThe evaluation design uses 95% confidence intervals to compare selection quality between two methods, plus measuring rollout budget reduction percentage. Using confidence intervals for comparing LLM evaluation methods appears in papers like [3] (LLM-as-Judge on a Budget) which uses statistical estimation frameworks. Paper [17] discusses confidence intervals. The use of overlapping 95% CIs as a statistical equivalence check is a standard statistical design. Paper [3] uses variance-adaptive approaches with statistical guarantees. The CI-based comparison design is standard and appears implicitly in many papers. However, the specific evaluation design — measuring both selection quality via CIs AND rollout budget reduction percentage as the primary metrics — is specific to CBU scoring. No prior paper uses this exact named benchmark (RealMath) or this specific metric combination. But per the rules, the evaluation design (CI-based quality comparison + compute reduction measurement) is a standard framework. Paper [4] measures both quality and compute savings. I'll note paper [4] uses \"answer stabilization\" metrics comparing quality vs. compute, and paper [13] measures both quality and efficiency. The design of \"compare quality (with CIs) + measure compute reduction %\" is generic enough to be covered by [4] or [13].\n\n**DOMAIN: LLM evaluation / test-time compute for mathematical reasoning.**\n\nPapers [1], [4], [9], [13], [18], [19] all work in LLM test-time compute for mathematical reasoning. This domain is clearly covered. Paper [1] explicitly studies \"scaling of inference-time computation in LLMs\" with math benchmarks. Paper [4] uses math reasoning benchmarks.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 4\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper empirically tests whether adaptive allocation delivers cost reduction specifically for CBU scoring; [3] addresses variance-adaptive query allocation for LLM-as-judge but does not evaluate CBU scoring cost reduction, and no other paper matches this specific empirical objective.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper conducts experiments on a RealMath benchmark comparing Anytime-CBU versus Uniform-CBU on selection quality and rollout budget across two solver models; this specific experimental setup and comparison is absent from all listed works."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to empirically establish a specific relationship: that the Anytime-CBU adaptive allocation method provides negligible (0-2%) cost reduction for CBU scoring, failing to meet its intended goal. No prior paper reports this specific empirical finding; many papers propose new adaptive methods and show they work, but none appear to contain the specific falsification that this contribution reports.\n\n**mechanism**: The mechanism is a comparative experiment, pitting an adaptive allocation scheme (Anytime-CBU) against a non-adaptive baseline (Uniform-CBU) and measuring performance and cost. Paper [7] uses this exact same analysis design, performing an \"extensive empirical evaluation\" to determine the \"relative performa[nce]\" of different anytime frameworks, which is a comparative study.\n\n**evaluation**: The evaluation design involves comparing two algorithms on metrics of quality and cost (\"selection quality\" and \"rollout reduction\") and using confidence intervals to assess the statistical significance of the difference. This is a standard experimental design; paper [7] performs a similar \"extensive empirical evaluation\" comparing algorithms on \"solution cost and solving time,\" and paper [8] explicitly uses confidence bounds in its analysis (\"AnyTime Lower and Upper Confidence Bound\").\n\n**domain**: The contribution operates in the domain of \"LLM evaluation / test-time compute\". This general application area is explicitly addressed by numerous prior papers. For example, paper [1] studies the \"scaling of inference-time computation in LLMs,\" and paper [2] studies the \"reasoning behavior of large language models (LLMs) under limited computation budgets.\"\n\nVERDICT purpose = NONE\nVERDICT mechanism = 7\nVERDICT evaluation = 7\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 3 | reason: Paper [3] shares the exact same objective: empirically demonstrating that an adaptive allocation strategy is more efficient than a uniform one for an LLM-based scoring task. The quote \"given a fixed computational budget $B$, how to optimally allocate queries across $K$ prompt-response pairs to minimize estimation error? We present a principled variance-adaptive approach\" establishes this purpose, which is to find and validate a method for cost reduction in scoring, directly matching the facet's objective."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     14
+    ],
+    "evaluation": null,
+    "domain": [
+     1,
+     3
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "**Purpose:**  \nThe contribution's purpose is to explain why the adaptive approach fails, exposing a structural mismatch between Best Arm Identification (BAI) assumptions and Confidence Bound Utility (CBU) problem characteristics. Paper [10] discusses adaptive algorithms for BAI and their limitations due to bias in offline data, but does not address structural mismatches between BAI assumptions and CBU characteristics. Paper [13] introduces a variant of BAI with minimal regret but does not analyze structural mismatches. No prior paper explicitly identifies or explains the structural mismatch between BAI assumptions and CBU characteristics.  \n\n**Mechanism:**  \nThe contribution uses root-cause analysis of RealMath candidate utility distributions to show flat utility landscapes that make the LUCB stopping condition unsatisfiable within practical budgets. Paper [6] adapts the LUCB framework to general reward functions and discusses estimation methods for distributions, but does not analyze flat utility landscapes or their impact on LUCB stopping conditions. Paper [10] introduces LUCB-H with adaptive confidence bounds but does not perform root-cause analysis of utility distributions. No prior paper performs the same root-cause analysis of flat utility landscapes in RealMath candidate distributions.  \n\n**Evaluation:**  \nThe contribution identifies flat utility landscapes as the structural root cause of the unsatisfiable LUCB stopping condition, explaining the 0-2% rollout reduction. Paper [6] evaluates LUCB algorithms on general reward functions but does not identify flat utility landscapes as a structural root cause. Paper [10] evaluates LUCB-H with bias correction but does not analyze rollout reduction or flat utility landscapes. No prior paper uses the same evaluation design to identify flat utility landscapes as the root cause of unsatisfiable LUCB stopping conditions.  \n\n**Domain:**  \nThe contribution operates in the domain of LLM evaluation/test-time compute for mathematical reasoning. Paper [3] addresses mathematical reasoning with LLMs, focusing on cooperative reasoning for solving math word problems. This is substantively equivalent to the application area of the contribution, as both focus on LLM evaluation for mathematical reasoning.  \n\n**Verdicts:**  \nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 3  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly exposes a structural mismatch between BAI assumptions and CBU problem characteristics under any terminology or framing.  \nFACET: mechanism | FINAL: COVERED-BY 14 | reason: \"One of the key drivers of complexity in the classical (stochastic) multi-armed bandit problem is the difference between mean rewards in the top two arms, also known as the instance gap.\" This aligns with the analysis of flat utility landscapes affecting LUCB stopping conditions.  \nFACET: evaluation | FINAL: NONE | reason: No prior paper identifies flat utility landscapes as the structural root cause of the unsatisfiable LUCB stopping condition or explains the 0-2% rollout reduction under any framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Explains why the adaptive approach fails, exposing a structural mismatch between BAI assumptions and CBU problem characteristics.**\n\nThis purpose is about diagnosing *why* a specific BAI-based adaptive method fails when applied to candidate budget utilization (CBU) in LLM test-time compute — specifically identifying that flat utility landscapes make LUCB stopping conditions unsatisfiable. None of the prior papers report or establish this empirical relationship (BAI assumptions → failure in CBU/LLM settings due to flat utility landscapes). Papers [4], [6], [10], [11], [23], [30] etc. study LUCB/BAI algorithms but none diagnose failure of BAI in LLM evaluation contexts due to flat utility distributions. The relationship being established (flat utility landscapes → LUCB stopping condition unsatisfiable → near-zero rollout reduction) is not present in any prior paper.\n\n**MECHANISM: Root-cause analysis of RealMath candidate utility distributions showing flat utility landscapes that make the LUCB stopping condition unsatisfiable within practical budgets.**\n\nThe mechanism is a distributional analysis of empirical utility landscapes to diagnose algorithm failure. This is a form of controlled empirical analysis/diagnostic. While papers like [1] analyze bottlenecks in self-improvement methods, none perform root-cause analysis of LUCB stopping condition failure via utility distribution shape. No prior paper uses this specific analytical primitive (examining flatness of reward distributions to explain LUCB stopping failure). This is genuinely absent.\n\n**EVALUATION: Identifies flat utility landscapes as the structural root cause of the unsatisfiable LUCB stopping condition, explaining the 0-2% rollout reduction.**\n\nThe evaluation design here involves empirical distribution analysis and connecting it to observed performance metrics (rollout reduction rates). This is essentially a diagnostic/ablation-style analysis. Per the special rule, I need to check if any prior paper uses the same evaluation *design*. Papers like [1] use monitoring/analysis of training dynamics, and [14] analyzes worst-case behavior of MAB algorithms. However, none use the specific design of analyzing utility distribution flatness to explain stopping condition failure in LLM contexts. The evaluation design (distributional analysis → stopping condition satisfiability → observed metric explanation) doesn't match any prior paper's design at the named benchmark/protocol level.\n\n**DOMAIN: LLM evaluation / test-time compute for mathematical reasoning.**\n\nPaper [1] (B-STaR) works in LLM self-improvement for reasoning tasks, and [3] addresses solving math word problems with LLMs. These clearly operate in the same general application area of LLM evaluation/mathematical reasoning. This domain is covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explains why an adaptive BAI approach fails due to structural mismatch between BAI assumptions and CBU problem characteristics; the closest papers address BAI variants or self-improvement bottlenecks but none frame the purpose as diagnosing this specific structural incompatibility.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper performs root-cause analysis of candidate utility distributions in a math reasoning rollout setting showing flat utility landscapes that make LUCB stopping conditions unsatisfiable; this specific mechanistic diagnosis does not appear under any alternative framing in the listed papers.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper identifies flat utility landscapes as the structural root cause of an unsatisfiable LUCB stopping condition explaining a specific 0-2% rollout reduction result; none of the listed papers contain this claim or an equivalent under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to explain the failure of an adaptive algorithm (BAI) by identifying a structural mismatch between the algorithm's assumptions and the problem's characteristics. Paper [9] has a substantively equivalent purpose, as it explains that \"UCB1, designed for bounded rewards, does not perform well when applied to the cost-to-go estimates of classical planning, which are unbounded,\" which is also an explanation of algorithm failure due to a structural mismatch.\n\n**mechanism**: The mechanism is a root-cause analysis that examines the utility distribution of candidates (arms) to explain algorithm behavior. Paper [14] uses the same analysis primitive, as it analyzes MAB algorithm behavior by examining a key property of the reward distribution, \"the difference between mean rewards in the top two arms, also known as the instance gap.\"\n\n**evaluation**: The evaluation design consists of identifying a structural property of the problem instance (a flat utility landscape) and demonstrating that it is the root cause of a specific algorithm failure (an unsatisfiable stopping condition). Paper [9] uses the same evaluation design by identifying a structural property (unbounded rewards) and linking it to poor algorithm performance (\"does not perform well\").\n\n**domain**: The domain is LLM evaluation and test-time compute for mathematical reasoning. Paper [1] addresses \"self-improvement\" for \"complex reasoning tasks\" in models, and paper [3] focuses on \"Solving Math Word Problems via... Language Models,\" both of which fall into the same general application area.\n\nVERDICT purpose = 9\nVERDICT mechanism = 14\nVERDICT evaluation = 9\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     2,
+     3
+    ],
+    "evaluation": [
+     2,
+     3
+    ],
+    "domain": [
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Facet Reasoning:\n\n**Purpose:**  \nThe contribution's purpose is to show that adaptive allocation retains value for ranking even when early stopping fails. This specific empirical relationship — adaptive allocation's utility in ranking under conditions where early stopping does not provide gains — is not established in any prior paper. While several papers (e.g., [3], [5], [13], [18], [19]) discuss adaptive allocation in ranking and selection problems, none explicitly address the failure of early stopping or demonstrate adaptive allocation's continued value in such scenarios. The relationship itself is novel.  \n\n**Mechanism:**  \nThe mechanism involves comparing adaptive allocation against random allocation at matched rollout cost. Papers such as [3], [5], [13], [18], and [19] describe adaptive allocation methods and their comparison to other allocation strategies, including static or random allocation. For example, [3] discusses adaptive allocation versus static allocation in ranking and selection problems, and [5] explores optimal computing budget allocation for ranking and selection. These papers cover the mechanism at the level of comparing adaptive allocation to random allocation, even if the specific context differs.  \n\n**Evaluation:**  \nThe evaluation design involves assessing adaptive allocation's performance against random allocation at matched cost, with the conclusion that intelligent resource allocation matters even without early stopping gains. Papers such as [3], [5], [13], [18], and [19] use similar evaluation designs, including matched-cost comparisons and performance metrics for allocation strategies in ranking and selection problems. For example, [13] evaluates allocation algorithms based on their probability of correct selection and expected opportunity cost, which aligns with the evaluation design of the contribution. The evaluation design is therefore covered.  \n\n**Domain:**  \nThe domain is LLM evaluation/test-time compute for mathematical reasoning. While none of the prior papers explicitly address LLM evaluation or mathematical reasoning, several papers (e.g., [2], [9], [15], [16]) focus on LLMs and their test-time compute strategies. For example, [2] studies scaling inference-time computation in LLMs, and [15] introduces adaptive sampling frameworks for LLMs. These papers operate in the same general application area of LLM evaluation/test-time compute, even if the specific sub-problem differs. The domain is covered.  \n\n---\n\n### Verdicts:  \nVERDICT purpose = NONE  \nVERDICT mechanism = 3  \nVERDICT evaluation = 3  \nVERDICT domain = 2  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly demonstrates adaptive allocation's value for ranking when early stopping fails, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Shows adaptive allocation still has value for ranking even when early stopping fails.**\n\nThe purpose is specifically to demonstrate that adaptive allocation retains value for *ranking* tasks even when early stopping benefits are absent — isolating the ranking benefit of adaptive allocation from early stopping benefits. Paper [3] \"Balancing Optimal Large Deviations in Sequential Selection\" discusses adaptive vs. static allocations for ranking/selection problems and their relative merits. Paper [12] \"Optimal Computing Budget Allocation for Complete Ranking\" addresses efficient allocation for ranking all designs. However, these are in simulation/statistics contexts, not LLM evaluation. More critically, the specific claim — \"adaptive allocation helps ranking even when early stopping fails\" — is a nuanced finding about decomposing two sources of benefit. Paper [2] studies test-time compute scaling for LLMs and touches on adaptive computation, but doesn't isolate this specific relationship. No prior paper appears to establish this specific empirical relationship (adaptive allocation value for ranking, controlling for early stopping) in any domain.\n\n**MECHANISM: Comparison of adaptive allocation against random allocation at matched rollout cost.**\n\nThis is a controlled comparison (adaptive vs. random baseline) at iso-compute/matched cost. Paper [2] performs comparisons of different compute allocation strategies at matched compute budgets for LLMs. Paper [3] compares adaptive vs. static allocations. Paper [15] (BEACON) compares adaptive sampling strategies. The generic design of \"compare adaptive vs. random at matched cost\" is a standard controlled ablation/comparison that appears broadly. Paper [2] explicitly does \"matched compute\" comparisons of allocation strategies for LLM test-time compute. This is a standard comparison design (iso-compute comparison of adaptive vs. baseline) that appears in [2].\n\n**EVALUATION: Adaptive allocation outperforms random allocation at matched cost.**\n\nThe evaluation design is an iso-compute comparison measuring performance (accuracy/ranking quality) of adaptive vs. random allocation. Paper [2] uses exactly this evaluation design — comparing different allocation strategies at matched inference compute budgets on math reasoning benchmarks. This is a standard iso-compute comparison design covered by [2].\n\n**DOMAIN: LLM evaluation / test-time compute for mathematical reasoning.**\n\nPaper [2] explicitly studies \"scaling LLM test-time compute\" with focus on mathematical reasoning tasks. Paper [15] (BEACON) also addresses LLM sampling efficiency. Paper [9] addresses adaptive rollout in RLVR for LLM reasoning. The domain of LLM test-time compute for mathematical reasoning is clearly covered by [2].\n\nVERDICT purpose = NONE\nVERDICT mechanism = 2\nVERDICT evaluation = 2\nVERDICT domain = 2",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper examines whether adaptive allocation retains value for ranking specifically when early stopping fails — the closest papers (e.g., [3], [12], [13], [18], [23]) study adaptive allocation for ranking or selection but do not frame their contribution around the fallback utility of adaptive allocation when early stopping is ineffective."
+     }
+    }
+   }
+  }
+ ]
+}

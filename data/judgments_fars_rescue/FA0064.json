@@ -1,0 +1,438 @@
+{
+ "paper_id": "FA0064",
+ "title": "NLL-Guided Full-Attention Layer Selection for Training-Free Sliding-Window Adaptation",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     20,
+     29
+    ],
+    "mechanism": [
+     8,
+     20,
+     21
+    ],
+    "evaluation": [
+     6,
+     20
+    ],
+    "domain": [
+     1,
+     3,
+     5,
+     6,
+     11,
+     19,
+     20,
+     22
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 20
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        3,
+        5,
+        6,
+        11,
+        19,
+        20,
+        22
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to decide which layers of a pretrained Transformer should retain full attention when adapting to hybrid sliding-window attention without training. This objective is not explicitly covered by any prior paper. While papers like [1], [20], and [22] discuss hybrid attention architectures and their challenges, none focus on layer selection for retaining full attention during adaptation. Papers such as [7], [9], and [14] discuss layer-wise pruning or dropping, but their purpose is computational efficiency or compression, not optimizing layer retention for hybrid attention adaptation.\n\n### Mechanism\nThe mechanism involves NLL-guided layer selection: measuring each layer's negative log-likelihood degradation on answer tokens when that layer uses sliding-window instead of full attention, and keeping the most sensitive layers at full attention. Papers like [8], [10], [21], and [33] discuss layer sensitivity analysis for quantization or pruning, but none use negative log-likelihood degradation as the sensitivity metric for hybrid attention adaptation. Papers such as [20] and [22] discuss sliding-window attention but do not propose a mechanism for layer selection based on NLL degradation.\n\n### Evaluation\nThe evaluation uses LongMemEval with Qwen3-4B, achieving 64.6% accuracy with only 1/4 full-attention layers, matching the 1/2-FA periodic baseline (65.0%) at half the budget. Papers like [1], [20], and [22] evaluate hybrid attention architectures, but none use LongMemEval or a similar benchmark family. The evaluation design (comparing accuracy and computational budget trade-offs for hybrid attention configurations) is not explicitly covered by any prior paper.\n\n### Domain\nThe domain is efficient long-context LLM inference. This domain is covered by multiple prior papers, including [1], [3], [5], [6], [11], [19], [20], and [22], which all address efficient long-context processing for LLMs. While the specific problem of layer selection for hybrid sliding-window attention is new, the general application area of efficient long-context LLM inference is well-established.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [1, 3, 5, 6, 11, 19, 20, 22]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses layer selection for hybrid sliding-window attention adaptation in pretrained Transformers.  \nFACET: mechanism | FINAL: COVERED-BY 20 | reason: SWAA (2025-12-11) discusses sensitivity-based adaptation for sliding-window attention, quoting \"catastrophic long context performance collapse... addressed by identifying sensitive layers.\"  \nFACET: evaluation | FINAL: NONE | reason: No prior paper evaluates hybrid sliding-window attention on LongMemEval with Qwen3-4B or similar metrics.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 20
+      },
+      "mechanism": {
+       "covered_by": 21
+      },
+      "evaluation": {
+       "covered_by": 20
+      },
+      "domain": {
+       "covered_by": 20
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## PURPOSE\n\nThe purpose is: \"Decide which layers of a pretrained Transformer should retain full attention when adapting to hybrid sliding-window attention without training.\"\n\nPaper [20] (SWAA) directly addresses \"Sliding Window Attention Adaptation for Efficient and Quality Preserving Long Context Processing\" — adapting pretrained full-attention models to use sliding-window attention. Paper [1] addresses \"post-training linearisation methods convert pre-trained Transformers to linear models efficiently, often using hybrid approaches that combine linear attention with sliding-window softmax\" and identifies flaws in existing hybrid methods. Paper [11] also covers \"converting pre-trained softmax attention blocks\" to hybrid architectures. Paper [22] studies hybrid architectures combining sliding-window and global attention layers.\n\nHowever, the specific purpose of *selecting which layers* to keep as full attention (layer selection for hybrid conversion without training) is most directly addressed by [20], which explicitly deals with which layers use SWA vs. full attention in a pretrained model adaptation setting. Paper [1] also addresses component imbalance in hybrid linear attention conversion, touching on layer-level decisions.\n\n## MECHANISM\n\nThe mechanism is: \"NLL-guided layer selection — measure each layer's NLL degradation on answer tokens when that layer uses sliding-window instead of full attention, and keep the most sensitive layers at full attention.\"\n\nThis is a sensitivity-based layer selection approach using loss/NLL as the sensitivity metric. Papers [8], [21], [29], [33], [31], [34] all use layer-wise sensitivity analysis (measuring per-layer degradation) to guide mixed-precision decisions — the same primitive of \"measure how much performance degrades when layer X is changed, use that to decide treatment of layer X.\" Paper [21] (LSMQ) explicitly \"calculated the sensitivity of each layer first, then the weight of each layer would be automatically quantized.\" Paper [29] assigns \"higher bit precisions to layers that are more sensitive.\" Paper [33] proposes \"an accuracy-aware criterion to quantify the layer's importance rank.\"\n\nThe primitive is identical: isolate each layer's contribution to output quality degradation, rank layers by sensitivity, allocate a higher-quality operation to the most sensitive layers. The application domain differs (quantization vs. attention type selection) but the mechanism is the same.\n\n## EVALUATION\n\nThe evaluation uses LongMemEval benchmark with accuracy metric, comparing against a periodic baseline (1/2-FA) at different budget levels. Paper [20] evaluates sliding-window attention adaptation on long-context benchmarks. Paper [3] evaluates long-context inference efficiency on LLM benchmarks with accuracy metrics. The evaluation design (accuracy on a long-context QA benchmark, comparing sparse-attention variants at different budgets) is used in [20] and [3]. LongMemEval is a specific benchmark instance within the long-context evaluation design family used across these papers.\n\n## DOMAIN\n\nThe domain is \"Efficient long-context LLM inference.\" Papers [3], [5], [6], [19], [20] all operate in this exact domain. Paper [20] is directly in efficient long-context LLM inference with sliding-window attention. Paper [3] addresses \"Efficient Long-Context Inference... for LLMs.\"\n\nVERDICT purpose = 20\nVERDICT mechanism = 21\nVERDICT evaluation = 20\nVERDICT domain = 20",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 29
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe purpose is to decide which layers in a pretrained Transformer should use full attention versus a more efficient alternative (sliding-window attention) in a training-free manner. This is an instance of the general objective of layer-wise resource allocation for model efficiency. This objective is covered by numerous papers in model compression, such as [29], which aims to solve the same problem for mixed-precision quantization: \"mixed-precision quantization where higher bit precisions are assigned to layers that are more sensitive.\"\n\n**MECHANISM**\nThe mechanism is to measure each layer's sensitivity by quantifying the degradation in the final model's negative log-likelihood (NLL) when that specific layer is switched from full to sliding-window attention. This primitive—isolating a component, applying a simplification, and measuring the impact on a global performance metric to guide selection—is covered by prior work. For example, [8] uses this approach for quantization, where it \"analyzed the sensitivity of layers by isolating the quantization effect\" to determine their importance.\n\n**EVALUATION**\nThe evaluation design involves measuring accuracy on a long-context benchmark (LongMemEval) and comparing the proposed method's accuracy-efficiency trade-off against a baseline. This is a standard evaluation protocol for work on efficient long-context inference. The design is covered by prior work like [6], which explicitly addresses improving the \"speed-accuracy trade-off\" and would necessarily use a similar evaluation framework of measuring performance versus computational cost on relevant benchmarks.\n\n**DOMAIN**\nThe application domain is efficient long-context LLM inference. This is a well-established area of research and is explicitly the domain of several prior papers. For instance, [3] is titled \"Efficient Long-Context Inference and Length Extrapolation for LLMs,\" and [6] is titled \"Self-Predictive Token Skipping for Efficient Long-Context LLM Inference,\" both of which operate in the exact same application area.\n\nVERDICT purpose = 29\nVERDICT mechanism = 8\nVERDICT evaluation = 6\nVERDICT domain = 3",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     24
+    ],
+    "mechanism": [
+     1,
+     24
+    ],
+    "evaluation": [
+     1,
+     6
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to demonstrate that measured layer importance outperforms fixed periodic patterns and attention-based heuristics in layer selection. Paper [1] discusses layer selection for hybrid attention models but does not compare measured layer importance against periodic patterns or heuristics. Paper [20] introduces Head Importance Scores (HIS) for pruning attention heads, which involves importance-based selection, but it does not address periodic patterns or heuristics. No prior paper explicitly establishes the same empirical relationship between measured layer importance and these alternatives.\n\n### Mechanism\nThe mechanism involves a head-to-head comparison of NLL-guided 1/4-FA against periodic 1/4-FA patterns and attention-based heuristics. Paper [1] uses KL-guided layer selection for hybrid attention models, which is conceptually similar to importance-based selection but does not involve NLL-guided 1/4-FA or comparisons to periodic patterns or heuristics. Paper [20] uses HIS for pruning, which is another importance-based approach but does not involve NLL-guided 1/4-FA or the specific comparison setup described here. No prior paper employs the same mechanism.\n\n### Evaluation\nThe evaluation design compares NLL-guided 1/4-FA against periodic 1/4-FA patterns and attention-based heuristics on LongMemEval, reporting performance improvements. Paper [6] introduces the Long-Context Attention Benchmark, which is a benchmark family for evaluating attention mechanisms, including hybrid attention. Paper [26] and [28] discuss long-context benchmarks, but they focus on retrieval-based or generation-based tasks rather than layer selection. Paper [1] evaluates layer selection methods but does not use LongMemEval or a similar benchmark family. No prior paper uses the same evaluation design.\n\n### Domain\nThe domain is hybrid attention layer selection. Paper [1] explicitly addresses hybrid attention layer selection for efficient LLM inference, making it substantively equivalent in application area. Paper [7] theoretically characterizes hybrid attention mechanisms but does not focus on layer selection. Paper [4] discusses intra-layer hybrid attention but does not address layer selection. Paper [3] introduces hybrid sparse attention but does not focus on layer selection. Paper [20] addresses pruning but does not focus on hybrid attention. Paper [1] covers the domain.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 1  ",
+      "stage2": "- **FACET: purpose** | **FINAL: NONE** | reason: No prior paper demonstrates that measured layer importance beats fixed periodic patterns and attention-based heuristics under the same objective, despite different terminology or framing.  \n- **FACET: mechanism** | **FINAL: NONE** | reason: No prior paper performs a head-to-head comparison of NLL-guided 1/4-FA against periodic 1/4-FA patterns and attention-based heuristics (LightTransfer-style) on LongMemEval.  \n- **FACET: evaluation** | **FINAL: NONE** | reason: No prior paper reports NLL-guided 1/4-FA outperforming the best periodic 1/4-FA pattern by 10.4pp and attention-based heuristics by 26.4pp, nor any equivalent claim.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": 1
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Demonstrate that measured layer importance beats fixed periodic patterns and attention-based heuristics.**\n\nThe purpose is to show empirically that NLL-guided (data-driven) layer importance measurement outperforms both periodic/fixed patterns and attention-based heuristics for hybrid attention layer selection. Paper [1] explicitly addresses layer selection for hybrid attention and uses \"layer importance\" (KL-guided) to compare against alternatives: \"A critical factor in the conversion process is layer selection, i.e., deciding on which layers to convert to linear attention variants. This paper describes a simple and efficient recipe for layer selection that uses layer import[ance].\" This is the same empirical relationship — measured importance beats fixed/heuristic selection — same variables and direction of effect.\n\n**MECHANISM: Head-to-head comparison of NLL-guided 1/4-FA against periodic patterns and attention-based heuristics (LightTransfer-style) on LongMemEval.**\n\nThe mechanism is a controlled comparison of importance-guided vs. periodic vs. attention-heuristic layer selection strategies. Paper [1] performs the same type of comparison: KL-guided layer selection vs. periodic patterns and other heuristics for hybrid attention conversion. The design is a substitution/swap experiment comparing selection strategies — the same analytical primitive, even if the specific benchmark (LongMemEval) differs.\n\n**EVALUATION: NLL-guided 1/4-FA outperforms the best periodic 1/4-FA pattern by 10.4pp and attention-based heuristics by 26.4pp.**\n\nThe evaluation design is a benchmark comparison measuring task performance (accuracy/score) across different layer selection strategies. Paper [1] uses the same evaluation design — comparing layer selection methods on downstream benchmarks with performance metrics. The specific numbers and benchmark (LongMemEval) differ, but the design (compare selection strategies on a long-context/language benchmark) is the same. This is a parameter change (different benchmark instance), not a logic change.\n\n**DOMAIN: Hybrid attention layer selection.**\n\nPaper [1] operates directly in hybrid attention layer selection for LLMs: \"Distilling pretrained softmax attention Transformers into more efficient hybrid architectures that interleave softmax and linear attention layers... A critical factor in the conversion process is layer selection.\" This is exactly the same domain. Papers [3], [4], [7] also work in hybrid attention architectures.\n\nVERDICT purpose = 1\nVERDICT mechanism = 1\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 24
+      },
+      "mechanism": {
+       "covered_by": 24
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: Paper [24] establishes the same empirical relationship, demonstrating that a measured importance metric (\"gradient-based layer sensitivity\") outperforms a fixed pattern (\"uniform compression\") for structural network modification.\n\nmechanism: The head-to-head comparison of different strategies on a benchmark is a standard analysis protocol used in prior work, such as in [24] which compares its sensitivity-based pruning method against uniform pruning.\n\nevaluation: The evaluation design, which consists of using a benchmark from the \"long-context benchmark\" family, is covered by prior work such as [6] (\"Long-Context Attention Benchmark\") and [26] (\"LongGenBench\").\n\ndomain: The domain of hybrid attention layer selection is explicitly covered by [1], which addresses \"Distilling to Hybrid Attention Models via KL-Guided Layer Selection\".\n\nVERDICT purpose = [24]\nVERDICT mechanism = [24]\nVERDICT evaluation = [6]\nVERDICT domain = [1]",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     22,
+     32
+    ],
+    "evaluation": [
+     1
+    ],
+    "domain": [
+     5,
+     11,
+     19
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 22
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to validate that the NLL signal captures long-range attention needs rather than generic layer sensitivity. None of the prior papers explicitly establish or validate this specific empirical relationship. While some papers (e.g., [4], [13], [20]) discuss long-range attention in LLMs, they do not address the specific relationship between NLL signals and long-range attention needs versus generic layer sensitivity. Similarly, papers like [15], [14], and [10] explore layer-wise sensitivity or importance but do not investigate the specific role of NLL signals in capturing long-range attention needs. Therefore, no prior paper covers this purpose.\n\n### Mechanism\nThe mechanism involves a de-confounding analysis comparing layer rankings derived from long vs. short prompts. While several papers discuss layer-wise analysis ([5], [10], [14], [15], [18], [19]), none of them employ a de-confounding analysis that specifically compares layer rankings derived from long versus short prompts. Paper [22] discusses confounding and control in general, but it does not apply this concept to layer rankings or long/short prompts. Thus, no prior paper covers this mechanism.\n\n### Evaluation\nThe evaluation uses Spearman’s rank correlation coefficient to measure the correlation between long- and short-prompt rankings. Papers [1], [6], [9], [17], [23], and [24] all discuss Spearman’s rank correlation or related rank correlation methods. For example, [1] and [6] describe Spearman’s rho as a non-parametric measure of correlation, and [9] discusses its application to ranked data. While these papers do not apply Spearman’s rho to the specific context of long- and short-prompt rankings, the evaluation design (using Spearman’s rho to measure rank correlation) is well-established in prior work. Therefore, the evaluation is covered.\n\n### Domain\nThe domain is the mechanistic validation of layer-importance signals. Papers like [5], [10], [14], [15], and [25] all address layer-wise analysis or sensitivity analysis in neural networks, which falls within the same general application area. While the specific focus on NLL signals and long-range attention needs is new, this is a change of instance within the broader area of layer-importance validation, not a new application area. Therefore, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 1  \nVERDICT domain = 5  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 4 | reason: ProLong explicitly assigns a \"long dependency score\" to rank samples based on long-range attention needs, aligning with the objective of validating NLL signal for long-range attention.  \nFACET: mechanism | FINAL: COVERED-BY 22 | reason: Paper 22 discusses confounding and control, providing methodological approaches to de-confounding, which aligns with the analysis of layer rankings derived from long vs short prompts."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 32
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 19
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Validate that the NLL signal captures long-range attention needs rather than generic layer sensitivity.**\n\nThe purpose is to demonstrate that a specific signal (NLL-based layer importance) is specific to long-range attention rather than being a generic sensitivity measure. This is a de-confounding/validation claim about a particular signal's specificity. Paper [19] (AdaSkip) discusses layer-wise skipping in long-context LLM inference and layer importance signals. Paper [4] discusses long-dependency scoring. However, none of these papers establish the same empirical relationship: that NLL-derived layer rankings are specific to long-range attention needs (vs. generic sensitivity). No prior paper reports this same directional relationship between these specific variables.\n\n**MECHANISM: De-confounding analysis comparing layer rankings derived from long vs short prompts.**\n\nThe mechanism is a controlled comparison of layer rankings under two conditions (long vs. short prompts) to isolate whether the signal is specific to long-range context. Paper [22] discusses confounding and control methodology. Paper [32] discusses negative controls for detecting confounding in observational studies — this is conceptually close to a de-confounding analysis. Paper [21] discusses conditional permutations for variable importance with confounding concerns. However, the specific primitive of \"compare rankings under two conditions to de-confound a signal\" is a standard controlled comparison/ablation design. Paper [32] explicitly addresses using negative controls to detect confounding, which is the same underlying primitive as comparing long vs. short prompt rankings to isolate the long-range-specific component.\n\n**EVALUATION: Spearman rho = 0.306 between long- and short-prompt rankings.**\n\nThe evaluation uses Spearman rank correlation as a metric to quantify agreement between two ranked lists. Papers [1], [2], [6], [9], [23], [24] all cover Spearman's rho as a statistical tool. The use of Spearman rho to compare two ranked lists is thoroughly covered. The evaluation design (computing Spearman correlation between two sets of rankings) is a standard statistical protocol present in multiple prior papers.\n\n**DOMAIN: Mechanistic validation of layer-importance signals.**\n\nThe domain is mechanistic analysis/validation of layer-importance signals in neural networks. Papers [10], [14], [15], [19], [28], [29] all work in the area of layer-wise importance/sensitivity analysis in neural networks. Paper [19] specifically addresses layer-wise skipping in long-context LLM inference. This is clearly within the existing area of layer importance analysis.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 32\nVERDICT evaluation = 1\nVERDICT domain = 19",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper contains the objective of validating that an NLL signal specifically captures long-range attention needs rather than generic layer sensitivity. Paper [4] (ProLong) scores long-dependency data but does not use NLL to probe layer-wise attention range. Paper [19] (AdaSkip) examines layer skipping in long-context inference but does not validate an NLL signal against long-range vs. generic sensitivity. No other paper matches this specific empirical objective even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 22
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 11
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "PURPOSE: The contribution's purpose is to validate a specific empirical relationship: that the NLL signal for layer importance reflects long-range attention needs, not just generic layer sensitivity. None of the prior papers investigate or establish this specific relationship; they either discuss long-context models generally (e.g., [4], [20]), methods for analyzing layer importance (e.g., [5], [11]), or are unrelated.\n\nMECHANISM: The mechanism is a \"de-confounding analysis comparing layer rankings derived from long vs short prompts.\" This is an application of the standard experimental design principle of using a controlled comparison to isolate a variable of interest and rule out a confounder. Paper [22] explicitly discusses this design, stating its purpose is \"controlling for a confounding factor.\"\n\nEVALUATION: The evaluation design is the use of Spearman's rank correlation coefficient (rho) to compare two rankings. This is a standard, named statistical method. Paper [1] is an encyclopedia entry that defines \"Spearman’s rank correlation coefficient,\" directly covering the evaluation design.\n\nDOMAIN: The domain is the \"mechanistic validation of layer-importance signals\" in neural networks. This falls into the well-established research area of sensitivity analysis and interpretability. Paper [11], \"Sensitivity Analysis for Neural Networks,\" is a clear example of prior work in this exact domain.\n\nVERDICT purpose = NONE\nVERDICT mechanism = [22]\nVERDICT evaluation = [1]\nVERDICT domain = [11]",
+      "stage2": "FACET: purpose: Validate that the NLL signal captures long-range attention needs rather than generic layer sensitivity. | FINAL: NONE | reason: No prior paper has the specific objective of validating the NLL signal for long-range needs by explicitly attempting to disentangle it from the potential confounder of generic layer sensitivity. Papers discuss layer sensitivity or long-range context, but not this specific validation goal."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     3,
+     5,
+     9
+    ],
+    "mechanism": [
+     9,
+     16,
+     19,
+     24
+    ],
+    "evaluation": [
+     9,
+     16,
+     19,
+     26
+    ],
+    "domain": [
+     5,
+     14,
+     18,
+     25
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        3,
+        5
+       ]
+      },
+      "mechanism": {
+       "covered_by": [
+        9,
+        19
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        9,
+        19
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        5,
+        25
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**Purpose:**  \nThe purpose is to show that the method is cheap enough for practical deployment. Paper [3] (\"Anytime learning of anycost classifiers\") discusses cost reduction in classifiers, aiming to make them practical for deployment by reducing computational expense. This aligns with the same objective of demonstrating practical affordability. Paper [5] (\"Amortized Inference with User Simulations\") also addresses cost reduction for practical deployment, specifically in simulation models, which is substantively equivalent at the problem-class level.  \n\n**Mechanism:**  \nThe mechanism is a one-time NLL calibration pass whose cost amortizes over subsequent inference requests. Paper [9] (\"Adversarial robustness of amortized Bayesian inference\") describes amortized Bayesian inference, where computational cost is initially invested in training an inference network, and subsequent inference requests benefit from this upfront cost amortization. Paper [19] (\"Amortized Monte Carlo Integration\") similarly introduces amortized methods for Monte Carlo integration, which amortize initial computational costs over subsequent operations. Both papers use the same underlying primitive of amortizing upfront computational costs over future operations, making the mechanism covered.  \n\n**Evaluation:**  \nThe evaluation involves measuring calibration time (~15 minutes on 4 GPUs) and amortization after ~1,354 inference requests at 24k prompt length. Paper [9] (\"Adversarial robustness of amortized Bayesian inference\") evaluates amortized inference methods by measuring computational efficiency gains over repeated inference tasks, which is substantively equivalent in design. Paper [19] (\"Amortized Monte Carlo Integration\") also evaluates amortized methods by analyzing computational efficiency gains over repeated operations. Both papers use the same evaluation design of measuring amortization efficiency, even though the specific benchmarks and objects differ.  \n\n**Domain:**  \nThe domain is deployment cost analysis. Paper [5] (\"Amortized Inference with User Simulations\") addresses deployment cost analysis in simulation models, which falls within the same general application area. Paper [25] (\"Cost-Effective Scaling of Machine Learning Model using Serverless Architecture\") also focuses on cost-effective deployment of machine learning models, which is substantively equivalent in domain.  \n\n**Verdict Lines:**  \nVERDICT purpose = 3, 5  \nVERDICT mechanism = 9, 19  \nVERDICT evaluation = 9, 19  \nVERDICT domain = 5, 25  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 24
+      },
+      "evaluation": {
+       "covered_by": 26
+      },
+      "domain": {
+       "covered_by": 14
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Show the method is cheap enough for practical deployment.**\n\nThe purpose is to demonstrate that a one-time calibration cost is low enough to be practically viable, essentially a deployment feasibility/cost-justification argument. Papers [26], [28], [16] discuss break-even analysis (when does an investment pay off?), which is conceptually related but in financial/operational research contexts, not ML deployment. Paper [14] analyzes \"response time, calibration, and model optimisation\" on embedded systems and explicitly discusses deployment cost and calibration cost together. However, the specific purpose of showing a calibration step amortizes over inference requests is not clearly established in any prior paper as the same empirical relationship. Paper [10] discusses \"the costs of calibration\" for instruments. None of these establish the same relationship: \"one-time NLL calibration cost amortizes over subsequent LLM inference requests.\" The closest is [14] which discusses calibration cost in deployment, but not the amortization relationship specifically.\n\n**MECHANISM: One-time NLL calibration pass whose cost amortizes over subsequent inference requests.**\n\nThe core primitive is: pay a one-time upfront cost, then reuse across many queries (amortization). Papers [5], [9], [11], [19], [21], [24] all discuss amortized inference — paying upfront training/calibration cost that amortizes over subsequent queries. Paper [24] (\"Tutorial on Amortized Optimization\") explicitly describes \"amortized optimization methods use learning to predict solutions... exploiting shared structure between similar problem instances\" and solving problems \"many orders of magnitudes faster.\" Paper [9] discusses \"initially invest computational cost in training an inference network... which can subsequently be used to rapidly perform inference for new observations.\" The primitive of one-time cost amortized over subsequent uses is clearly covered by the amortized inference literature.\n\n**EVALUATION: Calibration takes ~15 minutes on 4 GPUs and amortizes after ~1,354 inference requests at 24k prompt length.**\n\nThis is a break-even analysis: compute the crossover point where upfront cost is recovered. Papers [26], [28], [16] explicitly cover break-even analysis as an evaluation/analytical design. The evaluation design here is essentially a break-even calculation (upfront cost ÷ per-query savings = break-even number of queries). This is a standard break-even analysis design, covered by [26]/[28]. Additionally, [14] benchmarks inference time and calibration cost on deployment hardware, which is the same evaluation design applied to a different object.\n\n**DOMAIN: Deployment cost analysis.**\n\nThe domain is deployment cost analysis for ML/inference systems. Papers [14] (\"Comprehensive Analysis of Neural Network Inference on Embedded Systems: Response Time, Calibration, and Model Optimisation\"), [18] (LLM inference serving), [12] (GNN serving), [20] (Kubernetes-based cost optimization for large-scale deployments), and [25] (cost-effective scaling of ML models) all operate in the ML deployment cost analysis area. Paper [14] is particularly close, covering calibration + deployment cost + inference analysis together.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 24\nVERDICT evaluation = 26\nVERDICT domain = 14",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of demonstrating that the proposed method is cheap enough for practical deployment. Paper [14] discusses response time and model optimization on embedded systems, and [25] discusses cost-effective scaling via serverless architecture, but neither quotes a phrase establishing the same objective — showing a specific inference/calibration method's computational cost is low enough for real-world deployment. No exact or terminologically equivalent match found."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": 16
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": 18
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: The contribution's purpose is to establish that a method with a significant one-time cost is practical for deployment because that cost is amortized over repeated use. Paper [9] establishes the same relationship for a different method, stating \"the idea of amortized Bayesian inference is to initially invest computational cost in training an inference network... which can subsequently be used to rapidly perform inference,\" showing an upfront cost is justified by long-term efficiency.\n\nmechanism: The mechanism is an amortized cost analysis, where an initial investment is shown to be paid back over subsequent operations. Paper [16] describes this exact analysis primitive, the \"Break-even method of investment analysis,\" which is the specific form of amortized cost analysis used.\n\nevaluation: The evaluation design is a break-even analysis that calculates the specific point (number of inference requests) at which the initial setup cost is fully recovered. Paper [16], titled \"Break-even method of investment analysis,\" describes this exact evaluation design, making it a direct match.\n\ndomain: The domain is the cost analysis of deploying machine learning models for inference. Paper [18] operates squarely in this domain by analyzing the \"Throughput-Latency Tradeoff in LLM Inference with Sarathi-Serve,\" which is a core problem in deployment cost and performance analysis.\n\nVERDICT purpose = 9\nVERDICT mechanism = 16\nVERDICT evaluation = 16\nVERDICT domain = 18",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

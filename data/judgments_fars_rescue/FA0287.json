@@ -1,0 +1,298 @@
+{
+ "paper_id": "FA0287",
+ "title": "SinkCast: An Empirical Study of Inference-Time Correction for BF16 RoPE Shift-Invariance",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     16
+    ],
+    "evaluation": [
+     6,
+     11
+    ],
+    "domain": [
+     7,
+     11,
+     19
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 19
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to \"restore BF16 RoPE shift-invariance at low overhead by correcting only attention-sink positions.\" This is a specific objective related to numerical precision in attention mechanisms, particularly addressing the shift-invariance issue in BF16 RoPE. None of the prior papers explicitly address this purpose. While [19] discusses attention sinks in streaming LLMs and [14], [7], and [8] explore RoPE mechanisms and extensions, none of them aim to restore BF16 RoPE shift-invariance or address this specific problem. These papers either focus on understanding or extending RoPE, or on general attention sink phenomena, but not on correcting BF16 RoPE shift-invariance.\n\n### Mechanism\nThe mechanism, \"SinkCast,\" involves running BF16 FlashAttention to obtain output and log-sum-exp statistics, selectively recomputing sink-key logits in FP32, and applying a closed-form correction to the output. This mechanism combines selective recomputation and numerical correction techniques. Papers [16] and [17] describe selective recomputation for error correction in binary neural networks, which is conceptually similar to the selective recomputation aspect of SinkCast. Additionally, [2], [4], and [20] discuss accurate computation of log-sum-exp and softmax functions, which overlaps with the numerical correction aspect of SinkCast. However, none of these papers combine selective recomputation with closed-form correction in the specific context of BF16 RoPE or attention mechanisms, making the mechanism partially related but not fully covered.\n\n### Evaluation\nThe evaluation uses a three-stage method on Llama-3.1-8B and Mistral-7B-v0.3 with FlashAttention-2, measuring gap closure percentages. This evaluation design is not novel. Papers [6] and [3] evaluate FlashAttention variants on LLMs, and [19] evaluates attention sinks in streaming LLMs. These prior works use similar evaluation designs involving LLMs, attention mechanisms, and performance metrics. The specific models and benchmarks differ, but the evaluation design (testing on LLMs with attention mechanisms and measuring performance improvements) is covered.\n\n### Domain\nThe domain is \"LLM inference / attention numerical precision (BF16 RoPE, position-independent KV caching).\" Papers [7], [8], [14], and [19] all work in the general area of LLM inference and attention mechanisms, including RoPE and attention sinks. While the specific focus on BF16 RoPE and position-independent KV caching is narrower, it falls within the broader domain of LLM inference and attention numerical precision, which is covered by these prior works.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 6  \nVERDICT domain = 7  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 19 | reason: Paper [19] explicitly addresses restoring BF16 RoPE shift-invariance at low overhead by correcting attention-sink positions: \"Window attention, where only the most recent KVs are cached, is a natural approach -- but we show that it fails to address attention sink issues effectively. We propose methods to mitigate this phenomenon while maintaining efficiency.\"\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes the selective recomputation of sink-key logits in FP32 combined with a closed-form correction applied to BF16 FlashAttention outputs."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 16
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 19
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Restore BF16 RoPE shift-invariance at low overhead by correcting only attention-sink positions.**\n\nThe purpose is specifically about fixing numerical precision errors in BF16 RoPE computations that break shift-invariance, targeting only attention-sink positions to minimize overhead. Paper [19] (Efficient Streaming LLMs with Attention Sinks) introduces attention sinks and position-independent KV caching but does not address BF16 numerical precision restoration. Paper [22] (Mixed precision algorithms) discusses mixed-precision for accuracy but not RoPE shift-invariance specifically. No prior paper pursues the objective of \"restoring RoPE shift-invariance under BF16 precision by selectively correcting sink positions.\" The closest thematic neighbors ([19], [22], [14]) address different gaps (streaming inference, general mixed-precision, RoPE extrapolation) — none target this specific precision-restoration objective.\n\n**MECHANISM: SinkCast — run BF16 FlashAttention, selectively recompute sink-key logits in FP32, apply closed-form correction using log-sum-exp statistics.**\n\nThe mechanism combines: (1) selective recomputation of specific positions in higher precision, (2) using log-sum-exp statistics from FlashAttention to apply a closed-form output correction. Papers [16] and [17] use \"selective recompute-based error correction\" — [16] states \"applies recompute-based error correction only to error-sensitive channels\" and [17] \"recompute is performed selectively.\" However, these apply to binary neural networks with transient hardware errors, not floating-point precision correction in attention. The primitive of \"selectively recompute only sensitive elements to correct errors\" is structurally equivalent. Papers [2]/[4] cover log-sum-exp numerical stability but not the correction formula applied to attention outputs. The closed-form correction using LSE statistics (subtract BF16 contribution, rescale, add FP32 contribution) is a specific attention-output correction primitive not found elsewhere. Papers [16]/[17] cover the selective recompute idea but not the LSE-based closed-form output correction applied to attention. The combination is not fully covered, but the selective recompute primitive is present in [16]/[17].\n\n**EVALUATION: Llama-3.1-8B and Mistral-7B-v0.3 with FlashAttention-2; gap closure metrics.**\n\nThe evaluation uses standard LLM benchmarks on Llama and Mistral models — these model families appear in papers [1], [9], [10]. The evaluation design (measuring performance gap closure on standard LLM benchmarks) is a standard substitution/comparison experiment. Papers [1] and [6] evaluate on standard benchmarks with these model families. However, the specific \"gap closure percentage\" metric and the precision-correction evaluation protocol don't appear in prior work. The evaluation design of measuring how much a precision fix closes a performance gap is not a named benchmark family or standard protocol from prior papers — it's a custom measurement. No prior paper uses this specific evaluation design.\n\n**DOMAIN: LLM inference / attention numerical precision (BF16 RoPE, position-independent KV caching).**\n\nThe domain is LLM inference with attention mechanisms. Papers [1] (Mistral 7B), [6] (FlashAttention-2), [3] (FlashAttention-3), [19] (Streaming LLMs/attention sinks), [21] (attention sink analysis) all operate in LLM inference/attention. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 16\nVERDICT evaluation = NONE\nVERDICT domain = 19",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper targets restoring BF16 RoPE shift-invariance specifically by correcting only attention-sink positions at low overhead; [19] covers attention sinks and [2]/[4] cover softmax shift equivalence, but none combines these into the same objective of selectively patching sink positions to recover RoPE shift-invariance in BF16.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper presents a three-stage method evaluated on Llama-3.1-8B and Mistral-7B-v0.3 with FlashAttention-2 reporting gap-closure metrics of ≤23.6% and ≤36.3% against an 80% target; the specific experimental setup, models, and quantitative gap-closure framing appear nowhere in the prior papers."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 16
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 11
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: No prior paper addresses the specific objective of restoring RoPE's shift-invariance property when it is lost due to BF16 numerical precision issues. While papers discuss numerical accuracy in general ([2], [4]) or attention sinks ([19], [21]), none has the purpose of fixing this specific numerical artifact by targeting sink positions.\n\n**mechanism**: The core mechanism is to perform a fast, low-precision pass, identify a critical subset of the computation (the sink positions), re-compute only that subset in high precision, and then patch the original output. This \"selective recompute and correct\" primitive is present in [16], which proposes to \"selectively recomputing only those channels most susceptible to errors\" to perform error correction, and [17] which does the same.\n\n**evaluation**: The evaluation design measures \"gap closure,\" quantifying how much of the performance lost to a degradation (here, using BF16 instead of FP32) is recovered by the proposed method. This is a standard evaluation design in fields dealing with approximation and error correction, such as model quantization, as seen in [11] which proposes a \"mixed-precision quantization approach\" and would necessarily compare its method's accuracy against both the unquantized and naively quantized models.\n\n**domain**: The contribution operates in the domain of LLM inference, specifically focusing on the numerical precision of attention mechanisms like RoPE and concepts like KV caching. Numerous prior papers work in this general area, including [11] on \"Quantization Strategy for LLaMA-based Language Models\" and [19] on \"Efficient Streaming Language Models with Attention Sinks.\"\n\nVERDICT purpose = NONE\nVERDICT mechanism = 16\nVERDICT evaluation = 11\nVERDICT domain = 11",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper identifies the problem of RoPE's shift-invariance being broken by BF16 precision, nor proposes a solution that involves applying a correction specifically at attention-sink positions to restore this property at low overhead. The combination of problem (BF16-induced RoPE failure) and solution (targeted correction at sinks) is not present."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": null,
+    "domain": [
+     12
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 12
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to test whether BF16 shift-error is localized at attention sinks, specifically refuting the localization premise underlying SinkCast. None of the prior papers explicitly test or establish this empirical relationship. While several papers (e.g., [1], [3], [6], [11]) discuss attention sinks in various contexts, none address BF16 shift-error localization or refute the premise of SinkCast. Papers like [12], [18], and [24] discuss floating-point errors or BF16-related issues, but they do not explore attention sink localization.\n\n### Mechanism\nThe mechanism involves measuring the D_logit shift-error metric across key indices under position offsets and computing the sink key's fraction of total error. No prior paper uses this exact analysis method or metric. Papers like [1], [3], [6], and [11] analyze attention sinks, but their methods focus on attention patterns or structural biases rather than BF16 shift-error metrics. Papers like [12], [18], and [24] discuss floating-point error quantification but do not employ the D_logit metric or analyze attention sinks.\n\n### Evaluation\nThe evaluation design involves quantifying the sink key's fraction of total shift-error and comparing it to a threshold (e.g., 50%). This design is not covered by any prior paper. While papers like [1], [3], [6], and [11] evaluate attention sinks, their validation setups differ significantly, focusing on attention patterns or causal interventions rather than BF16 shift-error quantification. Papers like [12], [18], and [24] discuss floating-point error evaluation but do not use this specific design.\n\n### Domain\nThe domain is BF16 RoPE shift-error analysis. Papers like [12], [13], [15], and [16] address BF16 or RoPE-related issues, including quantization, rotary embeddings, and their implications for transformers. These papers operate in the same general application area of BF16 and RoPE analysis, even though they do not address attention sink localization specifically.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [12]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper tests BF16 shift-error localization at attention sinks; no equivalent objective found.  \nFACET: mechanism | FINAL: NONE | reason: No prior paper measures D_logit shift-error across indices under position offsets; no equivalent computation found.  \nFACET: evaluation | FINAL: NONE | reason: No prior paper evaluates sink key's D_logit fraction against total shift-error; no equivalent claim found.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": null
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation",
+      "domain"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**PURPOSE: Test whether BF16 shift-error is localized at attention sinks (the premise underlying SinkCast).**\n\nThe purpose is to empirically verify/refute a specific premise: that BF16 RoPE shift-error concentrates at attention sink positions. No prior paper examines this relationship — papers on attention sinks ([1],[2],[3],[4],[5],[6],[9],[11],[21]) study attention weight distributions, not BF16 numerical error localization. Papers on RoPE ([10],[13],[15],[16]) don't examine BF16 shift-error localization at sinks. Papers on floating-point error ([18],[24]) don't study RoPE or attention sinks. This specific empirical relationship (BF16 shift-error × attention sink position) is not established anywhere.\n\n**MECHANISM: Measure D_logit shift-error metric across key indices under position offsets 0 vs 4096, compute sink key's fraction of total error.**\n\nThis involves a specific controlled measurement protocol: computing a logit-difference metric (D_logit) across specific key positions under two position offset conditions, then computing fractional contribution. No prior paper uses this design — RoPE papers don't measure per-key-index shift-error fractions; attention sink papers don't compute numerical precision error metrics. Papers [24] and [18] address floating-point error analysis but not in this RoPE/attention-sink context with this specific protocol. This is a genuinely new analysis protocol.\n\n**EVALUATION: Sink key (j=0) accounts for only 5.0% (Llama) and 8.5% (Mistral) of total shift-error, refuting the localization premise.**\n\nThe evaluation design involves computing per-index fractional contributions to a total error metric and comparing against a threshold (50%), applied to two specific LLMs. No prior paper uses this evaluation design — it's a newly defined metric (D_logit fraction per key index) with a newly constructed measurement protocol. The benchmark/metric itself is novel, not just the object being measured.\n\n**DOMAIN: BF16 RoPE shift-error analysis.**\n\nThe domain sits at the intersection of BF16 numerical precision and RoPE positional embeddings in LLMs. RoPE papers ([10],[13],[15],[16]) cover RoPE in LLMs. Attention sink papers cover LLM attention mechanisms. Paper [12] covers BF16 in CNNs. However, the specific area of BF16 numerical error in RoPE computations within LLMs is not directly addressed by any prior paper as an application area. The closest is [13] (RoPE implementation efficiency) and [16] (RoPE theoretical properties), but neither addresses BF16 precision errors. This is a genuinely new intersection area not covered by prior work.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = NONE",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper tests whether BF16 shift-error is localized at attention sinks as the premise for a specific mitigation (SinkCast); attention sink papers study attention weight distributions, not BF16 numerical shift-error localization.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper measures a D_logit shift-error metric across specific key indices under position offsets (0 vs 4096) and computes a sink key's fraction of total error; this specific measurement protocol appears nowhere in the prior works.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports that the sink key (j=0) accounts for only ~5–8.5% of total BF16 shift-error and uses this to refute a localization premise; this specific quantitative finding and its threshold-based refutation are absent from all prior works.\n\nFACET: domain | FINAL: NONE | reason: No prior paper combines BF16 numerical precision analysis with RoPE positional encoding shift-error in the context of attention sinks; papers [12] and [18] touch BF16 or floating-point precision but not RoPE shift-error, and RoPE papers [13][15][16] do not analyze BF16 shift-error."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 30
+      },
+      "evaluation": {
+       "covered_by": 30
+      },
+      "domain": {
+       "covered_by": 12
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose:** The contribution's purpose is to test a specific empirical relationship: whether BF16-induced shift-error in RoPE is localized at attention sinks. As a \"finding\" contribution, this purpose is only covered if a prior paper reports or establishes the same relationship. No prior paper investigates the intersection of BF16 precision, RoPE shift-error, and attention sink localization, so this purpose is not covered.\n\n**mechanism:** The mechanism is to measure an error metric across different key indices and compute a specific key's fractional contribution to the total error, in order to test a localization hypothesis. This is a specific instance of a general analysis primitive: error source localization via component-wise measurement. This is covered by paper [30], which \"applies a software fault localization method to identify the neurons that cause performance degradation,\" a substantively equivalent analysis design.\n\n**evaluation:** The evaluation design involves attributing a system-level error metric (shift-error) to individual components (key positions) and using their quantitative contributions to test a hypothesis. This is a standard diagnostic design, not a new one. Paper [30] uses the same design by attributing \"performance degradation\" to specific neurons to identify root causes, which is the same primitive as attributing shift-error to key positions.\n\n**domain:** The domain is \"BF16 RoPE shift-error analysis.\" This is a specific problem within the broader, established area of analyzing numerical errors in neural network components. Prior work covers the constituent parts of this area; for instance, [12] analyzes errors in \"BF16-encoded CNN parameters\" and [10] analyzes \"Rotary Position Embedding.\" The contribution therefore operates within a covered general area, not a genuinely new one.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 30\nVERDICT evaluation = 30\nVERDICT domain = 12",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper investigates the relationship between low-precision format errors (like BF16 shift-error) and their potential localization at attention sinks. The papers on attention sinks do not discuss quantization error, and the papers on quantization do not analyze error distribution with respect to attention sinks."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     6
+    ],
+    "evaluation": [
+     1
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 12
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to explain why sink-focused correction fails and guide future approaches. Paper [12] (\"KVSink\") discusses the preservation of attention sinks in KV cache quantization and emphasizes the importance of understanding the underlying principles of sink behavior. Paper [17] (\"When Attention Sink Emerges in Language Models\") provides a deep empirical analysis of attention sinks in LLMs, aiming to understand their universal presence and implications. Both papers address the same problem-class level objective of understanding attention sink behavior, making the purpose facet **covered**.\n\n### Mechanism\nThe contribution analyzes BF16 rotation precision loss, showing that it affects all key positions proportionally to rotation angle rather than concentrating at sinks. Paper [6] (\"When Precision Meets Position\") identifies numerical issues in RoPE with BF16 format, specifically highlighting how precision loss impacts relative positional encoding in long-context scenarios. Paper [12] (\"KVSink\") also discusses precision-related degradation in KV cache quantization, focusing on attention sinks. Both papers analyze precision loss mechanisms in similar contexts, making the mechanism facet **covered**.\n\n### Evaluation\nThe contribution evaluates downstream performance on RULER and LongBench under position shift, reporting metrics like downstream improvement (-0.91 points) and degradation with increasing corrected keys. Paper [1] (\"LongBench\") introduces the LongBench benchmark for evaluating long-context understanding, and Paper [3] (\"LongBench v2\") extends this benchmark with deeper reasoning tasks. Paper [5] (\"LongBench Pro\") further refines the evaluation design for long-context tasks. Since the contribution uses the LongBench benchmark family, the evaluation design is **covered**.\n\n### Domain\nThe contribution operates in the domain of long-context LLM evaluation, specifically using RULER and LongBench. Papers [1], [3], and [5] all work in the same general application area of long-context LLM evaluation, even though they target different specific tasks or datasets. This makes the domain facet **covered**.\n\n---\n\nVERDICT purpose = 12  \nVERDICT mechanism = 6  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Explain why sink-focused correction fails and guide future approaches.**\n\nThe purpose is to diagnose a failure mode of a specific correction method (SinkCast/sink-focused key correction) by showing that BF16 rotation precision loss is not concentrated at sinks but distributed proportionally. Paper [6] \"When Precision Meets Position: BFloat16 Breaks Down RoPE in Long-Context Training\" addresses BF16 numerical issues in RoPE, but its purpose is to identify and fix the BF16/RoPE problem in training, not to explain why a sink-focused correction approach fails. Paper [12] (KVSink) addresses preservation of attention sinks in KV cache quantization, but its purpose is to enhance sink preservation, not to explain why sink-focused correction fails. Paper [17] studies attention sink emergence empirically. None of these papers share the specific purpose of explaining why sink-focused correction fails — this is a diagnostic purpose about a specific method's failure mode that no prior paper addresses.\n\n**MECHANISM: Analyze that BF16 rotation precision loss affects all key positions proportionally to rotation angle rather than concentrating at sinks; downstream evaluation on RULER and LongBench under position shift.**\n\nPaper [6] directly analyzes BF16 precision loss in RoPE, noting numerical deviations in long-context scenarios. However, the specific analytical finding — that the error is proportional to rotation angle and distributed across all positions rather than concentrated at sinks — is the mechanism here. Paper [6] discusses BF16/RoPE numerical issues but focuses on training-time fixes (e.g., using float32 for RoPE). The analytical primitive of \"measure per-position error as a function of rotation angle\" is related to [6]'s analysis. Paper [28] analyzes errors of constant rotation angle transforms as a function of rotation angle, but in a DSP context. The mechanism of analyzing precision loss proportional to rotation angle is partially covered by [6]'s BF16/RoPE analysis, which examines how BF16 deviates from intended behavior in RoPE. I'll consider [6] as covering this mechanism at the primitive level.\n\n**EVALUATION: Overall downstream improvement is -0.91 points (SinkCast worse than BF16 baseline); increasing corrected keys K beyond optimum degrades further (Llama K=16 gives -19.6% gap closure).**\n\nThe evaluation design uses RULER and LongBench benchmarks with standard accuracy metrics. Papers [1], [2], [3] introduce/use LongBench. RULER is a synthetic long-context benchmark. The evaluation design (running LLM on LongBench/RULER, reporting aggregate scores) is a standard design used in many prior papers. Paper [1] introduces LongBench and uses this exact evaluation design. The specific metrics reported (-0.91 points, gap closure percentages) are specific numbers, but the design (evaluate on LongBench/RULER, report accuracy) is covered by [1] and related papers.\n\n**DOMAIN: Long-context LLM evaluation (RULER, LongBench)**\n\nPapers [1], [2], [3], [4], [5] all operate in the domain of long-context LLM evaluation. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 6\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of explaining *why* sink-focused correction fails and guiding future approaches. Paper [12] (KVSink) studies preservation of attention sinks in KV cache quantization and notes that underlying principles are \"insufficiently understood,\" but its purpose is to explain and enhance sink preservation—not to diagnose the failure of sink-focused correction strategies or redirect future work away from them. Paper [17] analyzes when attention sinks emerge empirically but does not aim to explain why correcting sinks is insufficient. No other paper matches this specific objective even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe contribution's purpose is to explain why sink-focused correction fails for the BF16/RoPE numerical precision problem by showing the error is distributed, not concentrated at sinks. While paper [6] identifies the underlying problem of \"BFloat16 Breaks Down RoPE in Long-Context Training,\" it does not appear to analyze or refute the specific hypothesis about sink-focused correction. Other papers on attention sinks ([12], [17]) do not connect the phenomenon to this specific numerical error, making the contribution's explanatory purpose uncovered.\n\n**MECHANISM**\nThe mechanism is a combination of numerical analysis and downstream benchmarking. The core analysis of how BF16 precision loss affects RoPE rotations is substantively equivalent to the analysis in [6], which investigates how \"BFloat16 format results in numerical issues\" for RoPE. The second part of the mechanism, downstream evaluation on LongBench, is a standard protocol used in papers like [1].\n\n**EVALUATION**\nThe evaluation design involves measuring performance on the LongBench and RULER benchmarks. This evaluation design—using the LongBench benchmark family to assess long-context performance—is explicitly introduced and utilized by prior work, most notably [1] which introduced \"LongBench: A Bilingual, Multitask Benchmark for Long Context Understanding.\" Per the rules, using an established benchmark family, even for a new task, means the evaluation design is covered.\n\n**DOMAIN**\nThe contribution is situated in the domain of long-context Large Language Models. This is a well-established application area that is the explicit focus of numerous prior papers, including [1] (\"Benchmark for Long Context Understanding\") and [6] (\"RoPE in Long-Context Training\").\n\nVERDICT purpose = NONE\nVERDICT mechanism = 6\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the objective of explaining why a class of methods (\"sink-focused correction\") fails. Papers like [12] and [13] analyze the attention sink phenomenon and related successful techniques (like preserving initial tokens), but their purpose is to understand why these methods *work* or to provide a new theoretical framing, not to analyze their failure modes and guide future work based on that failure. Paper [24] explains why a method that *ignores* the sink (SWA) fails, which is the inverse of the specified purpose."
+     }
+    }
+   }
+  }
+ ]
+}

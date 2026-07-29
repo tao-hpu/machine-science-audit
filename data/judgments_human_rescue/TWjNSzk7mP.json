@@ -1,0 +1,299 @@
+{
+ "paper_id": "TWjNSzk7mP",
+ "title": "Boosting In-Context Learning in LLMs with Retrieval-based Codebook",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     9
+    ],
+    "mechanism": [
+     9,
+     10
+    ],
+    "evaluation": [
+     3,
+     9,
+     15
+    ],
+    "domain": [
+     1,
+     9
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to address the sensitivity of in-context learning (ICL) to prompt design and improve LLMs' contextual understanding. Papers [1], [5], [16], and [23] discuss prompt sensitivity and its impact on ICL performance, but they focus on analyzing or mitigating sensitivity rather than directly solving the problem through enhanced contextual understanding. Paper [15] introduces Implicit In-context Learning (I2CL) to reduce inference costs and sensitivity, but its focus is on computational efficiency rather than improving contextual understanding. None of the prior papers explicitly target the dual objective of reducing sensitivity and enhancing contextual understanding in the same way as the contribution.\n\n### Mechanism\nThe mechanism involves transforming original demonstrations into task vectors (keys/values at each layer) through multiple forward passes of the LLM, then combining these task vectors with the test task vector in a residual-like manner. Paper [9] introduces \"In-context Vectors\" (ICV), which recasts ICL as latent space steering using vectors derived from demonstrations, and paper [19] discusses task vectors computed by averaging across datasets to convey task information. Both papers involve task vectors and latent space manipulation, which are substantively equivalent to the mechanism described in the contribution. Paper [7] (KV-Runahead) discusses parallel key-value cache generation but focuses on inference efficiency rather than task vector manipulation, making it less relevant.\n\n### Evaluation\nThe contribution evaluates its method on SST2, SST5, MR, and AGNews datasets using various LLMs (opt-125m/350m, Qwen2-1.5B/7B, Llama3.1-8B) and reports accuracy improvements in Table 2. Papers [9], [19], and [15] evaluate ICL methods on text classification tasks using similar benchmark families (e.g., SST2, AGNews) and accuracy metrics. While the specific datasets and models differ, the evaluation design (benchmark-based accuracy comparison) is substantively equivalent to prior work. No new evaluation design is introduced.\n\n### Domain\nThe domain is large language models (LLMs) and in-context learning (ICL) applied to text classification. Papers [1], [5], [9], [15], [19], and others operate in the same general domain of LLMs and ICL for text classification tasks. Although the contribution targets specific datasets and models, the domain itself is well-covered by prior work.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 9  \nVERDICT evaluation = 9  \nVERDICT domain = 9  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses the dual objective of mitigating prompt sensitivity and enhancing LLM contextual understanding."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 15
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\n\nThe contribution aims to solve ICL's sensitivity to prompt design and insufficient single-pass understanding, improving LLM contextual understanding through repeated forward passes.\n\n- Paper [1] addresses \"sensitivity\" of prompts in ICL and its correlation with performance, but the purpose is analysis/measurement, not improving understanding via repeated processing.\n- Paper [16] studies sensitivity-accuracy correlation in ICL, again analytical rather than solving it via repeated forward passes.\n- Paper [9] explicitly states: \"in-context learning has seen limited effectiveness in many settings, is difficult to quantitatively control and takes up context window space\" — and proposes ICV to overcome these limitations. This matches the purpose of improving ICL beyond single-pass sensitivity issues.\n- Paper [15] (I2CL): \"ICL incurs substantial computational and memory overheads compared to zero-shot learning and is sensitive to the selection and order of demonstration examples\" — proposes implicit ICL to reduce inference cost and sensitivity. This closely matches the purpose.\n- Paper [10] addresses context-length limitations for many-shot multimodal ICL using task vectors, partially overlapping.\n\nPapers [9] and [15] both address the same problem class: ICL sensitivity/limitations, improving LLM's contextual understanding beyond naive ICL. Paper [9] is the closest match.\n\n## Mechanism\n\nThe mechanism is: run multiple forward passes over demonstrations to extract per-layer KV (task vectors), then concatenate/fuse these KV caches with the test input's KV in a residual-like manner.\n\n- Paper [9] (In-context Vectors): \"We first use a forward pass on demonstration examples to compute an in-context vector (ICV)\" — single forward pass, not multiple; steers latent space rather than KV concatenation.\n- Paper [11] (In-Context Learning Creates Task Vectors): Shows ICL creates task vectors at specific positions, but doesn't propose multiple forward passes or KV fusion.\n- Paper [19] (Label Words as Local Task Vectors): Discusses task vectors at label word positions, patching them — related but different mechanism.\n- Paper [15] (I2CL): \"reduces the inference cost of ICL to that of zero-shot\" by compressing demonstrations into implicit vectors via forward pass — single pass, not multiple; uses activation steering rather than KV concatenation.\n- Paper [10] (Multimodal Task Vectors): Uses task vectors for many-shot multimodal ICL, compressing demonstrations. Mentions KV cache and task vectors but in multimodal context.\n\nThe specific combination of **multiple** forward passes + extracting KV pairs as task vectors + residual-style concatenation with test KV is not clearly present in any single prior paper. Paper [9] uses single forward pass + latent steering. Paper [15] uses single forward pass + implicit vector. Paper [10] uses task vectors in KV form for multimodal. None combines repeated forward passes with KV-level residual fusion in this specific way.\n\nHowever, Paper [10] explicitly discusses \"task vectors\" stored as KV caches and concatenating them — \"Multimodal Task Vectors Enable Many-Shot Multimodal In-Context Learning\" — this is very close to the KV-based task vector mechanism. Let me re-examine: Paper [10] compresses many-shot examples into task vectors stored as KV pairs and appends them. The contribution adds **multiple/repeated** forward passes and residual-style fusion. Paper [10] covers the KV-task-vector-concatenation primitive substantially.\n\n## Evaluation\n\nThe evaluation uses SST2/SST5/MR/AGNews benchmarks with various LLMs (OPT, Qwen2, Llama), comparing accuracy against conventional ICL.\n\n- Paper [9] evaluates on text classification tasks including sentiment analysis benchmarks with LLMs, comparing against ICL baselines.\n- Paper [15] evaluates on classification benchmarks (SST2, AGNews, etc.) comparing against ICL.\n- Paper [11] evaluates ICL on classification tasks.\n- Papers [9], [15], [19] all use the same benchmark family (SST2, AGNews, sentiment classification) with LLM-as-baseline comparison design.\n\nThis evaluation design (standard NLP classification benchmarks + accuracy metric + comparison to ICL baseline) is clearly covered by [9] and [15].\n\n## Domain\n\nLarge language models / in-context learning for text classification.\n\n- Papers [9], [11], [15], [19], [23] all operate in LLM/ICL for text classification. Clearly covered.\n\nVERDICT purpose = 9\nVERDICT mechanism = 10\nVERDICT evaluation = 15\nVERDICT domain = 9",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: The objective is to solve the problem of In-Context Learning's sensitivity to prompt design and improve the model's understanding of the context. This is substantively equivalent to the purpose of prior work aiming to make ICL more robust and effective, such as [9] which seeks to make ICL \"more effective and controllable\" and [15] which aims to create a method that is less \"sensitive to the selection and order of demonstration examples.\"\n\nmechanism: The core technical primitive is to perform a forward pass on demonstration examples to compute a latent \"task vector\" (here, from KV cache activations) which is then used to condition the model for a new test input. This primitive is covered by [9], which proposes to \"use a forward pass on demonstration examples to compute an in-context vector (ICV),\" and [10], which proposes to \"distill the task information from many demonstration examples into a compact representation, which we call a multimodal task vector.\" The use of multiple forward passes is an iterative refinement of this existing primitive, not a fundamentally new one.\n\nevaluation: The evaluation design consists of comparing a proposed ICL method against conventional ICL on standard text classification benchmarks (SST2, AGNews, etc.) using accuracy as the primary metric. This is a standard evaluation protocol for ICL research and is used by numerous prior papers, including [3] (\"evaluate our method on a wide range of NLP tasks, including sentiment analysis (SST-2, MR), topic classification (AGNews...)\"), [5], and [9].\n\ndomain: The application area is In-Context Learning (ICL) for Large Language Models (LLMs), specifically applied to text classification. This is a well-established domain and is the explicit focus of a large number of the provided prior papers, including [1], [3], [5], [9], [15], and [16].\n\nVERDICT purpose = 9\nVERDICT mechanism = 9\nVERDICT evaluation = 3\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     9
+    ],
+    "mechanism": [
+     4
+    ],
+    "evaluation": [
+     6,
+     11,
+     18
+    ],
+    "domain": [
+     6
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to overcome input length limitations and filter irrelevant/noisy content in long-context demonstrations. Paper [9] explicitly addresses the same problem of input length limitations in LLMs and proposes a framework (LongMem) to enable LLMs to utilize long-context information. This aligns with the same objective of addressing input length constraints and improving the handling of long contexts. Therefore, the purpose is **covered** by [9].\n\n### Mechanism\nThe mechanism involves a retrieval-based codebook, an editable memory structure that dynamically stores/updates task vectors and retrieves the most relevant ones during testing to enhance prompts. Paper [4] introduces Key-Value Memory Networks, which use a key-value memory structure to store and retrieve relevant information dynamically. Similarly, [9] proposes a decoupled architecture with a memory encoder and retriever for long-term memory augmentation. Both papers employ substantively equivalent primitives: dynamic storage and retrieval of task-relevant information using memory structures. Thus, the mechanism is **covered** by [4] and [9].\n\n### Evaluation\nThe evaluation uses a private dataset (AE) with models like Qwen2-7B and Llama3.1-8B, comparing the proposed method against conventional ICL and Deep-thinking baselines. While the specific dataset and models are new, the evaluation design — comparing retrieval-augmented methods against baselines using task-specific metrics — is standard in retrieval-augmented ICL literature. Papers [6], [7], and [15] all use similar evaluation designs for retrieval-augmented ICL, comparing their methods against baselines on task-specific datasets. Therefore, the evaluation design is **covered** by [6], [7], and [15].\n\n### Domain\nThe domain is large language models (LLMs) and context learning, specifically retrieval-augmented in-context learning. Papers [6], [7], [8], [9], and [15] all operate in the same general application area of retrieval-augmented LLMs and in-context learning. While the specific dataset (AE) and models (Qwen2-7B, Llama3.1-8B) are new, the domain itself is not. Thus, the domain is **covered** by [6], [7], [8], [9], and [15].\n\n---\n\nVERDICT purpose = 9  \nVERDICT mechanism = 4  \nVERDICT evaluation = 6  \nVERDICT domain = 6  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose: 克服输入长度限制并过滤长上下文 demonstrations 中的无关内容/噪声\n\nPaper [9] (LongMem) explicitly states: \"Existing large language models (LLMs) can only afford fix-sized inputs due to the input length limit, preventing them from utilizing rich long-context information from past inputs.\" This directly matches the purpose of overcoming input length limits. Paper [13] also states: \"the length of context is often limited, and it becomes challenging to empower the model to cover overlong contexts.\" Paper [8] notes \"as input length grows linearly with the size of retrieved data, cost in computation and memory grows quadratically.\" These papers share the same objective of overcoming input length constraints while filtering/compressing relevant context.\n\n## Mechanism: Retrieval-based codebook storing/updating KV task vectors, retrieved at test time as augmented prompt\n\nPaper [24] introduces \"task vectors\" from ICL: \"the functions learned by ICL often have a very simple structure: they correspond to the task vectors.\" Paper [11] (I2CL) compresses demonstrations into implicit vectors and reuses them: \"reduces the inference cost of ICL to that of zero-shot learning\" by compressing demonstrations into condensed vectors. Paper [9] (LongMem) uses a \"decoupled network architecture\" with \"memory encoder\" and \"memory retriever\" that stores and retrieves past KV representations. The combination of (1) storing KV task vectors from ICL processing, (2) maintaining an editable/updatable memory structure (codebook), and (3) retrieving relevant vectors at test time is partially covered by [11] (implicit vectors from demonstrations stored and reused) and [9] (KV memory retrieval). However, the specific combination of a *codebook* structure storing *task vectors* (in the ICL sense of [24]) that are dynamically updated across multiple processing runs and retrieved for new queries is not fully assembled in any single prior paper. Paper [11] compresses demonstrations into task vectors but doesn't maintain an editable retrieval codebook across sessions. Paper [9] uses KV memory but for language modeling, not ICL task vectors. The mechanism is a novel assembly.\n\n## Evaluation: Private dataset (AE, 28-class merchant classification) with Qwen2-7B/Llama3.1-8B, comparing ICL baselines, with time overhead tables\n\nPapers [6] and [7] use retrieval-augmented ICL evaluation comparing against conventional ICL baselines with LLMs — same evaluation design (compare retrieval-augmented ICL vs. standard ICL on classification tasks). Paper [11] also evaluates against conventional ICL baselines. The evaluation design (compare retrieval-augmented ICL method vs. conventional ICL baseline on classification tasks, measuring accuracy and efficiency) is covered by [6], [7], [11]. The private dataset is a different instance, but the design is the same.\n\n## Domain: LLMs / In-context learning (retrieval-augmented)\n\nPapers [6], [7], [8], [11], [12], [13], [17], [18] all operate in the domain of LLMs with in-context learning and retrieval augmentation. This domain is clearly covered.\n\nVERDICT purpose = 9\nVERDICT mechanism = NONE\nVERDICT evaluation = 11\nVERDICT domain = 6",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper proposes a retrieval-based codebook that stores/updates KV task vectors across multiple inference runs and retrieves the most relevant historical task vectors as augmented prompts at test time. Paper [24] identifies that ICL creates task vectors but does not store or retrieve them. Paper [11] (I2CL) compresses demonstrations into vectors but has no editable memory store with retrieval across sessions. Papers on KV memory networks ([4], [1], [19], [22]) use key-value memory for different purposes (QA, neural network memory) without the specific mechanism of accumulating task vectors from repeated processing and retrieving them as prompt augmentation. No quoted phrase from any prior paper captures this combined mechanism."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 18
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: The objective of overcoming input length limitations for large language models is covered by multiple prior works. For example, [9] proposes a framework to \"address\" the \"input length limit\" which prevents LLMs from \"utilizing rich long-context information from past inputs.\" Similarly, [12] aims to address the \"inherent limitations due to... pre-defined context lengths\" in LLMs.\n\nmechanism: The core mechanism of a retrieval-based key-value memory used to augment a neural network is covered. [4] introduces \"Key-Value Memory Networks\" where memory is addressed using keys to retrieve values, which are then used to produce an output, establishing the same primitive of a retrieval-based KV memory augmenting a model's processing.\n\nevaluation: The evaluation design, which consists of comparing a new in-context learning method against baselines on a downstream classification task, is covered. [18] uses the same design, evaluating its proposed method \"on a suite of 10 classification tasks\" and showing it \"outperforms a range of strong baselines.\"\n\ndomain: The application domain of retrieval-augmented in-context learning for large language models is covered. Multiple papers operate in this exact domain, for instance [6], which is titled \"Crosslingual Retrieval Augmented In-context Learning for Bangla.\"\n\nVERDICT purpose = 9\nVERDICT mechanism = 4\nVERDICT evaluation = 18\nVERDICT domain = 6",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     2,
+     26
+    ],
+    "mechanism": [
+     7,
+     12,
+     15
+    ],
+    "evaluation": [
+     4,
+     7,
+     15
+    ],
+    "domain": [
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to validate that the proposed method outperforms existing in-context learning (ICL) methods in both accuracy and efficiency. Several prior papers address improving ICL performance, but none explicitly validate superiority in both accuracy and efficiency across multiple datasets/models. For example:\n- Paper [2] focuses on improving the quality of selected examples for ICL but does not explicitly validate efficiency improvements.\n- Paper [9] tackles demonstration augmentation to improve ICL performance but does not address efficiency.\n- Paper [15] explores scaling ICL with long-context models but does not explicitly validate efficiency alongside accuracy.\nThus, no prior paper establishes the same empirical relationship (accuracy + efficiency superiority).\n\n### Mechanism\nThe contribution's mechanism involves conducting main experiments across multiple datasets/models, comparing baselines, analyzing hyperparameters (demonstration count and codebook size), and performing time complexity analysis. This experimental design is standard in ICL research:\n- Paper [7] conducts experiments across diverse tasks and models, analyzing performance variations with model scale.\n- Paper [15] performs extensive experiments across datasets/models, analyzing the impact of demonstration count.\n- Paper [26] conducts experiments with representative demonstration selection, comparing baselines and analyzing efficiency.\nThese papers use substantively equivalent experimental setups, covering the mechanism.\n\n### Evaluation\nThe contribution evaluates on four public datasets and one private dataset, demonstrating superiority over state-of-the-art ICL methods. It observes performance trends with increasing model parameter size, noting that quantization strategy differences cause some deviations. This evaluation design is covered:\n- Paper [7] evaluates ICL performance across diverse tasks and models, analyzing trends with model scale.\n- Paper [15] evaluates ICL performance with increasing demonstration count across multiple datasets/models.\n- Paper [26] evaluates ICL performance with representative demonstration selection across tasks.\nThese papers use similar evaluation designs (benchmark family, metric semantics, and validation framework), covering the evaluation.\n\n### Domain\nThe contribution operates in the domain of large language models (LLMs) and in-context learning (ICL). This domain is extensively covered:\n- Paper [2] focuses on improving ICL for LLMs.\n- Paper [9] addresses demonstration augmentation for ICL in LLMs.\n- Paper [15] explores scaling ICL with long-context LLMs.\n- Paper [26] investigates representative demonstration selection for ICL in LLMs.\nThese papers all operate within the same general application area of LLMs and ICL, covering the domain.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 7  \nVERDICT evaluation = 7  \nVERDICT domain = 2  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses the objective of verifying a method's superiority in both accuracy and efficiency over existing ICL methods."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 26
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 15
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**PURPOSE: 验证方法在准确率与效率上均优于现有 ICL 方法**\nThe purpose is to demonstrate that a proposed method outperforms existing ICL methods on both accuracy and efficiency. Papers [2], [12], [16], [17], [19], [20], [26] all pursue the same objective: improving ICL demonstration selection to achieve better performance than existing ICL baselines. For example, [26] explicitly aims to select representative demonstrations that outperform existing methods efficiently, and [19] addresses \"high training costs\" and performance limitations of learning-based ICL selection. This purpose is clearly covered.\n\n**MECHANISM: 多数据集/多模型主实验、baseline对比、demonstrations数量与codebook大小超参分析、时间复杂度分析**\nThe mechanism involves multi-dataset/multi-model main experiments, baseline comparisons, hyperparameter analysis (number of demonstrations, codebook size), and time complexity analysis. Papers [2], [12], [15], [16], [17], [19], [20], [26] all use multi-dataset, multi-model experimental setups with baseline comparisons and ablation/hyperparameter analyses. For instance, [26] uses multiple datasets with baseline comparisons and analyzes demonstration selection efficiency. [15] explicitly studies behavior \"on multiple datasets and models\" with scaling analysis. [19] analyzes training costs and generalization. These are standard experimental designs in ICL papers — multi-dataset baseline comparison + hyperparameter sensitivity analysis appears in essentially all these papers.\n\n**EVALUATION: 四个公开数据集 + AE 私有集，state-of-the-art ICL对比；性能随模型参数量增大总体提升**\nThe evaluation design uses public benchmarks + comparison against state-of-the-art ICL methods, plus a scaling-with-model-size observation. Papers [12], [15], [19], [20], [26] all use public NLP benchmark datasets to compare against state-of-the-art ICL methods. The scaling observation (performance generally improves with model size) is also addressed in [4], [7], [11], [15] — particularly [15] which studies ICL behavior \"on multiple datasets and models\" examining how performance scales. [7] explicitly investigates scale effects on ICL performance across tasks. The evaluation design (public benchmarks + SOTA ICL comparison + model-scale analysis) is covered.\n\n**DOMAIN: 大语言模型 / 上下文学习**\nThe domain is LLMs and in-context learning. Papers [2], [3], [5], [7], [8], [9], [12], [15], [16], [17], [19], [20], [22], [26] all operate in the LLM/ICL domain explicitly.\n\nVERDICT purpose = 26\nVERDICT mechanism = 12\nVERDICT evaluation = 15\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 15
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: The objective is to demonstrate that a new method improves the accuracy and efficiency of In-Context Learning (ICL). This is covered by prior work like [2], which proposes a \"novel framework to... identify high-quality in-context examples for LLMs\" with the same goal of improving ICL effectiveness.\n\nmechanism: The analysis method involves standard empirical validation: experiments on multiple datasets and models, comparison against baselines, and hyperparameter/complexity analysis. This is a standard protocol, used in papers like [15] which studies ICL \"on multiple datasets and models\" and contrasts with baselines.\n\nevaluation: The evaluation design combines benchmarking against state-of-the-art ICL methods with a scaling analysis of performance versus model size. This design is covered, as prior work like [4] explicitly uses the evaluation design of measuring \"task performance with increased scale\" in large language models.\n\ndomain: The application area is Large Language Models (LLMs) and In-Context Learning (ICL). This domain is explicitly covered by numerous prior papers, including [2] (\"Learning to Retrieve In-Context Examples for Large Language Models\").\n\nVERDICT purpose = 2\nVERDICT mechanism = 15\nVERDICT evaluation = 4\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

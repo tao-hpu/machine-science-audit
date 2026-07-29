@@ -1,0 +1,421 @@
+{
+ "paper_id": "FA0153",
+ "title": "Fielded Max-Sim Keying for Assistant-Side Memory Recall in Long-Term Conversational Assistants",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     6,
+     8,
+     14,
+     18
+    ],
+    "evaluation": [
+     1
+    ],
+    "domain": [
+     1,
+     2,
+     3,
+     5,
+     27
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        2,
+        3
+       ]
+      },
+      "mechanism": {
+       "covered_by": [
+        6,
+        8,
+        18
+       ]
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": [
+        2,
+        3,
+        5,
+        27
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to close the retrieval gap for single-session-assistant (SSA) queries, where users ask about information the assistant previously provided, without harming other query types. Paper [3] discusses the limitations of retrieval-augmented generation (RAG) systems in handling extended dialogue histories and selective recall, which aligns with the general problem of improving retrieval for conversational memory. Paper [2] also identifies unique challenges in retrieving information from long-form conversational data, which includes addressing retrieval gaps in conversational contexts. Both papers share the same problem-class level objective of improving retrieval for conversational memory systems, including SSA-like scenarios.\n\n### Mechanism\nThe contribution introduces \"fielded max-sim keying,\" which treats each conversation round as a two-field document with separate embeddings for user and assistant content, scoring relevance as the maximum similarity across fields. Paper [6] discusses field-based relevance modeling for semi-structured documents, where fields are used as sources of information for relevance modeling and ranking. Paper [8] extends BM25F to proximity-based scoring of documents with multiple fields, which is conceptually similar to scoring relevance across fields. Paper [18] introduces Multi-Field Adaptive Retrieval (MFAR), a framework for retrieval using structured documents with multiple fields, which is substantively equivalent to the mechanism described in the contribution. These prior works cover the mechanism at the primitive level.\n\n### Evaluation\nThe contribution evaluates its method on LongMemEval, a benchmark for long-term conversational assistant memory retrieval, and reports metrics like Recall@10 and SSA-specific metrics. Paper [1] introduces LongMemEval as a benchmark for evaluating long-term memory abilities in chat assistants, including information extraction and multi-session reasoning. Since the contribution uses the same benchmark family (LongMemEval) and similar metrics (Recall@10), the evaluation design is covered by [1].\n\n### Domain\nThe contribution operates in the domain of long-term conversational assistant memory retrieval. Papers [2], [3], [5], and [27] all address long-term conversational memory retrieval in LLM-based systems, which is the same general application area. While the contribution targets SSA queries specifically, this is a narrower instance within the broader domain of conversational assistant memory retrieval, making the domain covered.\n\n---\n\nVERDICT purpose = 2, 3  \nVERDICT mechanism = 6, 8, 18  \nVERDICT evaluation = 1  \nVERDICT domain = 2, 3, 5, 27  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 18
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Close the retrieval gap for single-session-assistant (SSA) queries (where users ask about info the assistant previously provided), without harming other query types.**\n\nNo prior paper specifically targets the problem of retrieving assistant-generated content from prior conversation turns as a distinct retrieval gap. Papers [1], [2], [3], [4] address long-term conversational memory broadly, but none specifically identify and target the SSA sub-problem (queries about what the assistant itself said) as a distinct objective to close without degrading other query types. Paper [2] discusses unique problems in conversational retrieval but focuses on temporal/contextual issues, not the asymmetry between user-content and assistant-content indexing. This is a specific gap not covered by prior work.\n\n**MECHANISM: Fielded max-sim keying — treat each conversation round as a two-field document with separate embeddings for user and assistant content, score as max-sim across fields; no additional training.**\n\nPaper [18] (Multi-Field Adaptive Retrieval / MFAR) introduces a framework that \"accommodates any number of and any type of document indices on structured data\" with multiple fields. This is substantively equivalent — it indexes structured documents with multiple fields and combines field-level scores. Paper [14] also addresses neural ranking with multiple document fields. Paper [12] combines fields in email search. Paper [8] covers BM25F for multi-field documents. Paper [28] implements BM25F for structured documents. However, the specific primitive of \"max-sim across field embeddings\" (dense embedding per field, take maximum similarity) is most directly covered by [18], which uses multiple field indices and adaptive combination. The max-sim aggregation over dense field embeddings is a specific variant, but the underlying primitive — separate embeddings per field, combine scores — is present in [18] and [14].\n\n**EVALUATION: On LongMemEval, matches user-only indexing on overall Recall@10 while improving SSA metrics.**\n\nPaper [1] introduces LongMemEval as a benchmark. The evaluation design uses LongMemEval (a named benchmark) with Recall@K metrics. This benchmark and metric family are established in prior work [1]. The evaluation design (using LongMemEval + Recall@K) is covered by [1], even though the specific comparison (fielded indexing vs. user-only indexing) is new. Paper [17] also discusses Recall as a retrieval quality metric.\n\n**DOMAIN: Long-term conversational assistant memory retrieval.**\n\nPapers [1], [2], [3], [4], [27] all operate in the domain of long-term conversational memory retrieval for LLM-based assistants. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 18\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper targets the specific objective of closing the retrieval gap for single-session-assistant (SSA) queries—where users ask about information the assistant itself previously provided—without harming other query types. The conversational retrieval papers (e.g., [2], [3], [19]–[23]) address context-dependent query reformulation or long-term memory retrieval broadly, but none frame their purpose as selectively improving retrieval for assistant-sourced information as a distinct query type while preserving performance on other types. No equivalent objective appears under any alternative terminology in the prior papers."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The purpose is to close a specific retrieval gap for \"single-session-assistant\" (SSA) queries, where a user asks about information the assistant just provided. While many prior papers aim to improve conversational retrieval generally ([2], [3], [19]-[23]), none identify or target this specific failure mode. Their objectives are broader, such as general query reformulation or intent-aware recall, not fixing the specific problem of retrieving from the assistant's own prior utterances.\n\n**mechanism**: The mechanism is to treat a conversation turn as a two-field document (user, assistant), embed each field separately, and score relevance using the maximum similarity over the fields. This is an instance of fielded retrieval, a long-standing primitive in information retrieval. Prior work such as [14] explicitly investigates \"how neural models can deal with multiple document fields,\" which is the same underlying technical approach of combining signals from different parts of a document in a neural/embedding-based framework.\n\n**evaluation**: The evaluation is conducted using the LongMemEval benchmark and Recall@10 as a primary metric. This evaluation design is not new, as the LongMemEval benchmark itself was introduced in prior work. Specifically, paper [1] introduces \"LongMemEval, a comprehensive benchmark designed to evaluate five core long-term memory abilities of chat assistants,\" directly covering the evaluation design used.\n\n**domain**: The application area is long-term memory retrieval for conversational assistants. This domain is explicitly addressed by numerous prior papers. For example, [1] focuses on \"Benchmarking Chat Assistants on Long-Term Interactive Memory,\" and [2] discusses \"Conversational Agents with Context and Time Sensitive Long-term Memory,\" both operating in the exact same application area.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 14\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper frames its objective as closing a performance \"gap\" between queries that recall information the assistant just provided (\"SSA queries\") and other query types, nor do they include the explicit constraint of \"without harming other query types.\" While many papers aim to improve conversational retrieval, their stated objectives are different (e.g., query rewriting, handling topic shifts), not this specific, targeted performance correction."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     21,
+     28
+    ],
+    "evaluation": [
+     3,
+     5,
+     9
+    ],
+    "domain": [
+     1,
+     3
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to demonstrate that the method is a risk-free drop-in replacement (zero-harm property). None of the prior papers explicitly establish or report the same empirical relationship — that a method achieves identical overall retrieval metrics while improving specific sub-area metrics without introducing harm. Papers like [5] and [24] discuss conversational memory management and embedding-based retrieval failures, but they do not address the zero-harm property or the equivalence of metrics across retrieval setups. Therefore, no prior paper covers this purpose.\n\n### Mechanism\nThe mechanism compares fielded max-sim against user-only indexing on overall and SSA-specific retrieval metrics. Papers such as [14], [23], and [31] discuss retrieval mechanisms involving semantic embeddings, BM25 extensions, and field-weighted indexing, but none specifically compare max-sim against user-only indexing in the context of conversational memory retrieval. While [14] complements lexical retrieval with semantic embeddings, and [31] introduces field weighting for BM25F, these mechanisms differ substantively from the comparison of max-sim and user-only indexing. Thus, no prior paper covers this mechanism.\n\n### Evaluation\nThe evaluation design involves measuring Recall@10 and NDCG@10 for overall and SSA-specific retrieval metrics. Papers like [5], [14], and [26] use similar evaluation designs, including standard retrieval metrics like Recall and NDCG, applied to conversational memory or retrieval tasks. For example, [5] evaluates conversational memory management using retrieval metrics, and [14] uses NDCG for semantic retrieval. Although the specific benchmark instance (LongMemEval) is new, the evaluation design itself — using Recall and NDCG metrics for retrieval tasks — is covered by prior work.\n\n### Domain\nThe domain is conversational memory retrieval evaluation, specifically targeting conversational agents. Papers such as [1], [2], [3], and [5] address conversational memory retrieval and evaluation in LLM-based dialogue systems. For instance, [1] introduces a benchmark for cognitive memory evaluation, and [5] discusses memory management for conversational agents. While the specific sub-problem (SSA-specific retrieval metrics) may differ, the general application area of conversational memory retrieval is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 5  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly demonstrates or claims the zero-harm property as a risk-free drop-in replacement.  \nFACET: mechanism | FINAL: NONE | reason: No prior paper compares fielded max-sim against user-only indexing on overall and SSA-specific retrieval metrics."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 28
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Show the method is a risk-free drop-in replacement (zero-harm property)**\n\nThe purpose is to demonstrate that a new retrieval method does not degrade overall performance while improving performance on a specific subset (SSA queries). This is a \"no-harm\" or \"safe substitution\" claim. Looking through the prior papers: [3] compares memory retrieval methods and evaluates retrieval accuracy across different granularities, but its purpose is to find the best method, not to establish a zero-harm property. [28] (MFAR) introduces multi-field adaptive retrieval and evaluates it against baselines, but the purpose is to show improvement, not specifically to establish a zero-harm drop-in property. [24] analyzes embedding-based retrieval failures in social network search — closest in spirit to \"what goes wrong,\" but not establishing zero-harm. None of the prior papers specifically pursue the objective of demonstrating that a method is a safe drop-in replacement with zero degradation on overall metrics while improving a specific subset.\n\n**MECHANISM: Compares fielded max-sim against user-only indexing on overall and SSA-specific retrieval metrics**\n\nThe mechanism involves comparing a multi-field/fielded retrieval approach (max-sim across fields) against a single-field baseline (user-only indexing), measuring both aggregate and subset-specific metrics. Paper [28] (MFAR) introduces multi-field adaptive retrieval and compares field-weighted retrieval against single-field baselines. Paper [31] (BM25-FIC) uses field weighting for BM25F. Paper [20] uses field-weighted XML retrieval. However, the specific primitive of \"max-sim across fields vs. single-field indexing\" with subset-specific breakdown is closest to [28], which explicitly compares multi-field retrieval against single-field document retrieval. Paper [3] compares different memory indexing strategies (turn-level, session-level, summarization) on retrieval metrics, which is structurally similar.\n\n**EVALUATION: Identical overall Recall@10 and improved SSA Recall@10/NDCG@10**\n\nThe evaluation design uses standard IR metrics (Recall@K, NDCG@K) on a named benchmark (LongMemEval), comparing two retrieval configurations. Papers [3] and [2] use Recall@K and NDCG@K metrics for conversational memory retrieval evaluation. Paper [28] uses standard IR metrics comparing multi-field vs. single-field retrieval. The evaluation design (standard IR metrics comparing retrieval configurations) is covered by multiple papers including [3] and [28].\n\n**DOMAIN: Conversational memory retrieval evaluation (LongMemEval)**\n\nThe domain is conversational memory retrieval. Papers [1], [2], [3], and [5] all work in conversational memory for LLM agents/dialogue systems. Paper [3] specifically addresses memory retrieval for personalized conversational agents. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 28\nVERDICT evaluation = 3\nVERDICT domain = 3",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper claims or demonstrates a \"zero-harm\" or \"risk-free drop-in replacement\" property — i.e., that adopting the method never degrades performance relative to a baseline. None of the listed papers frame their contribution around guaranteeing no regression, even under different terminology such as \"safe fallback,\" \"monotonic improvement,\" or \"lossless augmentation.\""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 26
+      },
+      "mechanism": {
+       "covered_by": 21
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The purpose is to demonstrate that a new method is a \"risk-free drop-in replacement\" that provides a targeted benefit with no harm to a general metric. This is substantively equivalent to the purpose of [26], which introduces an engine to speed up retrieval \"Without impacting quality,\" establishing the same \"zero-harm\" empirical relationship.\n\n**mechanism**: The mechanism is an analysis that compares a fielded retrieval strategy (\"fielded max-sim\") against a non-fielded one (\"user-only indexing\"). This is a standard experimental design in information retrieval, covered by [21] which conducts a \"systematic study of metadata\" by comparing retrieval using structured fields against flattening them into unstructured text.\n\n**evaluation**: The evaluation design uses standard information retrieval metrics (Recall@10, NDCG@10) to measure effectiveness. The use of these metric semantics is covered by numerous prior papers in the field, such as [9], which explicitly mentions the goal of satisfying \"high recall rates\" in its evaluation.\n\n**domain**: The application area is conversational memory retrieval for dialogue agents. This domain is explicitly addressed by several prior works, including [1], which introduces a benchmark for \"Long-term conversational memory... for LLM-based dialogue systems.\"\n\nVERDICT purpose = 26\nVERDICT mechanism = 21\nVERDICT evaluation = 9\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     6,
+     11
+    ],
+    "evaluation": [
+     6,
+     11
+    ],
+    "domain": [
+     6,
+     7,
+     11,
+     18
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": [
+        6,
+        7,
+        11,
+        18
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to explain why the naive alternative (concatenating user+assistant text) fails. This requires prior work to explicitly report or establish the same empirical relationship — that concatenation leads to interference or degradation in retrieval performance. None of the prior papers directly address this specific failure mode of concatenation in multi-field indexing. While some papers (e.g., [6], [7], [11], [18]) discuss challenges in dense retrieval or multi-field indexing, they do not explicitly analyze or explain the failure of concatenation-based approaches.\n\n#### Mechanism:\nThe contribution's mechanism is the empirical measurement of cross-field interference in concatenation-based indexing. Papers [6], [7], [11], and [18] discuss multi-field or multi-aspect dense retrieval, and [18] specifically explores concatenation of embeddings. However, none of these papers measure or analyze cross-field interference caused by concatenation. While [18] discusses concatenation, it focuses on embedding compression and performance improvement rather than interference effects. Thus, no prior paper contains a substantively equivalent mechanism.\n\n#### Evaluation:\nThe evaluation design measures the degradation in overall Recall@10 due to concatenation, evidencing cross-field interference. Papers [6], [7], [11], and [18] use standard dense retrieval evaluation metrics like Recall@k, but none of them use these metrics to validate the specific claim that concatenation causes cross-field interference. While the evaluation metrics themselves are standard, the design — measuring interference effects in concatenation-based indexing — is not covered by prior work.\n\n#### Domain:\nThe contribution operates in the domain of dense retrieval and multi-field indexing. Papers [6], [7], [11], and [18] all work in the same general application area of dense retrieval and multi-field indexing, even though they target different specific problems or datasets. Therefore, the domain is covered.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 6, 7, 11, 18  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly explains why concatenating user+assistant text fails, even under different terminology or framing.  \nFACET: mechanism | FINAL: COVERED-BY 6 | reason: \"single-vector representations can be ineffective at capturing different aspects of the queries and documents in relevance matching\" aligns with empirical measurement of cross-field interference.  \nFACET: evaluation | FINAL: NONE | reason: No prior paper provides the specific empirical claim of concatenation degrading overall Recall@10 by -0.145 despite improving SSA recall."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 11
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Explain why naive concatenation (user+assistant text) fails in multi-field indexing**\n\nThe purpose is to demonstrate/explain why concatenating multiple fields degrades retrieval performance — specifically showing cross-field interference as the failure mode. Paper [11] (MFAR) explicitly addresses multi-field document retrieval and discusses why treating structured documents as flat text is problematic: \"Document retrieval for tasks such as search and retrieval-augmented generation typically involves datasets that are unstructured: free-form text without explicit internal structure.\" Paper [2] (Field Relevance Model) addresses structured document retrieval and implicitly motivates why naive field combination fails. However, neither paper specifically establishes the empirical relationship \"concatenation improves one field's recall while degrading overall recall due to cross-field interference.\" Paper [6] (Multi-Aspect Dense Retrieval) notes \"single-vector representations can be ineffective at capturing different aspects,\" which is related but targets multi-aspect rather than cross-field interference from concatenation. No prior paper specifically reports the same empirical relationship: concatenation causes cross-field interference that hurts overall recall despite helping one field's recall.\n\n**MECHANISM: Empirical measurement of cross-field interference in concatenation-based indexing**\n\nThe mechanism is measuring how concatenating fields creates interference between them in a dense retrieval index. Paper [11] (MFAR) compares concatenation baselines against their multi-field approach and measures retrieval metrics. Paper [6] measures multi-aspect retrieval performance. Paper [2] measures field-based retrieval. These papers do compare concatenation vs. structured approaches empirically, but the specific measurement of \"cross-field interference\" as a phenomenon (one field's gain hurting another) is not explicitly the mechanism in any prior paper. Paper [11] is the closest — it empirically compares concatenation baselines and measures recall, which is substantively equivalent to measuring cross-field interference effects.\n\n**EVALUATION: Recall@10 comparison showing concatenation degrades overall recall**\n\nThe evaluation design uses Recall@k metrics to compare concatenation vs. structured indexing approaches. Paper [11] explicitly uses recall-based metrics to evaluate multi-field retrieval approaches including concatenation baselines: \"Multi-Field Adaptive Retrieval\" evaluates retrieval performance with standard IR metrics including recall. Paper [6] also uses recall-based evaluation for dense retrieval. The design (measure Recall@k, compare concatenation baseline vs. structured approach) is clearly present in [11].\n\n**DOMAIN: Dense retrieval / multi-field indexing**\n\nPaper [11] (MFAR) operates directly in dense retrieval with multi-field structured documents. Paper [6] (Multi-Aspect Dense Retrieval) also operates in dense retrieval with multi-field/multi-aspect documents. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 11\nVERDICT evaluation = 11\nVERDICT domain = 11",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explains why concatenating user+assistant text fails as an indexing/retrieval strategy — the closest papers address multi-vector vs. single-vector tradeoffs or embedding concatenation for other purposes, but none diagnose the specific failure mode of naive user+assistant text concatenation for retrieval."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: Papers [6] and [7] identify the same objective at the problem-class level: showing that single-vector representations are insufficient for multi-faceted documents. For example, [7] states a \"single vector representation of a document is hard to match with multi-view queries, and faces a semantic mismatch problem,\" which is the same underlying failure that the contribution's purpose is to explain.\n\n**mechanism**: The mechanism is a standard empirical analysis comparing a naive combination method (concatenation) to other approaches to reveal its flaws. Papers proposing superior methods for multi-field data, such as [6] or [7], necessarily employ this same mechanism of empirical measurement to demonstrate the limitations of single-vector baselines and motivate their own work.\n\n**evaluation**: The evaluation design—using a standard retrieval metric like Recall@k to quantify the performance difference between a naive combination method and other approaches—is a standard protocol. Papers like [6] (\"Multi-Aspect Dense Retrieval\") or [11] (\"Multi-Field Adaptive Retrieval\") use this same evaluation design to validate their proposed methods against simpler baselines.\n\n**domain**: The domain of dense retrieval applied to multi-field or multi-aspect documents is explicitly covered by numerous prior works. For instance, [6] is titled \"Multi-Aspect Dense Retrieval\" and [11] introduces a framework for \"Multi-Field Adaptive Retrieval\" on structured data.\n\nVERDICT purpose = 7\nVERDICT mechanism = 6\nVERDICT evaluation = 6\nVERDICT domain = 6",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     18
+    ],
+    "mechanism": [
+     18
+    ],
+    "evaluation": [
+     7,
+     18
+    ],
+    "domain": [
+     4
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 18
+      },
+      "evaluation": {
+       "covered_by": 18
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to justify the non-linear max operator over linear score mixing. This requires prior work that establishes or reports the same empirical relationship — that non-linear max scoring is superior to linear mixtures in some retrieval scoring context.  \n- Paper [4] discusses the challenge of combining multiple retrieval signals due to their complex interactions but does not explicitly justify the superiority of non-linear max operators over linear mixtures.  \n- Paper [18] compares multiple score fusion rules, including max, sum, min, median, and product, but does not specifically justify the non-linear max operator over linear mixtures.  \n- Paper [11] introduces max-plus statistical leverage scores but focuses on matrix alignment and sampling algorithms, not retrieval scoring functions.  \n- No prior paper explicitly establishes the same empirical relationship or justification for the non-linear max operator over linear mixtures.  \n\n**Verdict: NONE**\n\n---\n\n#### Mechanism:\nThe contribution mechanism compares max-sim scoring against linear mixture scoring of the two fields. This involves the technical primitive of evaluating retrieval scoring functions using non-linear max operators versus linear combinations.  \n- Paper [2] and [14] both discuss fusion via linear combinations of scores, which matches the linear mixture scoring primitive.  \n- Paper [18] evaluates multiple score fusion rules, including max and linear combinations, which matches the comparison mechanism between max and linear scoring.  \n- Paper [4] discusses combining retrieval signals but does not explicitly compare max-sim scoring against linear mixtures.  \n- Paper [11] introduces max-plus statistical leverage scores, which involve a non-linear max operator, but the focus is on matrix alignment rather than retrieval scoring.  \n\n**Verdict: [18]**\n\n---\n\n#### Evaluation:\nThe evaluation facet demonstrates that only the non-linear max operator achieves zero harm, while linear mixtures trade SSA gains for unacceptable overall degradation. This requires prior work using the same evaluation design — a comparative analysis of scoring functions with metrics assessing harm and degradation.  \n- Paper [18] evaluates multiple score fusion rules, including max and linear combinations, in the context of biometric recognition systems. This matches the evaluation design of comparing scoring functions using metrics to assess performance trade-offs.  \n- Paper [4] empirically studies retrieval functions but does not use the same evaluation design focused on harm and degradation metrics.  \n- No other prior paper uses the same evaluation design for scoring functions in retrieval contexts.  \n\n**Verdict: [18]**\n\n---\n\n#### Domain:\nThe contribution operates in the domain of retrieval scoring functions. This requires prior work addressing retrieval scoring functions as a general application area.  \n- Paper [4] explicitly addresses retrieval scoring functions in information retrieval.  \n- Paper [18] addresses score fusion in biometric recognition systems, which is a different domain.  \n- Paper [11] addresses statistical leverage scores in matrix sampling algorithms, which is unrelated to retrieval scoring functions.  \n\n**Verdict: [4]**\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = [18]  \nVERDICT evaluation = [18]  \nVERDICT domain = [4]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly justifies the non-linear max operator over linear score mixing, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 18
+      },
+      "mechanism": {
+       "covered_by": 18
+      },
+      "evaluation": {
+       "covered_by": 18
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**PURPOSE: Justify the non-linear max operator over linear score mixing.**\n\nThe purpose is to demonstrate/justify why a max (non-linear) operator is preferable to linear combination for scoring. Paper [18] \"Score-Based Fusion in Multi-Unit Biometric Recognition System\" explicitly analyzes and compares sum, max, min, median, and product fusion rules, studying their relative performance. Paper [20] \"Comparative analysis of score level fusion techniques in multi-biometric system\" also compares multiple score-level fusion approaches. However, the specific purpose here is to justify the max operator on the grounds of \"zero-harm\" (no degradation) vs. linear mixtures causing degradation — this is a specific empirical relationship about harm/degradation tradeoffs. Papers [18] and [20] compare these operators but not with the specific framing of \"zero-harm guarantee.\" Still, the underlying objective — justify max over linear combination — is substantively covered by [18] and [20].\n\n**MECHANISM: Compares max-sim scoring against linear mixture scoring of the two fields.**\n\nPaper [18] explicitly compares max vs. sum (linear) fusion rules for multi-unit systems. Paper [27] \"Neural Ranking Models with Multiple Document Fields\" compares different ways of combining multiple document fields including linear combinations. Paper [2]/[14] \"Fusion Via a Linear Combination of Scores\" addresses linear combination of scores. The mechanism of comparing max vs. linear mixture scoring is directly present in [18].\n\n**EVALUATION: Only the non-linear max operator achieves zero-harm; linear mixtures trade SSA gains for unacceptable overall degradation.**\n\nThis is the finding/result itself. The evaluation design involves comparing scoring operators on retrieval metrics, measuring performance degradation. Papers [18] and [20] use comparative evaluation of fusion rules measuring recognition/retrieval performance. The evaluation design (compare fusion operators, measure performance metrics) is covered by [18] and [20]. The specific \"zero-harm\" framing is the finding, but the evaluation design (compare operators on benchmark metrics) is standard and covered.\n\n**DOMAIN: Retrieval scoring functions.**\n\nPapers [2], [3], [4], [5], [14], [24], [26], [27] all operate in information retrieval scoring/fusion. This is clearly covered. Paper [4] specifically addresses combining retrieval signals. Paper [27] addresses multiple document fields in retrieval.\n\nVERDICT purpose = 18\nVERDICT mechanism = 18\nVERDICT evaluation = 18\nVERDICT domain = 4",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 18
+      },
+      "mechanism": {
+       "covered_by": 18
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe purpose is to establish a specific empirical relationship: that the non-linear max operator is superior to linear mixing for retrieval scoring under a \"zero-harm\" constraint. The special rule for a \"finding\" contribution states this is covered only if a prior paper reports the same relationship. While paper [18] compares `max` and `sum` (linear) fusion, it does not establish this specific relationship of superiority, instead suggesting the methods can be complementary. No other paper establishes this finding.\n\n**MECHANISM**\nThe mechanism is a direct comparison of max-based scoring against linear mixture scoring. This comparative analysis design is a standard protocol. Paper [18] explicitly uses this design when it \"comparatively studied\" and analyzed \"five common score fusion rules: sum, max, min, median and product.\"\n\n**EVALUATION**\nThe evaluation design involves measuring standard performance while also enforcing a \"zero-harm\" constraint, which is a type of non-performance-related desideratum. Paper [7] introduces and advocates for an evaluation design for retrieval systems that goes beyond simple performance, proposing metrics that are \"generic, fair, normalized, and non-deceptive.\" The contribution's evaluation design falls into this established family of validating systems on axes other than pure performance.\n\n**DOMAIN**\nThe domain is retrieval scoring functions. This is a well-established area of information retrieval. Paper [4] directly operates in this domain, as it discusses how the \"effectiveness of a retrieval function is closely related to how it combines multiple retrieval signals\".\n\nVERDICT purpose = NONE\nVERDICT mechanism = 18\nVERDICT evaluation = 7\nVERDICT domain = 4",
+      "stage2": "FACET: purpose: Justify the non-linear max operator over linear score mixing. | FINAL: COVERED-BY [18] | reason: The paper's stated purpose is to \"comparatively stud[y]\" and \"analyze the five common score fusion rules: sum, max, min, median and product.\" This objective of comparing linear (sum) and non-linear (max) operators is the same as the one in question."
+     }
+    }
+   }
+  }
+ ]
+}

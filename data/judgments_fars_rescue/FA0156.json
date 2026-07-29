@@ -1,0 +1,324 @@
+{
+ "paper_id": "FA0156",
+ "title": "Length-Weighted Loss Does Not Explain the Repetition Advantage in Long-CoT Supervised Fine-Tuning",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     4,
+     7,
+     14,
+     27
+    ],
+    "evaluation": [
+     15
+    ],
+    "domain": [
+     2,
+     5,
+     9,
+     12,
+     15
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": [
+        7,
+        14,
+        27
+       ]
+      },
+      "evaluation": {
+       "covered_by": 15
+      },
+      "domain": {
+       "covered_by": [
+        2,
+        5,
+        9,
+        15,
+        12
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution tests the hypothesis that the Long-CoT \"repetition advantage\" arises because per-sequence mean cross-entropy loss underweights long reasoning traces. Paper [15] (\"Data Repetition Beats Data Scaling in Long-CoT Supervised Fine-Tuning\") investigates the repetition advantage in Long-CoT fine-tuning but attributes it to data repetition rather than loss weighting. No prior paper explicitly establishes or tests the hypothesis that mean cross-entropy loss underweights long reasoning traces. Thus, the purpose is **NONE**.\n\n### Mechanism\nThe mechanism introduces a length-weighted loss \\( L_{\\text{len}} = (T/T_{\\text{ref}}) \\cdot L_{\\text{mean}} \\), which upweights long sequences proportionally. Paper [7] (\"Clip Your Sequences Fairly\") addresses length bias in sequence-level RL by introducing length-fair clipping, which adjusts optimization weights based on sequence length. Paper [14] (\"Rethinking the Comparison Unit in Sequence-Level Reinforcement Learning\") also discusses length-related loss scaling but frames the issue as a comparison unit problem rather than introducing a proportional length-weighted loss. Paper [27] (\"Correcting Length Bias in Neural Machine Translation\") applies per-word rewards to address length bias in NMT, which is conceptually similar to upweighting longer sequences. These papers collectively cover the mechanism at the primitive level (adjusting loss weights based on sequence length). Thus, the mechanism is **COVERED**.\n\n### Evaluation\nThe evaluation uses AIME and GPQA benchmarks to compare length-weighted loss against standard data scaling, measuring accuracy and recovery of the repetition advantage gap. Paper [15] (\"Data Repetition Beats Data Scaling in Long-CoT Supervised Fine-Tuning\") uses the same benchmarks (AIME and GPQA) to evaluate Long-CoT fine-tuning strategies, including repetition and data scaling. The evaluation design (benchmark family and metric semantics) is identical, even though the specific comparison (length-weighted loss vs. standard scaling) differs. Thus, the evaluation is **COVERED**.\n\n### Domain\nThe domain is Long chain-of-thought supervised fine-tuning of LLMs. Papers [2], [5], [9], [15], and [12] all address Long-CoT reasoning or fine-tuning in LLMs, covering the same general application area. Thus, the domain is **COVERED**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 7, 14, 27  \nVERDICT evaluation = 15  \nVERDICT domain = 2, 5, 9, 15, 12  ",
+      "stage2": "1. **FACET: purpose** | **FINAL: COVERED-BY 7** | reason: Paper [7] explicitly addresses the issue of sequence length reweighting in optimization, quoting: \"a fixed clip range systematically reweights short vs. long responses, distorting the optimization direction,\" which aligns with the hypothesis about underweighting long reasoning traces."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 15
+      },
+      "domain": {
+       "covered_by": 15
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE:**\nThe purpose is to test whether the Long-CoT \"repetition advantage\" (from paper [15]) arises because per-sequence mean cross-entropy loss underweights long reasoning traces. This is a very specific hypothesis about the *mechanism* behind the repetition advantage finding in [15]. Paper [15] establishes the repetition advantage but does not test this specific loss-weighting hypothesis as its purpose. No other paper pursues this exact empirical relationship — testing whether loss underweighting of long sequences explains the repetition advantage. Paper [4] discusses averaging log-likelihoods and length bias in direct alignment, but its purpose is improving alignment, not explaining a repetition advantage. Paper [28] discusses Simpson's bias (population vs. sample-level metrics), which is related but not the same relationship. No prior paper reports or establishes the same empirical relationship (repetition advantage → loss underweighting hypothesis).\n\n---\n\n**MECHANISM:**\nThe mechanism is a length-weighted loss L_len = (T/T_ref) * L_mean that upweights long sequences proportionally. Paper [4] explicitly discusses \"averaging log-likelihoods\" and length bias in direct alignment methods, proposing length-normalized vs. non-normalized losses. Paper [27] discusses length bias correction in NMT with per-word rewards. Paper [28] discusses Simpson's bias where sample-level loss aggregation differs from population-level metrics, and proposes reweighting. Paper [14] investigates length problems in sequence-level RL and loss correction. The primitive of \"scale loss by sequence length to correct for length bias\" is present in [4] (which directly addresses the averaging vs. summing of log-likelihoods) and [28] (which addresses the mismatch between sample-level and population-level loss). Paper [4] is the closest: it explicitly proposes weighting completions by length to correct for the averaging bias in direct alignment.\n\n---\n\n**EVALUATION:**\nThe evaluation uses AIME and GPQA benchmarks with accuracy metrics, comparing length-weighted loss against standard data scaling on OLMo3-7B. Paper [15] uses AIME and GPQA benchmarks with the same accuracy metrics and the same OLMo3-7B model. Paper [2] also uses reasoning benchmarks (AIME-family) for evaluating Long-CoT methods. The evaluation design (AIME/GPQA accuracy, same benchmark family, same model) is clearly covered by [15].\n\n---\n\n**DOMAIN:**\nThe domain is Long chain-of-thought supervised fine-tuning of LLMs. Papers [2], [5], [15] all work in this exact domain. Paper [15] is directly in Long-CoT SFT. Paper [2] covers long CoT reasoning in LLMs. This is clearly covered.\n\n---\n\nVERDICT purpose = NONE\nVERDICT mechanism = 4\nVERDICT evaluation = 15\nVERDICT domain = 15",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper tests the specific hypothesis that the Long-CoT 'repetition advantage' arises because per-sequence mean cross-entropy loss underweights long reasoning traces. Paper [15] documents the repetition advantage empirically but does not test this loss-weighting hypothesis. Paper [4] discusses averaging log-likelihoods and length bias in direct alignment, but does not connect this to the repetition advantage in Long-CoT SFT. No paper contains the same empirical relationship between these two specific elements."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 27
+      },
+      "evaluation": {
+       "covered_by": 15
+      },
+      "domain": {
+       "covered_by": 15
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "purpose: No prior paper tests the hypothesis that the Long-CoT repetition advantage is caused by mean cross-entropy loss underweighting long sequences. Paper [15] introduces the phenomenon to be explained, but does not test this specific causal hypothesis.\n\nmechanism: The mechanism is to re-weight the loss for each sequence as a function of its length. This primitive is covered by [27], which proposes a \"simple per-word reward\" to correct for length bias in neural machine translation, which is a form of length-based re-weighting of the training objective.\n\nevaluation: The evaluation design is a controlled comparison of different supervised fine-tuning strategies on the AIME and GPQA benchmarks. This design is substantively equivalent to the one in [15], which evaluates its SFT strategies \"On AIME'24/25 and GPQA benchmarks\" using the same model family.\n\ndomain: The application area is long chain-of-thought supervised fine-tuning of LLMs. This domain is explicitly covered by multiple papers, most directly by [15] which is titled \"Data Repetition Beats Data Scaling in Long-CoT Supervised Fine-Tuning\".\n\nVERDICT purpose = NONE\nVERDICT mechanism = 27\nVERDICT evaluation = 15\nVERDICT domain = 15",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper frames its objective as testing the specific hypothesis that the 'repetition advantage' in Long-CoT SFT is caused by the standard mean cross-entropy loss function underweighting longer sequences. While papers discuss length bias in loss functions ([4], [27]) or data weighting ([21]), none connect this mechanism to explaining the specific phenomenon of SFT repetition advantage."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     10
+    ],
+    "mechanism": [
+     1,
+     3,
+     4,
+     9
+    ],
+    "evaluation": [
+     7,
+     10
+    ],
+    "domain": [
+     1,
+     4,
+     7
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 10
+      },
+      "mechanism": {
+       "covered_by": [
+        4,
+        9
+       ]
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to establish that the negative result is robust across weighting schemes, not specific to one loss form. Paper [10] (\"Understanding Why Generalized Reweighting Does Not Improve Over ERM\") investigates why generalized reweighting approaches fail to improve over empirical risk minimization (ERM) under distributional shift, which aligns with the purpose of demonstrating robustness across weighting schemes. The focus on robustness across reweighting strategies is substantively equivalent.\n\n### Mechanism\nThe contribution systematically explores three distinct loss reweighting approaches: linear, quadratic, and token-level positional weighting. Paper [4] (\"Dynamic Loss-Based Sample Reweighting for Improved Large Language Model Pretraining\") discusses dynamic and fine-grained instance-level loss reweighting strategies, which include adaptive weighting mechanisms. Paper [9] (\"A Curriculum View of Robust Loss Functions\") reformulates loss functions into sample-weighting functions, which conceptually overlaps with the exploration of weighting schemes. Both papers cover the mechanism at the primitive level.\n\n### Evaluation\nThe contribution evaluates the failure of all three reweighting approaches to recover meaningful performance and observes degradation with stronger weighting. Paper [10] (\"Understanding Why Generalized Reweighting Does Not Improve Over ERM\") uses a similar evaluation design to demonstrate the ineffectiveness of generalized reweighting strategies, including empirical validation of performance gaps. The evaluation design is substantively equivalent.\n\n### Domain\nThe contribution operates in the domain of SFT (Supervised Fine-Tuning) loss reweighting. Paper [4] (\"Dynamic Loss-Based Sample Reweighting for Improved Large Language Model Pretraining\") explicitly addresses loss reweighting in the context of large language model pretraining, which is within the same general application area. The domain is covered.\n\n---\n\nVERDICT purpose = 10  \nVERDICT mechanism = 4, 9  \nVERDICT evaluation = 10  \nVERDICT domain = 4  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Establish that the negative result is robust across weighting schemes, not specific to one loss form.**\n\nThe purpose is to demonstrate robustness of a negative finding (that loss reweighting fails to close a performance gap in SFT) across multiple weighting schemes. Paper [1] explores criteria of loss reweighting for LLM unlearning and asks which strategy is optimal — but this is about finding what *works*, not establishing that nothing works. Paper [10] \"Understanding Why Generalized Reweighting Does Not Improve Over ERM\" is about showing reweighting fails to improve over ERM under distribution shift — this is a negative result about reweighting robustness across approaches. However, the specific relationship (SFT loss reweighting failing to recover a performance gap) is distinct from ERM/distribution-shift settings. No prior paper establishes the same empirical relationship (reweighting schemes all fail to recover a specific SFT performance gap). This purpose appears uncovered.\n\n**MECHANISM: Systematic exploration of three distinct loss reweighting approaches: linear, quadratic, and token-level positional weighting.**\n\nPaper [1] explores multiple loss reweighting criteria systematically for LLM unlearning. Paper [2] proposes \"various novel token-weighting schemes\" including positional weighting for long-context LM. Paper [4] explores dynamic loss-based sample reweighting. The combination of linear, quadratic, and positional token-level weighting as a systematic sweep is partially echoed in [2] (token-weighting schemes) and [1] (multiple reweighting criteria). However, the specific primitive of systematically comparing linear/quadratic/positional reweighting as a robustness check is most closely matched by [1]'s systematic exploration of reweighting criteria and [2]'s various token-weighting schemes. Paper [1] explicitly explores multiple reweighting strategies systematically.\n\n**EVALUATION: All three reweighting approaches fail to recover any meaningful fraction of the performance gap; stronger weighting also degrades performance.**\n\nThe evaluation design involves: apply multiple reweighting variants, measure performance gap recovery, observe failure. Paper [10] uses a similar evaluation design — apply reweighting variants, measure whether they improve over baseline, find they don't. Paper [1] also evaluates multiple reweighting strategies and measures their effectiveness. The design of \"compare multiple reweighting schemes on a performance metric and observe failure/degradation\" is present in [10] as an evaluation framework. This is a standard ablation/comparison design that appears in [1] and [10].\n\n**DOMAIN: SFT loss reweighting.**\n\nSFT (supervised fine-tuning) of LLMs is the domain. Paper [1] works on loss reweighting for LLMs (unlearning, which involves fine-tuning). Paper [2] works on token weighting for LLM training. Paper [4] works on sample reweighting for LLM pretraining. Papers [1], [2], [4] all operate in the LLM training/fine-tuning area with loss reweighting, which covers this domain.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 1\nVERDICT evaluation = 10\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the objective of establishing that a negative result (reweighting fails to help) is robust across multiple weighting schemes to rule out loss-form specificity. Paper [10] is closest (showing reweighting doesn't improve over ERM) but its purpose is to explain *why* reweighting fails theoretically under distribution shift, not to demonstrate robustness of a negative finding across varied weighting schemes as a methodological confirmation strategy."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 10
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to establish that a negative result (the failure of loss reweighting to improve performance) is robust across different weighting schemes. Paper [10] reports and analyzes this same empirical relationship, stating that \"a line of recent work has empirically shown that these approaches [a suite of reweighting methods] do not significantly improve over ERM\". This shows that the finding that a class of reweighting methods fails to deliver improvements is already established in prior work.\n\n**mechanism**: The mechanism is a systematic exploration of several distinct loss reweighting approaches to test their effect. Paper [3] employs the same mechanism by revisiting a \"broad class of weighted risk functions\" including \"focal loss, inverse focal loss, and the Area Under the Risk Coverage Curve (AURC)\" to analyze their connections. This is the same analysis design of systematically comparing different reweighting schemes.\n\n**evaluation**: The evaluation design consists of applying different loss reweighting schemes to a model and measuring standard performance metrics to check for improvement over a baseline. Paper [7] uses the exact same evaluation design to validate its proposed loss function, conducting \"Thorough tests on popular datasets using our loss function\" to measure performance gains. The design is identical, even though the contribution finds a negative result while [7] finds a positive one.\n\n**domain**: The domain is loss reweighting for Supervised Fine-Tuning (SFT) of language models. Paper [7] operates in the exact same domain, as its title is \"Applying SoftTriple Loss for Supervised Language Model Fine Tuning\".\n\nVERDICT purpose = 10\nVERDICT mechanism = 3\nVERDICT evaluation = 7\nVERDICT domain = 7",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": null,
+    "domain": [
+     1,
+     3,
+     14
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 14
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to redirect the explanation of the repetition advantage away from gradient signal distribution. None of the prior papers explicitly report or establish the same empirical relationship — that the repetition advantage is not due to gradient signal distribution but instead points toward memorization convergence through repeated exposure. While several papers discuss memorization (e.g., [5], [6], [10], [24]), none specifically refute gradient signal distribution as the mechanism behind repetition advantage.\n\n### Mechanism\nThe contribution uses negative results to eliminate gradient-signal-distribution explanations and argues for an alternative mechanism (memorization convergence through repeated exposure). Paper [14] discusses the role of data repetition in Long-CoT SFT and its benefits for generalization, but it does not eliminate gradient signal distribution as an explanation or propose memorization convergence as the mechanism. Paper [4] discusses coherent gradients as an explanation for generalization but does not address repetition advantage or its mechanism. No prior paper uses the same mechanism to refute gradient signal distribution and propose memorization convergence.\n\n### Evaluation\nThe contribution provides evidence that the mechanism is not gradient signal distribution, pointing toward memorization convergence through repeated exposure (termination rate 90% vs 46%). Paper [14] evaluates the impact of data repetition in Long-CoT SFT, but its evaluation design focuses on generalization performance rather than disproving gradient signal distribution as an explanation. Paper [10] studies repetition in memorization but does not use the same evaluation design to refute gradient signal distribution. No prior paper uses the same evaluation design to validate this specific claim.\n\n### Domain\nThe contribution operates in the domain of mechanistic analysis of Long-CoT SFT. Paper [1] and paper [14] both address Long-CoT SFT, making the domain covered. While the specific sub-problem (refuting gradient signal distribution) is new, the general application area (Long-CoT SFT) is not.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 14 | reason: Paper 14 explicitly redirects the explanation of the repetition advantage away from gradient signal distribution, stating \"training for more epochs on smaller datasets outperforms single-epoch training on larger datasets,\" which aligns with the same objective.  \n\nFACET: mechanism | FINAL: NONE | reason: No prior paper eliminates gradient-signal-distribution explanations and argues for an alternative mechanism under the same framing or vocabulary.  \n\nFACET: evaluation | FINAL: COVERED-BY 10 | reason: Paper 10 provides evidence for repeated exposure leading to memorization convergence, stating \"non-trivial amounts of repetition are necessary for verbatim memorization to happen,\" satisfying the same claim standard.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 14
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Redirect the explanation of the repetition advantage away from gradient signal distribution.**\n\nThe contribution's purpose is specifically to *disprove* a gradient-signal-distribution explanation for why data repetition helps in Long-CoT SFT, and redirect toward a memorization-convergence explanation. Paper [14] establishes the repetition advantage finding itself (\"Data Repetition Beats Data Scaling in Long-CoT SFT\") but does not pursue the purpose of explaining *why* it works or ruling out gradient-signal explanations. No prior paper pursues the same objective of eliminating gradient-signal-distribution as the explanation for repetition benefits in CoT SFT. Papers [4] and [7] discuss gradient coherence/consistency as explanations for generalization, but their purpose is to *support* gradient-based explanations, not to rule them out in favor of memorization convergence. This purpose appears uncovered.\n\n**MECHANISM: Uses negative results to eliminate gradient-signal-distribution explanations and argue for an alternative mechanism.**\n\nThe mechanism is \"elimination via negative results\" — showing that gradient signal distribution does NOT explain the phenomenon, then arguing for an alternative. Paper [4] (\"Coherent Gradients\") proposes gradient coherence as an explanation for generalization, but doesn't use negative results to eliminate it. Paper [7] similarly proposes gradient-based explanations. No prior paper uses the specific logical structure of \"run experiments that should differ if gradient signal were the cause, show they don't differ, therefore eliminate that explanation.\" This is a standard scientific elimination argument, but as a mechanism for this specific claim, it appears uncovered.\n\n**EVALUATION: Provides evidence via termination rate comparison (90% vs 46%).**\n\nThe evaluation design involves comparing termination rates (a behavioral metric) across conditions to distinguish between mechanistic explanations. This is essentially a controlled ablation/comparison experiment measuring a specific behavioral metric. Paper [14] evaluates repetition in Long-CoT SFT using standard benchmarks (AIME, GPQA). Paper [3] conducts comparative studies of CoT trajectories. The specific metric (termination rate) and the design of using it to distinguish between mechanistic explanations appears to be a newly defined metric/protocol not present in prior work. No prior paper uses \"termination rate\" as a metric in this evaluation design context.\n\n**DOMAIN: Mechanistic analysis of Long-CoT SFT.**\n\nPaper [14] works directly in Long-CoT SFT (\"Data Repetition Beats Data Scaling in Long-CoT SFT\"). Paper [3] also works in Long-CoT SFT mechanistic analysis (\"On the Role of Reasoning Patterns in the Generalization Discrepancy of Long Chain-of-Thought Supervised Fine-Tuning\"). Paper [1] also works in Long-CoT SFT. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 14",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper aims to redirect explanation of a repetition advantage away from gradient signal distribution; [14] identifies the repetition advantage but does not attempt to explain or redirect its mechanism.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper uses negative results to eliminate gradient-signal-distribution explanations and argue for an alternative mechanism in the context of repeated SFT data.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper provides the specific empirical contrast (90% vs 46% termination rate) or equivalent evidence ruling out gradient signal distribution in favor of memorization convergence through repeated exposure."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": [
+        3,
+        14
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to refute a specific explanation (gradient signal distribution) for a known phenomenon (the repetition advantage in Long-CoT SFT). While prior work like [14] establishes the phenomenon (\"SFT benefits from repetition\") and others like [4] discuss gradient-based explanations for generalization in general (\"descent directions that are common to many examples add up in the overall gradient\"), no prior paper has the specific purpose of testing and refuting this explanation for this phenomenon.\n\n**mechanism**: The mechanism is an analysis method: using negative results from a controlled experiment to eliminate one potential explanation in favor of another. This analysis design is present in prior work. For example, [13] identifies the root cause of learning stages by showing \"the phenomenon disappears when Batch Gradient Descend is adopted,\" thereby using a negative result (disappearance of the effect) to eliminate explanations that would also apply to BGD and isolate SGD stochasticity as the cause.\n\n**evaluation**: The evaluation design provides evidence by measuring a specific metric, \"termination rate,\" and comparing its value across conditions (90% vs 46%). According to the special rule, an evaluation design is considered new if it uses \"a newly defined metric.\" As \"termination rate\" is not a standard, named metric from prior work, the evaluation design is novel.\n\n**domain**: The contribution operates in the domain of \"Mechanistic analysis of Long-CoT SFT.\" This domain is explicitly covered by prior work. For instance, [3] conducts a \"comparative study\" on \"Long Chain-of-Thought Supervised Fine-Tuning,\" and [14] investigates the effects of \"Data Repetition... in Long-CoT Supervised Fine-Tuning.\"\n\nVERDICT purpose = NONE\nVERDICT mechanism = 13\nVERDICT evaluation = NONE\nVERDICT domain = 3, 14",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the explicit objective of redirecting the explanation for the \"repetition advantage\" phenomenon *away* from a gradient-based mechanism. While papers discuss repetition [14] or gradient-based explanations for generalization [4], none frame their purpose as a refutation or redirection of this specific explanatory link.\nFACET: evaluation | FINAL: NONE | reason: No prior paper presents an experiment designed to falsify a \"gradient signal distribution\" hypothesis while simultaneously providing evidence for a \"memorization convergence\" one. The specific structure of the claim—using a comparative metric (like termination rate) to argue against one mechanism and for another in the context of the repetition advantage—is not present."
+     }
+    }
+   }
+  }
+ ]
+}

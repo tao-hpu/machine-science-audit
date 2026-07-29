@@ -1,0 +1,256 @@
+{
+ "paper_id": "FA0114",
+ "title": "Sketch-Gated Trace Clustering for Accelerating Inter-Trace Redundancy Pruning",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1
+    ],
+    "mechanism": [
+     6,
+     7
+    ],
+    "evaluation": [
+     1
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": [
+        6,
+        7
+       ]
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to reduce expensive judge-model comparisons that bottleneck inter-trace redundancy pruning in parallel test-time scaling. Paper [1] explicitly addresses inter-trace redundancy in parallel scaling for reasoning traces, identifying it as a computational inefficiency and proposing DeepPrune to mitigate this bottleneck. The objective of both contributions is substantively equivalent: improving efficiency by reducing redundancy in reasoning traces during parallel scaling.\n\n### Mechanism\nThe contribution introduces Sketch-Gated DeepPrune, which uses SimHash signatures and locality-sensitive hashing (LSH) banding to identify candidate clusters for redundancy pruning. Paper [7] discusses using SimHash for probabilistic near-duplicate detection, and paper [6] describes LSH-based methods for efficient candidate generation in similarity search. Both papers employ the same technical primitives (SimHash and LSH) for identifying similar clusters, albeit in different contexts. Thus, the mechanism is covered.\n\n### Evaluation\nThe contribution evaluates efficiency payoff at the method level. Paper [1] evaluates DeepPrune's efficiency in reducing redundancy during parallel reasoning trace generation, which is the same evaluation design (quantifying efficiency improvements in redundancy pruning). Although the specific metrics or benchmarks may differ, the evaluation design is substantively equivalent.\n\n### Domain\nThe contribution operates in the domain of LLM test-time scaling and reasoning-trace pruning. Paper [1] explicitly addresses parallel scaling in LLM reasoning traces, which is the same application area. While the contribution may target a specific sub-problem, the domain is covered under the general area of LLM reasoning-trace pruning.\n\n---\n\nVERDICT purpose = 1  \nVERDICT mechanism = 6, 7  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Reduce expensive judge-model comparisons bottlenecking inter-trace redundancy pruning in parallel test-time scaling.**\n\nPaper [1] (DeepPrune) directly addresses inter-trace redundancy in parallel scaling of LLMs, proposing to prune redundant traces. However, its purpose is to eliminate inter-trace redundancy broadly — the specific sub-purpose here is to reduce the *comparison cost* (the judge-model calls) within that pruning process. Paper [1] introduces the pruning system but the bottleneck being addressed here is the cost of comparisons *within* DeepPrune's own pipeline. This is a refinement of [1]'s efficiency objective — reducing the cost of the comparison mechanism that [1] itself uses. At the problem-class level, this is \"reduce computational cost of similarity-based redundancy detection in parallel LLM trace generation,\" which [1] partially covers (it addresses redundancy) but doesn't specifically target the comparison-cost bottleneck. Still, the objective of reducing wasted computation in parallel trace generation is substantively the same problem class as [1].\n\n**MECHANISM: SimHash signatures from trace suffixes + LSH banding for candidate cluster identification in constant time, gating an adaptive comparison budget.**\n\nPaper [7] uses SimHash for near-duplicate detection with probabilistic search in Hamming space. Papers [2], [3], [4], [5], [6], [9], [10], [15], [18], [19], [24] all use LSH variants for similarity search/candidate generation. The specific primitive here — compute SimHash signatures, use LSH banding to find candidate clusters, then gate a downstream comparison budget — is a standard LSH pipeline. Paper [7] specifically uses SimHash for near-duplicate detection. Paper [6] (BayesLSH) uses LSH for candidate generation then applies a budget-aware second phase. The combination of SimHash + LSH banding as a pre-filter to gate expensive comparisons is covered by [7] (SimHash near-duplicate detection) and [6] (LSH-gated comparison budget). The adaptive budget reduction (10→3) is a parameter, not a new primitive.\n\n**EVALUATION: Method-level efficiency payoff quantified in C2 (referring to a component/experiment within the paper).**\n\nThis is described as \"efficiency payoff quantified in C2\" — essentially measuring computational efficiency gains of the proposed method. Paper [1] evaluates efficiency of DeepPrune (computational savings, redundancy reduction). Papers [3], [6], [15] evaluate LSH efficiency. The evaluation design (measuring efficiency/speedup of a pruning/hashing method) is covered by [1] which evaluates the same type of system, and by LSH efficiency papers [3], [6]. This is a standard efficiency benchmark design.\n\n**DOMAIN: LLM test-time scaling / reasoning-trace pruning.**\n\nPaper [1] explicitly operates in LLM parallel test-time scaling with inter-trace redundancy pruning — exactly this domain. Paper [16] also addresses parallel reasoning acceleration. Paper [17] addresses CoT redundancy reduction.\n\nVERDICT purpose = 1\nVERDICT mechanism = 7\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     2
+    ],
+    "mechanism": [
+     2
+    ],
+    "evaluation": [
+     1,
+     2
+    ],
+    "domain": [
+     1,
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": [
+        1,
+        2
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        2
+       ]
+      },
+      "single_paper_covers_all": 2
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to demonstrate that the method reduces judge-comparison cost without hurting accuracy. Paper [2] (\"DeepPrune: Parallel Scaling without Inter-trace Redundancy\") shares a substantively equivalent purpose, as it aims to reduce computational inefficiency (cost) in reasoning tasks while maintaining accuracy by addressing inter-trace redundancy. The focus on computational efficiency and accuracy preservation aligns with the contribution's objective.\n\n### Mechanism\nThe mechanism involves benchmarking Sketch-Gated DeepPrune against DeepPrune on reasoning tasks, measuring judge prompt count and accuracy. Paper [2] also introduces DeepPrune, which addresses computational inefficiency in reasoning tasks by pruning redundant traces. While the contribution adds a sketch-gated variant, the underlying primitive of pruning redundant reasoning traces is substantively equivalent to the mechanism described in [2].\n\n### Evaluation\nThe evaluation achieves a 1.82x reduction in judge prompts with zero accuracy loss compared to DeepPrune on AIME and GPQA. Paper [1] (\"Logical Reasoning Capabilities of Large Language Models\") uses the GPQA dataset to evaluate reasoning performance, and Paper [2] evaluates DeepPrune's efficiency and accuracy. Both prior papers employ standard reasoning benchmarks and metrics to validate their claims, making the evaluation design covered. The specific benchmarks (AIME and GPQA) are instances within the same benchmark family, not a new evaluation design.\n\n### Domain\nThe domain is reasoning benchmarks, specifically AIME and GPQA. Paper [1] explicitly works on GPQA, and Paper [2] addresses reasoning tasks in general, including those involving reasoning benchmarks. Both papers operate in the same general application area of reasoning benchmarks, making the domain covered.\n\n---\n\nVERDICT purpose = 2  \nVERDICT mechanism = 2  \nVERDICT evaluation = 1, 2  \nVERDICT domain = 1, 2  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Demonstrate the method reduces judge-comparison cost without hurting accuracy.**\n\nThe purpose is to show that Sketch-Gated DeepPrune reduces judge prompt count (cost) while maintaining accuracy compared to DeepPrune. Paper [2] (DeepPrune) explicitly addresses reducing computational inefficiency in parallel reasoning by eliminating inter-trace redundancy, and its evaluation includes measuring efficiency (judge calls) and accuracy tradeoffs. This is the same objective: reduce evaluation/comparison cost without hurting reasoning accuracy. The purpose is substantively equivalent.\n\n**MECHANISM: Benchmark Sketch-Gated DeepPrune against DeepPrune on reasoning tasks measuring judge prompt count and accuracy.**\n\nThe mechanism here is a controlled comparison between a proposed variant and a baseline (DeepPrune), measuring two quantities: judge prompt count and accuracy. Paper [2] introduces DeepPrune and benchmarks it against baselines measuring judge calls and accuracy on reasoning tasks — this is the same comparative analysis design (variant vs. baseline, efficiency metric + accuracy metric). The analysis protocol is a standard controlled ablation/substitution experiment comparing a new method against a named baseline on the same metrics.\n\n**EVALUATION: Achieves 1.82x judge prompt reduction (1635 to 897) with zero accuracy loss compared to DeepPrune on AIME and GPQA.**\n\nThe evaluation design uses AIME and GPQA benchmarks with accuracy metrics and efficiency (prompt count) metrics. Paper [2] uses the same evaluation design — reasoning benchmarks with judge-call counting and accuracy measurement. Paper [1] also uses GPQA for LLM reasoning evaluation. The evaluation design (named benchmark family AIME/GPQA + accuracy + efficiency metric comparison) is covered by [2], which uses the same benchmark family and metric semantics.\n\n**DOMAIN: Reasoning benchmarks (AIME, GPQA).**\n\nPapers [1] and [2] both operate in the reasoning benchmark domain. Paper [1] explicitly uses GPQA for LLM reasoning evaluation. Paper [2] uses AIME and GPQA as reasoning benchmarks. This domain is clearly covered.\n\nVERDICT purpose = 2\nVERDICT mechanism = 2\nVERDICT evaluation = 2\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     14,
+     16
+    ],
+    "evaluation": [
+     12,
+     16
+    ],
+    "domain": [
+     4,
+     14
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to diagnose the actual source of observed efficiency gains via ablation. None of the prior papers explicitly report or establish the same empirical relationship — isolating efficiency gains specifically from the adaptive K1 comparison-budget mechanism versus LSH candidate-filtering quality. Papers [4], [5], [7], [11], and [15] discuss efficiency improvements in various contexts (e.g., ablation efficiency, medical procedures, refractive surgery), but none diagnose the source of efficiency gains in the same manner or isolate the adaptive K1 mechanism. These papers focus on efficiency improvements generally, not on diagnosing the source of gains via ablation.\n\n#### Mechanism:\nThe contribution uses ablation studies to isolate the adaptive K1 comparison-budget mechanism from LSH candidate-filtering quality. Papers [12] and [13] involve ablation studies and budget-constrained designs, but neither specifically isolates the adaptive K1 mechanism or compares it to LSH candidate-filtering quality. Paper [14] discusses locality-sensitive hashing (LSH) but does not use ablation studies to isolate mechanisms. No prior paper employs the same mechanism.\n\n#### Evaluation:\nThe evaluation design involves ablations revealing that the prompt reduction primarily stems from the adaptive K1 mechanism rather than LSH candidate quality. Papers [12] and [13] use ablation studies and budget-constrained designs, which match the evaluation design at the level of isolating components and measuring their impact. While the specific object (adaptive K1 mechanism vs. LSH candidate quality) differs, the evaluation design itself — ablation studies isolating components — is covered.\n\n#### Domain:\nThe domain is ablation analysis of the proposed mechanism. Papers [4], [5], [7], [11], and [15] all operate in domains involving ablation analysis, including material processing, medical procedures, and refractive surgery. While the specific instance (adaptive K1 mechanism vs. LSH candidate quality) differs, the general application area of ablation analysis is covered.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 12  \nVERDICT domain = 4  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly diagnoses the source of observed efficiency gains via ablation under any terminology or framing.  \n\nFACET: mechanism | FINAL: COVERED-BY 14 | reason: \"We propose a new class of data-independent locality-sensitive hashing (LSH) algorithms... enhances their separability,\" aligns with isolating the adaptive K1 comparison-budget mechanism from LSH candidate-filtering quality."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 14
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**PURPOSE: Diagnose the actual source of observed efficiency gains via ablation.**\n\nThe purpose is to identify which specific sub-component (adaptive K1 budget vs. LSH candidate filtering) is responsible for efficiency gains in a computational system. None of the prior papers pursue this same objective — papers [1]-[11] deal with physical/medical ablation, [12]-[22] deal with optimization, hashing, or pairwise comparisons. No paper establishes the same empirical relationship (isolating which sub-mechanism drives efficiency in an adaptive comparison-budget + LSH system). The closest thematic papers ([14], [22] on LSH; [13] on pairwise comparison budgets) do not report or establish this specific relationship between adaptive K1 budgets and LSH quality as sources of efficiency.\n\n**MECHANISM: Ablation studies isolating adaptive K1 comparison-budget from LSH candidate-filtering quality.**\n\nThe mechanism is a controlled ablation study design — removing/isolating components to attribute effects. This is a standard experimental design (controlled ablation/component isolation). However, per the special rule for finding-type contributions, the mechanism is judged at the design level. Controlled ablation/component isolation appears as a generic experimental shape, but no prior paper uses this specific protocol to validate the same claim. None of the prior papers perform component-isolation ablations on adaptive budget + LSH systems. The papers on LSH ([14], [22]) and pairwise comparisons ([13]) don't perform this type of ablation study.\n\n**EVALUATION: Ablations reveal prompt reduction stems primarily from adaptive K1 rather than LSH candidate quality.**\n\nThe evaluation design is a component-isolation ablation study measuring contribution of sub-mechanisms to an efficiency metric. This is a standard ablation design used broadly in ML. However, per the special rule, a generic experimental shape (\"swap a component, measure accuracy\") does not establish coverage unless a prior paper validated the same claim. No prior paper uses this specific ablation design to validate claims about adaptive K1 vs. LSH quality. The evaluation design itself (isolating two specific sub-components of an adaptive retrieval system) is not found in any prior paper.\n\n**DOMAIN: Ablation analysis of the proposed mechanism (adaptive comparison-budget + LSH system).**\n\nThe domain is computational/ML systems involving LSH and adaptive comparison budgets. Papers [14] and [22] work in LSH-based similarity search. Paper [13] works in adaptive pairwise comparison budgets. These prior papers operate in the same general application area (LSH-based retrieval and adaptive comparison allocation), so the domain is covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 14",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper contains the objective of diagnosing the actual source of efficiency gains via ablation in this computational/algorithmic context; the ablation-related papers are all in medical/laser domains with no equivalent empirical decomposition goal.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes an ablation study isolating an adaptive comparison-budget mechanism from an LSH candidate-filtering component; the closest papers ([13], [14]) address top-k selection and LSH separately but never combine or isolate these two mechanisms against each other.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper contains a finding — under any terminology — that prompt reduction stems primarily from an adaptive K1/budget mechanism rather than LSH candidate quality, nor any equivalent claim attributing efficiency gains to a gating strategy over a hashing/filtering component."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 16
+      },
+      "mechanism": {
+       "covered_by": 16
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": 14
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe contribution's purpose is to \"diagnose the actual source of the observed efficiency gains via ablation.\" This is a standard objective in empirical computer science, where an analysis is performed to attribute a system's performance improvement to a specific component. Paper [16] proposes a method for model pruning to improve efficiency and would necessarily contain an analysis (likely via ablation) to demonstrate that its proposed attention pruning mechanism is the source of the claimed benefits, thus sharing the same diagnostic purpose.\n\n**MECHANISM**\nThe mechanism is an \"ablation study\" designed to isolate the effects of different system components. For a \"finding\" contribution, this is judged at the design level. An ablation study is a standard analysis protocol in machine learning used to understand component contributions. Paper [16], in validating its proposed pruning method, would use this same standard protocol of ablating components to isolate their effects.\n\n**EVALUATION**\nThe evaluation design is an ablation study, which is a standard validation protocol. According to the special rules for a \"finding\", a standard analysis protocol that appears in prior work counts as covered, even when applied to a different object. Paper [16] uses the same evaluation design—an ablation study—to attribute performance changes to its components, making the design substantively equivalent.\n\n**DOMAIN**\nThe contribution's domain is the analysis of a mechanism involving \"LSH candidate-filtering\" and a \"comparison-budget,\" which are core concepts in the general application area of efficient similarity search and large-scale retrieval. Paper [14] works directly in this domain, as its title is \"Improving Similarity Search with High-dimensional Locality-sensitive Hashing.\"\n\nVERDICT purpose = 16\nVERDICT mechanism = 16\nVERDICT evaluation = 16\nVERDICT domain = 14",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

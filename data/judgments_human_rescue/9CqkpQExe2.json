@@ -1,0 +1,251 @@
+{
+ "paper_id": "9CqkpQExe2",
+ "title": "Ada-K Routing: Boosting the Efficiency of MoE-based LLMs",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     2
+    ],
+    "mechanism": [
+     2,
+     3
+    ],
+    "evaluation": [
+     2
+    ],
+    "domain": [
+     1,
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution aims to improve the efficiency/performance balance of MoE-based LLMs by addressing the inefficiency of static Top-K routing, which activates a fixed number of experts per token regardless of token importance.  \n- Paper [1] discusses the inefficiency of fixed Top-K routing but focuses on load imbalance and expert specialization rather than token importance.  \n- Paper [2] explicitly addresses the inefficiency of static Top-K routing and proposes dynamic expert selection based on input difficulty, which aligns with the same objective of improving efficiency/performance balance by adjusting expert activation.  \n- Paper [3] also critiques static Top-K routing and proposes token-adaptive routing, targeting the same inefficiency and performance tradeoff.  \n- Paper [4] introduces a dynamic router mechanism to allocate experts based on token importance, directly addressing the same purpose.  \n\n**Conclusion:** Papers [2], [3], and [4] share the same purpose.\n\n---\n\n#### Mechanism:\nThe contribution introduces Ada-K routing, a dynamic per-token strategy that adjusts the number of activated experts using a learnable allocator module that outputs a distribution over expert counts and samples the count for each token.  \n- Paper [2] proposes dynamic expert selection based on input difficulty, but it does not describe a learnable allocator module that samples expert counts per token.  \n- Paper [3] introduces token-adaptive routing with null experts, which dynamically adjusts the number of activated experts per token, but does not specify a sampling-based learnable allocator module.  \n- Paper [4] proposes a dynamic router mechanism that allocates varying numbers of experts based on token importance, but it does not describe the specific mechanism of sampling expert counts using a learnable module.  \n\n**Conclusion:** None of the prior papers describe a mechanism substantively equivalent to Ada-K routing.\n\n---\n\n#### Evaluation:\nThe contribution evaluates Ada-K routing against static Top-K routing across four MoE-based LLMs (14.3B to 140B parameters), measuring reductions in activated experts, FLOPs, inference speedup, and performance improvements across benchmarks.  \n- Paper [2] evaluates dynamic routing against static Top-K routing, measuring computational efficiency and model performance across benchmarks, which matches the evaluation design.  \n- Paper [3] evaluates token-adaptive routing against static Top-K routing, measuring efficiency and performance improvements across benchmarks, which matches the evaluation design.  \n- Paper [4] evaluates dynamic expert allocation against static Top-K routing, measuring efficiency and performance improvements across benchmarks, which matches the evaluation design.  \n\n**Conclusion:** Papers [2], [3], and [4] share the same evaluation design.\n\n---\n\n#### Domain:\nThe contribution operates in the domain of efficient MoE LLM inference.  \n- Papers [1], [2], [3], [4], [5], [8], [9], [12], and [13] all address efficient inference or routing strategies for MoE-based LLMs, which is the same general application area.  \n\n**Conclusion:** The domain is covered by multiple prior papers.\n\n---\n\n### Verdicts:\nVERDICT purpose = 2  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 2  \nVERDICT domain = 1  ",
+      "stage2": "FACET: mechanism | FINAL: COVERED-BY 2 | reason: Paper [2] explicitly introduces a dynamic expert selection framework that adjusts the number of activated experts based on input difficulty, replacing fixed Top-K routing. Quote: \"Unlike traditional MoE approaches that rely on fixed Top-K routing, which activates a predetermined number of experts regardless of the input's complexity, our method dynamically selects experts based on the confidence level in expert selection for each input.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Improve efficiency/performance balance of MoE-based LLMs by addressing the limitation that static Top-K routing activates a fixed equal number of experts per token regardless of token importance.**\n\nPapers [2], [3], [4] all explicitly address this exact purpose. Paper [2] states \"adjusting the number of activated experts based on input difficulty\" vs \"traditional MoE approaches that rely on fixed Top-K routing.\" Paper [3] states \"existing MoE methods usually enforce a constant top-k routing for all tokens, which is arguably restrictive.\" Paper [4] states \"existing router mechanisms allocate a fixed number of experts to each token, which neglects the varying importance of different input tokens.\" Paper [1] also notes \"a fixed number of experts to each token using a top-k function regardless of the relative importance.\" All four share the same objective at the problem-class level.\n\n**MECHANISM: Ada-K routing — a dynamic per-token strategy using a pluggable lightweight learnable allocator module that outputs a distribution over expert counts and samples the count for each token, replacing fixed Top-K.**\n\nPaper [2] introduces \"dynamic expert selection framework... dynamically selects experts based on the confidence level in expert selection for each input.\" Paper [3] (AdaMoE) introduces \"Token-Adaptive Routing\" that lifts the constant top-k constraint per token. Paper [4] (DA-MoE) proposes \"a novel dynamic router mechanism that Dynamically Allocates a variable number of experts to each token.\" These all share the core primitive: a learnable/dynamic per-token mechanism that varies the number of activated experts. The specific implementation details (distribution sampling, pluggable module) may differ, but the underlying primitive — dynamic per-token expert count allocation via a learned router — is substantively equivalent across [2], [3], [4].\n\n**EVALUATION: Comparison vs Top-K across multiple MoE-based LLMs measuring FLOPs reduction, inference speedup, and benchmark performance.**\n\nPapers [2], [3], [4] all evaluate dynamic routing against Top-K baselines on MoE models using benchmark performance metrics. Paper [2] evaluates \"computational efficiency and model performance.\" Paper [3] evaluates on MoE language models comparing against top-k routing. Paper [4] similarly compares against fixed routing baselines. The evaluation design (compare dynamic vs. fixed Top-K routing on MoE LLMs using standard NLP benchmarks + efficiency metrics) is substantively the same design, even if the specific models/scales differ.\n\n**DOMAIN: Efficient MoE LLM inference.**\n\nPapers [1], [2], [3], [4], [5], [8], [9] all operate in the MoE LLM domain. This is clearly covered.\n\nVERDICT purpose = 2\nVERDICT mechanism = 3\nVERDICT evaluation = 2\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     32
+    ],
+    "mechanism": [
+     6,
+     32
+    ],
+    "evaluation": [
+     12,
+     22
+    ],
+    "domain": [
+     5,
+     22
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to train the allocator despite the expert-count sampling operation being non-differentiable, while keeping training computationally efficient. None of the prior papers explicitly address this specific objective. While some papers discuss related topics, such as efficient training of MoE models ([5], [7], [12], [22]) or reinforcement learning for non-differentiable operations ([11], [26]), none of them explicitly target the problem of training an allocator under non-differentiable expert-count sampling while maintaining low training costs. These papers either focus on different aspects of MoE training or general reinforcement learning challenges, but not this specific purpose.\n\n### Mechanism\nThe mechanism involves using an RL-based end-to-end training framework with Proximal Policy Optimization (PPO) to optimize lightweight allocator modules for non-differentiable decision-making in expert allocation. Several prior papers discuss the use of PPO in reinforcement learning ([1], [2], [3], [4], [16], [20]), and some papers explore MoE architectures in reinforcement learning ([6], [13], [19]). However, none of these papers combine PPO with lightweight allocator modules specifically for non-differentiable expert allocation. The closest match is [6], which discusses MoE in reinforcement learning, but it does not use PPO for this specific purpose. Thus, the mechanism is not covered.\n\n### Evaluation\nThe evaluation emphasizes training efficiency, with only ~2M tunable parameters and training under 8 hours for all baselines, including Mixtral-8x22B (>140B params). Papers like [5], [7], [12], and [22] discuss efficient training of MoE models, and [18] highlights lightweight fine-tuning. However, none of these papers use the exact same evaluation design (e.g., training time under 8 hours for specific baselines or parameter counts). The evaluation design appears to be novel, as no prior paper explicitly uses this combination of metrics and baselines to validate training efficiency.\n\n### Domain\nThe domain is efficient MoE LLM training. Several prior papers ([5], [7], [10], [12], [22]) explicitly address MoE architectures for large language model (LLM) training, focusing on efficiency and scalability. While the specific problem instance (training an allocator for non-differentiable expert-count sampling) is new, the general application area of efficient MoE LLM training is well-covered by these papers.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 5  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses training an allocator despite non-differentiable expert-count sampling while keeping training cheap.  \nFACET: mechanism | FINAL: COVERED-BY 6 | reason: \"Mixture-of-experts (MOE)... multimodal policy represented as a mixture-of-experts (MOE)\" aligns with RL-based optimization for non-differentiable decision-making.  \nFACET: evaluation | FINAL: NONE | reason: No prior paper explicitly mentions training efficiency metrics (~2M parameters, <8 hours) for comparable baselines.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 32
+      },
+      "mechanism": {
+       "covered_by": 32
+      },
+      "evaluation": {
+       "covered_by": 22
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Train the allocator despite non-differentiable expert-count sampling, keep training cheap.**\n\nThe core purpose is handling non-differentiable discrete decisions in MoE routing/allocation using RL. Paper [32] (SkipNet) uses RL to handle non-differentiable gating decisions for layer skipping in CNNs. Paper [29] (Neural Architecture Search with RL) uses RL to optimize non-differentiable discrete architecture decisions. Paper [25] (N2N Learning) uses policy gradient RL to handle non-differentiable network compression decisions. These all share the objective of using RL to bridge non-differentiable discrete decisions in neural network design/routing. The \"keep training cheap\" aspect (lightweight allocator, ~2M params) is more specific, but the core purpose of using RL for non-differentiable discrete allocation is covered by [32] and [25]. Paper [22] (HyperRouter) also addresses efficient MoE router training. The closest match is [32] which explicitly frames dynamic routing with non-differentiable gates as a sequential decision problem solved with RL/PPO.\n\n**MECHANISM: PPO-based end-to-end training of lightweight allocator modules for non-differentiable expert allocation decisions.**\n\nPaper [32] uses PPO/REINFORCE to train gating networks for non-differentiable skip decisions in CNNs — same primitive: RL (policy gradient) to train a lightweight routing/gating module over non-differentiable discrete decisions. Paper [25] uses policy gradient RL to optimize non-differentiable network compression decisions. Paper [29] uses RL to train a controller for discrete architecture decisions. The mechanism of using PPO specifically to train a routing/allocation module over non-differentiable discrete choices is most directly covered by [32], which uses PPO for gating in a neural network context.\n\n**EVALUATION: ~2M tunable parameters, training under 8 hours for all baselines including Mixtral-8x22B.**\n\nThis evaluation reports parameter efficiency and wall-clock training time as metrics. This is a standard efficiency evaluation design used in MoE papers. Paper [5] (Layerwise Recurrent Router) evaluates parameter efficiency of MoE routing. Paper [22] (HyperRouter) evaluates training efficiency of sparse MoE. Paper [12] (Yuan 2.0-M32) reports training computation consumption comparisons. These papers use the same evaluation design: reporting parameter counts and training cost/time as validation metrics for efficiency claims in MoE LLM training. The design (parameter count + training time/cost comparison) is standard and covered by [22] and [5].\n\n**DOMAIN: Efficient MoE LLM training.**\n\nPapers [5], [7], [10], [12], [14], [22], [28] all operate in the MoE LLM training domain. This is clearly covered.\n\nVERDICT purpose = 32\nVERDICT mechanism = 32\nVERDICT evaluation = 22\nVERDICT domain = 5",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 32
+      },
+      "mechanism": {
+       "covered_by": 32
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 22
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The purpose is to train a component that makes a non-differentiable choice (expert allocation) within a larger model, using a method that is cheap and avoids direct differentiation. This objective is covered by prior work on dynamic routing and neural architecture search. For example, [32] formulates the problem of which network layers to skip as a \"sequential decision making\" problem and trains a gating network with reinforcement learning, which is substantively the same purpose of training a non-differentiable routing component.\n\n**mechanism**: The mechanism is using Proximal Policy Optimization (PPO), a policy gradient reinforcement learning algorithm, to train the non-differentiable allocator. The underlying primitive—using a policy gradient algorithm to optimize discrete choices about network structure or computation—is covered. [32] uses REINFORCE, a foundational policy gradient algorithm, for dynamic routing, and [29] uses policy gradient for neural architecture search; PPO is a well-established modern variant of this same primitive.\n\n**evaluation**: The evaluation design is to measure training efficiency by reporting the number of tunable parameters and the wall-clock training time on a large-scale model. This is a standard evaluation design for work focused on efficient model training. [12] uses the same design, evaluating its MoE model by reporting that \"the training computation consumption is only 9.25% of a dense model at the same parameter scale.\"\n\n**domain**: The application domain is efficient training for Mixture-of-Experts (MoE) Large Language Models (LLMs). This domain is covered by numerous prior papers. For instance, [22] is titled \"HyperRouter: Towards Efficient Training and Inference of Sparse Mixture of Experts\" and explicitly discusses its application to \"large language models,\" and [7] focuses on \"Large Scale Mixture-of-Expert Training.\"\n\nVERDICT purpose = 32\nVERDICT mechanism = 32\nVERDICT evaluation = 12\nVERDICT domain = 22",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     9,
+     11
+    ],
+    "mechanism": [
+     9,
+     20
+    ],
+    "evaluation": [
+     9,
+     11
+    ],
+    "domain": [
+     9,
+     20
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": 9
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to understand and validate what drives adaptive expert allocation in Mixture-of-Experts (MoE) models, providing design insights. Paper [9] (\"Towards an empirical understanding of MoE design choices\") systematically evaluates the impact of MoE design choices, including token-level and sequence-level routing, and uncovers distinct influences on validation performance. Paper [11] (\"Harder Tasks Need More Experts\") introduces a dynamic expert selection framework that adjusts expert activation based on input difficulty, which aligns with understanding adaptive allocation. Both papers share the same objective of understanding expert allocation mechanisms in MoE models.\n\n### Mechanism\nThe contribution uses detailed quantitative and qualitative analysis of Ada-K allocation at the task, layer, and token levels across four MoE LLMs. Paper [9] (\"Towards an empirical understanding of MoE design choices\") employs systematic evaluation of MoE design choices, including token-level and sequence-level routing, which overlaps with analyzing expert allocation at different granularities. Paper [11] (\"Harder Tasks Need More Experts\") dynamically adjusts expert activation based on input difficulty, which involves analyzing token-level routing and expert activation patterns. Both papers use similar analysis methods to study expert allocation mechanisms.\n\n### Evaluation\nThe contribution evaluates consistent advantages over baselines and analyzes patterns such as harder tasks, middle layers, and content words activating more experts. Paper [9] (\"Towards an empirical understanding of MoE design choices\") uses systematic evaluation of MoE design choices, including token-level and sequence-level routing, and presents empirical evidence of performance impacts. Paper [11] (\"Harder Tasks Need More Experts\") evaluates dynamic expert selection frameworks and their computational efficiency and performance improvements. Both papers use evaluation designs that analyze expert activation patterns and their impact on performance, covering the evaluation facet.\n\n### Domain\nThe contribution operates in the domain of efficient MoE LLM inference and interpretability of routing. Paper [9] (\"Towards an empirical understanding of MoE design choices\") and Paper [11] (\"Harder Tasks Need More Experts\") both address MoE-based LLMs, focusing on routing mechanisms and efficiency. Paper [5] (\"AdaMoE: Token-Adaptive Routing with Null Experts for Mixture-of-Experts Language Models\") also operates in the same domain, exploring token-adaptive routing in MoE LLMs. All three papers work within the same general application area of efficient MoE LLM inference and routing interpretability.\n\n---\n\nVERDICT purpose = 9  \nVERDICT mechanism = 9  \nVERDICT evaluation = 9  \nVERDICT domain = 9  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 11
+      },
+      "mechanism": {
+       "covered_by": 20
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 20
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Understand and validate what drives adaptive expert allocation, providing design insights.**\n\nPaper [11] \"Harder Tasks Need More Experts: Dynamic Routing in MoE Models\" directly investigates what drives expert allocation — specifically that harder tasks activate more experts. Paper [20] \"A Closer Look into Mixture-of-Experts in Large Language Models\" explicitly studies the underlying mechanism of MoE and explores modularization degree. Paper [9] \"Towards an empirical understanding of MoE design choices\" systematically evaluates design choices in MoE. These papers share the purpose of understanding what drives expert allocation patterns, providing design insights. Paper [11] is the closest match — its title and content directly address the relationship between task difficulty and expert activation.\n\n**MECHANISM: Detailed quantitative and qualitative analysis of Ada-K allocation at the task, layer, and token levels across four MoE LLMs.**\n\nPaper [20] performs analysis of MoE routing at multiple granularities (token, layer, task levels) across LLMs, stating it explores \"the underlying mechanism of MoE.\" Paper [11] analyzes expert activation patterns across tasks and layers. Paper [9] performs \"systematic evaluation... at token and sequence levels\" across MoE design choices. Paper [24] \"investigates the dispersion degree of the activated experts in customized tasks.\" The multi-level (task/layer/token) quantitative analysis design is substantially covered by [20] and [11].\n\n**EVALUATION: Consistent advantages over baselines; analysis finds harder tasks, middle layers, and content words tend to activate more experts.**\n\nPaper [11] explicitly reports the finding that \"harder tasks need more experts\" — this is the same empirical relationship. Paper [20] reports layer-level and token-level analysis findings about routing patterns. Paper [9] reports empirical findings at \"token and sequence levels\" about routing behavior. The evaluation design (comparing against baselines, then doing breakdown analysis by task/layer/token) is covered by [11] and [20]. The specific finding about middle layers and content words maps to the multi-level analysis in [20].\n\n**DOMAIN: Efficient MoE LLM inference / interpretability of routing.**\n\nPapers [11], [20], [9], [5], [19], [4], [14] all operate in the domain of efficient MoE LLM inference and routing interpretability. This domain is clearly covered by multiple prior papers, particularly [20] which focuses on interpretability of MoE routing, and [11] which focuses on efficient dynamic routing in MoE LLMs.\n\nVERDICT purpose = 11\nVERDICT mechanism = 20\nVERDICT evaluation = 11\nVERDICT domain = 20",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

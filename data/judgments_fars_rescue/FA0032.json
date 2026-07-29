@@ -1,0 +1,276 @@
+{
+ "paper_id": "FA0032",
+ "title": "RC-MemStop: Risk-Controlled Early Stopping for Long-Context Memory Agents",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     3,
+     18
+    ],
+    "mechanism": null,
+    "evaluation": [
+     3,
+     5
+    ],
+    "domain": [
+     3
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 18
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is \"provides training-free early stopping for memory agents with explicit safety guarantees on broken-success risk.\" No prior paper explicitly addresses early stopping for memory agents with safety guarantees on broken-success risk. Papers like [18] (Confidence-Guided Early Stopping) and [17] (SAFE-KD) discuss early stopping mechanisms, but they focus on adaptive halting or distillation frameworks without explicit guarantees on broken-success risk. Similarly, [27] (Game-Theoretic Statistics and Safe Anytime-Valid Inference) and [14] (Safe Logrank Test) discuss error control under continuous monitoring but do not target memory agents or broken-success risk. Thus, no prior paper shares the same purpose.\n\n### Mechanism\nThe mechanism, \"RC-MemStop applies conformal risk control with an answer-stability stopping rule (terminate after k consecutive matching draft answers) and the Waudby-Smith-Ramdas betting bound to select the least conservative k satisfying a user-specified risk budget epsilon,\" is partially covered. Papers [5] (Conformal Risk Control) and [13] (STaR-Bets) both discuss betting bounds and conformal risk control, but neither applies these techniques to answer-stability stopping rules or memory agents. Paper [18] (Confidence-Guided Early Stopping) uses Bayesian posterior mass for adaptive halting, which is conceptually similar to stability-based stopping but does not employ conformal risk control or betting bounds. Paper [17] (SAFE-KD) applies conformal risk control to early-exit networks, but its mechanism focuses on hierarchical distillation rather than answer-stability stopping. Thus, the mechanism is partially covered but not substantively equivalent.\n\n### Evaluation\nThe evaluation facet is \"first application of conformal risk control to memory agent early stopping; UCB-calibrated thresholds maintain user-specified risk budgets with zero violations across all 8 configurations on MemAgent with 448K-896K token contexts.\" Papers [5] (Conformal Risk Control), [13] (STaR-Bets), and [18] (Confidence-Guided Early Stopping) all use conformal risk control or betting bounds in their evaluation setups, but none applies these methods to memory agents or long-context inference. However, the evaluation design itself — conformal risk control with calibrated thresholds — is not novel, as it appears in [5] and [13]. The specific application to memory agents belongs to the domain facet, not evaluation. Thus, the evaluation is covered.\n\n### Domain\nThe domain is \"long-context LLM memory agents / efficient inference.\" Papers [3] (Conformal Thinking: Risk Control for Reasoning on a Compute Budget) and [21] (A Survey of LLM Reasoning in Healthcare and Medicine) both address reasoning and inference in LLMs, including compute-efficient methods. Paper [18] (Confidence-Guided Early Stopping) also discusses efficient inference in LLMs. While none of these papers specifically targets memory agents with long contexts, they operate in the same general application area of LLM reasoning and efficient inference. Thus, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 5  \nVERDICT domain = 3  ",
+      "stage2": "- **FACET: purpose** | **FINAL: COVERED-BY 18** | reason: Paper [18] introduces Confidence-Guided Early Stopping (CGES), which provides early stopping for LLMs with guarantees on decision reliability, aligning with the purpose of training-free early stopping with explicit safety guarantees on broken-success risk. Quote: \"We prove guarantees in both finite-sample and asymptotic regimes for the stopping rule, ensuring reliability under a user-specified confidence threshold.\"\n\n- **FACET: mechanism** | **FINAL: COVERED-BY 13** | reason: Paper [13] describes the use of betting bounds for confidence interval construction and sequential decision-making, which aligns with the Waudby-Smith-Ramdas betting bound and its application to risk-controlled stopping. Quote: \"The current state-of-the-art method to construct confidence intervals is by using betting algorithms... deriving optimal stopping rules under a user-specified risk budget.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Training-free early stopping for memory agents with explicit safety guarantees on broken-success risk.**\n\nPaper [3] \"Conformal Thinking: Risk Control for Reasoning on a Compute Budget\" addresses adaptive reasoning with token budget control using risk control for LLM reasoning — this is about early stopping with safety guarantees on compute/accuracy trade-offs. Paper [17] \"SAFE-KD: Risk-Controlled Early-Exit Distillation for Vision Backbones\" provides risk-controlled early exit with conformal risk control guarantees. However, neither specifically targets memory agents. The purpose at the problem-class level is \"training-free early stopping with formal risk guarantees\" — paper [3] covers this for LLM reasoning (stopping early when computation is unlikely to help, with risk control), and paper [17] covers it for vision early-exit. Paper [3] is the closest: \"re-frame the budget setting problem as risk control\" for adaptive reasoning/stopping. This is substantively equivalent at the problem-class level: both aim to provide early stopping with formal risk guarantees on accuracy degradation.\n\n**MECHANISM: Conformal risk control + answer-stability stopping rule (k consecutive matching answers) + Waudby-Smith-Ramdas betting bound to select least conservative k.**\n\nPaper [3] uses conformal risk control for token budget/early stopping in LLM reasoning. Paper [5] introduces conformal risk control as a general framework. Paper [23] derives the Waudby-Smith-Ramdas (betting-based) confidence sequences for bounded random variables — this is the WSR betting bound. Paper [18] \"CGES\" uses answer stability (majority vote / posterior over candidate answers) as a stopping criterion for self-consistency in LLMs — \"adaptively halts sampling once one answer accumulates enough posterior mass.\" The combination of (a) CRC + (b) answer-stability stopping + (c) WSR betting bound is the specific mechanism. Paper [3] uses CRC for LLM stopping. Paper [18] uses answer-stability stopping. Paper [23] provides the WSR betting bound. No single prior paper combines all three into this specific mechanism. However, the question is whether the mechanism as a primitive is covered. The core primitive is \"use conformal risk control with a stability-based stopping rule calibrated via betting bounds.\" Paper [3] covers CRC-based early stopping for LLMs. Paper [18] covers answer-stability stopping. Paper [23] covers the WSR bound. But no prior paper combines them in this way for this purpose. Still, the mechanism's underlying primitives are all present. The closest single paper is [3], which uses CRC for LLM reasoning stopping, but doesn't use the WSR betting bound or answer-stability rule specifically. The mechanism as a combined primitive appears not fully covered by any single paper.\n\n**EVALUATION: UCB-calibrated thresholds maintaining user-specified risk budgets with zero violations across 8 configurations on MemAgent with 448K-896K token contexts.**\n\nPaper [3] evaluates conformal risk control applied to LLM reasoning with risk budget validation. Paper [17] evaluates conformal risk control for early-exit with risk budget verification. The evaluation design — checking that conformal risk control maintains user-specified risk budgets (risk budget compliance verification) — is present in [3] and [5] and [17]. The design of \"verify risk budget is not violated across configurations\" is a standard CRC evaluation design used in [3] and [17]. This is COVERED by [3] and [17].\n\n**DOMAIN: Long-context LLM memory agents / efficient inference.**\n\nPaper [3] operates in LLM reasoning/inference efficiency. Paper [18] operates in LLM self-consistency/efficient inference. The general area of \"LLM efficient inference\" is covered by [3] and [18]. Memory agents are a specific sub-problem within LLM inference. This is COVERED by [3] and [18].\n\nVERDICT purpose = 3\nVERDICT mechanism = NONE\nVERDICT evaluation = 3\nVERDICT domain = 3",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper combines the specific triple of (1) answer-stability stopping rule with k consecutive matching draft answers, (2) conformal risk control framing, and (3) Waudby-Smith-Ramdas betting bound to select the least conservative k under a user-specified risk budget ε. Paper [3] uses conformal risk control for reasoning compute budgets but does not use a consecutive-match stopping rule or WSR betting bounds for k-selection. Paper [23] introduces the WSR betting bound but not in the context of LLM answer stability or stopping rules. No paper quotes any equivalent mechanism combining these three elements."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The purpose of providing early stopping with explicit safety/risk guarantees is covered by several prior papers. For example, [3] frames the problem of adaptively spending tokens for LLM reasoning as \"risk control,\" aiming to stop early when computation is unlikely to help, and [17] introduces a method for vision models to know \"when early exit is safe\" using conformal risk control.\n\n**mechanism**: The core components—conformal risk control, answer stability heuristics, and betting bounds—exist in prior work. However, the specific mechanism of combining them—using a Waudby-Smith-Ramdas betting bound to select the parameter `k` for an answer-stability stopping rule, and then applying conformal risk control to this composite rule—is a new technical primitive not present in any of the listed papers.\n\n**evaluation**: The evaluation design, which consists of applying a conformal risk control method and verifying that the empirical risk on a test set is maintained below a user-specified budget, is the standard protocol for this class of methods. This design is implicitly used in the foundational paper [5] and would be the direct evaluation for applied works like [3] and [17], even though they target different objects (LLM reasoning, vision backbones).\n\n**domain**: The general application area of efficient inference for Large Language Models is covered by prior work. Specifically, [3] addresses \"Reasoning Large Language Models (LLMs)... on a Compute Budget,\" which is the same high-level domain as the contribution's focus on efficient inference for memory agents.\n\nVERDICT purpose = 3\nVERDICT mechanism = NONE\nVERDICT evaluation = 3\nVERDICT domain = 3",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: The mechanism is a specific three-part combination: (1) Conformal Risk Control (CRC) as the framework, (2) an answer-stability stopping rule (stop after k identical answers), and (3) using a Waudby-Smith-Ramdas betting bound to select the parameter k. While prior works contain these components separately (e.g., [5] introduces CRC, [23] introduces the betting approach, and [18] uses a different type of stability stopping rule), no single paper combines them in this manner. Specifically, no prior work uses a betting bound to select the parameter `k` for a stability-based stopping rule within the CRC framework."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     12
+    ],
+    "evaluation": [
+     12,
+     29
+    ],
+    "domain": [
+     1,
+     6
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to show that calibration-only early stopping does not yield meaningful compute savings for memory agents. None of the prior papers explicitly report or establish the same empirical relationship between calibration-only early stopping and compute savings for memory agents. While several papers discuss early stopping (e.g., [2], [8], [10], [12], [17], [24]), their focus is on different objectives, such as statistical testing, energy efficiency, or confidence-guided stopping, rather than the specific relationship between calibration-only early stopping and compute savings in memory agents. No prior paper demonstrates this specific finding.\n\n### Mechanism\nThe mechanism involves empirical evaluation of the calibrated answer-stability stopping rule on MemAgent across 448K-896K token contexts. Papers such as [12] (Confidence-Guided Early Stopping) and [24] (Early Stopping Based on Repeated Significance) discuss early stopping mechanisms, but they do not use the same calibrated answer-stability stopping rule. While [16] (Smooth Calibration and Decision Making) and [14] (Calibrated Confidence Measures With Guarantees) discuss calibration, they do not combine it with early stopping in the same way. Thus, no prior paper employs the same mechanism.\n\n### Evaluation\nThe evaluation design measures speedup (1.02x-1.14x) against a 1.5x target and a 1.2x practical utility threshold, while ensuring risk control. Papers such as [12] (Confidence-Guided Early Stopping) and [19] (Conformal Risk Control) use similar evaluation designs involving risk control and efficiency metrics, even though they apply them to different objects. The evaluation design here is not fundamentally new, as it aligns with established frameworks for measuring efficiency and risk control.\n\n### Domain\nThe domain is long-context LLM memory agents and efficient inference. Papers such as [1] (Evaluating Long-Context Reasoning in LLM-Based WebAgents), [3] (LongLLMLingua), [5] (LOFT), [6] (Scaling Long-Horizon LLM Agent via Context-Folding), and [7] (Unstable Safety Mechanisms in Long-Context LLM Agents) all address long-context LLM agents and efficient inference. While the specific sub-problem or dataset may differ, the general application area is covered by prior work.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 12  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly or equivalently shows that calibration-only early stopping fails to yield meaningful compute savings for memory agents.  \nFACET: mechanism | FINAL: COVERED-BY 12 | reason: \"Confidence-Guided Early Stopping (CGES)... adaptively halts sampling once one answer accumulates enough posterior mass\" aligns with the empirical evaluation of a calibrated answer-stability stopping rule."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 29
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Shows that calibration-only early stopping does not yield meaningful compute savings for memory agents.**\n\nThe purpose is to demonstrate a specific empirical relationship: that calibrated answer-stability stopping rules fail to produce meaningful compute savings (speedup) in long-context memory agents, despite achieving risk control. This is a negative finding about the gap between risk-control achievement and actual compute efficiency. No prior paper reports this same relationship — papers on early stopping (2, 8, 10, 11, 12, 17) focus on when early stopping works, not on demonstrating its failure to yield compute savings in LLM memory agents. Paper [12] (CGES) shows early stopping for self-consistency works, which is the opposite direction. Paper [19] (Conformal Risk Control) establishes the framework but doesn't report this failure mode. No prior paper establishes the same variables (calibrated stopping → insufficient speedup in memory agents) and direction of effect.\n\n**MECHANISM: Empirical evaluation of the calibrated answer-stability stopping rule on MemAgent across 448K-896K token contexts.**\n\nThe mechanism is running a calibrated/conformal stopping rule and measuring its compute savings. Paper [19] introduces conformal risk control as a framework. Paper [12] (CGES) uses confidence-guided early stopping with posterior guarantees and measures efficiency. The analysis design — apply a calibrated stopping rule, measure speedup — is a standard empirical evaluation protocol. Paper [12] specifically evaluates a confidence-calibrated early stopping rule and measures efficiency gains, which is the same analysis design applied to a different object (self-consistency sampling vs. memory agent inference).\n\n**EVALUATION: Speedup is 1.02x-1.14x, far below 1.5x target and below 1.2x practical utility threshold.**\n\nThe evaluation design uses speedup ratio as a metric to assess compute savings from early stopping, compared against a target threshold. Paper [12] uses similar efficiency metrics (number of LLM calls saved) to evaluate early stopping. Paper [29] explicitly evaluates methods under computational time constraints and measures speedup/efficiency tradeoffs. The design of measuring speedup ratio against a threshold is a standard evaluation design present in multiple papers. Paper [29] proposes \"a novel online evaluation protocol... which penalizes slower methods\" and measures computational efficiency — same design of comparing compute savings against a threshold.\n\n**DOMAIN: Long-context LLM memory agents / efficient inference.**\n\nPapers [1], [5], [6], [7] all work in long-context LLM agents. Paper [6] (Context-Folding) specifically addresses LLM agents constrained by context length and efficient inference. Paper [3] (LongLLMLingua) addresses efficient inference in long-context LLM scenarios. The domain of long-context LLM agents with efficient inference is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 12\nVERDICT evaluation = 29\nVERDICT domain = 6",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper examines whether calibration-only early stopping yields meaningful compute savings specifically for memory agents; the closest papers (CGES [12], NYTRO [17]) address different settings (self-consistency sampling and least-squares regression respectively) with no equivalent empirical claim about memory agents or calibration-gated stopping failing to save compute."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": [
+     17
+    ],
+    "domain": [
+     2,
+     5
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 17
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to explain why the answer-stability signal fails to enable early stopping. No prior paper explicitly investigates this specific empirical relationship between answer-stability and early stopping failure. Papers like [17] and [19] discuss early stopping methods and answer convergence but do not establish the same relationship or root cause for failure. Thus, no prior paper reports or establishes this specific empirical relationship.\n\n### Mechanism\nThe mechanism involves a root-cause analysis of broken-success risk as a function of the consecutive-match threshold \\(k\\). Papers such as [17], [19], and [12] discuss early stopping methods and statistical frameworks for reasoning models, but none perform a root-cause analysis of broken-success risk tied specifically to the consecutive-match threshold \\(k\\). While [19] introduces Bayesian frameworks for early stopping, it does not analyze broken-success risk as a function of \\(k\\). Therefore, no prior paper employs this specific mechanism.\n\n### Evaluation\nThe evaluation design involves analyzing draft answers' stabilization behavior and broken-success risk across varying \\(k\\) thresholds. Papers like [17], [19], and [12] use similar evaluation designs for early stopping, such as monitoring answer convergence or statistical signals during reasoning. For example, [17] examines reasoning convergence thresholds, and [19] uses posterior mass accumulation for stopping. These designs are substantively equivalent to the evaluation design here, even though the specific \\(k\\) thresholds differ. Thus, the evaluation design is covered.\n\n### Domain\nThe domain is long-context LLM memory agents and failure analysis. Papers such as [2], [5], [7], [9], and [15] address long-context LLMs and their challenges, including memory systems, reasoning strategies, and benchmarks for long-context tasks. While the specific sub-problem of failure analysis differs, the general application area of long-context LLMs is covered. Therefore, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 17  \nVERDICT domain = 2  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 17 | reason: Paper explicitly studies why answer-stability fails for early stopping, quoting: \"we find that on math reasoning tasks... models typically converge to their final answers after redundant reasoning steps, which fail to signal early stopping.\"\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper analyzes broken-success risk as a function of consecutive-match threshold k, even under alternate terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Explains why the answer-stability signal fails to enable early stopping.**\n\nThe purpose is to explain the *failure mode* of answer-stability-based early stopping — specifically why consecutive-match signals break down. Paper [17] studies answer convergence as a signal for early stopping in reasoning, and Paper [12] introduces statistical early stopping methods monitoring uncertainty signals. However, neither paper's purpose is to explain *why* such signals fail. Paper [17] finds that models converge to final answers after some steps (a positive finding), not a failure analysis. No prior paper reports the same empirical relationship: that answer-stability signals fail and why. This is a failure-analysis purpose not covered by prior work.\n\n**MECHANISM: Root-cause analysis of broken-success risk as a function of the consecutive-match threshold k.**\n\nThe mechanism is analyzing \"broken-success risk\" (probability that a stable answer is later disrupted) as a function of threshold k. Paper [17] examines answer convergence and stability in reasoning chains. Paper [12] monitors uncertainty signals with sequential testing. Paper [25] deals with consecutive sequential probability ratio tests. None of these perform a root-cause analysis of a \"broken-success risk\" metric as a function of a consecutive-match threshold k in the context of LLM answer stability. This specific analytical primitive — measuring the risk that a stability signal is premature as a function of k — does not appear in prior work.\n\n**EVALUATION: Draft answers do not stabilize until processing is nearly complete; broken-success risk remains above 50% until k=30-50, k=60-120 required.**\n\nThe evaluation design involves measuring a stability/risk metric across varying threshold values (k) on LLM-generated draft answers. Paper [17] uses a similar design: examining when models reach stable decisions during reasoning, measuring convergence points. The design of \"measure answer stability as a function of a threshold parameter across generation steps\" is substantively equivalent to what [17] does (systematic study of minimum reasoning for stable decisions). This counts as a covered evaluation design.\n\n**DOMAIN: Long-context LLM memory agents / failure analysis.**\n\nPaper [5] explicitly evaluates long-term memory for long-context question answering with LLMs. Paper [7] addresses agentic long-context understanding. Paper [2] addresses long-context processing with LLMs. These papers work in the same general application area of long-context LLM processing/memory agents. The domain is covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 17\nVERDICT domain = 5",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explains why an answer-stability/convergence signal specifically fails to enable early stopping. Paper [17] uses answer convergence as a positive signal; paper [12] critiques overthinking but not the failure mode of stability-based stopping. No paper contains an equivalent claim even under different terminology.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper performs a root-cause analysis of a \"broken-success risk\" (or equivalent false-positive stopping risk) as a function of a consecutive-match threshold k. Papers on SPRT, CUSUM, and sequential testing ([1],[4],[13],[22],[25]) address error probabilities in hypothesis testing but none analyze how a consecutive-match threshold k modulates the risk of stopping on a spuriously stable but incorrect answer. No equivalent framing found."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 17
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe contribution's purpose is to explain why an answer-stability signal fails for early stopping, which is a negative finding establishing a specific empirical relationship. Paper [17] investigates a similar signal (\"answer convergence\") for the same purpose (\"early stopping\") but reports a positive finding, that the signal is effective. Establishing that a method fails is a different purpose from establishing that it succeeds, so no prior paper shares the same objective.\n\n**MECHANISM**\nThe mechanism is a root-cause analysis that measures a risk metric as a function of a consecutive-match threshold parameter, `k`. This is a standard parametric analysis of a stopping rule's performance. Paper [17] uses an equivalent analysis design when it studies the \"minimum reasoning required for a model to reach a stable decision,\" which involves analyzing answer stability against the number of generation steps.\n\n**EVALUATION**\nThe evaluation design consists of measuring \"broken-success risk\" as a function of the \"consecutive-match threshold k\". This design is substantively equivalent to the one in paper [17], which evaluates \"answer convergence\" as a function of the number of reasoning steps to determine when a \"stable decision\" is reached. Both use the same evaluation design of measuring output stability against a generation-step-related parameter.\n\n**DOMAIN**\nThe domain is \"long-context LLM memory agents\". Paper [2] explicitly addresses the same general area in its title, \"Chain of Agents: Large Language Models Collaborating on Long-Context Tasks\". The contribution operates within this established application area, even if it focuses on a specific failure analysis.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 17\nVERDICT evaluation = 17\nVERDICT domain = 2",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the objective of explaining the failure of an answer-stability or answer-convergence signal for early stopping. Paper [17] investigates this signal but for the purpose of *using* it, not explaining its failure. Paper [19] critiques a different method (majority vote over multiple runs) and proposes a Bayesian alternative, but does not analyze the failure of an intra-run stability signal."
+     }
+    }
+   }
+  }
+ ]
+}

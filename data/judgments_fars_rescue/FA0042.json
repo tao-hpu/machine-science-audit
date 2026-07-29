@@ -1,0 +1,304 @@
+{
+ "paper_id": "FA0042",
+ "title": "Distilling Bidirectional Embedding Teachers into Streaming-Compatible Causal Students",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": [
+     14,
+     31
+    ],
+    "domain": [
+     2,
+     5,
+     7
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 10
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 31
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to provide streaming-compatible text embeddings (KV-cache reusable) without sacrificing the quality of bidirectional attention. None of the prior papers explicitly address this objective. While papers like [10], [12], [13], and [14] discuss KV-cache reuse, they focus on accelerating inference or enabling multi-tenant systems rather than embedding quality or compatibility with bidirectional attention. Similarly, papers like [5] and [26] discuss embedding quality and distillation but do not address streaming compatibility or KV-cache reuse. Thus, no prior paper shares the same purpose.\n\n### Mechanism\nThe mechanism involves a teacher-student distillation framework that trains a bidirectional teacher with GG-SM (Gradient-Guided Soft Masking) and distills it into a causal student using a combination of InfoNCE contrastive loss and MSE distillation loss. Papers [5], [8], [18], and [23] discuss knowledge distillation frameworks for embeddings or language models, and [8] specifically mentions contrastive representation distillation. However, none of these papers combine GG-SM with InfoNCE and MSE loss in the same framework. GG-SM itself appears novel, as no prior paper mentions a similar masking mechanism. Therefore, the mechanism is not substantively equivalent to any prior work.\n\n### Evaluation\nThe evaluation involves measuring the distilled student's performance on MTEB (Massive Text Embedding Benchmark) and its streaming speedup via KV-cache reuse. Paper [31] introduces MTEB-NL, a benchmark for Dutch embeddings, which is part of the MTEB family. Papers [10], [12], [13], and [14] evaluate KV-cache reuse strategies, albeit for different tasks. Since the evaluation design reuses the MTEB benchmark family and measures KV-cache reuse, the evaluation facet is covered.\n\n### Domain\nThe domain is text embeddings and streaming inference. Papers [5], [8], [9], [10], [12], [13], [14], and [16] all operate in the general area of text embeddings or streaming inference. While the specific focus on KV-cache reuse for streaming-compatible embeddings may be narrower, it falls within the broader domain of text embeddings and streaming inference. Thus, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 31  \nVERDICT domain = 5  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 10 | reason: Paper [10] explicitly discusses KV cache reuse as a lightweight representation for downstream tasks, aligning with the objective of streaming-compatible text embeddings without sacrificing bidirectional attention quality. Quote: \"KV caches...encode contextual information that can be reused for downstream tasks at no extra cost.\"\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper combines GG-SM (Gradient-Guided Soft Masking) with InfoNCE contrastive loss and MSE distillation loss in a teacher-student framework, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 31
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose: Provide streaming-compatible text embeddings (KV-cache reusable) without giving up the quality of bidirectional attention.\n\nThe core objective is closing the quality gap between causal (streaming-friendly) and bidirectional (quality-focused) text embeddings. Paper [10] discusses KV cache reuse for downstream tasks but focuses on sampling/reasoning, not text embeddings. Paper [30] compares bidirectional encoders vs. causal decoders for classification but doesn't address streaming compatibility or KV-cache reuse for embeddings. No prior paper specifically pursues the objective of making causal LM embeddings match bidirectional quality while preserving KV-cache reusability for streaming inference. The closest are [2] and [5] which do distillation for sentence embeddings, but their purpose is model compression (large→small), not causal→bidirectional quality recovery for streaming.\n\n## Mechanism: Teacher-student distillation with GG-SM (Gradient-Guided Soft Masking) on the teacher + InfoNCE + MSE distillation loss on the student.\n\nPaper [2] (DistillCSE) combines contrastive learning with knowledge distillation for sentence embeddings — InfoNCE-style contrastive loss + distillation loss combination is present. Paper [5] (DistilCSE) also applies knowledge distillation for contrastive sentence embeddings. Paper [8] (Contrastive Representation Distillation) uses contrastive objectives for distillation. However, the GG-SM (Gradient-Guided Soft Masking) component — using gradient signals to guide soft masking of the teacher's attention — is a specific primitive. Paper [28] covers differentiable soft-masked attention, but not gradient-guided masking for distillation purposes. Paper [23] uses masked inputs for distillation but with random masking (MAE-style), not gradient-guided. The combination of gradient-guided soft masking on the teacher side with InfoNCE+MSE on the student side appears not covered as a unified primitive. The InfoNCE+MSE combination for sentence embedding distillation is in [2] and [5], but GG-SM is not present.\n\n## Evaluation: 68.1% gap-closure on MTEB + 4.1x streaming speedup via KV-cache reuse.\n\nMTEB (Massive Text Embedding Benchmark) is used as the evaluation benchmark. Paper [31] explicitly uses MTEB as an evaluation framework (\"Massive Text Embedding Benchmark\"). The gap-closure metric design (measuring how much a student closes the gap to teacher on MTEB) is a standard relative improvement metric on a named benchmark. The streaming speedup measurement is a standard throughput/latency metric. Both evaluation designs (MTEB-based quality evaluation + inference speedup measurement) appear in prior work at the design level — MTEB in [31], and speedup measurements are standard in distillation/efficiency papers like [1], [5].\n\n## Domain: Text embeddings / streaming inference.\n\nPaper [2] and [5] work in text/sentence embeddings. Paper [31] works explicitly in text embeddings (MTEB). Streaming inference for LLMs is addressed in [10], [12], [13], [14]. The combination of text embeddings + streaming is the specific sub-area, but both components exist in prior work. The domain of text embeddings is clearly covered by [2], [5], [31].\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 31\nVERDICT domain = 2",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper targets streaming-compatible text embeddings that are KV-cache reusable while preserving bidirectional attention quality. Paper [10] uses KV cache for sampling/reasoning in autoregressive LLMs but never addresses text embedding quality or bidirectional attention. No other paper combines these three elements even under different terminology.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper combines a bidirectional teacher trained with gradient-guided soft masking (GG-SM) distilled into a causal student via joint InfoNCE contrastive loss and MSE distillation loss. Paper [2] (DistillCSE) uses contrastive learning with knowledge distillation for sentence embeddings but has no causal/bidirectional teacher-student split, no gradient-guided masking, and no KV-cache motivation. Paper [8] (CRD) uses contrastive objectives for distillation but not in this architecture. No paper combines all these specific components even under alternative vocabulary."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": [
+        31,
+        14
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        2,
+        7
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe purpose is to create streaming-compatible text embeddings that are KV-cache reusable, while maintaining the quality of a bidirectional model. While prior work has focused on making models efficient via distillation [6] or using KV-caches as representations [10], no single paper articulates the specific objective of distilling a bidirectional model into a causal one specifically for the purpose of creating high-quality, KV-cache-reusable streaming embeddings. The combination of the goal (streaming-compatible quality) and the constraint (KV-cache reuse) appears to be a new problem formulation.\n\n**MECHANISM**\nThe mechanism is a teacher-student distillation framework combining contrastive and MSE losses to distill a bidirectional teacher into a causal student. The core primitive of using a contrastive loss to distill knowledge between representations is explicitly introduced in [8] (\"Contrastive Representation Distillation\"). This primitive is then applied specifically to sentence embeddings in [2] and [5], and the general concept of distilling into a causal model is present in [6]. Therefore, the fundamental technical approach is covered.\n\n**EVALUATION**\nThe evaluation design involves measuring performance on the MTEB benchmark and measuring streaming speedup from KV-cache reuse. MTEB is an established benchmark family, as shown by [31] which introduces a Dutch version (\"Massive Text Embedding Benchmark for Dutch (MTEB-NL)\"). Measuring speedup from KV-cache reuse is a standard evaluation protocol in papers that propose such methods, such as [14] (\"Accelerating Large Language Models via Efficient KV Cache Reuse\"). Thus, the evaluation design is a composition of existing, standard protocols.\n\n**DOMAIN**\nThe domain is text embeddings and streaming inference. The area of text/sentence embeddings is well-established and is the explicit domain of [2] (\"Distilled Contrastive Learning for Sentence Embeddings\") and [5]. The area of streaming systems with embeddings is also established, as seen in [7] (\"Scalable Dynamic Embedding Size Search for Streaming Recommendation\"). The contribution operates within this known application area.\n\nVERDICT purpose = NONE\nVERDICT mechanism = [8]\nVERDICT evaluation = [31], [14]\nVERDICT domain = [2], [7]",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the objective of creating streaming-compatible text embeddings by reusing the KV-cache, while specifically aiming to match the quality of bidirectional attention models. Paper [10] uses KV-cache for representations but explicitly notes they are \"weaker than dedicated embeddings,\" which is a different objective. Other papers on streaming embeddings ([7], [9], [16]) or KV-cache reuse ([12], [13], [14]) do not have this specific goal."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     2,
+     12,
+     16,
+     19
+    ],
+    "evaluation": [
+     2,
+     12,
+     16,
+     19
+    ],
+    "domain": [
+     2,
+     12,
+     16,
+     18
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        2,
+        12,
+        16,
+        19
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        2,
+        12,
+        16,
+        19
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        2,
+        12,
+        16,
+        18
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to quantify the bidirectional embedding quality retained by a causal student and its efficiency advantage over inference-time workarounds. No prior paper explicitly quantifies this relationship between bidirectional embedding quality and efficiency in the context of causal students. While Paper [13] investigates bidirectional vs. unidirectional models through the Information Bottleneck principle, it does not quantify the retention of bidirectional embedding quality or compare efficiency against inference-time workarounds. Similarly, Paper [19] discusses task-specific bidirectional knowledge distillation but does not address the specific purpose of quantifying embedding quality retention and efficiency. Thus, no prior paper establishes the same empirical relationship.\n\n### Mechanism\nThe contribution benchmarks the distilled student against the bidirectional teacher and Echo embeddings on an MTEB slice with latency measurements. Paper [12] introduces the MTEB benchmark for evaluating text embeddings, and Paper [16] discusses maintaining MTEB for long-term usability. Paper [2] explores KV-cache streaming as a lightweight representation for downstream tasks, which aligns with the mechanism of using KV-cache streaming for latency speedup. Paper [19] discusses bidirectional knowledge distillation, which is the underlying technical primitive for benchmarking the causal student against the bidirectional teacher. Together, these papers cover the mechanism at the primitive level.\n\n### Evaluation\nThe evaluation design involves measuring gap closure on an MTEB slice, comparing performance against Echo embeddings, and quantifying latency speedup through KV-cache streaming. Paper [12] introduces the MTEB benchmark, which is used in this contribution, and Paper [16] discusses its maintenance. Paper [2] evaluates KV-cache streaming for efficiency, which matches the latency measurement design. Paper [19] evaluates bidirectional knowledge distillation, which aligns with the comparison of the causal student and bidirectional teacher. Thus, the evaluation design is covered by these prior works.\n\n### Domain\nThe contribution operates in the domain of text embeddings and streaming inference. Paper [12] and Paper [16] explicitly address text embeddings, and Paper [2] and Paper [18] discuss streaming inference with KV-cache technology. These papers collectively cover the domain of text embeddings and streaming inference.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 2, 12, 16, 19  \nVERDICT evaluation = 2, 12, 16, 19  \nVERDICT domain = 2, 12, 16, 18  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly quantifies bidirectional embedding quality retention and efficiency advantage over inference-time workarounds."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 12
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Quantify how much bidirectional embedding quality the causal student retains and its efficiency advantage over inference-time workarounds.**\n\nThe purpose is to measure quality retention (gap closure) of a causally-distilled student vs. a bidirectional teacher, and compare against Echo embeddings as an inference-time workaround, with latency as a joint metric. No prior paper pursues this specific objective — papers [12] and [16] benchmark embeddings generally, but none specifically ask \"how much bidirectional quality does a causal student retain vs. teacher, and does it beat inference-time workarounds like Echo embeddings?\" Paper [2] uses KV cache for representations but doesn't compare against a bidirectional teacher or Echo embeddings. This specific relationship (causal student vs. bidirectional teacher vs. Echo embeddings, quality+latency jointly) is not established in any prior paper.\n\n**MECHANISM: Benchmarking the distilled student against the bidirectional teacher and Echo embeddings on an MTEB slice with latency measurements.**\n\nThe mechanism is: run MTEB evaluation + latency measurement to compare a distilled causal model against its teacher and an inference-time baseline. Paper [12] introduces MTEB as a benchmarking framework for text embeddings. Papers [16], [21], [22] also use MTEB. Latency benchmarking of transformer inference appears in [14], [28], [29]. The combination of MTEB + latency comparison is a standard benchmarking design — the underlying primitive (evaluate on MTEB, measure latency, compare models) is covered by combining [12] and [14]/[28].\n\n**EVALUATION: 68.1% gap-closure on MTEB-slice, outperforming Echo embeddings by 2.0pp, 4.1x latency speedup.**\n\nThe evaluation design uses MTEB (a named benchmark family) with standard accuracy metrics plus latency measurements. Paper [12] establishes MTEB as the evaluation framework. Papers [14], [28], [29] use latency benchmarking. The design — MTEB scores + latency comparison — is a combination of existing evaluation designs. Per the special rule, using MTEB (a named benchmark family) counts as COVERED even on a different model/slice. Paper [12] covers the MTEB design; latency measurement is covered by [14]/[28].\n\n**DOMAIN: Text embeddings / streaming inference.**\n\nText embeddings as an application area is directly covered by [12] (\"Massive Text Embedding Benchmark\"), [7] (instruction-finetuned text embeddings), [8] (text embeddings), [4] (neural embeddings for text). Streaming/efficient inference with KV cache is covered by [2], [15], [27]. This domain is well-covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 12\nVERDICT evaluation = 12\nVERDICT domain = 12",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper measures how much bidirectional embedding quality a causally-trained student retains nor quantifies its efficiency advantage over inference-time workarounds; the closest papers either study causal LM distillation mechanistically (paper 3) or KV-cache efficiency (papers 2, 15, 27) but none frame the objective as benchmarking retained bidirectional embedding fidelity versus efficiency trade-offs for a causal student model."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     24
+    ],
+    "evaluation": [
+     24
+    ],
+    "domain": [
+     17,
+     24
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 24
+      },
+      "evaluation": {
+       "covered_by": 24
+      },
+      "domain": {
+       "covered_by": 24
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution aims to characterize which embedding task types benefit from cross-attention-architecture distillation. None of the prior papers explicitly report or establish this specific empirical relationship between task types and distillation effectiveness. While several papers discuss distillation techniques (e.g., [12], [13], [17]), they do not analyze task-type variation in distillation effectiveness across embedding tasks or MTEB categories. Papers like [24] introduce MTEB as a benchmark but do not address the relationship between task types and distillation benefits.\n\n#### Mechanism:\nThe mechanism involves analyzing task-type variation in distillation effectiveness across MTEB task categories. Paper [24] introduces MTEB as a benchmark for evaluating text embeddings across tasks, and papers like [12] and [17] discuss cross-architecture distillation and embedding distillation techniques. However, none of the prior papers specifically analyze task-type variation in distillation effectiveness across MTEB categories. The mechanism design appears unique.\n\n#### Evaluation:\nThe evaluation design measures transfer effectiveness for classification, clustering, and pair classification tasks using MTEB benchmarks. Paper [24] introduces MTEB as a benchmark for evaluating embeddings across tasks, and papers like [12], [13], and [17] use similar evaluation designs (e.g., task-specific metrics, embedding transfer performance). The evaluation design is therefore covered, as it reuses MTEB benchmarks and standard metrics for embedding evaluation.\n\n#### Domain:\nThe domain is text embeddings and streaming inference. Papers like [24], [12], [13], and [17] all operate in the text embedding domain, addressing applications such as semantic similarity, clustering, and classification. This domain is well-covered by prior work.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 24  \nVERDICT domain = 24  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly characterizes which embedding task types benefit from cross-attention-architecture distillation under any terminology or framing.  \nFACET: mechanism | FINAL: COVERED-BY 24 | reason: MTEB paper explicitly analyzes task-type variation in embedding effectiveness across task categories, quoting: \"Text embeddings are commonly evaluated on a small set of datasets from a single task not covering their possible applications to other tasks.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 17
+      },
+      "mechanism": {
+       "covered_by": 24
+      },
+      "evaluation": {
+       "covered_by": 24
+      },
+      "domain": {
+       "covered_by": 17
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Characterize which embedding task types benefit from cross-attention-architecture distillation.**\n\nThe purpose is to identify differential transfer effectiveness across task categories when distilling from a cross-attention architecture to an embedding model. Paper [17] (jina-embeddings-v5) explicitly studies task-targeted embedding distillation and reports findings about which tasks benefit more from distillation. Paper [14] studies distilling cross-attention (BERT-style cross-encoders) to sentence embeddings, which is the same architectural direction. However, neither paper specifically characterizes *which task types* benefit differentially from cross-attention-architecture distillation. Paper [24] (MTEB) raises the question of whether embeddings transfer across task types, but doesn't characterize distillation effectiveness per task type. No prior paper establishes the same empirical relationship: differential task-type benefit from cross-attention-to-embedding distillation. This purpose appears uncovered.\n\n**MECHANISM: Analysis of task-type variation in distillation effectiveness across MTEB task categories.**\n\nThis is a per-task-category breakdown analysis of distillation performance. Paper [11] performs multi-task distillation analysis across NLU tasks. Paper [17] analyzes distillation effectiveness across task types. Paper [24] introduces MTEB with per-task-category breakdowns. The mechanism of breaking down performance by task category is a standard analytical design present in [24] and [17]. This is a generic per-category breakdown, which is covered as an analysis design.\n\n**EVALUATION: Strong transfer for classification (1.03x) and clustering (0.80x) but limited transfer for pair classification (0.30x).**\n\nThe evaluation design uses MTEB task categories as the benchmark family with relative performance ratios across task types. Paper [24] introduces MTEB and uses exactly this evaluation design — per-category performance measurement across the same task families (classification, clustering, pair classification, etc.). Paper [17] also evaluates on MTEB categories. The evaluation design (MTEB benchmark family, per-category metrics) is clearly covered by [24] and [17].\n\n**DOMAIN: Text embeddings / streaming inference.**\n\nText embeddings as an application area is directly covered by multiple papers: [7] (contrastive sentence embeddings), [14] (sentence-pair modeling via distilled sentence embedding), [16] (embedding model distillation), [17] (embedding model distillation), [24] (MTEB text embeddings). The streaming inference aspect is a specific instance within the text embedding deployment area, which is also touched on in [14] (scalable sentence-pair modeling). This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 24\nVERDICT evaluation = 24\nVERDICT domain = 17",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 17 | reason: Paper [17] explicitly states \"Our findings suggest that this approach is more effective for training small embedding models for some tasks than others\" — but this describes task-specific contrastive loss combined with distillation, not cross-attention-architecture distillation specifically. Re-examining strictly: no paper asks which *embedding task types* (e.g., retrieval vs. clustering vs. STS) benefit specifically from *cross-attention-architecture* distillation. Paper [14] distills cross-attention to bi-encoder but does not characterize which task types benefit. Paper [17] examines task types but not cross-attention architecture distillation. The same-objective standard requires the same empirical relationship — none qualify. FINAL: NONE | reason: No prior paper characterizes which embedding task types benefit from cross-attention-architecture distillation specifically; [14] does cross-attention distillation without task-type analysis; [17] does task-type analysis without cross-attention-architecture distillation."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 24
+      },
+      "evaluation": {
+       "covered_by": 24
+      },
+      "domain": {
+       "covered_by": 24
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to establish an empirical relationship: that the effectiveness of cross-architecture distillation for embeddings varies systematically by the type of downstream task (e.g., classification vs. pair classification). No prior paper appears to report or establish this specific relationship. Paper [24] motivates this line of inquiry by noting it is \"unclear whether state-of-the-art embeddings... can be equally well applied to other tasks,\" but it introduces a benchmark to enable such studies rather than performing this specific analysis for distillation.\n\n**mechanism**: The mechanism is an \"Analysis of task-type variation in distillation effectiveness across MTEB task categories.\" This is a standard analysis design: running experiments on a benchmark and then breaking down the results by the benchmark's predefined categories. Paper [24] introduces the MTEB benchmark and its explicit purpose is to enable analysis across its defined task categories, making this analysis design substantively equivalent.\n\n**evaluation**: The evaluation design involves measuring performance on a multi-task benchmark (MTEB) and comparing results across different task types (classification, clustering, pair classification). This evaluation design—using a benchmark with a variety of task types to assess model generalization—is the central contribution of paper [24], which introduced the \"Massive Text Embedding Benchmark\" for this exact purpose.\n\n**domain**: The domain is \"text embeddings.\" Numerous prior papers operate in this domain. For instance, paper [24] introduces the \"Massive Text Embedding Benchmark\" and is entirely focused on the evaluation of text embeddings.\n\nVERDICT purpose = NONE\nVERDICT mechanism = [24]\nVERDICT evaluation = [24]\nVERDICT domain = [24]",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the objective of characterizing which embedding task types (e.g., retrieval, clustering, classification) specifically benefit from distillation involving a cross-attention teacher and a different student architecture. Papers like [12] and [14] propose or apply cross-architecture/cross-attention distillation for a specific goal (e.g., boosting performance, enabling scalability) but do not perform a systematic analysis across a variety of task types to characterize where the technique is most effective. Paper [24] proposes a benchmark for such an evaluation but does not itself perform the characterization for this specific distillation technique."
+     }
+    }
+   }
+  }
+ ]
+}

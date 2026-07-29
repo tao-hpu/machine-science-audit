@@ -1,0 +1,350 @@
+{
+ "paper_id": "FA0141",
+ "title": "BH-Exit: Label-Free Early Termination for HNSW Search via Bucket-Histogram Stability",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     6
+    ],
+    "mechanism": null,
+    "evaluation": [
+     3,
+     6
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to enable label-free early termination of HNSW search by detecting convergence earlier than exact ID matching. This is a specific objective within the broader area of approximate nearest neighbor (ANN) search. Paper [3] discusses \"Learned Adaptive Early Termination\" for ANN search, which also aims to terminate search early, but it relies on learned models rather than label-free convergence detection. Paper [6] introduces a \"Simple Early Termination Strategy for HNSW Graph Traversal,\" which is directly relevant as it also focuses on early termination in HNSW search. While the specific method differs, the purpose of enabling early termination in HNSW search is shared. Therefore, the purpose is covered by [6].\n\n### Mechanism\nThe mechanism, BH-Exit, monitors bucket-histogram stability by assigning corpus vectors to buckets via offline k-means clustering and terminating search when the L1 distance between consecutive bucket histograms falls below a threshold. Paper [8] discusses histogram testing and L1 distance measures for distinguishing distributions, which aligns with the histogram-based stability monitoring in BH-Exit. Paper [13] introduces the \"Annular Bucket Histogram\" for spatial selectivity estimation, which also involves bucket-based histogram representations, though in a different context. However, neither [8] nor [13] applies these histogram techniques to early termination in ANN search. Paper [6] uses a different mechanism for early termination in HNSW, not involving histograms or bucket stability. Thus, the specific mechanism of BH-Exit appears to be novel.\n\n### Evaluation\nThe evaluation involves coarse-grained monitoring that ignores within-bucket churn, enabling earlier convergence detection than ID-Overlap. Paper [6] evaluates early termination strategies for HNSW search, which aligns with the evaluation design of comparing termination strategies in HNSW. While the specific metrics or benchmarks may differ, the evaluation design of comparing early termination effectiveness in HNSW search is shared. Therefore, the evaluation is covered by [6].\n\n### Domain\nThe domain is approximate nearest neighbor (ANN) / HNSW dense retrieval search. Papers [1], [2], [3], [4], [5], [6], and [7] all operate in the domain of ANN search, with several specifically addressing HNSW-based methods. Since the contribution operates within this well-established domain, the domain is covered.\n\n---\n\nVERDICT purpose = 6  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 6  \nVERDICT domain = 1  ",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper explicitly describes monitoring bucket-histogram stability via L1 distance between consecutive bucket histograms in the context of corpus vectors assigned through offline k-means clustering."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose: Enable label-free early termination of HNSW search that detects convergence earlier than exact ID matching.\n\nPaper [3] \"Improving Approximate Nearest Neighbor Search through Learned Adaptive Early Termination\" directly addresses early termination of ANN search. Paper [6] \"Patience in Proximity: A Simple Early Termination Strategy for HNSW Graph Traversal\" addresses early termination specifically for HNSW. Paper [4] \"ANSMET: Approximate Nearest Neighbor Search with Near-Memory Processing and Hybrid Early Termination\" also addresses early termination for ANNS. The \"label-free\" aspect and \"detects convergence earlier than exact ID matching\" is a refinement within the same objective class — all these papers pursue the same goal of terminating HNSW/ANN search early without exhaustive computation. Paper [6] is the closest match, explicitly targeting HNSW early termination.\n\n## Mechanism: BH-Exit monitors bucket-histogram stability via offline k-means clustering assignment, terminating when L1 distance between consecutive bucket histograms falls below a threshold.\n\nThe specific combination of: (1) offline k-means to assign corpus vectors to buckets, (2) tracking a histogram of which buckets appear in the candidate set, and (3) comparing consecutive histograms via L1 distance as a stopping criterion — this is a novel combination. Paper [3] uses learned adaptive early termination but not histogram-based bucket monitoring. Paper [6] uses a patience/counter-based approach (no ID changes for N steps), not histogram stability. Paper [20] uses online histogram-based classifiers for concept drift, not ANN search termination. Paper [10] uses histogram distance measures for change detection in brain imaging. None of the prior papers combine k-means bucketing of corpus vectors with L1 histogram stability as an ANN search termination criterion. The closest conceptually is [6] (ID-overlap style patience) but the mechanism is fundamentally different — coarse bucket histograms vs. exact ID tracking.\n\n## Evaluation: Coarse-grained monitoring that ignores within-bucket churn, enabling earlier convergence detection than ID-Overlap.\n\nThe evaluation design here involves comparing the proposed early termination method against ID-Overlap as a baseline on ANN search benchmarks, measuring recall/efficiency tradeoffs. Paper [3] uses standard ANN benchmarks (recall vs. speed) with comparison to baselines. Paper [6] similarly evaluates on ANN benchmarks comparing early termination strategies. The evaluation design (recall-speed tradeoff on ANN benchmarks, comparison to ID-overlap baseline) follows the same design as [3] and [6]. The specific claim about \"earlier convergence detection than ID-Overlap\" is a comparative evaluation design that mirrors the baseline-comparison structure in [3] and [6].\n\n## Domain: Approximate nearest neighbor (ANN) / HNSW dense retrieval search.\n\nPapers [1], [2], [3], [4], [5], [6], [7] all operate in the ANN/HNSW search domain. This is clearly covered.\n\nVERDICT purpose = 6\nVERDICT mechanism = NONE\nVERDICT evaluation = 3\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes using offline k-means bucket assignments of corpus vectors combined with monitoring L1 distance between consecutive bucket histograms of search results as a termination criterion. Paper [3] uses learned early termination but based on candidate set statistics, not bucket histograms. Paper [6] uses patience/stagnation in the candidate list. Paper [20] uses online histograms for concept drift, not ANN search termination. No paper contains an equivalent mechanism under any terminology."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     8,
+     23
+    ],
+    "evaluation": [
+     1,
+     15
+    ],
+    "domain": [
+     1,
+     15
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to demonstrate latency improvement over the ID-Overlap baseline without quality loss. None of the prior papers explicitly report or establish this specific empirical relationship between latency improvement and maintaining retrieval quality. While some papers (e.g., [17], [23], [27]) discuss latency-sensitive retrieval systems or adaptive indexing, they do not establish the same relationship between latency improvement and retrieval quality preservation over the ID-Overlap baseline.\n\n### Mechanism\nThe mechanism involves replacing exact ID-Overlap monitoring with bucket-histogram stability monitoring. Paper [14] discusses bucket-based histograms for spatial query optimization, and paper [8] addresses optimal histograms with outliers. Both involve histogram-based techniques for monitoring or estimation, which are substantively equivalent to the bucket-histogram stability monitoring mechanism described in the contribution. Therefore, the mechanism is covered.\n\n### Evaluation\nThe evaluation reports a 28.0% p50 latency improvement over ID-Overlap on BEIR TREC-COVID while maintaining equivalent retrieval quality (nDCG@10 = 0.6725). Papers [1], [2], [4], [5], [7], and [9] all use BEIR or TREC-COVID benchmarks for evaluation, and the metric nDCG@10 is a standard retrieval quality metric. The evaluation design (benchmark family and metric semantics) is therefore covered.\n\n### Domain\nThe domain is latency-sensitive dense retrieval applied to BEIR TREC-COVID. Papers [1], [2], [4], [5], [7], and [9] all address dense retrieval in the BEIR or TREC-COVID domain, which is substantively equivalent to the application area described in the contribution. Thus, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 8  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly demonstrates latency improvement over the ID-Overlap baseline without quality loss, even under different terminology, framing, or domain vocabulary."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 23
+      },
+      "evaluation": {
+       "covered_by": 15
+      },
+      "domain": {
+       "covered_by": 15
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**PURPOSE: Demonstrate latency improvement over the ID-Overlap baseline without quality loss.**\n\nThe purpose is to show that a specific monitoring approach (bucket-histogram stability) achieves lower latency than an ID-Overlap baseline while maintaining retrieval quality. Paper [23] (CALL) explicitly addresses \"low-latency retrieval in disk-based vector databases\" and optimizes latency while maintaining quality. Paper [15] (PLAID reproducibility) studies \"latency without needing to sacrifice effectiveness.\" Paper [17] addresses \"tail latency minimization\" in retrieval systems. However, none of these specifically frame their purpose as \"demonstrate latency improvement over an ID-Overlap baseline\" — the ID-Overlap baseline is a specific monitoring primitive, and the purpose here is about comparing a new monitoring approach against it. Paper [23] is closest in spirit (latency vs. quality tradeoff in retrieval), but the specific objective of replacing ID-Overlap monitoring with histogram-based monitoring for latency gains is not covered. No prior paper pursues the same objective at the problem-class level.\n\n**MECHANISM: Replacing exact ID-Overlap monitoring with bucket-histogram stability monitoring.**\n\nThe mechanism is using bucket-histogram stability as a proxy for index stability instead of exact ID-Overlap tracking. Paper [23] (CALL) uses \"cluster access patterns\" and histogram-like monitoring of query distributions to reduce cache misses. Paper [27] (Quake) uses adaptive indexing based on distribution monitoring. Papers [18], [25] use histogram-based monitoring for concept drift detection. Paper [14] discusses bucket histograms for selectivity estimation. However, none specifically use bucket-histogram stability as a replacement for ID-Overlap in a retrieval index monitoring context. The closest is [23] which monitors cluster access patterns (histogram-like) to optimize retrieval latency — this is substantively similar: both use distributional/histogram summaries of cluster/ID access patterns to make indexing decisions. This is the same primitive: \"use a histogram summary of access patterns to drive index management decisions.\"\n\n**EVALUATION: 28.0% p50 latency improvement over ID-Overlap on BEIR TREC-COVID while maintaining equivalent retrieval quality (nDCG@10 = 0.6725).**\n\nThe evaluation design uses nDCG@10 on BEIR TREC-COVID as the quality metric, combined with latency measurement (p50). Paper [1] (BEIR) introduces the benchmark family including TREC-COVID. Paper [15] (PLAID) uses BEIR benchmarks with nDCG@10 and latency measurements to evaluate retrieval systems — same design: nDCG@10 quality + latency on BEIR datasets. This is clearly covered.\n\n**DOMAIN: Latency-sensitive dense retrieval (BEIR TREC-COVID).**\n\nDense retrieval is covered by papers [1], [15], [21], [23], [27]. Paper [15] specifically addresses PLAID/ColBERTv2 dense retrieval with latency considerations on BEIR. Paper [23] addresses low-latency retrieval in vector databases. The domain of latency-sensitive dense retrieval is well covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 23\nVERDICT evaluation = 15\nVERDICT domain = 15",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of demonstrating latency improvement over an ID-Overlap baseline without quality loss; paper [15] studies PLAID parameters and latency but does not reference an ID-Overlap baseline, and no other paper contains a phrase establishing this same empirical relationship."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     17
+    ],
+    "evaluation": [
+     17
+    ],
+    "domain": [
+     1,
+     22
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 17
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to validate that semantic clustering (as opposed to random bucketing) drives the observed gains. None of the prior papers explicitly establish or validate this specific empirical relationship. While several papers discuss clustering methods (e.g., [1], [7], [8], [12], [13]), none of them focus on comparing semantic clustering to random bucketing or empirically demonstrate that semantic clustering is the driver of gains. Papers like [17] and [26] discuss evaluation techniques for clustering but do not validate the specific relationship between semantic clustering and performance gains.\n\n### Mechanism\nThe mechanism involves an ablation comparing k-means semantic bucket assignment against random assignment. Several prior papers ([1], [7], [8], [12], [13]) discuss k-means clustering and its variations, but none explicitly describe an ablation comparing semantic clustering to random bucketing. For example, [1] and [7] propose improved k-means algorithms, but they do not include a direct comparison to random assignment as part of their methodology. Thus, the specific mechanism of this contribution is not covered.\n\n### Evaluation\nThe evaluation design involves comparing the performance of semantic bucket assignment via k-means to random assignment, with a reported 31.3% improvement in expansion savings. Papers like [17] and [26] discuss evaluation techniques for clustering, including divergence from a random baseline ([17]) and pointwise clustering metrics ([26]). These papers provide evaluation designs that are substantively equivalent to the one used in this contribution, as they involve comparing clustering methods to a random baseline or using metrics to assess clustering quality. Therefore, the evaluation design is covered.\n\n### Domain\nThe domain of this contribution is the ablation of bucket assignment strategies. Several prior papers ([1], [7], [8], [12], [13]) operate in the general area of clustering and bucket assignment strategies, including semantic clustering. For example, [1] discusses semantic partitioning, and [13] focuses on deep semantic clustering. While the specific instance of ablation in this contribution may differ, the general application area is well-covered by prior work.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 17  \nVERDICT domain = 1  ",
+      "stage2": "1. **FACET: purpose** | **FINAL: NONE** | reason: No prior paper explicitly validates that semantic clustering (not random bucketing) drives the gains, even under different terminology, framing, or domain-specific vocabulary. No paper establishes the same empirical relationship.\n\n2. **FACET: mechanism** | **FINAL: COVERED-BY 17** | reason: The paper explicitly discusses \"Divergence from a random baseline\" as a technique for evaluating clustering quality, which aligns with the ablation comparing k-means semantic bucket assignment against random assignment. Quote: \"Divergence from a random baseline is a technique for the evaluation of document clustering. It ensures cluster quality measures are performing work that prevents ineffective clusterings from giving high scores to clusterings that provide no useful result.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**PURPOSE: Validate that semantic clustering (not random bucketing) drives the gains.**\n\nThe purpose is to demonstrate that semantic assignment (k-means) is causally responsible for observed gains, as opposed to random bucket assignment. This is a specific empirical relationship: semantic clustering > random bucketing in a particular system's performance. None of the prior papers establish or test this specific relationship — papers [1], [7], [8], [12] improve k-means but don't compare semantic vs. random bucket assignment to validate which drives gains in a downstream system. Papers [2], [5], [6], [15], [16], [17], [26] compare clusterings but not in the context of validating semantic vs. random bucket assignment as the driver of expansion savings. No prior paper reports the same empirical relationship (semantic bucket assignment outperforms random assignment in driving expansion savings).\n\n**MECHANISM: Ablation comparing k-means semantic bucket assignment against random assignment.**\n\nThe mechanism is a controlled ablation where one variable (semantic vs. random assignment) is swapped while holding everything else constant. This is a generic ablation/substitution design. Papers like [2], [5], [6], [15], [17] compare clustering methods, and [15] specifically involves \"random partition distributions\" compared against deterministic clustering. However, none specifically use the design of swapping k-means semantic assignment vs. random assignment as an ablation to validate a system component. The generic shape of \"compare two assignment strategies\" appears broadly, but as a controlled ablation design it's a standard experimental move. Paper [15] uses random partition distributions vs. deterministic clustering as a comparison, which is structurally similar.\n\n**EVALUATION: Semantic bucket assignment via k-means outperforms random assignment by 31.3% in expansion savings.**\n\nThe evaluation design involves measuring a downstream metric (expansion savings) under two conditions (semantic vs. random bucket assignment). This is a substitution/swap experiment measuring a downstream performance metric. The design of comparing semantic clustering vs. random baseline for evaluation purposes appears in [17] (\"Divergence from a Random Baseline\" for document clustering evaluation) — this paper explicitly uses random baselines to evaluate clustering quality. This is structurally the same evaluation design: compare semantic clustering against a random baseline and measure the difference.\n\n**DOMAIN: Ablation of bucket assignment strategy.**\n\nThe domain here is the study of bucket/cluster assignment strategies in a system context. Papers [1], [7], [8], [12] work on k-means clustering algorithms and their assignment strategies. Paper [22] works on bucketing functions for sequences. The general area of bucket/cluster assignment strategy analysis is covered by multiple prior papers.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 17\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the objective of validating that semantic clustering (versus random bucketing) is the causal driver of performance gains in the specific retrieval/generation pipeline context; the closest papers (e.g., [17] on divergence from random baseline) address cluster quality evaluation in document clustering, not ablating semantic vs. random assignment to validate a system's gains.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes an ablation that directly swaps k-means semantic bucket assignment with random assignment to isolate the contribution of semantic structure; [15] uses random partition distributions as a clustering method itself, not as a control condition against semantic clustering, and no other paper matches this specific experimental design."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 17
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 22
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: The contribution's purpose is to validate that semantic clustering is superior to random grouping. This is a restatement of the \"cluster hypothesis,\" which prior papers [3] and [16] explicitly set out to test, e.g., \"Testing the cluster hypothesis in distributed information retrieval\" [3].\n\nmechanism: The mechanism is an ablation comparing a semantic clustering method (k-means) against a random baseline. This experimental design is explicitly proposed and analyzed in paper [17] as a technique for evaluation, titled \"Document Clustering Evaluation: Divergence from a Random Baseline\".\n\nevaluation: The evaluation design involves comparing the performance of a clustering algorithm against a random baseline to demonstrate its effectiveness. This design is the central topic of paper [17], which advocates for using \"Divergence from a random baseline\" as a standard evaluation technique for clustering.\n\ndomain: The domain is the study of bucket or cluster assignment strategies. Paper [22] works in this exact domain, developing \"Locality-sensitive bucketing functions\" and analyzing strategies for assigning sequences to buckets.\n\nVERDICT purpose = 3\nVERDICT mechanism = 17\nVERDICT evaluation = 17\nVERDICT domain = 22",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     6,
+     7,
+     13
+    ],
+    "evaluation": [
+     6,
+     13
+    ],
+    "domain": [
+     3,
+     4,
+     18
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Per-Facet Reasoning:\n\n**Purpose:**  \nThe contribution aims to establish robustness of the method across bucket granularities. None of the prior papers explicitly report or establish the same empirical relationship between bucket granularity and robustness. While several papers (e.g., [3], [4], [8], [13]) discuss bucketing or hashing schemes, they do not focus on the robustness of a method across varying bucket granularities. Papers like [19] and [22] discuss sensitivity analysis and dynamic bucketing, but they do not establish the same relationship between bucket granularity and robustness. Therefore, no prior paper covers this purpose.\n\n**Mechanism:**  \nThe mechanism involves sweeping the number of clusters/buckets \\( C \\) over a range. Papers such as [1], [2], [5], [7], and [12] discuss methods for determining or estimating the number of clusters, but they do not involve sweeping \\( C \\) over a range to establish robustness. Papers like [3], [4], [8], and [22] discuss bucketing or hashing mechanisms, but they do not use sweeping \\( C \\) as a mechanism to validate robustness. Thus, no prior paper matches this mechanism.\n\n**Evaluation:**  \nThe evaluation design involves testing robustness across bucket granularities (\\( C \\) in [64, 4096]) and measuring consistent improvement over ID-Overlap ranging from 13.2% to 40.5%. Papers like [6], [19], and [22] discuss sensitivity analysis or evaluation setups involving clustering or bucketing, but none use the same evaluation design (e.g., sweeping \\( C \\) over a range and measuring ID-Overlap improvement). Therefore, the evaluation design is not covered by prior work.\n\n**Domain:**  \nThe domain is robustness to bucket granularity. Papers such as [3], [4], [8], [13], and [22] address bucketing, hashing, or clustering in various contexts, which are part of the same general application area. While this contribution applies the concept to a specific robustness problem, the domain itself is not genuinely new. Thus, the domain is covered.\n\n---\n\n**Verdicts:**  \nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 3",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly establishes robustness across bucket granularities with the same empirical relationship.  \nFACET: mechanism | FINAL: COVERED-BY 7 | reason: \"Scanning of preferences subspace corresponding to the optimal cluster number\" aligns with sweeping the number of clusters/buckets over a range.  \nFACET: evaluation | FINAL: NONE | reason: No prior paper evaluates robustness across bucket granularities with consistent improvement over ID-Overlap in the specified range.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 18
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**Purpose: Establish robustness of the method across bucket granularities.**\n\nThis purpose is about demonstrating that a method's performance is stable/consistent when the number of buckets C is varied. None of the prior papers establish this same empirical relationship — that varying bucket count C over a range [64, 4096] yields consistent improvement over a baseline called \"ID-Overlap.\" Papers [1], [2], [5], [11], [12] deal with *selecting* the optimal number of clusters, not demonstrating robustness of a method's performance across cluster counts. Paper [19] does sensitivity analysis of model outputs using clustering, but the relationship being established is different. No prior paper reports the same variables (bucket count C vs. improvement over ID-Overlap) and direction of effect.\n\n**Mechanism: Sweeping the number of clusters/buckets C over a range.**\n\nThis is a parameter sweep / sensitivity analysis over the number of buckets/clusters. Paper [6] is titled \"Setup of Sensitivity Analysis\" which covers the general design of sweeping a parameter. Papers [1], [2], [5], [11], [12] all involve varying or searching over the number of clusters as part of their methodology. Paper [19] explicitly performs cluster-based sensitivity analysis sweeping parameters. The primitive of \"sweep a parameter (number of clusters/buckets) over a range and measure performance\" is a standard sensitivity/ablation design present in multiple papers.\n\n**Evaluation: Robust across bucket granularities (C in [64, 4096]), with consistent improvement over ID-Overlap ranging from 13.2% to 40.5%.**\n\nThe evaluation design here is a sensitivity/robustness analysis: vary a hyperparameter over a range and report metric values. This is a standard sensitivity analysis design. Paper [6] \"Setup of Sensitivity Analysis\" covers this design. Paper [19] also uses sensitivity analysis with clustering. The design of \"sweep a parameter, report performance metric across the range\" is a generic sensitivity analysis protocol present in prior work.\n\n**Domain: Robustness to bucket granularity.**\n\nThe application area here involves bucketing/hashing with variable bucket counts, in what appears to be an image/identity-related retrieval or matching context (given reference to \"ID-Overlap\" and paper [18] about ID association for group photo personalization). Paper [18] \"ID-Patch: Robust ID Association for Group Photo Personalization\" operates in the same general application area (identity-based image processing/personalization). The domain of bucket-based methods for identity/image retrieval is covered by the combination of hashing papers and [18].\n\nVERDICT purpose = NONE\nVERDICT mechanism = 6\nVERDICT evaluation = 6\nVERDICT domain = 18",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the objective of establishing robustness of a bucketing method across varying bucket granularities. Paper [13] varies bucket sizes (10, 20, 50) in a performance comparison of hashing techniques, but its purpose is comparing extendible vs. linear hashing performance, not demonstrating that a specific method's results are stable/robust across bucket granularities. No paper matches the same objective even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose:** The contribution's purpose is to establish a finding about the robustness of a method to its bucket granularity. This is equivalent to the purpose of prior work that analyzes the performance of hashing schemes as a function of bucket size. For example, [4] gives a \"unified analysis of linear probing hashing with a general bucket size,\" and [8] presents a \"distributional analysis of a linear probing hashing scheme with buckets of size b,\" both of which serve to establish the relationship between performance and bucket granularity.\n\n**mechanism:** The mechanism is a parameter sweep, specifically \"Sweeping the number of clusters/buckets C over a range.\" This is a standard experimental technique used in prior work to evaluate methods that involve buckets. For instance, [13] in its \"Performance comparison of extendible hashing and linear hashing techniques\" explicitly states that \"The simulation is conducted with the bucket sizes of 10, 20, and 50\".\n\n**evaluation:** The evaluation design is a sensitivity analysis, where a method's performance is measured across a range of values for a key hyperparameter (bucket granularity) to assess robustness. This design is used in prior work. [13] employs this design by running simulations \"with the bucket sizes of 10, 20, and 50 for both hashing techniques\" to compare their performance, and the general methodology is named in [6] (\"Setup of Sensitivity Analysis\").\n\n**domain:** The domain is the study of methods involving bucketing or clustering, and specifically the effect of bucket/cluster granularity on performance. This is a core topic in the fields of hashing and clustering. Numerous prior papers operate in this domain, including [4] (\"Linear Probing Hashing with Buckets\") and [10] (\"Data clustering\").\n\nVERDICT purpose = 4\nVERDICT mechanism = 13\nVERDICT evaluation = 13\nVERDICT domain = 4",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

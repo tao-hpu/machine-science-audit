@@ -1,0 +1,255 @@
+{
+ "paper_id": "EgJhwYR2tB",
+ "title": "Speculative Knowledge Distillation: Bridging the Teacher-Student Gap Through Interleaved Sampling",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     14
+    ],
+    "mechanism": [
+     4,
+     20
+    ],
+    "evaluation": [
+     4,
+     19
+    ],
+    "domain": [
+     2,
+     4
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 14
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 19
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to overcome limitations in supervised KD (train-inference distribution mismatch) and on-policy KD (low-quality student samples that are OOD for the teacher, yielding inaccurate feedback). Paper [14] (\"Knowledge Distillation with Distribution Mismatch\") explicitly addresses the issue of distribution mismatch in KD, which aligns with the stated purpose. Paper [26] (\"DADAgger\") also tackles OOD states during training, though in the context of imitation learning rather than KD. However, the specific focus on addressing both supervised KD and on-policy KD limitations simultaneously is not covered by any prior paper.\n\n### Mechanism\nThe mechanism, Speculative Knowledge Distillation (SKD), involves interleaved sampling where the student proposes on-policy tokens and the teacher rejects/re-samples tokens not in the teacher's top-K distribution. This is inspired by speculative decoding and imitation learning. Paper [4] (\"DistillSpec\") uses speculative decoding combined with KD to align a draft model with a target model, which is conceptually similar to SKD's interleaved sampling approach. Paper [20] (\"Diffusion Meets DAgger\") and [26] (\"DADAgger\") both employ rejection/resampling mechanisms for OOD states in imitation learning, which is analogous to SKD's rejection of tokens outside the teacher's top-K distribution. Thus, the mechanism is covered.\n\n### Evaluation\nThe evaluation design involves task-specific benchmarks (Flores-200, DialogSum, GSM8K, UltraInteract math) and metrics (COMET, ROUGE-L, accuracy). Papers [19] (\"Pre-trained Summarization Distillation\") and [15] (\"Knowledge Distillation of Black-Box Large Language Models\") use similar evaluation designs for KD, including task-specific benchmarks and standard metrics. Paper [30] (\"Spanish and LLM Benchmarks\") discusses benchmark translation and evaluation in non-English languages, which overlaps with Flores-200's multilingual evaluation. The evaluation design is therefore covered.\n\n### Domain\nThe domain is LLM knowledge distillation/model compression for text generation. Papers [2], [6], [7], [9], [13], and [15] all address LLM knowledge distillation or compression for text generation tasks, making the domain covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 4  \nVERDICT evaluation = 19  \nVERDICT domain = 2  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 14 | reason: Paper [14] explicitly addresses \"Knowledge Distillation with Distribution Mismatch,\" which aligns with the objective of overcoming train-inference distribution mismatch in supervised KD. Quoting [14]: \"We address the distribution mismatch problem in knowledge distillation by proposing a novel framework.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Overcome limitations of both supervised KD (train-inference distribution mismatch) and on-policy KD (OOD student samples yielding inaccurate teacher feedback) when distilling large LLMs into small students.**\n\nPaper [1] addresses \"transfer gap in knowledge distillation\" and the IID assumption mismatch between human and machine domains — this is about distribution mismatch in KD, but it focuses on the train/transfer-set gap, not specifically the dual problem of supervised KD mismatch AND on-policy KD's OOD feedback problem. Paper [14] is titled \"Knowledge Distillation with Distribution Mismatch\" which directly addresses distribution mismatch in KD. Paper [11] addresses the problem of \"few distribution overlap exists between the teacher and the student\" in KD. However, none of these papers specifically frame the purpose as the dual limitation: supervised KD's train-inference mismatch AND on-policy KD's inaccurate teacher feedback due to OOD student samples. The closest is [1] and [14] on distribution mismatch, but neither targets the specific dual-problem framing of on-policy KD producing OOD samples that yield inaccurate teacher feedback. Paper [4] (DistillSpec) addresses aligning draft models with target models for speculative decoding, which is adjacent but not the same purpose. No prior paper captures the exact dual-limitation purpose at the problem-class level.\n\n---\n\n**MECHANISM: Speculative Knowledge Distillation — student proposes tokens, teacher rejects/re-samples tokens not in teacher's top-K distribution (inspired by speculative decoding + imitation learning), dynamically interpolating between supervised and on-policy KD.**\n\nPaper [4] (DistillSpec) uses knowledge distillation to align a draft model with a target model for speculative decoding — but the mechanism goes the other direction: KD is used to improve speculative decoding, not speculative decoding mechanics used to improve KD. The accept/reject sampling primitive from speculative decoding is used in [4] as the inference mechanism, not as a training signal. Paper [20] (Diffusion Meets DAgger) uses DAgger-style dataset aggregation with expert correction for imitation learning — the mechanism of \"student proposes, expert corrects OOD states\" is structurally similar. Paper [26] (DADAgger) queries the expert only for OOD states identified by ensemble variance — again structurally related to \"student proposes, teacher corrects when OOD.\" However, the specific primitive of top-K membership as an acceptance criterion borrowed from speculative decoding's rejection sampling, applied as a KD training mechanism for LLMs, is not present in any prior paper. The combination of speculative decoding's token-level accept/reject with KD training is genuinely absent. Papers [20] and [26] cover DAgger-style imitation but not the speculative-decoding-inspired token-level top-K acceptance criterion as a KD mechanism.\n\n---\n\n**EVALUATION: Distilling Gemma-7B→2B on Flores-200 (COMET), DialogSum (ROUGE-L), GSM8K (accuracy), UltraInteract math; held-out MATH and GSM-plus for instruction-following generalization.**\n\nThe evaluation design uses standard NLP benchmarks (translation with COMET, summarization with ROUGE-L, math reasoning with accuracy on GSM8K/MATH) — these benchmark families and metric semantics appear across many prior papers. Paper [4] evaluates KD for LLMs on standard benchmarks. Papers [13], [16] evaluate reasoning distillation on math/reasoning benchmarks. The benchmark families (GSM8K, MATH, translation, summarization) and metric semantics (ROUGE, accuracy, COMET) are all standard and appear in prior work. The evaluation design (distill a larger LLM to smaller, measure on standard NLP task benchmarks with standard metrics) is covered by the general design used in papers like [4], [13], [11].\n\n---\n\n**DOMAIN: LLM knowledge distillation / model compression for text generation.**\n\nThis is clearly covered by numerous prior papers: [4], [11], [13], [14], [2], [6], [7], etc. all work in LLM/language model knowledge distillation and compression.\n\n---\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 4\nVERDICT domain = 4",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: Paper [14] (\"Knowledge Distillation with Distribution Mismatch\") and [1] (\"Respecting Transfer Gap in Knowledge Distillation\") address distribution mismatch in KD, but neither specifically targets the dual problem of supervised KD's train-inference mismatch AND on-policy KD's OOD/low-quality student samples yielding inaccurate teacher feedback in the LLM distillation setting. No paper quotes an equivalent objective combining both failure modes as the motivation for a unified fix.\n\nFACET: mechanism | FINAL: NONE | reason: Paper [4] (DistillSpec) combines speculative decoding with KD but in the opposite direction — using KD to better align a draft model to a target model for inference speedup, not using speculative decoding's accept/reject logic as the sampling mechanism for distillation training. No prior paper describes an interleaved student-proposes/teacher-rejects sampling loop with a top-K membership acceptance criterion that dynamically interpolates between supervised and on-policy KD regimes."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 20
+      },
+      "evaluation": {
+       "covered_by": 19
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The contribution aims to solve the problem of distribution mismatch between training and inference in knowledge distillation (KD), and the related problem of a weak student generating out-of-distribution samples for the teacher in on-policy KD. This objective is covered by prior work that explicitly identifies and addresses the same fundamental issue. For example, [1] points out that the \"underlying assumption that the data collected in both human domain and machine domain are both independent and identically distributed (IID)\" is naive, which is the same \"train-inference distribution mismatch\" problem. Similarly, [14] is titled \"Knowledge Distillation with Distribution Mismatch,\" directly addressing the same problem class.\n\n**mechanism**: The proposed mechanism is an interleaved sampling process where a student model proposes on-policy tokens and a teacher model rejects and re-samples tokens that fall outside its own high-probability distribution (top-K). This is substantively equivalent to the Dataset Aggregation (DAgger) algorithm from imitation learning. DAgger addresses compounding errors from distribution shift by having a student policy run on-policy and querying an expert for corrections on the states it encounters. [20] describes this approach, which is the same primitive: \"When the learned policy encounters states that are not present in the expert demonstrations, the policy fails... The Dataset Aggregation, or DAgger approach to this problem simply collects more data to cover these failure states.\"\n\n**evaluation**: The evaluation design consists of applying the distillation method to a teacher-student model pair (Gemma-7B to Gemma-2B) and measuring the student's performance on a suite of standard downstream NLP benchmarks (Flores-200, DialogSum, GSM8K) using their standard metrics (COMET, ROUGE-L, accuracy). This design—evaluating a compression technique by its performance on standard downstream tasks—is a widely used protocol in the field. For instance, [19] evaluates methods for \"Pre-trained Summarization Distillation\" by applying them and measuring performance on summarization tasks, which is the same evaluation design pattern.\n\n**domain**: The contribution operates in the domain of knowledge distillation and model compression specifically for large language models (LLMs) used for text generation. This is a well-established research area. Numerous prior papers work in the exact same domain, such as [2], which focuses on \"Uncertainty-Driven Knowledge Distillation for Language Model Compression,\" and many others that explicitly target compressing pre-trained language models.\n\nVERDICT purpose = 1\nVERDICT mechanism = 20\nVERDICT evaluation = 19\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     7,
+     23
+    ],
+    "mechanism": [
+     7,
+     23
+    ],
+    "evaluation": [
+     7,
+     23
+    ],
+    "domain": [
+     3,
+     14
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose:\nThe contribution's purpose is to demonstrate that stochastic knowledge distillation (SKD) is broadly effective across diverse generation tasks and deployment scenarios rather than a single narrow setting. Paper [7] (\"A Comparative Analysis of Task-Agnostic Distillation Methods for Compressing Transformer Language Models\") explicitly analyzes task-agnostic distillation methods across diverse tasks, aiming to generalize their effectiveness. Similarly, paper [9] (\"ERNIE 3.0 Tiny\") discusses task-agnostic distillation and its generalization gap, which aligns with the purpose of evaluating broad effectiveness across tasks. Paper [20] (\"Task-agnostic Distillation of Encoder-Decoder Language Models\") also focuses on task-agnostic distillation across diverse tasks, aiming to preserve performance while improving efficiency. These papers share the same objective at the problem-class level.\n\n### Mechanism:\nThe contribution's mechanism involves empirical evaluation across summarization, translation, and reasoning tasks in both task-specific and task-agnostic distillation settings. Paper [1] (\"XtremeDistilTransformers\") introduces a task-agnostic distillation framework and evaluates it across multiple NLP tasks, including summarization and translation. Paper [7] (\"A Comparative Analysis of Task-Agnostic Distillation Methods\") reproduces and compares several task-agnostic distillation methods across diverse tasks, including summarization and translation. Paper [20] (\"Task-agnostic Distillation of Encoder-Decoder Language Models\") also evaluates task-agnostic distillation across multiple tasks, including summarization and translation. These papers employ substantively equivalent mechanisms of evaluating distillation across diverse tasks.\n\n### Evaluation:\nThe contribution's evaluation design involves comparing SKD against existing KD methods (supervised KD, on-policy KD, ImitKD) across text generation tasks in both task-specific and task-agnostic scenarios. Paper [7] (\"A Comparative Analysis of Task-Agnostic Distillation Methods\") uses a similar evaluation design, comparing multiple task-agnostic distillation methods across diverse tasks. Paper [9] (\"ERNIE 3.0 Tiny\") evaluates task-agnostic distillation methods and their generalization gaps across multiple tasks. Paper [20] (\"Task-agnostic Distillation of Encoder-Decoder Language Models\") also compares task-agnostic distillation methods across diverse tasks. These papers reuse the same evaluation design of comparing distillation methods across tasks, making the evaluation facet covered.\n\n### Domain:\nThe contribution operates in the domain of LLM knowledge distillation for text generation. Paper [3] (\"TextKD-GAN\") explicitly addresses knowledge distillation for text generation tasks such as summarization, translation, and language modeling. Paper [5] (\"Knowledge Distillation on Extractive Summarization\") focuses on distillation for summarization tasks, which fall under text generation. Paper [17] (\"Autoregressive Knowledge Distillation through Imitation Learning\") addresses distillation for autoregressive models in text generation tasks. Paper [20] (\"Task-agnostic Distillation of Encoder-Decoder Language Models\") also operates in the domain of LLM knowledge distillation for text generation. These papers cover the same general application area.\n\n---\n\nVERDICT purpose = 7  \nVERDICT mechanism = 7  \nVERDICT evaluation = 7  \nVERDICT domain = 3  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 23
+      },
+      "mechanism": {
+       "covered_by": 23
+      },
+      "evaluation": {
+       "covered_by": 23
+      },
+      "domain": {
+       "covered_by": 14
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Demonstrate that SKD is broadly effective across diverse generation tasks and deployment scenarios rather than a single narrow setting.**\n\nThe purpose here is to show *generalization breadth* of a specific KD method (SKD) across tasks and settings. Paper [23] (GKD/On-Policy Distillation) evaluates across summarization, translation, and reasoning tasks to show broad effectiveness of their method. Paper [12] (f-Divergence) similarly demonstrates their framework across multiple tasks. Paper [16] evaluates sentence-level vs token-level KD across multiple tasks. However, none of these specifically establish the same empirical relationship — \"SKD is broadly effective across diverse tasks and settings\" — since SKD is the contribution being evaluated. The closest is [23], which demonstrates broad effectiveness of a KD method across the same task types (summarization, translation, reasoning) in both task-specific and task-agnostic settings. This is substantively the same purpose at the problem-class level: \"show our KD method generalizes across diverse generation tasks and deployment scenarios.\"\n\n**MECHANISM: Empirical evaluation across summarization, translation, and reasoning tasks in both task-specific and task-agnostic distillation settings.**\n\nPaper [23] evaluates GKD across summarization, translation, and reasoning in task-specific settings. Paper [7] conducts comparative analysis of task-agnostic distillation methods across multiple tasks. Paper [20] addresses task-agnostic distillation of encoder-decoder models across multiple generation tasks. The combination of (1) multiple generation tasks including summarization+translation+reasoning AND (2) both task-specific and task-agnostic settings appears in [23] (covers task-specific across those tasks) and [7] (covers task-agnostic comparative analysis). Together these cover the mechanism design.\n\n**EVALUATION: SKD consistently outperforms existing KD methods (supervised KD, on-policy KD, ImitKD) across tested tasks in both settings.**\n\nThe evaluation design is a comparative benchmark across multiple KD baselines (supervised KD, on-policy KD, ImitKD) on standard text generation benchmarks. Paper [23] uses exactly this design — comparing KD methods on summarization, translation, reasoning benchmarks with standard metrics. Paper [16] does comprehensive comparison of KD methods across NMT benchmarks. Paper [12] compares KD variants across generation tasks. This is a standard \"compare KD methods on generation benchmarks\" design, well-covered by [23] and [16].\n\n**DOMAIN: LLM knowledge distillation for text generation.**\n\nMultiple prior papers work in this exact domain. Papers [14], [15], [16], [17], [23], [12], [26] all work in knowledge distillation for text generation (NMT, summarization, LLM compression). This domain is thoroughly covered.\n\nVERDICT purpose = 23\nVERDICT mechanism = 23\nVERDICT evaluation = 23\nVERDICT domain = 14",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     8,
+     21
+    ],
+    "mechanism": [
+     8,
+     21
+    ],
+    "evaluation": [
+     8,
+     21
+    ],
+    "domain": [
+     1,
+     19
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to demonstrate SKD's practical reliability under varied training conditions, addressing on-policy KD's known sensitivity to student initialization. Paper [8] explicitly investigates the significance of model initialization in multilingual KD, analyzing how well the student model acquires knowledge from the teacher. Paper [21] also focuses on the impact of student initialization in KD, arguing that random starting points hinder students from fully leveraging the teacher. Both papers address the same problem-class level objective of understanding and mitigating sensitivity to student initialization in KD, making the purpose covered.\n\n### Mechanism\nThe mechanism involves systematically evaluating SKD by varying model initialization strategies, training data sizes, and model families, including low-data regimes and two-stage training ablations. Paper [8] investigates the role of initialization in KD, emphasizing copying teacher weights directly to the student model, which overlaps with the focus on initialization strategies. Paper [21] also systematically evaluates the impact of student initialization on KD outcomes, making the mechanism covered. However, no prior paper explicitly combines this with varying data sizes, model families, or low-data regimes, so the mechanism is partially covered but not fully novel.\n\n### Evaluation\nThe evaluation design involves demonstrating SKD's robustness and adaptability across different model initializations, data sizes, and model families, while contrasting it with on-policy KD's sensitivity to initialization. Paper [8] evaluates the impact of initialization on multilingual KD, using a similar design to assess robustness across different initialization strategies. Paper [21] also evaluates initialization effects in KD, focusing on how initialization impacts student performance. Both papers use evaluation designs that align with the contribution's approach, making the evaluation covered.\n\n### Domain\nThe domain is LLM knowledge distillation for text generation. Papers [1], [2], [3], [4], [6], and [19] all address knowledge distillation in the context of LLMs or text generation, making the domain covered.\n\n---\n\nVERDICT purpose = 8  \nVERDICT mechanism = 8  \nVERDICT evaluation = 8  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 21
+      },
+      "mechanism": {
+       "covered_by": 21
+      },
+      "evaluation": {
+       "covered_by": 21
+      },
+      "domain": {
+       "covered_by": 19
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Show SKD's practical reliability under varied training conditions, addressing on-policy KD's known sensitivity to student initialization.**\n\nThe purpose is specifically to demonstrate robustness of a KD method (SKD) to student initialization sensitivity — i.e., showing that a particular KD approach is less sensitive to initialization than on-policy KD. Paper [21] \"Well-Read Students Learn Better: The Impact of Student Initialization on Knowledge Distillation\" directly investigates student initialization's impact on KD performance, establishing that initialization matters significantly. However, the contribution's purpose is the *opposite direction* — showing a method that is *robust* to initialization sensitivity, not establishing that initialization matters. Paper [8] \"The Privileged Students: On the Value of Initialization in Multilingual Knowledge Distillation\" also investigates initialization in KD. Neither paper establishes the relationship \"SKD is robust to initialization sensitivity\" — they establish that initialization matters, not that a specific method overcomes it. No prior paper reports the same empirical relationship (SKD robustness vs. on-policy KD sensitivity). This is a genuinely new purpose.\n\n**MECHANISM: Systematic evaluation varying model initialization strategies, training data sizes (100/1K/10K), and model families (Gemma, Qwen); includes low-data regime and two-stage training ablation.**\n\nThe mechanism is a systematic ablation/sensitivity analysis varying initialization, data size, and model family. Paper [21] varies student initialization strategies in KD experiments. Paper [8] also varies initialization in multilingual KD. Paper [19] (DDK) evaluates KD across different model families and data conditions. These are standard controlled ablation designs — varying initialization, data size, model family — which appear across multiple prior papers as generic experimental moves. However, per the finding-type rules, mechanism is judged at design level: controlled ablation with varied initialization appears in [21] and [8]; varied data sizes and model families appear in [19] and others. These are standard analysis protocols.\n\n**EVALUATION: SKD shows robustness across initializations, data sizes, model families; on-policy KD is highly sensitive to initialization.**\n\nPer the finding-type special rule, evaluation is judged at design level. The evaluation design uses standard benchmark metrics for LLM text generation, comparing methods across ablation conditions. Papers [21] and [8] use the same evaluation design (comparing KD methods across initialization conditions using standard NLP metrics). This design is covered.\n\n**DOMAIN: LLM knowledge distillation for text generation.**\n\nMultiple prior papers work in LLM/language model knowledge distillation for text generation: [1], [6], [9], [15], [19] all operate in this domain. This is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 21\nVERDICT evaluation = 21\nVERDICT domain = 19",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 21 | reason: Paper [21] explicitly studies \"the Impact of Student Initialization on Knowledge Distillation\" and argues \"a random starting point hinders students from fully leveraging the teacher experience,\" directly addressing on-policy KD's known sensitivity to student initialization — however, the specific objective of *showing SKD's practical reliability under varied training conditions* as a robustness/reliability demonstration is not the same empirical claim; [21] argues initialization matters and proposes better initialization, whereas the facet's purpose is to demonstrate that SKD is *robust despite* varied initialization. No paper quotes an equivalent objective of demonstrating robustness/reliability of a specific KD method across varied student initializations. FINAL: NONE | reason: No prior paper has the same objective of demonstrating practical reliability of a specific sequential/on-policy KD method under varied training conditions to address initialization sensitivity; [21] studies initialization importance but proposes better initialization rather than showing a method's robustness to it."
+     }
+    }
+   }
+  }
+ ]
+}

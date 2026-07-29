@@ -1,0 +1,300 @@
+{
+ "paper_id": "FA0045",
+ "title": "Hard Examples Beat Easy Examples in Repetition-Heavy Long-CoT Fine-Tuning",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     8,
+     12
+    ],
+    "mechanism": [
+     12
+    ],
+    "evaluation": [
+     12
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to determine which examples should be selected when training long-CoT models with many-epoch repetition on small datasets. No prior paper explicitly investigates this specific empirical relationship between example selection strategies (e.g., low-NLL, high-NLL, random) and their performance impact under long-CoT fine-tuning with repeated epochs. While [12] (\"Hard Examples Are All You Need\") explores the effect of training on hard examples, it does so in the context of GRPO post-training, not long-CoT fine-tuning with repeated epochs. Similarly, [17] (\"More Data or Better Data?\") analyzes data selection for mathematical reasoning but does not establish the same relationship between NLL-based selection and long-CoT fine-tuning performance. Thus, no prior paper reports or establishes this specific empirical relationship.\n\n### Mechanism\nThe mechanism involves NLL-based data selection comparison, where subsets of training examples (low-NLL, high-NLL, random) are selected and trained for 32 epochs under identical conditions. [9] (\"Improving Pretraining Data Using Perplexity Correlations\") uses a similar mechanism of selecting data based on loss (perplexity) correlations, but it applies this to pretraining data selection rather than fine-tuning subsets for long-CoT reasoning. [12] (\"Hard Examples Are All You Need\") employs difficulty-based selection strategies, but its mechanism focuses on identifying hard examples based on model failure rates, not NLL-based selection. [13] (\"AIR: Post-training Data Selection for Reasoning via Attention Head Influence\") introduces a different mechanism (attention influence) for reasoning data selection. None of the prior papers use NLL-based selection for long-CoT fine-tuning, making the mechanism novel.\n\n### Evaluation\nThe evaluation design compares aggregate accuracy across benchmarks (AIME and GPQA) for subsets selected by NLL (low-NLL, high-NLL, random). This design is covered by [12] (\"Hard Examples Are All You Need\"), which evaluates the impact of difficulty-based example selection on reasoning benchmarks using similar metrics (accuracy) and validation setups. Although the specific benchmarks differ, the evaluation design (comparing subsets based on difficulty metrics across reasoning tasks) is substantively equivalent. Additionally, [9] (\"Improving Pretraining Data Using Perplexity Correlations\") uses a similar evaluation framework to validate data selection strategies, further supporting coverage.\n\n### Domain\nThe domain is LLM long chain-of-thought fine-tuning and data selection. [1] (\"Select2Reason\") explicitly addresses long-CoT reasoning fine-tuning, making the domain covered. While other papers ([12], [13], [17]) also explore reasoning-related fine-tuning, [1] directly operates in the same application area of long-CoT reasoning fine-tuning, ensuring domain coverage.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 12  \nVERDICT domain = 1  ",
+      "stage2": "1. **FACET: purpose** | **FINAL: COVERED-BY 8** | reason: Paper [8] explicitly analyzes multi-epoch training on small datasets, addressing the same objective of determining how examples should be selected for repeated training under limited data conditions. Quote: \"We ask: to match the performance of training on a dataset of size $N$ for $K$ epochs, how much larger must a dataset be if trained for fewer epochs?\"\n\n2. **FACET: mechanism** | **FINAL: NONE** | reason: No prior paper explicitly describes or evaluates NLL-based data selection on OLMo3-7B with Dolci-Think, using length-matched 800-example subsets (low-NLL, high-NLL, random) for 32 epochs under identical conditions. No equivalent mechanism was found under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Determine which examples should be selected when training long-CoT models with many-epoch repetition on small datasets.**\n\nThe specific purpose is about data selection for long-CoT fine-tuning under multi-epoch, small-dataset conditions. Paper [1] (Select2Reason) addresses data selection for long-CoT reasoning fine-tuning. Paper [12] investigates \"whether example difficulty affects GRPO training effectiveness by comparing selection strategies (easy, medium, hard, random)\" — this is very close but uses RL (GRPO), not SFT/distillation. Paper [4] addresses data selection for RL fine-tuning. Paper [17] analyzes data selection for mathematical reasoning. However, the specific combination of long-CoT + many-epoch repetition + small dataset is most directly addressed by [1] (long-CoT data selection) and [12] (difficulty-based selection for reasoning). The purpose of finding which examples to select for long-CoT training under repeated-epoch small-dataset conditions is substantively covered by [1] and [12] together, with [1] being the closest match on long-CoT specifically.\n\n**MECHANISM: NLL-based data selection comparison, training low-NLL vs. high-NLL vs. random subsets.**\n\nUsing NLL/perplexity/loss as a difficulty signal for data selection appears in multiple papers. Paper [9] uses \"LLM losses on many pretraining texts are correlated with downstream benchmark performance\" for data selection. Paper [28] uses \"loss-aware sample prioritization\" / \"high-loss samples during batch construction.\" Paper [10] explicitly does \"hard example selection\" for fine-tuning. Paper [12] compares easy/medium/hard/random selection strategies. Paper [6] uses \"difficulty-based data selection\" considering \"model's inherent knowledge distribution.\" The NLL-as-difficulty-signal for comparing subsets is a well-established primitive covered by [9], [28], and [12].\n\n**EVALUATION: High-NLL examples outperform low-NLL, measured on AIME and GPQA benchmarks.**\n\nThe evaluation design uses standard reasoning benchmarks (AIME, GPQA) with accuracy metrics to compare data selection strategies. AIME and GPQA are named benchmark families used in prior reasoning papers. Paper [12] evaluates difficulty-based selection strategies \"across multiple models and reasoning tasks\" with accuracy metrics. Paper [1] evaluates on reasoning benchmarks. Paper [17] evaluates data selection methods \"under a unified pipeline\" on mathematical reasoning benchmarks. The design (compare selection strategies on named reasoning benchmarks with accuracy) is covered by [12] and [17].\n\n**DOMAIN: LLM long chain-of-thought fine-tuning / data selection.**\n\nPapers [1], [12], [4], [13], [17] all work in LLM fine-tuning with reasoning/data selection. This domain is clearly covered.\n\nVERDICT purpose = 1\nVERDICT mechanism = 12\nVERDICT evaluation = 12\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 12
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe purpose is to determine whether hard or easy examples are better for training when using many-epoch repetition on small datasets. This is covered by [12], which explicitly states its goal is to \"investigate whether example difficulty affects GRPO training effectiveness by comparing selection strategies (easy, medium, hard, random)\" and reports the same finding that \"Training on the hardest 10% of examples... yields dramatic performance gains\".\n\n**MECHANISM**\nThe mechanism is a controlled experiment comparing models trained on subsets selected by Negative Log-Likelihood (NLL) as a proxy for difficulty (low-NLL=easy, high-NLL=hard). This experimental design is covered by [12], which compares training on subsets selected by difficulty (\"easy, medium, hard, random\"). Furthermore, [13] explicitly mentions \"heuristics based on... overall loss\" as an existing data selection method, which is equivalent to using NLL.\n\n**EVALUATION**\nThe evaluation design consists of training models on the selected data subsets and then comparing their aggregate accuracy on downstream reasoning benchmarks (AIME, GPQA). This design is covered by [12], which evaluates its data selection strategies by comparing performance on \"multiple models and reasoning tasks\". Using standard reasoning benchmarks to evaluate a method intended to improve reasoning is a common evaluation design.\n\n**DOMAIN**\nThe domain is data selection for long chain-of-thought (CoT) fine-tuning. This is covered by [1], which is titled \"Select2Reason: Efficient Instruction-Tuning Data Selection for Long-CoT Reasoning\" and explicitly addresses the problem of selecting data for long-CoT instruction tuning.\n\nVERDICT purpose = 12\nVERDICT mechanism = 12\nVERDICT evaluation = 12\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     4,
+     10
+    ],
+    "evaluation": [
+     4
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to explain why low-NLL selection fails under repetition-heavy training. Paper [4] (\"Repetition In Repetition Out\") directly investigates the relationship between repetitions in training data and neural text degeneration, which aligns with the purpose of this contribution. Specifically, it states: \"Our preliminary investigation reveals a strong correlation between the degeneration issue and the presence of repetitions in training data.\" This matches the objective of explaining failure modes related to repetition-heavy training. Paper [7] (\"The Curious Case of Neural Text Degeneration\") also discusses the relationship between likelihood-based objectives and repetitive text generation but does not explicitly address low-NLL selection failure under repetition-heavy training. Therefore, [4] is the closest match.\n\n### Mechanism\nThe mechanism involves a confound analysis linking low-NLL examples to high textual repetition and its effects on training dynamics. Paper [4] (\"Repetition In Repetition Out\") performs a similar analysis, stating: \"Our preliminary investigation reveals a strong correlation between the degeneration issue and the presence of repetitions in training data. Subsequent experiments also demonstrate...\" This indicates a confound analysis linking repetition in training data to undesirable outcomes, which is substantively equivalent to the mechanism in the contribution. No other paper explicitly performs this type of confound analysis.\n\n### Evaluation\nThe evaluation involves demonstrating that low-NLL examples exhibit a higher trigram repetition rate (0.457 vs. 0.206) and lead to poor termination behavior and unstable training dynamics, with hyperparameter tuning and trigram filtering failing to recover performance. Paper [4] (\"Repetition In Repetition Out\") uses a similar evaluation design, analyzing the correlation between repetition in training data and degeneration issues, and conducting experiments to validate these effects. While the specific metrics (e.g., trigram repetition rate) and experimental details differ, the evaluation design — analyzing repetition rates and their impact on training outcomes — is substantively equivalent. No other paper uses a comparable evaluation design.\n\n### Domain\nThe domain is LLM long chain-of-thought fine-tuning and data selection. Paper [1] (\"Take the essence and discard the dross\") and Paper [5] (\"Instruction Mining\") both address data selection for fine-tuning large language models (LLMs), which is the same general application area. Paper [4] (\"Repetition In Repetition Out\") also operates in the domain of LLM training but focuses on understanding neural text degeneration rather than data selection. However, since the contribution explicitly targets data selection for fine-tuning LLMs, [1] and [5] are the closest matches for the domain.\n\n---\n\nVERDICT purpose = 4  \nVERDICT mechanism = 4  \nVERDICT evaluation = 4  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Explain why low-NLL selection fails under repetition-heavy training.**\n\nThe purpose is to establish a causal/explanatory relationship between low-NLL data selection and repetition-heavy training failure. Paper [4] (\"Repetition In Repetition Out\") investigates why neural text degeneration occurs and links it to repetitions in training data. However, this is about generation degeneration from repetitive training data generally, not specifically about why a *data selection criterion* (low-NLL) fails. Paper [7] and [9] address text degeneration but not data selection failure. No prior paper specifically investigates why low-NLL as a *selection criterion* fails due to repetition in the selected subset. This specific relationship (low-NLL selection → repetition-heavy subset → training failure) is not established in any prior paper.\n\n**MECHANISM: Confound analysis linking low-NLL examples to high textual repetition and its effects on training dynamics.**\n\nPaper [4] performs analysis linking repetition in training data to degeneration behavior, which is conceptually related. However, the specific mechanism here is a *confound analysis* showing that low-NLL is a proxy for repetition, and that repetition (not low-NLL per se) drives the training failure. Paper [9] also analyzes repetition causes in generation. Neither paper performs a confound analysis specifically targeting a data selection metric (NLL) as a proxy for repetition. The analytical primitive of \"identify a confound between a selection criterion and a data quality artifact\" is not clearly present in any prior paper.\n\n**EVALUATION: Low-NLL examples exhibit trigram repetition rate 0.457 vs. 0.206, leading to poor termination behavior and unstable training dynamics; hyperparameter tuning and trigram filtering fail to recover low-NLL performance.**\n\nThe evaluation design involves: (1) measuring trigram repetition rates on selected subsets, (2) analyzing training dynamics/termination behavior, and (3) ablation/intervention experiments (hyperparameter tuning, trigram filtering). Paper [4] measures repetition rates in training data and correlates with degeneration — this is a similar measurement design (repetition rate statistics on training data linked to model behavior). The trigram repetition measurement as an evaluation design for training data quality appears in [4] and [9]. The intervention/ablation design (try to fix it, show it doesn't work) is a generic experimental shape. Paper [4] uses repetition rate measurement linked to training outcomes, which partially covers this design.\n\n**DOMAIN: LLM long chain-of-thought fine-tuning / data selection.**\n\nPapers [1], [5], [6], [13], [18] all work in the domain of data selection for fine-tuning large language models. This is clearly covered. Paper [1] explicitly addresses \"Data Selection for Fine-Tuning Large Language Models.\"\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 4\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explains why low-NLL selection fails specifically because of repetition-heavy training data. Paper [4] links repetition in training data to degeneration, and [7] links likelihood to repetitive generation, but neither addresses low-NLL data selection criteria failing due to repetition bias in the selection pool. No quoted phrase from any paper captures this same objective.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper performs a confound analysis linking low-NLL example selection to high textual repetition and its downstream effects on training dynamics. Paper [4] shows \"a strong correlation between the degeneration issue and the presence of repetitions in training data\" but this concerns generation degeneration, not the mechanism by which NLL-based data selection is confounded by repetition. No paper provides the specific causal/confound framing connecting NLL scores to repetition as a selection artifact."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe purpose is to explain a specific empirical finding: why selecting data with low NLL (a proxy for quality) fails when the training data contains significant repetition. While paper [4] establishes a link between \"repetitions in training data\" and the \"degeneration issue\" in generation, it does not investigate or explain this specific failure mode of a *data selection method* during fine-tuning. Therefore, the purpose of explaining this particular relationship is not covered.\n\n**MECHANISM**\nThe mechanism is a \"confound analysis,\" which is a standard statistical technique used to identify a third variable that explains an observed relationship. This analytical primitive is explicitly discussed and used in prior work, such as [10], which is about \"Variable Selection for Confounder Control... in Causal Inference.\"\n\n**EVALUATION**\nThe evaluation design consists of measuring a linguistic property (trigram repetition rate) across different data subsets and linking this property to downstream training dynamics. This design is substantively equivalent to the one used in [4], which \"reveals a strong correlation between the degeneration issue and the presence of repetitions in training data,\" an analysis that requires measuring a data property (repetition) and correlating it with a model behavior (degeneration).\n\n**DOMAIN**\nThe domain is data selection for fine-tuning Large Language Models (LLMs). This is a general application area that is explicitly addressed by multiple prior papers, for instance [1], which is a survey on \"Data selection for fine-tuning large language models\".\n\nVERDICT purpose = NONE\nVERDICT mechanism = 10\nVERDICT evaluation = 4\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the explicit objective of explaining this specific failure mode. Papers like [4] and [7] explain why models generate repetitive text (a model behavior/output problem), but not why a specific data selection method (low-NLL) fails when applied to a repetition-heavy corpus (a selection method problem). Paper [13] investigates perplexity-based selection but does not focus on explaining its failure under repetition-heavy conditions."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     3,
+     24
+    ],
+    "mechanism": null,
+    "evaluation": [
+     1,
+     4,
+     16
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to provide actionable guidance for repetition-heavy fine-tuning regimes. None of the prior papers explicitly focus on this specific objective. While several papers discuss fine-tuning strategies (e.g., [3], [9], [18]), they do so in the context of improving fine-tuning efficiency or adapting to low-resource settings, not specifically to provide actionable guidance for repetition-heavy fine-tuning regimes. Therefore, no prior paper establishes the same purpose.\n\n### Mechanism\nThe mechanism involves distilling an empirical comparison into a selection rule for many-epoch training on small datasets. Papers like [4], [6], and [10] discuss data selection strategies for fine-tuning, but they focus on different primitives, such as influence-based methods ([4]), multi-dimensional signals ([6]), or rethinking data selection heuristics ([10]). None of these papers describe a mechanism equivalent to distilling empirical comparisons into a selection rule specifically for many-epoch training on small datasets. Thus, the mechanism is not covered.\n\n### Evaluation\nThe evaluation is supported by a 33.0% vs. 23.6% aggregate accuracy gap and the failure of optimization attempts (hyperparameter tuning, trigram filtering) to rescue low-NLL selection. Papers like [4], [6], and [10] use evaluation designs involving accuracy gaps and comparisons of data selection strategies, which are substantively equivalent to the evaluation design here. For example, [4] systematically investigates the performance of influence-based methods, and [6] evaluates multi-dimensional signals for instruction data selection. These prior works use similar evaluation designs, even if applied to different datasets or metrics. Therefore, the evaluation is covered.\n\n### Domain\nThe domain is LLM long chain-of-thought fine-tuning and data selection. Papers like [1], [4], and [6] explicitly address instruction tuning or data selection for LLMs, including long chain-of-thought reasoning ([1]). While the specific sub-problem or dataset may differ, the general application area of LLM fine-tuning and data selection is well-covered. Thus, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 4  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 3 | reason: Paper [3] explicitly provides actionable guidance for fine-tuning LLMs in data-scarce scenarios, aligning with the same objective of repetition-heavy fine-tuning regimes. Quote: \"This paper presents a structured and practical survey of recent methods for fine-tuning LLMs in data-scarce scenarios.\"\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper distills an empirical comparison into a selection rule specifically for many-epoch training on small datasets, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "**Purpose:** The contribution's purpose is to give practitioners actionable guidance specifically for repetition-heavy fine-tuning regimes (many-epoch training on small datasets) — i.e., a selection rule tailored to that regime. No prior paper establishes the same empirical relationship between data selection criteria and many-epoch/small-dataset fine-tuning regimes. Papers like [1], [3], [10] discuss data selection for fine-tuning generally, but none specifically targets the \"repetition-heavy / many-epoch on small dataset\" regime as the problem being solved, nor do they report the same directional finding about NLL-based selection failing in that regime. This is a specific empirical relationship not covered.\n\n**Mechanism:** The mechanism is distilling an empirical comparison into a selection rule for many-epoch training on small datasets. This is essentially a comparative empirical study that produces a practical heuristic/rule. Papers [1], [10], [6] compare data selection strategies and derive practical recommendations, but none specifically frames the comparison around many-epoch repetition regimes or derives a rule for that setting. The closest is [10] (\"Rethinking Data Selection for SFT\") which rethinks selection criteria and produces practical guidance, and [1] which targets long-CoT selection. However, the specific primitive of \"distill comparison into a rule for repetition-heavy regimes\" is not substantively equivalent to any prior paper's mechanism. NONE is appropriate.\n\n**Evaluation:** The evaluation design uses aggregate accuracy metrics across benchmarks comparing two selection strategies, plus ablation-style experiments (hyperparameter tuning, trigram filtering) to show robustness of the finding. This is a standard \"compare methods on benchmark accuracy, run ablations to rule out confounds\" design. Papers [1], [4], [10] all use aggregate benchmark accuracy comparisons with ablations to validate data selection claims. This evaluation design (benchmark accuracy comparison + ablation to rule out alternatives) is clearly covered.\n\n**Domain:** The domain is LLM long chain-of-thought fine-tuning / data selection. Paper [1] explicitly addresses \"long chain-of-thought reasoning\" fine-tuning data selection for LLMs. Papers [10], [4], [6] address LLM instruction fine-tuning data selection. This domain is covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper quotes or frames the objective as giving practitioners actionable guidance specifically for repetition-heavy fine-tuning regimes (many-epoch, small-dataset settings); the closest papers (e.g., [3], [9]) address low-resource fine-tuning broadly but never frame their purpose around epoch-repetition dynamics or selection rules for that regime.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper distills an empirical comparison into a selection rule specifically targeting many-epoch training on small datasets; papers like [10], [4], [6] propose selection criteria but none frame their mechanism as condensing a multi-method empirical study into a practitioner decision rule keyed to training-repetition intensity."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 24
+      },
+      "mechanism": {
+       "covered_by": 24
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "purpose: The contribution is a finding that a specific data selection rule is superior to low-NLL selection in repetition-heavy fine-tuning regimes. According to the special rule for findings, the purpose is covered only if a prior paper establishes the same empirical relationship. None of the provided abstracts report this specific relationship between data selection methods and the training regime (i.e., many-epoch or repetition-heavy).\n\nmechanism: The mechanism is an empirical comparison distilled into a selection rule. This is a standard analysis method for deriving practical guidance. Paper [24] employs the same mechanism by conducting a \"comprehensive exploration and analysis of Whisper’s fine-tuning capabilities and the advantages and disadvantages of various fine-tuning strategies\" to provide guidance, which is substantively the same design.\n\nevaluation: The evaluation design consists of measuring an aggregate accuracy gap between two methods and showing that simple optimizations fail to improve the baseline. The core of this design—measuring a performance gap on a standard benchmark to validate a claim—is common. Paper [16] uses this design when it \"reduces the training set size by 2.35x, surprisingly increases nDCG@10 on BEIR by 1.0 point,\" demonstrating a performance gap on a named benchmark family (BEIR) to support its finding.\n\ndomain: The domain is data selection for LLM long chain-of-thought fine-tuning. Paper [1] explicitly addresses this exact domain in its title and abstract: \"Select2Reason: Efficient Instruction-Tuning Data Selection for Long-CoT Reasoning.\"\n\nVERDICT purpose = NONE\nVERDICT mechanism = [24]\nVERDICT evaluation = [16]\nVERDICT domain = [1]",
+      "stage2": "FACET: purpose: Give practitioners actionable guidance for repetition-heavy fine-tuning regimes. | FINAL: COVERED-BY [24] | reason: This paper's objective is to provide a \"comprehensive exploration and analysis of Whisper’s fine-tuning capabilities and the advantages and disadvantages of various fine-tuning strategies\" for \"low-resource\" settings. Low-resource fine-tuning necessitates repetition-heavy regimes (i.e., many epochs over a small dataset), making the objective identical: to provide actionable guidance for practitioners in this specific training context."
+     }
+    }
+   }
+  }
+ ]
+}

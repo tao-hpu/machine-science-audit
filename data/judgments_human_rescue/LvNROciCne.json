@@ -1,0 +1,399 @@
+{
+ "paper_id": "LvNROciCne",
+ "title": "AdaRankGrad: Adaptive Gradient Rank and Moments for Memory-Efficient LLMs Training and Fine-tuning",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     2,
+     16
+    ],
+    "evaluation": [
+     10,
+     16,
+     27
+    ],
+    "domain": [
+     7,
+     10,
+     19
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 16
+      },
+      "evaluation": {
+       "covered_by": [
+        16,
+        27
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        10,
+        7,
+        19
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to establish a theoretical foundation for memory-efficient LLM training/fine-tuning by surpassing prior loose upper bounds on gradient rank. Paper [2] discusses the implicit regularization of neural networks towards low-rank solutions during training but does not explicitly address memory efficiency or surpassing prior rank bounds. Paper [4] explores rank transitions in SGD but focuses on rank jumps rather than gradual rank reduction or memory efficiency. Paper [16] studies rank behavior in neural networks but does not aim to establish a theoretical foundation for memory-efficient training. No prior paper explicitly shares the same purpose.\n\n### Mechanism\nThe contribution formalizes a new phenomenon: the approximate/stable rank of layer gradient matrices decreases during training and asymptotically approaches rank-one under vanilla SGD (Lemma 1). Paper [2] proves that stochastic gradient-based training regularizes networks towards low-rank solutions, but it does not formalize the gradual rank reduction or asymptotic rank-one behavior. Paper [4] discusses rank transitions under SGD but focuses on jumps between high and low ranks rather than gradual reduction. Paper [16] rigorously studies rank diminishing in neural networks but does not formalize the asymptotic rank-one behavior under vanilla SGD. No prior paper contains a substantively equivalent mechanism.\n\n### Evaluation\nThe contribution uses qualitative/theoretical results and empirical evidence, including eigenvalue dominance in RoBERTa-Base gradients (Fig. 2) and effective rank reduction over update steps in RTE/MRPC tasks (Fig. 3/4). Paper [16] provides empirical evidence of rank diminishing in neural networks, including effective rank analysis over training steps, which matches the evaluation design of the contribution. Paper [27] analyzes effective rank reduction during gradient descent iterates, which also matches the evaluation design. Both papers use similar evaluation setups (effective rank analysis over training steps), so the evaluation facet is covered.\n\n### Domain\nThe contribution operates in the domain of LLM optimization/theory. Paper [10] studies low-rank properties of LLM weight matrices and their implications for memory and compute efficiency, which matches the general application area of LLM optimization/theory. Paper [7] addresses memory-efficient training of deep neural networks but focuses on mobile devices rather than LLMs. Paper [19] leverages low-rank structures to reduce computational costs in machine learning tasks, which overlaps with the general area of optimization for large models. Thus, the domain facet is covered.\n\n---\n\n**VERDICT purpose = NONE**  \n**VERDICT mechanism = NONE**  \n**VERDICT evaluation = 16, 27**  \n**VERDICT domain = 10, 7, 19**  ",
+      "stage2": "- **FACET: purpose** | **FINAL: COVERED-BY 7** | reason: Paper [7] explicitly addresses \"memory-efficient on-device training\" by proposing \"approximating the gradient matrices of deep neural networks using a low-rank parameterization,\" which aligns with the objective of laying a theoretical foundation for memory-efficient LLM training/fine-tuning.  \n- **FACET: mechanism** | **FINAL: COVERED-BY 16** | reason: Paper [16] rigorously studies \"the behavior of network rank, focusing particularly on the rank diminishing phenomenon during training,\" which matches the formalization of the phenomenon of layer gradient matrix rank gradually decreasing and asymptotically approaching rank-one."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 10
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n## Purpose\n\nThe purpose is to establish a theoretical foundation for memory-efficient LLM training/fine-tuning by proving that gradient rank decreases during training and asymptotically approaches rank-one — going beyond prior loose upper bounds.\n\n- Paper [10] studies \"non-uniform low-rank properties of weight matrices in LLMs through the lens of stabilizing gradient subspace\" and provides \"a theoretical framework to understand the stabilization of gradient subspaces through Hessian analysis\" — this is about gradient subspace stabilization, not proving rank decreases to rank-one asymptotically.\n- Paper [6] leverages \"low-rank structure to reduce the high computational cost of canonical gradient-based methods\" — purpose is algorithmic efficiency, not theoretical proof of rank collapse.\n- Paper [7] proposes \"approximating the gradient matrices of deep neural networks using a low-rank parameterization\" for memory-efficient on-device training — similar motivation but no theoretical proof of rank diminishing.\n- Paper [4] shows \"with SGD, there is always a probability to jump from high to low rank\" in deep linear networks — related but focused on matrix completion/DLNs, not LLM gradient rank asymptotic behavior.\n- Paper [27] shows \"the effective rank of gradient descent iterates is provably c[onstrained]\" in deep matrix factorization — close, but the purpose is understanding implicit bias in matrix factorization, not memory-efficient LLM training theory.\n\nNo prior paper specifically targets proving gradient rank asymptotically approaches rank-one to theoretically ground memory-efficient LLM training beyond loose upper bounds. The closest are [4] and [27], but neither shares this exact purpose.\n\n## Mechanism\n\nThe mechanism is a formal proof (Lemma 1) that under vanilla SGD, the estimated layer gradient matrix's stable/approximate rank decreases monotonically and asymptotically approaches rank-one — a stronger result than prior loose upper bounds like rank(G) < min{n,m}/2.\n\n- Paper [4]: \"We show that with SGD, there is always a probability to jump from high to low rank\" — this is about jumping between local minima in DLNs, not proving asymptotic rank-one convergence of gradient matrices.\n- Paper [27]: \"the effective rank of gradient descent iterates is provably c[onstrained]\" and analyzes \"dynamics of vanilla gradient descent for deep matrix factorization\" showing rank behavior — this is the closest match. It formally analyzes effective rank dynamics under gradient descent and proves rank-related properties. However, it focuses on weight matrix rank in matrix factorization, not gradient matrix rank approaching rank-one.\n- Paper [16]: \"Rank Diminishing in Deep Neural Networks\" — performs \"a rigorous study on the behavior of network rank\" showing rank diminishing. This directly studies rank diminishing phenomena in neural networks, though focused on feature/activation rank rather than gradient matrix rank approaching rank-one under SGD.\n- Paper [2]: \"proves that stochastic gradient-based training implicitly regularizes neural networks towards low-rank solutions through a gradual increase of the rank during training\" — this is about rank *increasing* (greedy low-rank learning), opposite direction.\n\nPaper [16] is about rank diminishing in DNNs rigorously, and [27] formally proves effective rank dynamics under gradient descent. Neither proves gradient matrix rank → rank-one asymptotically under vanilla SGD specifically, but [16] covers \"rank diminishing\" as a formal study and [27] covers effective rank dynamics formally. The specific claim of asymptotic rank-one convergence of gradient matrices appears absent.\n\n## Evaluation\n\nThe evaluation uses: (1) theoretical/qualitative results + empirical validation on RoBERTa-Base showing first eigenvalue captures 50% of gradient information, first two capture 90% (Fig. 2); (2) effective rank decreasing with update steps on RTE/MRPC (Fig. 3/4).\n\n- Paper [10] empirically studies gradient subspace properties in LLMs with similar eigenvalue/spectral analysis.\n- Paper [16] performs empirical rank analysis on neural networks during training.\n- Paper [27] empirically validates rank dynamics during training.\n- The evaluation design (eigenvalue spectrum analysis + rank-vs-training-steps plots on standard NLP benchmarks) is a standard empirical validation design used in papers like [10], [16], [27] — spectral analysis of gradient/weight matrices during training is a well-established evaluation design.\n\nPaper [10] uses empirical gradient subspace analysis on LLMs; [16] and [27] use rank-vs-training dynamics empirically. The design (spectral eigenvalue analysis + rank tracking over training steps) is covered.\n\n## Domain\n\nThe domain is LLM optimization / theory — specifically applying gradient rank theory to large language model training/fine-tuning.\n\n- Paper [10] explicitly works on \"Large Language Models' (LLMs) weight matrices\" and gradient subspace in LLMs.\n- Paper [7] works on memory-efficient training of deep neural networks.\n- Paper [6] works on deep neural network training optimization.\n\nPaper [10] directly covers LLM optimization as the application area.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 10\nVERDICT domain = 10",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of providing theoretical foundations specifically for memory-efficient LLM training/fine-tuning by establishing tight bounds on gradient rank. Paper [7] targets on-device training memory via low-rank gradient approximation but provides no such theoretical foundation; paper [10] studies gradient subspace stabilization for LLMs but from a Hessian perspective, not tight rank bounds. No exact match under any terminology.\n\nFACET: mechanism | FINAL: NONE | reason: Paper [16] (\"Rank Diminishing in Deep Neural Networks\") studies rank reduction across layers of activations/features, not gradient matrices, and does not prove asymptotic rank-one convergence of estimated gradient matrices under vanilla SGD. Paper [27] analyzes gradient descent dynamics for deep matrix factorization showing effective rank decreases, but does not prove asymptotic rank-one convergence of the gradient matrix itself nor contrast with a prior loose upper bound of rank < min{n,m}/2. No prior paper formally proves the specific phenomenon of estimated layer gradient matrices asymptotically approaching rank-one under vanilla SGD as described in Lemma 1."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 10
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "purpose: Prior work discusses related low-rank phenomena, but none appear to establish the same empirical relationship. Paper [2] finds the opposite, that rank *increases* during training under GLRL, while others like [16] and [27] analyze the rank of *weights/iterates*, not the gradient matrix, and [4] discusses discrete jumps in weight rank rather than a progressive decrease in gradient rank.\n\nmechanism: The mechanism is a formal proof of the rank dynamics of matrices under stochastic gradient descent. This is a standard analysis method in theoretical machine learning, used by multiple prior papers to establish different results; for example, [2] \"proves that stochastic gradient-based training implicitly regularizes neural networks towards low-rank solutions\" using a similar style of theoretical analysis.\n\nevaluation: The evaluation design consists of a theoretical proof supported by empirical validation on standard models and benchmarks (RoBERTa on RTE/MRPC), where the theoretically relevant quantity (effective rank) is measured and plotted over training steps. This design is covered by [10], which states \"we provide a theoretical framework... Second, we empirically validate our theory by demonstrating that stabilizing the gradient subspace indeed leads to more effective low-rank approximation\".\n\ndomain: The domain is LLM optimization and theory. This is covered by [10], which explicitly addresses \"Large Language Models' (LLMs) weight matrices\" and studies them \"through the lens of stabilizing gradient subspace.\"\n\nVERDICT purpose = NONE\nVERDICT mechanism = 2\nVERDICT evaluation = 10\nVERDICT domain = 10",
+      "stage2": "FACET: 为内存高效的 LLM 训练/微调奠定理论基础，超越以往对梯度秩仅有的宽松上界。 | FINAL: COVERED-BY [10] | reason: Paper [10] shares the same objective of providing a theoretical basis for low-rank phenomena in LLM training. The target paper's claim to \"go beyond\" prior bounds is a claim of improvement, not a different purpose. Quote: \"we provide a theoretical framework to understand the stabilization of gradient subspaces through Hessian analysis.\""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     3,
+     9
+    ],
+    "mechanism": [
+     1,
+     9
+    ],
+    "evaluation": [
+     1
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to significantly reduce memory usage during fine-tuning while preserving the full dynamics of parameter training, overcoming the limitations of LoRA (requiring a full-rank warm start) and GaLore (requiring a fixed-rank preset). This objective is **not explicitly covered** by any prior paper. While many papers address memory-efficient fine-tuning (e.g., [1], [2], [3], [9], [12]), none explicitly aim to preserve the full dynamics of parameter training while addressing the specific limitations of LoRA and GaLore. For example, [1] and [9] focus on low-rank gradient projection but do not address the need to adaptively determine the rank or preserve full training dynamics. Similarly, [2] and [3] focus on LoRA-based methods but do not address the full-rank warm start limitation.\n\n### Mechanism\nThe mechanism introduces AdaRankGrad, which adaptively reduces the rank of gradients during Adam updates by using an online low-rank projection rule based on a \"retained information ratio\" threshold. It also includes adaptive updates to the projection based on convergence criteria and internal transformations of first- and second-order moments. This mechanism is **partially covered** by [1], [9], and [6]. Specifically:\n- [1] and [9] both use low-rank gradient projection, but they rely on fixed-rank projections and do not include adaptive rank determination based on a retained information ratio or convergence criteria.\n- [6] employs randomized low-rank matrix approximations in Adam optimization, which is conceptually similar to the use of low-rank projections in AdaRankGrad. However, [6] does not include adaptive rank updates or the specific moments subspace transformation introduced here.\n\nThus, while elements of the mechanism are present in prior work, the specific combination of adaptive rank determination, convergence-based updates, and moments subspace transformation is **not fully covered**.\n\n### Evaluation\nThe evaluation uses the GLUE benchmark with RoBERTa-Base across 8 tasks, comparing accuracy and memory usage against full fine-tuning, LoRA, and GaLore. This evaluation design is **covered** by [1], [2], [3], and [9], as they all use similar evaluation setups for memory-efficient fine-tuning methods. For example:\n- [1] evaluates GaLore on GLUE tasks using BERT and RoBERTa models, comparing memory usage and accuracy against LoRA and full fine-tuning.\n- [3] evaluates QLoRA on GLUE tasks with RoBERTa and other models, comparing memory usage and task performance.\n- [9] evaluates Q-GaLore on GLUE tasks, focusing on memory savings and performance relative to GaLore and LoRA.\n\nAlthough the specific benchmark instance (e.g., RoBERTa-Base on 8 tasks) may differ, the evaluation design (GLUE benchmark, task accuracy, memory usage comparison) is the same.\n\n### Domain\nThe domain is LLM optimization and efficient fine-tuning, which is **covered** by [1], [2], [3], [9], and [12]. All these papers focus on memory-efficient fine-tuning or optimization of large language models, addressing the same general application area.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": "- **FACET: purpose** | **FINAL: COVERED-BY 3** | reason: QLoRA explicitly states \"preserving full 16-bit finetuning task performance while reducing memory usage,\" which aligns with the objective of reducing memory while retaining full parameter training dynamics.  \n- **FACET: mechanism** | **FINAL: COVERED-BY 9** | reason: Q-GaLore describes \"layer-adaptive low-rank gradients with frequent subspace updates,\" which matches the adaptive low-rank gradient projection mechanism described, including layer-specific rank determination and updates."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\n\nThe contribution aims to: reduce memory while preserving full-parameter training dynamics, overcoming LoRA's need for full-rank warm start and GaLore's fixed-rank limitation — i.e., adaptive rank selection per layer during gradient-based optimization.\n\n- [1] GaLore: reduces memory via gradient low-rank projection but uses fixed rank — explicitly identified as a limitation this work overcomes.\n- [9] Q-GaLore: \"GaLore offers minimal improvement in terms of rank adaptability\" and addresses layer-adaptive low-rank gradients — this paper explicitly pursues layer-adaptive rank selection for gradient projection in LLM training, which is substantively equivalent to the purpose here.\n- [2] LoRA-GA: addresses LoRA's slow convergence via gradient approximation, but doesn't focus on adaptive rank.\n- [14] GRASS: addresses memory via sparse projections, not adaptive rank.\n\n[9] Q-GaLore explicitly targets \"layer-adaptive low-rank gradients\" to overcome GaLore's fixed-rank limitation, which is the same purpose.\n\n## Mechanism\n\nThe contribution proposes: adaptive per-layer rank determination in Adam updates using online-updated low-rank projections, with rank chosen by an information-retention threshold, and moments subspace transformation (transforming first/second moments into the projected subspace).\n\n- [1] GaLore: uses SVD-based low-rank gradient projection with fixed rank and periodic updates — no adaptive rank selection by threshold.\n- [9] Q-GaLore: introduces layer-adaptive rank selection based on singular value analysis, with INT4 quantization. The layer-adaptive rank via singular value thresholding is similar, but the moments subspace transformation (internal transformation of Adam's m/v moments) is a distinct primitive.\n- [6] Adapprox: uses randomized low-rank approximation of Adam's second moment — approximates the moment matrix itself, not the gradient projection with adaptive rank.\n- [4] Ada-LR: uses random projections for full-matrix AdaGrad approximation — related but different primitive.\n- [19] PowerSGD: low-rank gradient compression via power iteration for distributed training — compression focus, no adaptive rank by threshold, no moment transformation.\n- [10] Flora: identifies LoRA as gradient compressor, uses random projections — no adaptive rank threshold or moment transformation.\n\nThe combination of (1) online-updated projection with information-retention threshold for rank, (2) moments subspace transformation in Adam, is not fully covered. [9] covers adaptive rank selection partially, but the moments subspace transformation primitive is not present in prior work.\n\n## Evaluation\n\nThe contribution evaluates on GLUE benchmark (RoBERTa-Base, 8 tasks), comparing accuracy and memory against full FT/LoRA/GaLore.\n\n- [1] GaLore: evaluates on GLUE with RoBERTa for fine-tuning, comparing memory and accuracy against LoRA and full FT — same benchmark family, same metric semantics, same comparison setup.\n- [2] LoRA-GA: evaluates on GLUE benchmarks comparing against LoRA and full fine-tuning.\n- [9] Q-GaLore: evaluates memory efficiency and accuracy in LLM training settings.\n- [13]: evaluates PEFT methods on GLUE.\n\n[1] and [2] both use GLUE with accuracy metrics comparing memory-efficient methods against LoRA/full FT — same evaluation design.\n\n## Domain\n\nThe contribution operates in LLM optimization / efficient fine-tuning.\n\n- [1], [2], [3], [9], [10], [12], [13], [14], [16], [17] all operate in LLM/large model efficient fine-tuning — clearly the same domain.\n\nVERDICT purpose = 9\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper combines all the following in one mechanism: adaptive per-layer rank selection driven by a retained-information-ratio threshold, convergence-criterion-triggered subspace updates, and moments subspace transformation applied to both first and second Adam moments. GaLore [1] does gradient low-rank projection but uses fixed-interval SVD with no information-ratio threshold and no moments subspace transformation. Q-GaLore [9] adds layer-adaptive rank but via a different criterion (no information-ratio threshold, no moments transformation). Adapprox [6] approximates the second moment only via randomized low-rank, with no per-layer adaptive rank threshold or convergence-triggered updates. No paper quotes a mechanism equivalent to all three distinguishing elements together."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "The contribution's purpose is to overcome the specific limitation of prior work like GaLore which requires a pre-set, fixed rank for gradient projection, by making the rank dynamically adaptive. While many papers share the high-level goal of reducing memory ([1], [3], [6]), none state the specific objective of solving the fixed-rank problem by making the projection rank adaptive online based on information content.\n\nVERDICT purpose = NONE\nThe core mechanism is applying a low-rank projection to gradients during optimization to save memory, which is substantively equivalent to the mechanism in [1] GaLore (\"projecting weight gradients into a low-rank subspace\"). The contribution's novelty lies in making this projection's rank and subspace adaptive, which is an extension of the existing primitive, not a fundamentally new one.\n\nVERDICT mechanism = 1\nThe evaluation design compares a new efficient fine-tuning method against baselines (full fine-tuning, LoRA, GaLore) on a standard benchmark suite (GLUE) using standard metrics (accuracy, memory). This is the standard evaluation protocol in this research area, used by direct predecessors like [1] GaLore.\n\nVERDICT evaluation = 1\nThe application domain is LLM optimization and efficient fine-tuning. This is the explicit domain of numerous prior papers, such as [1] (\"Memory-Efficient LLM Training\"), [3] (\"Efficient Finetuning of Quantized LLMs\"), and [13] (\"Parameter-efficient fine-tuning of large-scale pre-trained language models\").\n\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: The purpose is to overcome specific limitations of BOTH LoRA (warm start) and GaLore (pre-set fixed rank). No single prior paper shares this dual objective. Papers building on GaLore, like [9] and [14], focus on computational overhead (SVD, dense projections) rather than the pre-set rank limitation."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     3,
+     11,
+     13
+    ],
+    "mechanism": null,
+    "evaluation": [
+     3,
+     21
+    ],
+    "domain": [
+     3,
+     21
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        11,
+        13
+       ]
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": [
+        3,
+        21
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        3,
+        21
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to make adaptive rank selection computationally feasible by avoiding expensive truncated SVD operations. Paper [11] addresses adaptive rank selection for tensor ring decomposition, which is conceptually similar in targeting adaptive rank selection to reduce computational cost. Paper [13] also discusses selecting the rank of truncated SVD, aiming to optimize the approximation capacity, which aligns with the goal of adaptive rank selection. Both papers share the same problem-class level objective of enabling efficient rank selection in SVD-related contexts.\n\n#### Mechanism:\nThe contribution proposes a randomized SVD scheme based on Halko et al.'s SSRF and introduces a fast adaptive low-rank approximation using binary search within a narrow rank range. Paper [2] extensively analyzes randomized SVD methods, including Halko et al.'s SSRF, and discusses their computational efficiency. Paper [4] also studies randomized algorithms for low-rank matrix factorizations, including randomized SVD, and provides performance bounds. Paper [6] employs a modification to the standard randomized SVD procedure, which is similar in spirit to the contribution's mechanism. However, none of the prior papers explicitly combine randomized SVD with binary search for adaptive rank selection in the narrow range described in the contribution. Thus, the mechanism is **not covered**.\n\n#### Evaluation:\nThe contribution evaluates its method by demonstrating a reduction in subspace computation cost by an order of magnitude, compensating for the additional time spent on subspace search, and showing competitiveness relative to GaLore. Paper [3] evaluates GaLore, which serves as the baseline for comparison in the contribution. Paper [21] also evaluates GaLore and its memory-efficient training approach. Both papers use similar evaluation designs, including comparisons of computational cost and performance metrics. Since the evaluation design (comparison against GaLore and computational cost analysis) is reused, the evaluation facet is **covered**.\n\n#### Domain:\nThe contribution operates in the domain of LLM optimization and numerical methods. Paper [3] and Paper [21] both address LLM optimization, specifically focusing on memory-efficient training and low-rank gradient projection. These papers work in the same general application area of LLM optimization, even though the contribution targets a specific sub-problem within this area. Thus, the domain facet is **covered**.\n\n---\n\n### Verdicts:\nVERDICT purpose = 11, 13  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 3, 21  \nVERDICT domain = 3, 21  ",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper explicitly describes a randomized SVD approach combined with binary search for adaptive low-rank approximation iterating in a narrow rank range with complexity O(log(r_max−r_min)), even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 21
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n## Purpose: Make adaptive rank selection computationally feasible, avoiding expensive truncated SVD\n\nThe purpose is to reduce the computational cost of SVD-based rank selection in the context of LLM training/optimization. Paper [3] (Q-GaLore) explicitly states \"GaLore relies on time-consuming Singular Value Decomposition (SVD) operations to identify the subspace, and the frequent subspace updates lead to significant training time overhead\" — directly identifying the same problem. Paper [21] (GaLore) is the baseline being improved. Paper [1] addresses \"selecting a data-driven truncation level... only based on the knowledge of the first m̂ singular values and vectors\" to avoid full SVD, which is related but in a statistical inverse problem context. Paper [3] most directly covers this purpose: making SVD-based subspace computation cheaper for LLM gradient projection.\n\n## Mechanism: Randomized SVD (based on Halko et al. SSRF) + binary search for fast adaptive low-rank approximation in O(log(r_max−r_min)) iterations\n\nThe mechanism combines randomized SVD with binary search over rank. Paper [2] explicitly studies \"Fast and stable randomized low-rank matrix approximation\" building on Halko et al. (SIREV 2011). Papers [4], [5], [7], [10], [12], [18], [25] all cover randomized SVD variants. However, the specific combination of randomized SVD + binary search to find rank adaptively in O(log(r_max−r_min)) iterations is more specific. Paper [1] uses \"sequential early stopping rules\" for truncation level selection, which is a sequential search rather than binary search. Paper [11] proposes \"Adaptive Rank Selection for Tensor Ring Decomposition\" with automatic rank finding, but uses a different mechanism (truncated SVD with threshold). None of the prior papers explicitly combine randomized SVD with binary search for adaptive rank finding in this specific O(log) complexity manner. The randomized SVD component is covered by [2], but the binary search adaptive rank selection primitive as a combined mechanism is not clearly present.\n\nActually, reconsidering: the mechanism has two parts — (1) randomized SVD (clearly covered by [2], [4], [5], [7], [12], [18]) and (2) binary search over rank range. The combination as a unified primitive for adaptive rank selection doesn't appear explicitly. Paper [1] does sequential early stopping (not binary search). The binary search over rank to find a subspace is a distinct algorithmic primitive not present in prior papers.\n\n## Evaluation: SVD computation time reduced by order of magnitude, compensating for subspace search overhead, competitive with GaLore\n\nThe evaluation design compares computational time/efficiency against GaLore as baseline, measuring training efficiency. Paper [3] (Q-GaLore) uses the same evaluation design: comparing against GaLore on LLM training benchmarks with efficiency metrics. Paper [21] (GaLore) establishes the baseline evaluation framework. This is a standard efficiency comparison on LLM training benchmarks — the design (timing comparison + perplexity/accuracy on LLM benchmarks vs. GaLore) is covered by [3] and [21].\n\n## Domain: LLM optimization / numerical methods\n\nPaper [21] (GaLore), [3] (Q-GaLore), [16], [20], [24] all work in LLM optimization/training with low-rank methods. This domain is clearly covered.\n\nVERDICT purpose = 3\nVERDICT mechanism = NONE\nVERDICT evaluation = 3\nVERDICT domain = 21",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper combines randomized SVD (Halko-style SSRF) with binary search over rank to achieve O(log(r_max−r_min)) adaptive rank selection in a single algorithm. Paper [2] covers fast randomized low-rank approximation but does not use binary search for adaptive rank selection. Paper [11] does adaptive rank selection for tensor ring decomposition but uses a different mechanism (incremental rank adjustment, not binary search + randomized SVD). No paper in the list contains this specific algorithmic combination even under different terminology."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     17
+    ],
+    "mechanism": [
+     17
+    ],
+    "evaluation": [
+     1,
+     4,
+     17
+    ],
+    "domain": [
+     3,
+     4,
+     5
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 17
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to validate the convergence and performance advantages of a method across pretraining and fine-tuning tasks in both language and biological foundation models. None of the prior papers explicitly establish or validate this same empirical relationship. While several papers (e.g., [1], [3], [4], [5], [16]) discuss fine-tuning methods or memory-efficient techniques for LLMs and biological models, they do not focus on validating convergence and performance advantages across both pretraining and fine-tuning tasks in the specified domains. Papers like [17], [24], and [30] provide theoretical convergence guarantees, but they do not empirically validate convergence and performance advantages across the specific tasks and domains described in the contribution.\n\n### Mechanism\nThe mechanism involves providing a convergence analysis (Theorem 2) and conducting empirical studies across three task types: GLUE fine-tuning, C4 pretraining of LLaMA, and Geneformer fine-tuning for single-cell genomics. Papers such as [17], [24], [26], and [30] provide theoretical convergence analyses for gradient descent or low-rank optimization, which are substantively equivalent to the convergence analysis in Theorem 2. Additionally, [1], [3], [4], and [16] empirically evaluate fine-tuning methods (e.g., LoRA) on LLMs, which overlaps with the empirical studies on GLUE fine-tuning and C4 pretraining. However, none of these papers extend their empirical studies to biological models like Geneformer, nor do they combine convergence analysis with such a diverse set of tasks.\n\n### Evaluation\nThe evaluation design includes validation perplexity and memory usage on C4 pretraining of LLaMA, as well as Macro-F1/Accuracy metrics for Geneformer fine-tuning on single-cell genomics data. Papers like [1], [3], [4], and [16] evaluate fine-tuning methods on LLMs using similar metrics (e.g., perplexity, memory usage, accuracy), which covers the evaluation design for the LLaMA-related tasks. However, none of the prior papers evaluate fine-tuning performance on single-cell genomics data or use the specific Geneformer setup described in the contribution. Since the evaluation design for Geneformer is not reused from prior work, this part of the evaluation is novel.\n\n### Domain\nThe domain of the contribution spans optimization and empirical studies for LLMs and biological foundation models. Papers like [1], [3], [4], [5], and [16] address optimization and fine-tuning for LLMs, which covers the LLM-related domain. Additionally, [5] focuses on fine-tuning for biomedical NLP, which overlaps with the broader biological foundation model domain. While the specific instance of single-cell genomics is new, it falls within the broader biological foundation model area, making the domain covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 17  \nVERDICT evaluation = 1  \nVERDICT domain = 5  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses the convergence and performance advantages of methods in pretraining/fine-tuning for both language and biological foundational models."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 17
+      },
+      "mechanism": {
+       "covered_by": 17
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: 验证方法在语言与生物基础模型的预训练/微调上的收敛性与性能优势**\n\nThe purpose is to demonstrate convergence guarantees AND empirical performance advantages of an optimization method across LLM pretraining/fine-tuning and biological foundation model fine-tuning. Paper [17] (\"Memory-Efficient LLM Training with Online Subspace Descent\") explicitly provides \"the first convergence guarantee for arbitrary update rules of projection matrix\" and validates on LLM training scenarios. This is the same objective: prove convergence + show performance advantage for a memory-efficient training method on LLMs. No prior paper combines convergence proof with biological foundation model (Geneformer) validation as the same stated purpose — but the core purpose (convergence + performance of optimizer for LLM training) is covered by [17]. Paper [4] (LISA) also validates memory-efficient fine-tuning performance vs LoRA on LLMs. The biological model aspect is unique, but the problem-class level purpose (convergence + performance of efficient training method) is covered by [17].\n\n**MECHANISM: 收敛性分析 + 跨GLUE微调/C4预训练LLaMA/Geneformer细胞分类三类任务实证**\n\nThe mechanism combines a convergence theorem with empirical validation across three task types. Paper [17] provides convergence guarantees for subspace-based LLM training methods and empirical validation on LLM benchmarks. The convergence analysis design (theorem for gradient-subspace methods) is present in [17]. The three-domain empirical sweep design (NLP fine-tuning + LLM pretraining + bio) is not present in any single prior paper. However, GLUE fine-tuning + LLM pretraining empirical validation appears in [17] and [4]. The Geneformer component is absent. But as an analysis method/design, convergence theorem + multi-task empirical sweep is covered by [17].\n\n**EVALUATION: C4预训练验证困惑度 + Geneformer心肌病细胞分类Macro-F1/Accuracy**\n\nThe evaluation design uses: (1) validation perplexity on C4 for LLM pretraining — this exact design (C4 pretraining perplexity as evaluation metric for memory-efficient LLM training) appears in [17] (\"Memory-Efficient LLM Training with Online Subspace Descent\") which uses the same benchmark family and metric semantics. (2) Geneformer cell classification with Macro-F1/Accuracy — no prior paper uses this specific evaluation design. However, per the special rule, the C4 perplexity design is covered by [17]. The Geneformer evaluation design is genuinely new (new benchmark, new metric context). Since part of the evaluation design is covered and part is new, but the dominant novel piece (Geneformer bio evaluation) is absent from all prior papers, I'll note [17] covers the LLM pretraining perplexity evaluation design.\n\n**DOMAIN: LLM/生物基础模型 优化/实证**\n\nLLM optimization/fine-tuning is extensively covered by [1], [2], [3], [4], [11], [17], etc. Biological foundation model fine-tuning (Geneformer, single-cell omics) is not addressed in any prior paper listed. However, per the domain special rule, the general area of \"foundation model optimization/fine-tuning\" is covered. The biological foundation model aspect could be a new sub-area, but \"foundation model fine-tuning\" as a general area is covered by many papers. Paper [5] covers biomedical NLP fine-tuning, which is adjacent. The domain of \"LLM + bio foundation model optimization\" as a combined area is partially new, but the broader area (foundation model fine-tuning/optimization) is covered by [17], [4], [3], etc.\n\nVERDICT purpose = 17\nVERDICT mechanism = 17\nVERDICT evaluation = 17\nVERDICT domain = 3",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 17
+      },
+      "mechanism": {
+       "covered_by": 17
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe purpose is to validate a method's convergence and performance advantages. This is a standard objective for papers introducing new optimization or training algorithms. For instance, [17] pursues the same objective class by providing \"the *first* convergence guarantee\" for its proposed memory-efficient LLM training algorithm.\n\n**MECHANISM**\nThe mechanism combines theoretical convergence analysis with empirical validation across multiple tasks (language pre-training/fine-tuning and a biological application). This is a standard methodology for validating a new algorithm. Providing convergence guarantees is a core part of many optimization papers like [17], and validating methods on biomedical foundation models is done in [5] (\"systematic study on fine-tuning stability in biomedical NLP\").\n\n**EVALUATION**\nThe evaluation design uses standard metrics (perplexity, F1/Accuracy, memory usage) to compare against a state-of-the-art baseline (LoRA) on standard task families (large-scale pre-training, classification). This evaluation design is not new; for example, [4] introduces a new PEFT technique and validates it by comparing its performance against LoRA, and [9] uses perplexity as a key evaluation metric for model performance on large datasets.\n\n**DOMAIN**\nThe application domains are LLM optimization and biological foundation models. The LLM domain is extensively covered by numerous prior papers, such as [4] which focuses on \"Memory-Efficient Large Language Model Fine-Tuning\". The domain of biological foundation models is also covered by [5], which studies \"fine-tuning large neural language models for biomedical natural language processing\".\n\nVERDICT purpose = 17\nVERDICT mechanism = 17\nVERDICT evaluation = 4\nVERDICT domain = 4",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,305 @@
+{
+ "paper_id": "O6DKGUwv0m",
+ "title": "Empowering Teachers with Enhanced Knowledge via Variable Scale Distillation Framework",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     3,
+     16
+    ],
+    "mechanism": [
+     8,
+     20
+    ],
+    "evaluation": [
+     2,
+     5,
+     17
+    ],
+    "domain": [
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": [
+        8,
+        20
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        2,
+        5
+       ]
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to better exploit the teacher network's superior feature-extraction capacity in knowledge distillation, addressing the under-utilization caused by feeding identical inputs to both teacher and student. Paper [3] (\"Fixing the Teacher-Student Knowledge Discrepancy in Distillation\") identifies a similar issue, noting that teacher and student models with different networks or initialization have distinct feature representations, and proposes methods to address this discrepancy. This aligns with the same problem-class level objective of improving the utilization of teacher features in distillation.\n\n### Mechanism\nThe mechanism involves training the teacher on images of varying resolutions (inspired by image super-resolution) to capture both high-level semantics and fine details, combined with multi-task training that mixes self-supervised rotation learning with image classification in an aggregated vector space. Paper [8] (\"Multi-Scale Aligned Distillation for Low-Resolution Detection\") uses multi-resolution inputs for distillation, focusing on aligning teacher and student features across resolutions, which is substantively equivalent to the resolution-based aspect of the proposed mechanism. Additionally, paper [20] (\"Distill on the Go: Online knowledge distillation in self-supervised learning\") incorporates self-supervised learning (e.g., rotation prediction) into distillation, which matches the multi-task training aspect. Together, these papers cover the mechanism.\n\n### Evaluation\nThe evaluation uses CIFAR100 with ResNet/WideResNet/VGG/ShuffleNet/MobileNet backbones and measures accuracy improvements over SOTA distillation methods. Paper [2] (\"Similarity-Preserving Knowledge Distillation\") evaluates distillation methods on CIFAR100 using ResNet and WideResNet backbones, employing accuracy as the metric. Paper [5] (\"Better Teacher Better Student: Dynamic Prior Knowledge for Knowledge Distillation\") also evaluates distillation methods on CIFAR100 with ResNet backbones, using accuracy improvements as the validation metric. Both papers use the same evaluation design (benchmark family and metric semantics), so the evaluation facet is covered.\n\n### Domain\nThe domain is knowledge distillation/model compression in image classification. Papers [2], [3], [5], and many others explicitly address knowledge distillation for image classification tasks, making this domain well-covered.\n\n---\n\nVERDICT purpose = 3  \nVERDICT mechanism = 8, 20  \nVERDICT evaluation = 2, 5  \nVERDICT domain = 2  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 16
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Better exploit the teacher network's superior feature-extraction capacity in knowledge distillation, which prior methods under-utilize by feeding teacher and student identical inputs.**\n\nPaper [3] addresses \"teacher and student models with different networks... have distinct feature representations\" and tries to fix the teacher-student knowledge discrepancy. Paper [16] explicitly asks \"how to conduct teacher training for knowledge distillation\" and notes \"a best-performing teacher does not necessarily yield the best-performing student,\" exploring teacher training oriented toward student performance. Paper [5] addresses the capacity gap between teachers and students and proposes dynamic prior knowledge to better utilize the teacher. Paper [13] investigates cross-quality knowledge distillation where teacher and student receive different resolution inputs, noting that teacher's full-resolution training can be better exploited. However, the specific purpose here is about *feeding the teacher different (higher-resolution/varied) inputs* to better exploit its capacity — this is closest to [13] (cross-quality KD, teacher on full-res, student on low-res) and [8] (distilling from high-resolution teacher to low-resolution student). Paper [16] covers the general purpose of better teacher training for KD. The contribution's purpose — that prior methods under-utilize the teacher by giving it identical inputs, and the fix is to give the teacher richer/varied inputs — is most directly covered by [16] (teacher training oriented toward student benefit) and [13] (teacher trained on higher-resolution images to better transfer knowledge).\n\n---\n\n**MECHANISM: Variable Scale Distillation Framework — train teacher on images of varying (higher) resolutions inspired by super-resolution, combined with multi-task training mixing self-supervised rotation pretext task with image classification in an aggregated vector space.**\n\nThis is a compound mechanism. Let me check each component:\n\n1. *Training teacher on varying/higher resolutions*: Paper [8] \"Multi-Scale Aligned Distillation for Low-Resolution Detection\" distills from high/multi-resolution teacher to low-resolution student. Paper [13] \"Teacher Network Calibration Improves Cross-Quality Knowledge Distillation\" trains teacher on full-resolution images and transfers to low-resolution student. Paper [19] \"Resolution-Aware Knowledge Distillation\" focuses on low-resolution inference with KD. These cover the resolution-varying teacher aspect partially, but [8] and [13] are closest.\n\n2. *Multi-task training mixing self-supervised rotation pretext with classification*: Paper [20] \"Distill on the Go: Online knowledge distillation in self-supervised learning\" combines self-supervised learning (rotation pretext) with KD. Paper [22] uses rotation prediction as a self-supervised pretext task. Paper [24] uses multi-task self-supervised learning. Paper [25] combines auxiliary tasks with supervised learning. However, the specific combination of rotation pretext + classification + KD in an aggregated vector space is not clearly covered by any single paper. Paper [20] is the closest — it applies KD within self-supervised learning using rotation prediction.\n\nThe *combination* of variable-scale teacher training (inspired by SR) + rotation pretext multi-task in an aggregated vector space as a unified KD framework does not appear in any single prior paper. Paper [8] covers multi-scale/resolution distillation but not the rotation pretext component. Paper [20] covers rotation+KD but not the variable-scale teacher training. No single paper covers this combined mechanism.\n\n---\n\n**EVALUATION: CIFAR100 with ResNet/WideResNet/VGG/ShuffleNet/MobileNet backbones; outperforms SOTA distillation.**\n\nCIFAR100 with these backbone families is the standard KD benchmark suite used across many papers in this list. Papers [3], [5], [15], [16], and others use CIFAR100 with ResNet/WideResNet/VGG/ShuffleNet/MobileNet pairs as the standard KD evaluation benchmark. Paper [5] explicitly uses \"CIFAR100\" with similar backbone pairs. Paper [16] uses CIFAR100 with ResNet/WideResNet/ShuffleNet. This evaluation design is thoroughly covered.\n\n---\n\n**DOMAIN: Knowledge distillation / model compression (image classification)**\n\nThis is the standard domain of KD papers. Papers [1], [2], [3], [4], [5], [6], [7], [11], [15], [16], [26], [30] all operate in knowledge distillation/model compression for image classification. Clearly covered.\n\n---\n\nVERDICT purpose = 16\nVERDICT mechanism = NONE\nVERDICT evaluation = 5\nVERDICT domain = 2",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper combines (1) training a teacher on varying/higher resolutions inspired by super-resolution to capture both semantics and fine details, (2) multi-task training mixing self-supervised rotation pretext tasks with image classification, and (3) an aggregated vector space. Paper [8] does multi-scale distillation for detection but not the teacher-resolution-variation mechanism. Paper [19] uses low-resolution student inference but not variable-resolution teacher training. Paper [20] does self-supervised distillation with rotation but not combined with variable-resolution teacher training or aggregated vector spaces. Paper [13] does cross-quality KD but without rotation pretext or variable-resolution teacher training. No single paper contains this combined mechanism even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 16
+      },
+      "mechanism": {
+       "covered_by": [
+        8,
+        20
+       ]
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The objective of improving knowledge distillation by addressing the sub-optimality of how the teacher model is trained or what it sees is covered by [16], which notes a \"fundamental discrepancy between the current teacher training practice and the ideal teacher training strategy\" and seeks to train a teacher that is better oriented for the student.\n\n**mechanism**: The mechanism's core primitives are covered. Using different input resolutions for the teacher and student is covered by [8], which proposes \"Multi-Scale Aligned Distillation for Low-Resolution Detection\" by distilling from a \"high- or multi-resolution model.\" The use of multi-task learning with a self-supervised rotation pretext task in the context of knowledge distillation is covered by [20], which proposes \"Online knowledge distillation in self-supervised learning\" and explicitly mentions pretext tasks like \"predicting rotation.\"\n\n**evaluation**: The evaluation design—comparing a new knowledge distillation method against state-of-the-art competitors on a standard image classification benchmark (CIFAR100) using a suite of common network backbones (ResNet, VGG, etc.) and measuring accuracy—is the standard validation protocol for this research area, as acknowledged by [17] which notes that \"many previous knowledge distillation methods are designed for image classification.\"\n\n**domain**: The application area of knowledge distillation for model compression in the context of image classification is a well-established domain and is explicitly the domain of numerous prior works, including [2], which describes knowledge distillation for \"neural network compression\" where \"a high-capacity teacher is distilled to train a compact student.\"\n\nVERDICT purpose = 16\nVERDICT mechanism = 8, 20\nVERDICT evaluation = 17\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     12,
+     21
+    ],
+    "mechanism": [
+     12,
+     21
+    ],
+    "evaluation": [
+     12,
+     21
+    ],
+    "domain": [
+     1,
+     3
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        12,
+        21
+       ]
+      },
+      "mechanism": {
+       "covered_by": [
+        12,
+        21
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        12,
+        21
+       ]
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**Purpose:**  \nThe purpose of fixing the feature-map size mismatch between teacher and student models during hierarchical distillation is addressed in [12] (\"We first identify the challenge of applying knowledge distillation (KD) to teacher and student networks that act on different input resolutions\") and [21] (\"We face the challenge of feature size mismatch and class number mismatch when applying knowledge distillation to networks with different input resolutions\"). Both papers explicitly tackle the issue of mismatched feature sizes between teacher and student models, which is substantively equivalent to the stated purpose.  \n\n**Mechanism:**  \nThe proposed Rescale Block aligns feature maps between teacher and student models to preserve scale consistency during hierarchical distillation. This mechanism is covered by [12] (\"We propose a multi-scale aligned distillation framework to address the feature size mismatch between teacher and student networks\") and [21] (\"We propose a novel feature alignment method to address feature size mismatch in low-resolution human pose estimation\"). Both papers describe mechanisms for aligning feature maps between teacher and student models, which is substantively equivalent to the Rescale Block's function.  \n\n**Evaluation:**  \nThe evaluation design involves ablation studies on SSKD to demonstrate the effectiveness of the Variable Scale Framework + Rescale Block. Ablation studies are a generic experimental move, but [12] uses a similar evaluation design (\"We conduct ablation studies to validate the effectiveness of our multi-scale aligned distillation framework\") and [21] also employs ablation studies (\"We perform ablation experiments to evaluate the impact of our feature alignment method\"). Both papers use ablation studies to validate feature alignment methods in knowledge distillation, making the evaluation design covered.  \n\n**Domain:**  \nThe domain of knowledge distillation/model compression is addressed by all prior papers listed, as they all operate within the general area of knowledge distillation. For example, [1] (\"Knowledge distillation for multi-task learning\"), [5] (\"Knowledge distillation for model compression\"), and [9] (\"Knowledge distillation aims to transfer useful information from a teacher network to a student network\") all work within this domain.  \n\n**Verdicts:**  \nVERDICT purpose = 12, 21  \nVERDICT mechanism = 12, 21  \nVERDICT evaluation = 12, 21  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 12
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Fix the feature-map size mismatch between teacher (fed larger/finer images) and student (original size) that breaks hierarchical distillation.**\n\nPaper [12] explicitly addresses \"the challenge of applying knowledge distillation (KD) to teacher and student networks that act on different input resolutions\" for low-resolution detection. Paper [21] states \"we face the challenge of feature size mismatch and class number mismatch when applying knowledge distillation to networks with different input resolutions.\" Paper [16] focuses on \"accelerating deep models... by using low-resolution (LR) images\" with knowledge distillation. These papers share the same objective: resolving feature map size/resolution mismatch between teacher and student in KD. The purpose is clearly covered.\n\n**MECHANISM: A Rescale Block that preserves scale consistency between teacher and student feature maps during hierarchical distillation.**\n\nPaper [12] proposes \"Multi-Scale Aligned Distillation\" which explicitly aligns feature maps between teacher and student operating at different resolutions — the core primitive is spatial rescaling/alignment of feature maps to enable distillation. Paper [21] proposes a method to handle \"feature size mismatch\" in cross-resolution KD, which involves aligning feature maps spatially. Paper [16] also addresses resolution-aware distillation with feature alignment. The mechanism of inserting a rescaling/alignment block to match feature map sizes between teacher and student is substantively equivalent to what [12] and [21] describe — same primitive (spatial rescaling of feature maps for alignment), different specific architecture name.\n\n**EVALUATION: Ablation (Table 1) on SSKD showing Variable Scale Framework + Rescale Block yields accuracy improvements.**\n\nThe evaluation design is an ablation study on a knowledge distillation benchmark (SSKD is a known KD framework/benchmark), measuring student accuracy improvements across configurations. Ablation studies measuring student accuracy on standard KD benchmarks appear throughout the prior work — papers [6], [12], [17], [25] all include ablation tables measuring student accuracy improvements in KD settings. Per the special rule, the same evaluation design (ablation on a named KD benchmark measuring student accuracy) is covered even if the specific benchmark instance differs. Paper [12] in particular uses ablation studies on detection benchmarks to validate their resolution-alignment approach.\n\n**DOMAIN: Knowledge distillation / model compression.**\n\nThis is clearly covered by virtually every prior paper listed. Papers [1]-[27] (excluding the unrelated [28]-[33]) all operate in the knowledge distillation / model compression domain. Papers [3], [5], [6], [12], [17], [21], [25] are all squarely in this domain.\n\nVERDICT purpose = 12\nVERDICT mechanism = 12\nVERDICT evaluation = 12\nVERDICT domain = 3",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     8,
+     32
+    ],
+    "mechanism": [
+     8,
+     11,
+     15,
+     16
+    ],
+    "evaluation": [
+     6,
+     8,
+     11,
+     16
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 15
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to demonstrate generalization of the framework across tasks and datasets. None of the prior papers explicitly report or establish the same empirical relationship — generalization across tasks and datasets — as a finding. While many papers discuss knowledge distillation (e.g., [1], [6], [12]), they do not substantiate this specific relationship. Papers like [16] and [19] focus on few-shot learning but do not address generalization across tasks and datasets in the context of KD.\n\n### Mechanism\nThe mechanism involves a comprehensive comparison against SOTA KD methods across 10 teacher-student pairs, few-shot scenarios, and transfer via frozen-encoder linear classification. Paper [6] (Contrastive Representation Distillation) and [13] (Relational Knowledge Distillation) both involve comparisons across multiple KD methods and architectures, but neither explicitly covers frozen-encoder linear classification or the specific experimental setup described here. Paper [11] (Frozen Feature Augmentation for Few-Shot Image Classification) discusses frozen features in few-shot learning but does not combine this with KD methods. Thus, the mechanism is uncovered.\n\n### Evaluation\nThe evaluation design involves benchmarking against SOTA KD methods, achieving best results on same-architecture pairs, and outperforming baselines in few-shot and frozen-encoder linear classification scenarios. Paper [6] (Contrastive Representation Distillation) and [13] (Relational Knowledge Distillation) use similar evaluation designs, including benchmarking against KD methods and validating performance improvements. Paper [11] also uses frozen features for few-shot classification, which aligns with the evaluation design here. Therefore, the evaluation design is covered.\n\n### Domain\nThe domain is knowledge distillation/model compression. Many prior papers, including [1], [6], [12], [13], and [14], work in this general application area. Even though this contribution targets specific sub-problems (e.g., few-shot scenarios, frozen-encoder classification), the domain itself is not novel.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 6  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly demonstrates generalization of a framework across tasks and datasets.  \nFACET: mechanism | FINAL: COVERED-BY 15 | reason: \"Black-box Few-shot Knowledge Distillation\" explicitly evaluates KD methods across few-shot scenarios and teacher-student pairs. Quote: \"The distillation process often happens at an external party side where we do not have access to much data, and the teacher does not disclose its parameters, requiring evaluation across different architectures and few-shot settings.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Demonstrate generalization of the framework across tasks and datasets.**\n\nThe purpose here is to show that a KD framework generalizes broadly — across architectures, data regimes (few-shot), and transfer settings. Papers [1], [6], [8] all demonstrate their KD methods across multiple settings to show generalization. Paper [8] (HSAKD) explicitly evaluates across multiple teacher-student pairs and settings to demonstrate generalization of their framework. Paper [1] (SSKD) similarly demonstrates generalization across multiple benchmarks and settings. This is a standard empirical purpose in KD papers — showing a method works broadly. Paper [6] (CRD) also demonstrates generalization across multiple teacher-student pairs and tasks.\n\n**MECHANISM: Comprehensive comparison against SOTA KD methods across 10 teacher-student pairs, few-shot scenarios, and frozen-encoder linear classification.**\n\nThe mechanism involves: (a) multi-architecture teacher-student pair comparisons, (b) few-shot data regime testing, and (c) frozen encoder linear classification evaluation. Paper [1] (SSKD) uses comparisons across multiple teacher-student pairs against SOTA KD baselines. Paper [6] (CRD) compares against KD, RKD, etc. across multiple pairs. Paper [16] (SSKD for few-shot) combines self-supervised KD with few-shot evaluation. Paper [8] (HSAKD) compares against KD, CRD, SSKD across multiple teacher-student pairs. The frozen-encoder linear classification protocol appears in paper [9] (MOKD) which uses linear evaluation for self-supervised KD. The combination of all three sub-protocols together is present across [1], [8], [6], [9] collectively.\n\n**EVALUATION: Best on all 5 same-architecture pairs; 25% few-shot achieves 70.50%; frozen student encoder outperforms baselines on STL10/TinyImageNet.**\n\nThe evaluation design uses: standard CIFAR-100 benchmark with multiple teacher-student pairs (used in [6], [8], [1]), few-shot percentage splits (used in [16], [15]), and linear classification on STL10/TinyImageNet (used in [9]). Paper [8] uses the same benchmark family (CIFAR-100, multiple teacher-student pairs) with the same metric semantics (top-1 accuracy comparison against KD baselines). Paper [9] uses linear classification evaluation on downstream datasets. These are all standard evaluation designs in the KD literature, covered by [8], [6], [1], [9].\n\n**DOMAIN: Knowledge distillation / model compression.**\n\nThis is clearly covered by virtually all prior papers. Papers [1], [6], [8], [12], [13], [25] all operate in knowledge distillation / model compression.\n\nVERDICT purpose = 8\nVERDICT mechanism = 8\nVERDICT evaluation = 8\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 32
+      },
+      "mechanism": {
+       "covered_by": [
+        11,
+        16
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        11,
+        16
+       ]
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "purpose: The contribution is a finding that a specific, new framework generalizes. According to the rules for findings, the purpose is only covered if a prior paper establishes the exact same empirical relationship, which is not possible since the framework itself is novel to this contribution.\n\nmechanism: The mechanism is a comprehensive comparison using established experimental protocols, including evaluation in few-shot scenarios and transfer learning via a frozen-encoder linear classifier. Prior work uses these same protocols; [16] evaluates \"Knowledge Distillation for Few-shot Learning\" and [11] uses the protocol of \"Training a linear classifier... on top of pretrained vision model outputs, socalled ‘frozen features’\" for few-shot tasks.\n\nevaluation: The evaluation design involves measuring performance on standard benchmarks under few-shot and transfer learning (linear probing) conditions. This design is not new; [11] uses a linear classifier on \"frozen features\" for \"few-shot image classification,\" and [16] evaluates knowledge distillation methods in a few-shot context, which requires the same evaluation design.\n\ndomain: The domain is knowledge distillation and model compression. This is explicitly covered by numerous prior papers, including [1] which states \"Knowledge distillation... has emerged as an important technique for model compression and transfer learning.\"\n\nVERDICT purpose = NONE\nVERDICT mechanism = 11, 16\nVERDICT evaluation = 11, 16\nVERDICT domain = 1",
+      "stage2": "FACET: purpose: Demonstrate generalization of the framework across tasks and datasets. | FINAL: COVERED-BY [32] | reason: This paper introduces a benchmark suite and explicitly states its purpose includes using it to evaluate a variety of existing models across multiple tasks and datasets, which is the same objective. Quote: \"We use ETAB to benchmark a variety of state-of-the-art self-supervised and supervised pretrained models...\""
+     }
+    }
+   }
+  }
+ ]
+}

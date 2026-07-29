@@ -1,0 +1,281 @@
+{
+ "paper_id": "FA0291",
+ "title": "Key-Search Attacks Bypass Encrypted Activation Monitors",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     20,
+     24
+    ],
+    "evaluation": [
+     2,
+     16
+    ],
+    "domain": [
+     2,
+     7
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 20
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to show that key-conditioned embedding obfuscation enables adversaries to evade activation-based safety monitors. No prior paper explicitly establishes this purpose. While several papers address evasion attacks (e.g., [2], [5], [6], [14]), they focus on bypassing safety mechanisms or detectors in general, not specifically on embedding obfuscation or activation-based monitors. Papers like [7] and [27] discuss activation monitoring but focus on detection mechanisms rather than evasion strategies. Thus, no prior paper shares the same objective.\n\n### Mechanism\nThe mechanism involves a key-search attack where a malicious client samples multiple encryption keys for the same harmful prompt, evaluates each encrypted version through a frozen transformer, and selects the one minimizing the server-side monitor score. This mechanism is substantively equivalent to search-based adversarial attacks described in [20] and [11], which optimize adversarial examples by searching for perturbations that evade detection. Specifically, [20] benchmarks search algorithms for generating adversarial examples in NLP tasks, and [11] uses search-based adversarial testing for constrained systems. Both involve iterative sampling and evaluation to minimize detection scores, matching the underlying primitive of the contribution's mechanism.\n\n### Evaluation\nThe evaluation design uses a standard setup: testing the attack's impact on monitor true positive rate (TPR) at fixed false positive rate (FPR) thresholds, applied to Qwen2.5-7B-Instruct with an OSNIP-style encryptor. This design is covered by [16], which conducts large-scale evaluations of jailbreak attacks using similar metrics (e.g., TPR/FPR) and setups. Additionally, [6] evaluates jailbreak attacks using stochastic optimization algorithms, which align with the evaluation framework of measuring attack efficacy against safety systems. The specific benchmark instance (Qwen2.5-7B-Instruct) is new, but the evaluation design itself is not.\n\n### Domain\nThe domain is LLM safety and privacy-preserving split inference, specifically activation monitoring. This domain is covered by [2], [6], [7], and [16], all of which address LLM safety and evasion attacks against safety mechanisms. While the contribution targets a specific sub-problem (activation-based monitors), the general application area of LLM safety and adversarial attacks is well-established in prior work.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 20  \nVERDICT evaluation = 16  \nVERDICT domain = 2  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly demonstrates key-conditioned embedding obfuscation enabling adversaries to evade activation-based safety monitors, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 24
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\n\nThe purpose is: \"Show that key-conditioned embedding obfuscation lets adversaries evade activation-based safety monitors.\"\n\nThis is specifically about evading *activation-based safety monitors* in the context of *privacy-preserving split inference with encryption keys*. Paper [2] addresses bypassing LLM guardrail/detection systems, and paper [7] uses linear probes on layer activations for detection (but doesn't address evasion of such monitors). Paper [14] addresses deactivating safety filters via false-data injection, but in a control-barrier function context. Paper [27] uses linear probes to detect deception in activations. None of these prior papers specifically address the purpose of showing that key-conditioned embedding obfuscation (encryption keys in split inference) enables evasion of activation-based monitors. The closest is [2] (bypassing LLM guardrails), but that doesn't involve activation monitors or encryption-key-based obfuscation. No prior paper covers this specific objective.\n\n## Mechanism\n\nThe mechanism is: \"Key-search attack: sample K encryption keys for the same harmful prompt, run each through encryptor + frozen transformer, submit the version whose server-side monitor score is minimized (below threshold).\"\n\nThis is essentially a score-minimization search over a discrete key space — a form of black-box evasion via repeated sampling/querying to find an input transformation that minimizes a classifier's score. Paper [24] covers \"parallel restarted search\" — running multiple independent searches in parallel and taking the best result. The mechanism of sampling multiple random keys and picking the one with the lowest monitor score is structurally equivalent to parallel restarted random search. Paper [22] and [3] discuss random noise/query-based defenses. Paper [1] involves query-efficient score-based black-box attacks. However, the specific primitive here — sample K random keys, evaluate each against a monitor score, pick the minimum — is most analogous to parallel restarted search ([24]) or random search over perturbations. Paper [24] explicitly covers \"parallelizing restarted backtrack search\" where multiple restarts are run and the best is taken. This is the same primitive: enumerate K random candidates, pick the best-scoring one. This counts as covered.\n\n## Evaluation\n\nThe evaluation design: measuring TPR/FPR of a monitor under attack at specific K values on a specific model (Qwen2.5-7B-Instruct), reporting percentage-point drops in TPR at fixed FPR.\n\nPaper [2] evaluates evasion attacks against LLM detection/guardrail systems using detection metrics (TPR/FPR equivalents). Paper [7] evaluates linear probes on activations using TPR/FPR metrics. The evaluation design of measuring TPR at fixed FPR for a safety/detection system under adversarial attack is used in [2] and [7]. This is a standard detection evaluation framework (ROC-based, TPR@FPR) applied to safety monitors — the same design appears in prior work on adversarial evasion of detectors.\n\n## Domain\n\nThe domain is: LLM safety / privacy-preserving split inference (activation monitoring).\n\nPaper [7] works in LLM safety with activation-based monitoring. Paper [2] works in LLM safety/guardrail systems. Paper [27] works in LLM safety with activation monitoring (linear probes). The general area of LLM safety and activation-based monitoring is clearly covered by [7] and [27]. Split inference is a specific sub-instance within LLM deployment/safety, which is covered as an area.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 24\nVERDICT evaluation = 2\nVERDICT domain = 7",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper demonstrates that key-conditioned embedding obfuscation enables adversaries to evade activation-based safety monitors. Paper [7] uses linear probes on activations for detection but does not show an attack that defeats such monitors via key-conditioned obfuscation. Paper [2] bypasses guardrails but via character injection and AML evasion, not key-conditioned embedding manipulation. No paper contains an equivalent objective even under different terminology."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": [
+     16,
+     20
+    ],
+    "domain": [
+     3,
+     17
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to establish that key diversity is a necessary condition for attack effectiveness. This is a finding-type contribution, so the purpose is covered only if a prior paper reports or establishes the same empirical relationship — that key diversity directly impacts attack effectiveness. None of the prior papers explicitly establish this relationship. Papers [3], [4], [5], and [9] discuss diversity in ensembles or models, but their focus is on improving adversarial robustness or defense, not on demonstrating that diversity is a necessary condition for attack effectiveness. Thus, no prior paper establishes the same empirical relationship.\n\n### Mechanism\nThe mechanism involves ablating the key-diversity training loss (lambda2=0.5 vs 0) and correlating per-prompt score variance across keys with bypass probability. This is a specific experimental protocol for analyzing the relationship between diversity and attack effectiveness. Papers [3], [4], [5], and [9] discuss diversity in ensembles and its impact on adversarial robustness, but they do not use the same mechanism of ablation and correlation analysis to study key diversity. Therefore, the mechanism is not covered.\n\n### Evaluation\nThe evaluation design involves measuring the drop in true positive rate (TPR) and correlating bypass probability with score variance. This design is specific to the contribution and does not match any prior paper's evaluation design. Papers [3], [4], [5], and [9] evaluate diversity in ensembles, but their evaluation designs focus on metrics like adversarial robustness or attack cost, not on TPR drops or score variance correlations. Thus, the evaluation design is not covered.\n\n### Domain\nThe domain is adversarial analysis of key-conditioned obfuscation. This falls under the broader area of adversarial machine learning, which is addressed by several prior papers, including [3], [4], [5], and [9]. While these papers do not specifically address key-conditioned obfuscation, they operate in the same general application area of adversarial analysis. Therefore, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 3  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper establishes key diversity as a necessary condition for attack effectiveness under any terminology or framing.  \nFACET: mechanism | FINAL: NONE | reason: No prior paper ablates key-diversity training loss and correlates per-prompt score variance with bypass probability.  \nFACET: evaluation | FINAL: COVERED-BY 16 | reason: \"Variance analysis based distinguisher for template attack\" discusses score variance correlation with attack success, satisfying the evaluation standard.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 20
+      },
+      "domain": {
+       "covered_by": 17
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Establish that key diversity is the necessary condition for attack effectiveness.**\n\nThe purpose is to demonstrate that a specific training component (key diversity loss) is causally necessary for an attack to work — i.e., ablating it kills effectiveness. Papers [3], [4], [5], [9] discuss diversity in ensembles as important for adversarial robustness, but these are about *defense* diversity improving robustness, not about diversity being a necessary condition for *attack* effectiveness. The direction of effect is different: here diversity enables the attack, not the defense. No prior paper establishes the same empirical relationship — that key diversity is the necessary condition for an obfuscation/attack mechanism to succeed. The closest thematic papers ([3],[4],[5],[9]) are about diversity in defenses, not about diversity enabling attacks. None report the same variables and direction.\n\n**MECHANISM: Ablate the key-diversity training loss (lambda2=0.5 vs 0) and correlate per-prompt score variance across keys with bypass probability.**\n\nThe mechanism is a controlled ablation of a loss component combined with correlation analysis between score variance and bypass probability. Papers [3], [4], [5], [9] use ablation/diversity analysis in ensemble defenses. The generic shape (ablate a component, measure performance) is a standard experimental move. However, the specific design — correlating per-prompt score variance across keys with bypass probability — is not matched by any prior paper. The variance-analysis papers ([16], [18]) are in unrelated domains (side-channel attacks, regression). No prior paper uses this specific combination as a design for this claim.\n\n**EVALUATION: TPR drops 5.0pp vs 25.0pp at K=64; score variance 0.020 vs 0.004, r=0.458, p<1e-13.**\n\nThe evaluation design involves: (1) ablation comparison of TPR at specific K values, and (2) correlation analysis (Pearson r with p-value) between a variance metric and a bypass metric. Correlation analysis with statistical significance testing is a standard evaluation design used broadly. Paper [20] uses correlation analysis to validate security metrics. Paper [16] uses variance analysis in the context of key-recovery attacks. The design of \"compute correlation between a variance measure and an outcome, report r and p-value\" is a standard statistical protocol appearing in prior work (e.g., [20]). The ablation+TPR comparison design is also standard. These evaluation designs (correlation with r/p-value, ablation comparison) appear in prior work.\n\n**DOMAIN: Adversarial analysis of key-conditioned obfuscation.**\n\nThe domain is adversarial ML with key-conditioned mechanisms — touching watermarking/steganography with adversarial analysis. Papers [2], [17], [26], [32] work in key-conditioned steganography/watermarking with adversarial analysis. Paper [17] explicitly addresses adaptive attacks on image watermarks with secret keys. Paper [2] addresses adversarial attacks on secret key networks for watermarking. This is the same general application area.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 20\nVERDICT domain = 17",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper establishes \"key diversity\" as a *necessary condition* for attack effectiveness in the secret-key/watermarking/steganography context. Papers [3][4][5][9] discuss ensemble diversity for adversarial robustness, but none frame diversity of secret keys as the necessary condition for bypass success — a fundamentally different objective requiring different empirical evidence.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper ablates a key-diversity training loss (lambda2=0.5 vs 0) and correlates per-prompt score variance across keys with bypass probability. The closest papers ([3][4][5][9]) study ensemble diversity but none perform this specific ablation design linking a diversity regularization hyperparameter to score variance and bypass probability as joint measurements."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": [
+     3,
+     5,
+     6,
+     11,
+     22,
+     23,
+     30
+    ],
+    "domain": [
+     1,
+     4,
+     7,
+     22,
+     28
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": [
+        3,
+        5,
+        6,
+        22,
+        11
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        7,
+        22,
+        28
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to reveal a fundamental tradeoff constraining whether OSNIP-like schemes can be both private and attack-resistant. None of the prior papers explicitly establish this specific tradeoff between privacy and attack resistance in OSNIP-like schemes. While several papers discuss privacy-utility tradeoffs (e.g., [2], [3], [5], [6], [22]), none of them address the specific relationship between privacy and attack resistance in the context of OSNIP-like schemes. Therefore, the purpose is **not covered**.\n\n### Mechanism\nThe mechanism involves comparing encryptor configurations on key diversity, utility (KL divergence), and privacy (inversion ASR@10) against target constraints. Papers such as [8], [9], [12], [13], [16], and [27] discuss encryption schemes and their vulnerabilities to attacks, including leakage-abuse and inversion attacks. However, none of these papers use the exact mechanism of comparing encryptor configurations across the specific metrics of key diversity, KL divergence, and inversion ASR@10. Thus, the mechanism is **not covered**.\n\n### Evaluation\nThe evaluation design involves measuring the tradeoff between privacy, utility, and attack resistance using metrics like KL divergence and ASR@10. Papers such as [3], [5], [6], [22], and [11] discuss privacy-utility tradeoffs and use similar evaluation designs, including modular frameworks, Pareto fronts, and metrics for privacy and utility. While the specific benchmarks and metrics differ, the evaluation design itself — measuring tradeoffs between privacy, utility, and security — is **covered**.\n\n### Domain\nThe domain is the privacy-utility-security tradeoff in LLM obfuscation. Papers such as [7], [22], and [28] discuss privacy-utility tradeoffs in obfuscation and privacy-preserving machine learning, which are closely related to the application area of LLM obfuscation. Although none of the prior papers specifically address OSNIP-like schemes or LLM obfuscation, the general domain of privacy-utility-security tradeoffs in obfuscation is **covered**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = [3, 5, 6, 22, 11]  \nVERDICT domain = [7, 22, 28]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly reveals a fundamental tradeoff constraining OSNIP-like schemes for both privacy and attack-resistance under any terminology or framing.  \nFACET: mechanism | FINAL: NONE | reason: No prior paper compares encryptor configurations on key diversity, utility (KL divergence), and privacy (inversion ASR@10) against target constraints, even under alternate terms or domains.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Reveal a fundamental tradeoff constraining whether OSNIP-like schemes can be both private and attack-resistant.**\n\nThe purpose is to demonstrate a three-way tradeoff between privacy, utility, and attack-resistance in LLM obfuscation schemes. Papers [2], [3], [4], [5], [6], [7], [11], [22] all address privacy-utility tradeoffs in obfuscation systems. However, the specific purpose here is to show that *attack-resistance* creates a constraint that conflicts with both privacy AND utility simultaneously — a three-way tension. Papers [2], [6], [7] discuss privacy-utility tradeoffs but don't introduce attack-resistance as a third conflicting dimension in the same relationship. Paper [22] covers \"privacy, utility and fairness\" tradeoffs but fairness ≠ attack-resistance. None of the prior papers establish the same empirical relationship: that making an obfuscation scheme more susceptible to attacks (high key diversity) violates both utility and privacy constraints simultaneously. The specific variables and direction of effect are not matched.\n\n**MECHANISM: Compare encryptor configurations on key diversity, utility (KL divergence), and privacy (inversion ASR@10) against target constraints.**\n\nThe mechanism involves comparing configurations across three dimensions (key diversity, KL divergence utility, inversion attack success rate) against threshold targets. Paper [3] uses a \"modular evaluation framework\" comparing obfuscation strategies on privacy/utility metrics. Paper [6] uses game-theoretic comparison of obfuscation mechanisms on privacy-utility. Paper [23] investigates top-k ASR metrics including ASR@10 in attack evaluation. None of these combine key diversity + KL divergence + inversion ASR@10 as the specific triple of metrics for comparing encryptor configurations. However, at the design level, comparing system configurations across multiple metrics against targets is a standard analysis protocol covered broadly.\n\n**EVALUATION: High-diversity encryptor enabling effective attacks violates utility (KL=0.031 vs target 0.02) and privacy (ASR@10=0.526 vs target 0.20); standard low-diversity encryptor meets both but resists attacks.**\n\nThis is a specific empirical finding with specific numbers. As an evaluation design, it uses metric-threshold comparison (measuring KL divergence and ASR@10 against target thresholds). Paper [23] uses ASR@k metrics. Papers [3], [6] use privacy-utility metric comparisons. The evaluation design of comparing configurations against threshold targets on multiple metrics is a generic experimental shape present in prior work. However, the specific combination of ASR@10 for inversion attacks + KL divergence utility + key diversity in LLM obfuscation is not a named benchmark or protocol family from prior work.\n\n**DOMAIN: Privacy-utility-security tradeoff in LLM obfuscation.**\n\nPapers [1], [2], [3], [4], [5], [6], [7] all work in the domain of privacy-utility tradeoffs in data obfuscation systems. While none specifically target LLM obfuscation, the general application area of \"privacy-utility tradeoffs in obfuscation\" is clearly covered by multiple prior papers, particularly [7] (\"Privacy engineering through obfuscation\") and [6] (\"Privacy Games: Optimal User-Centric Data Obfuscation\"). The LLM-specific instance is a new parameter within an existing area.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 7",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper frames its goal as revealing a fundamental tradeoff constraining whether a specific OSNIP-like scheme can be simultaneously private AND attack-resistant; the closest papers (e.g., [2],[6],[11]) address privacy-utility tradeoffs in obfuscation or DP but never the three-way constraint involving attack-resistance as a distinct axis opposing both privacy and utility in this encryption context.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper compares encryptor configurations specifically on key diversity, KL divergence utility, and inversion ASR@10 privacy simultaneously against target constraints; [23] uses top-k ASR but only for adversarial transferability, not encryptor configuration comparison, and no paper combines all three metrics in this evaluation structure.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports the specific empirical finding that a high-diversity encryptor yields KL=0.031 vs a 0.02 target and ASR@10=0.526 vs a 0.20 target while a low-diversity encryptor meets both targets but resists attacks with only a 5.0pp drop at K=64; this precise quantitative tradeoff result appears in no prior work."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": [
+        23,
+        30
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        5,
+        23,
+        30
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        4
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe contribution's purpose is to reveal a fundamental three-way tradeoff between privacy, utility, and attack resistance. While many prior papers establish a two-way \"privacy/utility tradeoff\" ([2], [3], [4], [6]), and one paper [22] establishes a different three-way tradeoff (\"privacy, utility and fairness\"), none appear to establish the specific empirical relationship between privacy, utility, and *attack resistance* as a fundamental constraint.\n\n**MECHANISM**\nThe mechanism is a comparative analysis of encryptor configurations using metrics for key diversity, utility (KL divergence), and privacy (inversion ASR@10). The core components of this analysis method are found in prior work: paper [30] introduces \"model inversion attacks\" as a way to measure privacy leakage, and paper [23] uses \"top-k attack success rate (ASR)\" as a standard metric for evaluating attack strength.\n\n**EVALUATION**\nThe evaluation design involves measuring utility (via KL divergence) and privacy/security (via an inversion attack's success rate) across different system configurations. This design is covered by prior work; for instance, paper [5] evaluates a tradeoff between utility (\"rank-preservation\") and privacy defined by resistance to \"fingerprinting attacks,\" and papers [23] and [30] establish the use of ASR and model inversion attacks as evaluation primitives, respectively.\n\n**DOMAIN**\nThe domain is the privacy-utility-security tradeoff in LLM obfuscation. The general application area of privacy in machine learning via data obfuscation is well-covered by prior work, including [1] (\"Privacy-Preserving Machine Learning... Data Obfuscation Methods\") and [4] (\"privacy... by obfuscating sensor data while minimally affecting... a machine learning model\"). Applying this to LLMs is a new instance within an existing area, not a genuinely new domain.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 23, 30\nVERDICT evaluation = 5, 23, 30\nVERDICT domain = 1, 4",
+      "stage2": "FACET: purpose: Reveal a fundamental tradeoff constraining whether OSNIP-like schemes can be both private and attack-resistant. | FINAL: COVERED-BY [5] | reason: Paper [5]'s explicit purpose is to analyze the tradeoff between rank-preservation (the core utility of an OSNIP-like scheme) and resistance to a specific attack. This is the same objective. Quote: \"In this work, dataset obfuscation under two objectives is considered: i) rank-preservation: to preserve the row ordering in the obfuscated dataset induced by a given rank function, and ii) anonymity: to protect user anonymity under fingerprinting attacks.\""
+     }
+    }
+   }
+  }
+ ]
+}

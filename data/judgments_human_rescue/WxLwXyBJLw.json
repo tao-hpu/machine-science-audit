@@ -1,0 +1,244 @@
+{
+ "paper_id": "WxLwXyBJLw",
+ "title": "Flow Matching for One-Step Sampling",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     6
+    ],
+    "mechanism": [
+     3,
+     5
+    ],
+    "evaluation": [
+     5,
+     6
+    ],
+    "domain": [
+     3,
+     5
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to eliminate the high computational cost of solving ODEs during Flow Matching sampling and achieve one-step generation from the initial distribution to the target distribution. Papers [3], [6], [7], [8], [9], [16], [17], [22], and [26] all address the problem of reducing computational overhead in generative models, particularly diffusion or flow-based models, by enabling faster sampling or one-step generation. For example, [6] explicitly discusses distilling diffusion models into one-step generators to reduce computational demands, and [7] introduces Distribution Matching Distillation for one-step image generation. These papers share the same objective at the problem-class level.\n\n### Mechanism\nThe mechanism involves using Ryzhakov et al. (2024)'s explicit vector field formula to reverse-solve the Cauchy problem for target distribution samples, obtaining their prototypes, and training a neural network to directly map paired {prototype, target sample} data. The pairing method ensures nearly monotonic trajectories, and importance sampling is used for integral estimation. Papers [3], [5], [8], [13], and [26] describe similar mechanisms for rectifying or straightening flow paths in generative models to reduce truncation errors and improve sampling efficiency. For example, [3] discusses straightening probability flows for fast sampling, and [5] uses rectified flow to learn ODE paths connecting distributions. Additionally, [11] and [14] address solving inverse Cauchy problems using neural networks or numerical techniques, which aligns with the reverse-solving aspect of the mechanism.\n\n### Evaluation\nThe evaluation involves qualitative demonstrations of one-step sampling on toy 2D datasets (e.g., 8 Gaussians) and MNIST, without quantitative metrics like FID. Papers [6], [7], [16], [17], and [26] use similar evaluation designs, such as qualitative demonstrations of one-step sampling on image datasets (e.g., MNIST or other benchmarks). For instance, [6] and [7] evaluate one-step generators on image synthesis tasks, and [16] applies Distribution Matching Distillation to unpaired image-to-image translation. The evaluation design (qualitative demonstration of sampling efficiency) is covered by these prior works.\n\n### Domain\nThe domain is generative modeling, specifically fast sampling in Flow Matching. Papers [3], [5], [6], [7], [8], [9], [13], [16], [17], [22], and [26] all operate in the same general application area of generative modeling and fast sampling techniques for flow-based or diffusion models. For example, [3] focuses on fast sampling in continuous-time generative models, and [6] addresses efficient one-step generation in diffusion models. The domain is clearly covered.\n\n---\n\nVERDICT purpose = 6  \nVERDICT mechanism = 3  \nVERDICT evaluation = 6  \nVERDICT domain = 3  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 5
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\n\nThe purpose is to eliminate the high computational cost of ODE solving in Flow Matching sampling, enabling one-step generation from initial to target distribution.\n\nPapers [6], [7], [17], [26] all aim at one-step generation from diffusion models. Papers [3], [8], [9], [13] aim to reduce NFE in flow/diffusion models. Paper [5] (Rectified Flow) and [1] address straightening flows for faster sampling. The purpose of \"one-step generation by eliminating ODE solving overhead\" is substantively equivalent to papers like [6] (\"Diffusion Models Are Innate One-Step Generators\"), [7] (DMD: \"one-step image generator\"), [17] (EM Distillation for one-step), [26] (SiD: \"single-step generator\"). These all share the same objective: eliminate multi-step ODE/SDE sampling, achieve one-step generation.\n\n## Mechanism\n\nThe mechanism involves: (1) using an explicit vector field formula (from Ryzhakov et al. 2024) to backward-solve a Cauchy problem for target samples to get their prototypes, (2) training a neural network on {prototype, target} pairs for direct mapping, (3) near-monotone trajectories (non-crossing), (4) importance sampling for integral estimation.\n\nPaper [6] uses instance-based distillation pairing noise→data. Paper [5] uses reflow (pairing ODE-solved endpoints). Paper [1] also uses reflow-style pairing. The backward-solving via explicit vector field formula to find prototypes is a specific mechanism. Paper [5]'s \"reflow\" is the closest: solve ODE forward to get paired (x0, x1) then train directly — this is structurally similar (pair initial noise with target via ODE trajectory, train direct map). However, the contribution here reverses the direction (backward from target to find prototype) using an explicit formula rather than numerical ODE integration, and uses importance sampling. Paper [3] (Sequential Flow Straightening) also creates pairs by solving ODEs. The core primitive of \"solve ODE to get paired endpoints, train direct neural map\" is present in [5] and [3]. The importance sampling aspect appears in [20] (Gaussian-mixture umbrella sampling) but in a different context. The backward Cauchy problem solving is referenced in [11], [14], [25] but not in the flow matching context. The combination is somewhat novel, but the core pairing-then-direct-mapping primitive is covered by [5].\n\n## Evaluation\n\nThe evaluation uses toy 2D (8 Gaussians) and MNIST with qualitative visualization, no FID. Paper [5] uses toy 2D experiments including Gaussian mixtures for qualitative evaluation. Paper [3] also uses toy 2D experiments. Paper [13] uses similar setups. The evaluation design (toy 2D Gaussian mixture + MNIST qualitative) is a standard design used in flow matching papers. Paper [5] explicitly uses multi-Gaussian toy experiments and image generation qualitative results. This design is covered.\n\n## Domain\n\nThe domain is generative modeling / fast sampling in Flow Matching. Papers [1], [2], [3], [5], [8], [12], [13] all work in generative modeling with flow matching. This is clearly covered.\n\nVERDICT purpose = 6\nVERDICT mechanism = 5\nVERDICT evaluation = 5\nVERDICT domain = 5",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     10
+    ],
+    "mechanism": null,
+    "evaluation": [
+     10
+    ],
+    "domain": [
+     10
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 10
+      },
+      "mechanism": {
+       "covered_by": 27
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 10
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose:\nThe contribution's purpose is \"在带标签数据集上支持条件生成\" (support conditional generation on labeled datasets). Paper [10] explicitly addresses conditional generation on labeled datasets, as it introduces conditional generative adversarial nets (cGANs) and demonstrates their ability to generate MNIST digits conditioned on class labels. This matches the problem-class level objective of supporting conditional generation on labeled datasets.\n\n### Mechanism:\nThe contribution's mechanism involves using a conditional model \\(v_\\theta(x_0, i)\\), maintaining independent buffers for each label to estimate integrals, and incorporating labels into the loss function (Algorithm 2). Paper [27] describes hierarchically branched diffusion models for class-conditional generation, which also leverage class labels in the generative process. While the specific implementation details differ, the underlying primitive of using class labels to guide conditional generation is substantively equivalent.\n\n### Evaluation:\nThe contribution evaluates its method on labeled MNIST (m=1 processing, DiT) to generate digits 0-9, presenting qualitative results (Fig. 3) without quantitative metrics. Paper [10] evaluates conditional generation on MNIST digits conditioned on class labels, using qualitative examples to validate the generative model's ability. The evaluation design — generating labeled MNIST digits and presenting qualitative results — is substantively equivalent.\n\n### Domain:\nThe contribution operates in the domain of conditional image generation. Paper [10] explicitly addresses conditional image generation, as it demonstrates conditional generative adversarial nets generating MNIST digits conditioned on class labels. This matches the general application area.\n\n---\n\nVERDICT purpose = 10  \nVERDICT mechanism = 27  \nVERDICT evaluation = 10  \nVERDICT domain = 10  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 10
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 10
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: 在带标签数据集上支持条件生成 (support conditional generation on labeled datasets)**\n\nPaper [10] explicitly states \"we introduce the conditional version of generative adversarial nets\" and \"we show that this model can generate MNIST digits conditioned on class labels.\" Paper [20] addresses \"conditional diffusion models.\" Paper [27] addresses \"class-conditional generation\" with labeled datasets. Paper [13] also addresses \"class-conditional generation.\" The purpose of enabling conditional generation on labeled datasets is thoroughly covered by [10], [20], [27], [13], and others.\n\n**MECHANISM: 使用条件模型 v_theta(x_0, i),对每个标签维护独立的 buffer 估计积分,损失中纳入标签 (conditional model with per-label independent buffers to estimate integrals, label incorporated in loss)**\n\nThe key primitive here is maintaining per-label independent buffers to estimate integrals (likely replay buffers or per-class buffer estimates in a flow/diffusion context). Paper [27] uses \"hierarchically branched diffusion models\" that \"learn reverse diffusion separately for each class,\" which is structurally similar to maintaining per-label independent estimates. Paper [20] incorporates labels into the loss via classifier-free guidance. However, the specific primitive of maintaining per-label independent buffers to estimate integrals (as in Algorithm 2, likely a flow matching or score-based context) is not clearly described in any prior paper. The per-label buffer mechanism for integral estimation appears distinct from standard conditioning approaches. No prior paper describes this exact primitive of per-label independent buffer maintenance for integral estimation in a flow/diffusion model.\n\n**EVALUATION: 带标签 MNIST 上生成 0-9 数字,定性结果(Fig.3);无量化指标**\n\nPaper [10] explicitly evaluates conditional generation on MNIST digits (0-9) with qualitative results. This is the same evaluation design: MNIST digit generation with qualitative/visual inspection. Paper [20] also uses qualitative evaluation of conditional generation. The evaluation design (qualitative MNIST digit generation) is clearly covered by [10].\n\n**DOMAIN: 条件图像生成 (conditional image generation)**\n\nPapers [10], [20], [27], [13], [1], [5], [11] all work in conditional image generation. This domain is thoroughly covered.\n\nVERDICT purpose = 10\nVERDICT mechanism = NONE\nVERDICT evaluation = 10\nVERDICT domain = 10",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes maintaining per-label independent buffers for integral estimation within a conditional diffusion model loss (v_theta(x_0, i) with label-indexed buffers as in Algorithm 2). Paper [20] uses classifier-free guidance with conditional diffusion models but does not maintain per-label buffer estimates of integrals. Paper [27] uses branched diffusion models per class but the mechanism is architectural branching, not per-label buffer integral estimation. No other paper contains an equivalent element even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 10
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 10
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The objective is conditional generation on a labeled dataset. This is a foundational problem in generative modeling and is explicitly addressed by numerous prior works. For example, [10] introduces \"the conditional version of generative adversarial nets\" with the express purpose of generating data conditioned on labels, such as \"MNIST digits conditioned on class labels.\"\n\n**mechanism**: The mechanism involves a conditional model `v_theta(x_0, i)` and incorporating the label into the loss, which are standard components of any conditional generative model, as seen in [10]. However, the core technical primitive is to \"maintain independent buffer for each label to estimate the integral\" (对每个标签维护独立的 buffer 估计积分). None of the provided abstracts describe a mechanism that uses per-label buffers to estimate an integral as part of the training process for a generative model.\n\n**evaluation**: The evaluation design consists of generating class-conditional samples for the MNIST dataset and presenting qualitative results. This exact evaluation protocol was used in prior work. Specifically, [10] states, \"We show that this model can generate MNIST digits conditioned on class labels,\" which is the same validation design.\n\n**domain**: The application area is conditional image generation. This is a well-established domain covered by many prior papers. For instance, [7] focuses on \"conditional generative modeling (CGM) for image data,\" and [10] applies its method to \"generate MNIST digits,\" directly matching the domain.\n\nVERDICT purpose = 10\nVERDICT mechanism = NONE\nVERDICT evaluation = 10\nVERDICT domain = 10",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: The mechanism is highly specific: using a conditional model while maintaining an independent buffer *for each label* to *estimate an integral* for the loss function. While prior works use conditional models ([10]), handle classes separately in the model architecture ([13]), or use other data points for estimation ([25]), none describe this specific algorithmic structure of a stateful, per-label buffer used for integral estimation during training. This combination appears novel."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": null,
+    "domain": [
+     2,
+     10
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution aims to demonstrate why a non-zero regularization parameter σ is necessary for reversible conditional mapping during backward ODE solving. This specific empirical relationship — the necessity of σ for avoiding prototype collapse to a low-dimensional manifold — does not appear to be established in any prior paper. While several papers discuss regularization in generative models ([10], [20]) or ODE solvers ([7], [25]), none explicitly address the role of σ in ensuring reversibility of conditional mappings in probability flow ODEs. Papers like [2] and [6] focus on convergence theory for probability flow ODEs but do not empirically establish this relationship.\n\n#### Mechanism:\nThe mechanism involves scanning σ (1e-5 to 1e-2) and ODE solver tolerance (1e-4, 1e-6) on synthetic 2D data to observe whether prototypes collapse to a low-dimensional manifold. This experimental setup is specific to the contribution and does not appear in prior papers. Papers like [2], [6], and [20] discuss ODE solvers and regularization but do not use this exact mechanism of scanning σ and tolerance to analyze prototype collapse. The synthetic 2D data and collapse observation are unique to this contribution.\n\n#### Evaluation:\nThe evaluation design involves visualizing the prototype distribution under varying σ and tolerance values, showing collapse to a 1D manifold when σ is small and tolerance is insufficient, and recovery to normal distribution characteristics when σ increases or tolerance decreases. This visualization-based evaluation design is not explicitly reused in prior papers. While papers like [2], [6], and [20] evaluate ODE solvers and regularization effects, their designs focus on convergence rates, Wasserstein distances, or computational efficiency rather than prototype distribution collapse visualization.\n\n#### Domain:\nThe domain is generative modeling with a focus on regularization analysis. This general application area is well-covered by prior papers such as [2], [6], [10], [20], and [18], which address generative modeling, regularization, and ODE-based methods. Although the specific instance of analyzing σ's role in prototype collapse is new, the broader domain of generative modeling and regularization analysis is not.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [2]  ",
+      "stage2": "- **FACET: purpose** | **FINAL: NONE** | reason: No prior paper explicitly addresses the necessity of a non-zero regularization parameter σ for invertibility in reverse ODE solving, even under different terminology or framing.  \n- **FACET: mechanism** | **FINAL: NONE** | reason: No prior paper describes scanning σ and ODE solver tolerance on synthetic 2D data to observe prototype distribution degeneration, even with alternative phrasing or domain-specific vocabulary.  \n- **FACET: evaluation** | **FINAL: NONE** | reason: No prior paper presents an evaluation resembling Fig.1's observations of prototype behavior under varying σ and tolerance, nor a similar hypothesis without formal proof.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 10
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**PURPOSE: 论证为何反向求解 ODE 时必须使用非零正则化参数 σ (使条件映射可逆)**\n\nThe purpose is to demonstrate/explain why a non-zero regularization parameter σ is necessary when inverting an ODE to keep the conditional mapping invertible — specifically showing that without it, prototypes collapse to a low-dimensional manifold. I need to find a prior paper that establishes the same empirical relationship: regularization parameter → invertibility of ODE-based mapping. Paper [17] (OT-Flow) discusses invertibility of continuous normalizing flows and regularization, but doesn't specifically argue about σ preventing manifold collapse during ODE inversion. Paper [20] discusses trajectory regularization for CNFs and ODE solver tolerance effects on NFE. Paper [10] discusses regularization to handle dimensional mismatch/non-overlapping support in GANs. None of these specifically establish the relationship \"non-zero σ prevents prototype collapse to low-dimensional manifold during ODE inversion.\" This specific empirical relationship appears absent from prior work.\n\n**MECHANISM: 扫描不同 σ 与 ODE solver tol，观察 prototype 分布是否退化到低维流形**\n\nThe mechanism is a 2D synthetic data sweep over regularization parameter values and ODE solver tolerances, observing whether output distributions degenerate to lower-dimensional manifolds. Paper [20] studies ODE solver truncation errors and their effect on CNF computation, and sweeps NFE/tolerance parameters. Paper [25] provides empirical study of stochastic regularization in Neural ODEs. However, neither specifically sweeps both σ and solver tolerance jointly to observe manifold degeneracy of prototypes. The specific combination (parameter sweep + manifold degeneracy check) on synthetic 2D data doesn't appear in prior work, though the general design of \"sweep hyperparameter, observe distribution quality\" is generic.\n\n**EVALUATION: Fig.1 显示 σ 小且 tol 不足时 prototype 落在一维流形上**\n\nThe evaluation design involves a 2D synthetic dataset (semicircle uniform distribution, N=200) with visual inspection of prototype distributions under parameter sweeps. This is a custom-constructed synthetic benchmark with a newly defined visual/geometric criterion (manifold degeneracy). No prior paper uses this specific evaluation design — it's a newly constructed diagnostic benchmark. The closest would be [20] which uses synthetic experiments for CNF evaluation, but the specific design (semicircle distribution, prototype collapse to 1D manifold as metric) is not matched.\n\n**DOMAIN: 生成模型 / 正则化分析**\n\nGenerative models and regularization analysis is clearly covered by multiple prior papers. Papers [10], [17], [20], [25] all work in generative models with regularization analysis. This domain is well-covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 10",
+      "stage2": "I'll carefully re-examine each uncovered facet against all prior papers.\n\n**purpose: 论证为何反向求解 ODE 时必须使用非零正则化参数 σ(使条件映射可逆)**\n\nScanning all papers: Paper [17] (OT-Flow) discusses invertibility of normalizing flows and ODE mappings. Paper [24] discusses invertible generative models and representation error. Paper [4] discusses stochastic CNFs trained as ODEs. None of these argue specifically that a non-zero regularization parameter σ is *necessary* for invertibility when solving ODEs in reverse — they don't make this specific claim about σ ensuring the conditional mapping remains invertible during reverse ODE solving. No paper contains this specific objective even under different terminology.\n\n**mechanism: 在合成 2D 数据(半圆均匀分布,N=200)上扫描不同 σ(1e-5~1e-2)与 ODE 求解器 tol(1e-4,1e-6)观察 prototype 分布是否退化到低维流形**\n\nThis is a very specific experimental setup: semicircular uniform distribution, N=200, scanning σ and ODE solver tolerance jointly, observing prototype collapse to low-dimensional manifold. No prior paper contains anything resembling this specific experimental mechanism. Papers [7] and [26] discuss ODE solvers and tolerances but not in this context. Paper [12]/[14] discuss manifolds but not this setup.\n\n**evaluation: Fig.1 显示 σ 小且 tol 不足时 prototype 落在一维流形上;σ 增大或 tol 减小时恢复到正态分布特征;仅提出假设,无严格证明**\n\nThis specific finding — that small σ combined with insufficient ODE tolerance causes prototype collapse to a 1D manifold, and that increasing σ or decreasing tolerance recovers normal distribution characteristics — is not present in any prior paper. Papers [2] and [6] provide convergence theory for probability flow ODEs but don't make this specific empirical claim about prototype collapse patterns.\n\nFACET: purpose | FINAL: NONE | reason: No prior paper argues specifically that non-zero σ is necessary for invertibility of the conditional mapping when solving ODEs in reverse; closest works on invertible flows/ODEs don't make this specific claim.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper uses this specific experimental setup (semicircular 2D data, N=200, joint σ/tol sweep, prototype manifold collapse observation).\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports the specific finding that small σ + insufficient ODE tol causes prototype collapse to 1D manifold, with recovery upon increasing σ or tightening tol."
+     }
+    }
+   }
+  }
+ ]
+}

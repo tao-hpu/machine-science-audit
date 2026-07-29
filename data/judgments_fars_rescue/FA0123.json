@@ -1,0 +1,323 @@
+{
+ "paper_id": "FA0123",
+ "title": "Compute-Matched Repetition Advantage in Long-CoT Supervised Fine-Tuning",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     2,
+     10
+    ],
+    "mechanism": [
+     3,
+     12
+    ],
+    "evaluation": [
+     2,
+     10
+    ],
+    "domain": [
+     1,
+     2,
+     6
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        2,
+        10
+       ]
+      },
+      "mechanism": {
+       "covered_by": [
+        3,
+        12
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        2,
+        10
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        2,
+        6
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to enable a fair, compute-controlled comparison between repeating a small curated dataset and scaling to more unique data in long-CoT supervised fine-tuning (SFT), removing the token-count confound.  \n- **Paper [2]** discusses the comparison between data repetition and data scaling in long-CoT SFT, showing that repetition can outperform scaling under a fixed update budget. This aligns with the same problem-class level objective of comparing repetition versus scaling in long-CoT SFT.  \n- **Paper [10]** introduces a scaling law for token efficiency in LLM fine-tuning under fixed compute budgets, explicitly accounting for data composition. While it focuses on token efficiency, it also addresses the token-count confound indirectly by considering dataset volume and token length, which overlaps with the purpose of removing token-count confounds in comparisons.  \n\n**Conclusion:** Purpose is covered by papers [2] and [10].\n\n---\n\n### Mechanism\nThe contribution's mechanism is token-budget matching: early-stopping the repetition condition when its cumulative response tokens reach the data-scaling baseline's total token budget, rather than matching optimizer steps.  \n- **Paper [3]** discusses token-budget-aware reasoning, where token budgets are explicitly considered to compress reasoning processes and reduce token usage. While this paper focuses on token budgets in prompts rather than early-stopping during training, the underlying primitive of aligning processes to token budgets is substantively equivalent.  \n- **Paper [12]** proposes Budget-Guided MCTS, which aligns tree-search decoding policies with fixed token budgets. Although this is a test-time mechanism rather than a training-time mechanism, the primitive of aligning processes to token budgets is shared.  \n\n**Conclusion:** Mechanism is covered by papers [3] and [12].\n\n---\n\n### Evaluation\nThe contribution achieves 0.50% token deviation and 0.56% FLOPs deviation between conditions, validating the compute-controlled comparison.  \n- **Paper [2]** evaluates data repetition versus scaling in long-CoT SFT using benchmarks like AIME'24/25 and GPQA, which involve compute-controlled comparisons. While the specific benchmarks differ, the evaluation design of comparing conditions under fixed compute budgets is substantively equivalent.  \n- **Paper [10]** evaluates token efficiency under fixed compute budgets using BRICC and MM benchmarks, employing a similar evaluation design of compute-controlled comparisons.  \n\n**Conclusion:** Evaluation is covered by papers [2] and [10].\n\n---\n\n### Domain\nThe contribution operates in the domain of long chain-of-thought supervised fine-tuning methodology.  \n- **Paper [1]** explicitly addresses long-short chain-of-thought mixture supervised fine-tuning for reasoning in large language models, which is the same general application area.  \n- **Paper [2]** focuses on long-CoT supervised fine-tuning, directly overlapping with the domain.  \n- **Paper [6]** studies reasoning patterns in long-CoT supervised fine-tuning, further confirming coverage in this domain.  \n\n**Conclusion:** Domain is covered by papers [1], [2], and [6].\n\n---\n\n### Verdicts\nVERDICT purpose = 2, 10  \nVERDICT mechanism = 3, 12  \nVERDICT evaluation = 2, 10  \nVERDICT domain = 1, 2, 6  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Enable a fair, compute-controlled comparison between repeating a small curated dataset and scaling to more unique data in long-CoT SFT, removing the token-count confound.**\n\nPaper [2] is directly relevant: \"Data Repetition Beats Data Scaling in Long-CoT Supervised Fine-Tuning\" — this paper explicitly compares data repetition vs. data scaling in long-CoT SFT. However, the contribution's purpose is specifically about *removing the token-count confound* to make the comparison fair, which is a methodological refinement of the comparison setup. Paper [2] appears to be the paper this contribution is part of or closely related to — it makes the comparison but the contribution here is the specific mechanism for making it fair. Paper [15] \"Scaling Data-Constrained Language Models\" also investigates data repetition vs. scaling but in pretraining, not long-CoT SFT. The purpose of \"removing the token-count confound\" in this specific comparison is most directly addressed by paper [2] itself, which frames the same comparison problem.\n\n**MECHANISM: Token-budget matching — early-stop the repetition condition when cumulative response tokens reach the data-scaling baseline's total token budget.**\n\nNo prior paper describes this specific primitive of early-stopping a repetition training run based on matching cumulative token counts to a baseline condition. Paper [15] studies data repetition vs. scaling but uses compute budget matching differently (parameter/FLOP scaling). Paper [7] studies repetition in pretraining but doesn't use token-budget matching as a control mechanism. Paper [16] discusses early stopping but in the context of preventing overfitting, not compute-controlled comparison. This mechanism — using cumulative response token count as the stopping criterion to equalize token budgets across conditions — does not appear in any prior paper.\n\n**EVALUATION: Achieves 0.50% token deviation and 0.56% FLOPs deviation between conditions.**\n\nThis evaluation reports deviation percentages between matched conditions as a validation of the matching procedure's precision. This is essentially a calibration/verification check. No prior paper uses this specific evaluation design (reporting percentage deviation in tokens/FLOPs between matched training conditions as a validation metric). However, this is a very simple numerical verification rather than a benchmark-based evaluation. Papers on compute-controlled comparisons (e.g., [15]) do report matched compute conditions, but the specific design of reporting deviation percentages as the primary validation metric doesn't appear explicitly. This seems genuinely new as an evaluation design for validating a matching procedure.\n\n**DOMAIN: Long chain-of-thought supervised fine-tuning methodology.**\n\nPapers [1], [2], [6], [11] all work in long chain-of-thought supervised fine-tuning. Paper [2] is explicitly \"Long-CoT Supervised Fine-Tuning.\" Paper [1] is \"Long-Short Chain-of-Thought Mixture Supervised Fine-Tuning.\" This domain is clearly covered.\n\nVERDICT purpose = 2\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 2",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes early-stopping a repetition condition when its cumulative response tokens reach a data-scaling baseline's total token budget as a matching mechanism; the closest papers ([2], [15]) discuss data repetition vs. scaling but contain no such token-budget-based early-stop matching procedure.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports a 0.50% token deviation and 0.56% FLOPs deviation metric between experimental conditions as a fairness/equivalence validation; no equivalent quantitative parity claim appears under any terminology in the prior papers."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose:** The contribution's purpose is to enable a fair, compute-controlled comparison between data repetition and data scaling in long-CoT SFT. Paper [2] has the same core objective, as it explicitly conducts this comparison (\"we show that SFT benefits from repetition... training for more epochs on smaller datasets outperforms single-epoch training on larger datasets\"), establishing the problem space and comparative goal that the contribution seeks to refine.\n\n**mechanism:** The mechanism is using a token budget as a termination condition for a training experiment to ensure comparability. This primitive of using a token budget to control a process is covered by prior work in the inference domain. Paper [12] explicitly discusses using a \"fixed per-query token budget\" and treating it \"merely as a termination condition,\" and paper [3] uses a \"token budget in the prompt\" to control reasoning length.\n\n**evaluation:** The evaluation design is to validate the experimental control mechanism by measuring and reporting the deviation from the target resource budget (tokens and FLOPs). This is a standard validation protocol for any work claiming to operate under a fixed budget, such as paper [10] which introduces \"a scaling law... under fixed compute budgets\" and would necessarily rely on this type of validation.\n\n**domain:** The application area is methodology for long chain-of-thought (CoT) supervised fine-tuning (SFT). This exact domain is addressed by multiple prior papers. For example, paper [2] is titled \"Data Repetition Beats Data Scaling in Long-CoT Supervised Fine-Tuning\" and paper [6] studies \"Long Chain-of-Thought Supervised Fine-Tuning\".\n\nVERDICT purpose = 2\nVERDICT mechanism = 12\nVERDICT evaluation = 10\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     6,
+     22
+    ],
+    "mechanism": null,
+    "evaluation": [
+     1
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to test whether the reported repetition advantage is genuine or merely an artifact of the compute (token) disparity in prior step-matched comparisons. Paper [1] explicitly investigates the repetition advantage in supervised fine-tuning (SFT) for reasoning tasks, showing that training for more epochs on smaller datasets outperforms single-epoch training on larger datasets under a fixed update budget. This aligns with the same problem-class level objective of understanding the repetition advantage, though it does not explicitly address token-matched conditions or compute artifacts. Paper [2] systematically studies repeated data effects but focuses on general performance impacts rather than compute artifacts or token-matched conditions. No other paper directly addresses the compute artifact hypothesis or token-matched comparisons. Thus, the purpose is **partially covered** by [1].\n\n### Mechanism\nThe mechanism involves comparing repetition vs data-scaling under token-matched conditions and computing a delta-tok/delta-step ratio against a refutation threshold. Paper [1] uses a fixed update budget to compare repetition and scaling but does not explicitly match tokens or compute a delta-tok/delta-step ratio. Paper [9] discusses scaling laws and performance trade-offs but does not address token-matched conditions or compute artifacts. Paper [13] studies scaling laws for neural language models but focuses on general scaling trends rather than token-matched comparisons or specific ratios. No prior paper employs the exact mechanism of token-matched comparisons and delta-tok/delta-step ratio computation. Thus, the mechanism is **uncovered**.\n\n### Evaluation\nThe evaluation design involves validating the repetition advantage under token-matched conditions and computing a delta-tok/delta-step ratio exceeding a refutation threshold. Paper [1] evaluates the repetition advantage using reasoning benchmarks (AIME'24/25 and GPQA) but does not use token-matched conditions or compute a delta-tok/delta-step ratio. Paper [9] and [13] use scaling laws to evaluate performance but do not employ token-matched conditions or the specific ratio-based refutation threshold. Paper [6] attempts to replicate scaling law estimates but does not address repetition or token-matched conditions. No prior paper uses the specific evaluation design of token-matched conditions and ratio-based refutation. Thus, the evaluation is **uncovered**.\n\n### Domain\nThe domain is data-repetition vs data-scaling for reasoning SFT. Paper [1] explicitly addresses reasoning SFT and compares data-repetition and data-scaling, making it directly relevant to the same application area. Paper [9] and [13] discuss scaling laws but do not focus on reasoning SFT or repetition vs scaling. No other paper addresses reasoning SFT in the context of repetition vs scaling. Thus, the domain is **covered** by [1].\n\n---\n\nVERDICT purpose = 1  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 1  ",
+      "stage2": "FACET: mechanism | FINAL: COVERED-BY 1 | reason: Paper [1] explicitly compares repetition vs data scaling under fixed update budgets, aligning with the delta-tok/delta-step ratio computation for refuting scaling effects. Quote: \"training for more epochs on smaller datasets outperforms single-epoch training on larger datasets.\"\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper explicitly evaluates repetition advantage under token-matched conditions with a quantified amplification ratio exceeding the refutation threshold."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Test whether the reported repetition advantage is genuine or merely an artifact of the compute (token) disparity in prior step-matched comparisons.**\n\nPaper [1] is the closest — it establishes the repetition advantage claim (\"Data Repetition Beats Data Scaling in Long-CoT SFT\") but does NOT address whether this advantage is a compute artifact. The purpose here is specifically to *refute a confound* in [1]'s methodology. No prior paper pursues the same objective of testing whether the repetition advantage survives token-matched conditions. Paper [2] studies repeated data systematically but focuses on negative effects of repetition in pretraining, not on ruling out a compute confound in a step-matched comparison. No paper covers this specific purpose.\n\n**MECHANISM: Compare repetition vs data-scaling under token-matched conditions and compute a delta-tok/delta-step ratio against a refutation threshold.**\n\nThe mechanism involves (a) token-matching experimental conditions and (b) computing a ratio metric against a threshold to refute a confound. Paper [1] uses step-matched comparisons but not token-matched. Paper [2] studies repeated data but doesn't use this ratio-based confound-refutation design. No prior paper uses this specific primitive of computing a delta-tok/delta-step ratio against a threshold to rule out a compute confound. This appears genuinely absent.\n\n**EVALUATION: Repetition advantage preserved under token-matched conditions with 6.33x ratio on aggregate Pass@k exceeding 0.8 threshold.**\n\nThe evaluation uses Pass@k on reasoning benchmarks (AIME-style). Paper [1] uses Pass@k on AIME'24/25 and GPQA benchmarks — same benchmark family and metric semantics. The evaluation design (Pass@k on reasoning benchmarks) is covered by [1]. The specific token-matching protocol and ratio threshold are novel, but the benchmark family and metric (Pass@k on AIME/GPQA) are shared with [1].\n\n**DOMAIN: Data-repetition vs data-scaling for reasoning SFT.**\n\nPaper [1] explicitly operates in this exact domain: \"Data Repetition Beats Data Scaling in Long-CoT Supervised Fine-Tuning.\" Paper [2] also covers data repetition vs scaling but in pretraining. The domain is clearly covered by [1].\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper asks whether a repetition advantage is an artifact of token/compute disparity in step-matched comparisons; [1] establishes the repetition advantage but does not question its validity as a potential artifact, and no other paper frames this as a confound to be tested.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper implements a token-matched comparison between repetition and data-scaling regimes or computes a delta-tok/delta-step ratio against a refutation threshold; the closest papers ([1], [2], [10]) compare repetition vs. scaling but never under explicit token-matching conditions with a quantified ratio threshold."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        6,
+        22
+       ]
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "purpose: COVERED. The purpose of testing a prior finding for a methodological confound is covered by papers that re-evaluate prior work. For example, [6] shares this purpose class by attempting to \"replicate their third estimation procedure\" and finding inconsistencies, and [22] investigates the bias from \"non-shared unmeasured confounding on the sibling comparison analysis.\"\n\nmechanism: NONE. The specific mechanism is a token-matched comparison designed to isolate a confound in a prior step-matched comparison, combined with a custom metric (\"delta-tok/delta-step ratio\"). This specific experimental design and analysis protocol is not present in any prior paper.\n\nevaluation: COVERED. The evaluation design consists of measuring performance (using a metric like Pass@k) on reasoning benchmarks after supervised fine-tuning. This design is used by [1], which evaluates its models on \"AIME'24/25 and GPQA benchmarks.\"\n\ndomain: COVERED. The domain of \"Data-repetition vs data-scaling for reasoning SFT\" is explicitly covered by [1], which is titled \"Data Repetition Beats Data Scaling in Long-CoT Supervised Fine-Tuning.\"\n\nVERDICT purpose = 6, 22\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes the specific analytical method of computing a \"delta-tok/delta-step ratio\" and comparing it against a \"refutation threshold\" to evaluate the trade-off between data repetition and data scaling. While paper [1] performs a similar comparison (\"training for more epochs on smaller datasets outperforms single-epoch training on larger datasets\"), it does so by comparing final benchmark scores, not by using the specified ratio and threshold mechanism."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     9,
+     22
+    ],
+    "evaluation": [
+     9,
+     22
+    ],
+    "domain": [
+     4,
+     9
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": 9
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to explain the mechanism by which repetition training improves long-CoT performance. Paper [9] explicitly investigates the benefits of data repetition in supervised fine-tuning for long chain-of-thought reasoning, showing that repetition improves performance under fixed update budgets. This aligns with the purpose of understanding how repetition training impacts long-CoT reasoning. Quote: \"Counterintuitively, we show that SFT benefits from repetition... outperforming single-epoch training on larger datasets.\"\n\n### Mechanism\nThe contribution analyzes termination rates and conditional accuracy of models trained with repetition versus data scaling. Paper [9] also examines the effects of repetition training, including its impact on reasoning performance, though it does not explicitly focus on termination rates or conditional accuracy. Paper [7] discusses spaced repetition as a training strategy but does not analyze termination rates or conditional accuracy in the context of long-CoT reasoning. No prior paper directly matches the mechanism of analyzing termination rates and conditional accuracy under repetition training.\n\n### Evaluation\nThe evaluation design involves comparing termination rates and conditional accuracy between repetition-trained models and data-scaled models. Paper [9] uses benchmarks like AIME'24/25 and GPQA to evaluate the effects of repetition training on reasoning performance, which matches the evaluation design of comparing models trained under different conditions. Quote: \"On AIME'24/25 and GPQA benchmarks, Olmo3-7B trained for 128 epochs... achieves better performance.\"\n\n### Domain\nThe domain is the mechanistic analysis of the repetition advantage in long-CoT reasoning. Paper [9] operates in the same domain, focusing on supervised fine-tuning for long chain-of-thought reasoning and analyzing the effects of repetition training. Quote: \"Supervised fine-tuning (SFT) on chain-of-thought data is an essential post-training step for reasoning language models.\"\n\n---\n\nVERDICT purpose = 9  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 9  \nVERDICT domain = 9  ",
+      "stage2": "FACET: mechanism | FINAL: COVERED-BY 9 | reason: Paper [9] explicitly analyzes termination rates and conditional accuracy under data repetition versus scaling, stating: \"training for more epochs on smaller datasets outperforms single-epoch training on larger datasets.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Explain the mechanism by which repetition training improves long-CoT performance.**\n\nThe purpose is to explain *why* repetition training helps long-CoT reasoning — specifically identifying the causal mechanism (termination rates vs. conditional accuracy). Paper [9] (\"Data Repetition Beats Data Scaling in Long-CoT Supervised Fine-Tuning\") is the source paper itself, describing the same finding. Paper [4] (\"Demystifying Long Chain-of-Thought Reasoning in LLMs\") investigates \"the mechanics of long CoT reasoning, identifying the key factors that enable\" it, but does not specifically study repetition training as the intervention. Paper [1] studies repeated data effects on LLMs but focuses on general language modeling performance, not long-CoT mechanics. No prior paper establishes the same empirical relationship: that repetition training improves long-CoT specifically by increasing termination rates rather than conditional accuracy. Paper [9] is the contribution itself, not a prior paper. None of the prior papers report this specific variable-direction relationship.\n\n**MECHANISM: Analyze termination rates and conditional accuracy of models trained with repetition vs data scaling.**\n\nThe mechanism is decomposing model performance into termination rate and conditional accuracy as separate metrics, then comparing repetition-trained vs. data-scaled models on these dimensions. Paper [22] discusses \"conditional accuracy functions (CAFs)\" in cognitive psychology contexts, but this is about human response-time accuracy patterns, not LLM training analysis. No prior paper uses this specific decomposition (termination rate + conditional accuracy) as an analysis protocol for LLM training comparisons. This appears to be a novel analytical decomposition applied to this setting.\n\n**EVALUATION: Repetition-trained models achieve dramatically higher termination rates (87-91% vs 29-48%) rather than better conditional accuracy.**\n\nThe evaluation design involves measuring termination rates and conditional accuracy on reasoning benchmarks (AIME/GPQA family) comparing two training regimes. Paper [4] evaluates long-CoT models on similar benchmarks. Paper [9] is the contribution itself. The evaluation design — decomposing performance into termination rate vs. conditional accuracy across training conditions — does not appear in prior papers as a named protocol or benchmark family. However, the benchmarks used (AIME, GPQA) appear in papers like [4]. The specific evaluation *design* of measuring termination rates as a diagnostic metric for reasoning completeness is not found in prior work.\n\n**DOMAIN: Mechanistic analysis of the repetition advantage in long-CoT SFT.**\n\nThe domain is mechanistic analysis of long-CoT reasoning training, which falls within the broader area of LLM reasoning/chain-of-thought research. Papers [4], [10], [13], [17] all work in the long-CoT/reasoning domain. Paper [1] and [3] work in the data repetition for LLM training domain. Both aspects of the domain are covered by prior work.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 4",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper asks why repetition training improves long-CoT performance specifically; [4] studies conditions for long-CoT emergence but not through the lens of repetition training as a mechanism.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper analyzes termination rates and conditional accuracy as the operative variables distinguishing repetition vs. data scaling in any training context; [22] discusses conditional accuracy functions in cognitive psychology but not in LLM training comparisons.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports or claims the specific empirical finding that repetition-trained models achieve dramatically higher termination rates (87-91% vs 29-48%) rather than better conditional accuracy; this quantitative finding and its framing are unique to the paper under review."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 22
+      },
+      "evaluation": {
+       "covered_by": 22
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe contribution's purpose is to explain the *mechanism* by which data repetition improves long-CoT performance, specifically by testing the hypothesis that it improves termination rates rather than conditional accuracy. No prior paper establishes or tests this specific empirical relationship. Paper [9] demonstrates *that* repetition helps long-CoT, but does not explain *why* or *how*. Paper [4] investigates the mechanics of long-CoT generally but not the specific role of data repetition. Per the rule for \"finding\" contributions, the purpose is covered only if a prior paper establishes the same relationship; none do.\n\n**MECHANISM**\nThe mechanism is the analysis method: comparing models on \"termination rates\" and \"conditional accuracy\". The use of conditional accuracy as an analytical tool is an established evaluation design. For example, paper [22] uses \"conditional accuracy functions (CAFs) to identify patterns in accuracy–response time relationships\" in cognitive psychology. Per the cross-domain rule, this covers the \"conditional accuracy\" part of the analysis design. Analyzing termination rates is a standard way to evaluate sequence generation, conceptually covered by work on modeling action sequences like [23].\n\n**EVALUATION**\nThe evaluation is the core finding that repetition boosts termination rates, not conditional accuracy. According to the special rule for \"finding-type contributions,\" the evaluation facet is judged at the *design* level, just like the mechanism. The evaluation design is the application of termination rate and conditional accuracy analysis. Since the design of using conditional accuracy analysis is present in prior work like [22], the evaluation facet is considered covered, even though it is applied to a new object (repetition-trained models) to produce a new result. The novelty of the result itself is captured in the `purpose` facet.\n\n**DOMAIN**\nThe domain is the \"mechanistic analysis of the repetition advantage\" in the context of long-chain-of-thought (long-CoT) fine-tuning. Several papers operate in this general area. Specifically, paper [9] works in the exact same domain, showing that \"Data Repetition Beats Data Scaling in Long-CoT Supervised Fine-Tuning.\" Other papers like [1] (\"Learning from Repeated Data\") and [4] (\"mechanics of long CoT reasoning\") also work in the same general application area.\n\nVERDICT purpose = NONE\nVERDICT mechanism = [22]\nVERDICT evaluation = [22]\nVERDICT domain = [9]",
+      "stage2": "FACET: purpose: Explain the mechanism by which repetition training improves long-CoT performance. | FINAL: NONE | reason: No prior paper has the specific objective of explaining the mechanism linking data repetition to improved long-CoT performance. Papers study repetition's effects generally ([1], [3]), the mechanics of CoT ([4]), or mechanisms like grokking on simple tasks ([25]), but none combine these to explain this specific phenomenon."
+     }
+    }
+   }
+  }
+ ]
+}

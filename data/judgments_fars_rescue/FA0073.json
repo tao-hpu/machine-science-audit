@@ -1,0 +1,249 @@
+{
+ "paper_id": "FA0073",
+ "title": "Sink-Free Attention Enables Prefix-Free Streaming KV Caches",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     8,
+     17
+    ],
+    "mechanism": [
+     17
+    ],
+    "evaluation": [
+     8,
+     17
+    ],
+    "domain": [
+     8
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": 17
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to show that gated attention allows stable streaming inference without preserving prefix sink tokens in the KV cache. None of the prior papers explicitly establish this empirical relationship. While papers like [8] and [17] discuss attention sinks and gated attention mechanisms, they do not demonstrate the specific effect of gated attention enabling stable streaming inference under the described KV cache regime. Similarly, [21] explores attention sinks but does not address gated attention or streaming inference stability. No prior paper reports or establishes the same empirical relationship.\n\n### Mechanism\nThe mechanism involves comparing vanilla and gated Qwen2-1B models under pure rolling-window (0+W) versus prefix-sink (S+(W-S)) cache regimes with cache-relative positional encoding. Paper [17] discusses gated attention mechanisms and systematically investigates their effects, including sparsity and attention-sink-free properties, which align with the gated attention primitive used here. Paper [8] explores window attention and prefix-sink caching but does not involve gated attention. Paper [30] discusses positional encoding enhancements but does not address gated attention or the specific cache regimes described. Thus, [17] covers the mechanism.\n\n### Evaluation\nThe evaluation design measures the PPL ratio between pure rolling-window and prefix-sink regimes for gated versus vanilla attention. Papers like [8], [17], and [21] use similar evaluation designs involving attention mechanisms and their effects on inference performance metrics (e.g., PPL). Specifically, [17] conducts comprehensive experiments comparing gated attention variants, which aligns with the evaluation design here. While the specific models and cache regimes differ, the evaluation design itself is covered by [17].\n\n### Domain\nThe domain is streaming LLM inference and KV cache management. Papers [1], [4], [8], [17], and others extensively address streaming LLM inference and KV cache optimization. For example, [8] focuses on streaming applications and KV cache challenges, while [4] surveys KV cache optimization techniques for LLM serving. These papers operate in the same general application area, even if the specific sub-problem or instance differs. Thus, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 17  \nVERDICT evaluation = 17  \nVERDICT domain = 8  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 8 | reason: Paper [8] explicitly discusses \"streaming applications\" and the challenges of \"caching previous tokens' Key and Value states (KV)\" while addressing \"attention sinks,\" which aligns with the objective of stable streaming inference without preserving prefix sink tokens in the KV cache."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 17
+      },
+      "mechanism": {
+       "covered_by": 17
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Show that gated attention allows stable streaming inference without preserving prefix sink tokens in the KV cache.**\n\nPaper [17] \"Gated Attention for Large Language Models: Non-linearity, Sparsity, and Attention-Sink-Free\" directly addresses this purpose — the title itself says \"Attention-Sink-Free\" and the paper investigates gating-augmented softmax attention variants, explicitly examining whether gated attention eliminates the need for attention sinks. Paper [8] introduces StreamingLLM and the attention sink phenomenon but does not show gated attention removes the need for sink tokens. Paper [21] studies when attention sinks emerge empirically. Paper [17] is the closest match — it explicitly investigates gated attention being \"attention-sink-free,\" which is substantively equivalent to showing gated attention allows stable streaming inference without preserving prefix sink tokens.\n\n**MECHANISM: Compare vanilla and gated Qwen2-1B models under pure rolling-window (0+W) versus prefix-sink (S+(W-S)) cache regimes with cache-relative positional encoding.**\n\nPaper [17] performs \"comprehensive comparison over 30 variants of 15B MoE models and 1.7B dense models\" comparing gated vs. vanilla attention variants, and explicitly studies attention-sink-free behavior. Paper [8] introduces the rolling-window vs. sink-token comparison framework. However, the specific mechanism here — comparing vanilla vs. gated models under pure rolling-window (0+W) vs. prefix-sink (S+(W-S)) regimes with cache-relative positional encoding on Qwen2-1B — is a controlled ablation design. Paper [17] uses a similar comparative design (gated vs. vanilla, with/without sinks). The underlying primitive is \"controlled comparison of gated vs. vanilla attention under different cache regimes,\" which paper [17] covers substantively.\n\n**EVALUATION: Gated attention achieves PPL ratio of 1.015-1.007 between pure rolling-window and prefix-sink regimes, versus 2.54 for vanilla attention.**\n\nThe evaluation design uses perplexity (PPL) ratio as a metric comparing rolling-window vs. prefix-sink cache regimes. Paper [8] uses perplexity to evaluate streaming LLM performance under different cache configurations. Paper [17] uses perplexity and other metrics to compare gated vs. vanilla attention variants. The evaluation design — measuring PPL under different cache window configurations to compare model variants — is used in both [8] and [17]. This is a standard perplexity-based benchmark evaluation design applied to streaming/cache settings, covered by [8] and [17].\n\n**DOMAIN: Streaming LLM inference / KV cache management.**\n\nPaper [8] is the foundational paper on streaming LLM inference with attention sinks and KV cache management. Papers [1], [3], [4], [5], [6], [7] all operate in the KV cache management / LLM inference domain. This domain is clearly covered.\n\nVERDICT purpose = 17\nVERDICT mechanism = 17\nVERDICT evaluation = 8\nVERDICT domain = 8",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     3,
+     11
+    ],
+    "evaluation": [
+     3,
+     11
+    ],
+    "domain": [
+     1,
+     11
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to establish the causal mechanism linking gating to streaming stability via attention sink elimination. Paper [3] discusses the effects of gating mechanisms in attention, including their ability to eliminate attention sinks, but it does not explicitly establish a causal mechanism linking gating to streaming stability. Paper [6] identifies attention sinks as a universal phenomenon in language models and discusses their implications for streaming and other applications, but it does not establish a causal mechanism linking gating to streaming stability. Paper [10] proposes Value-State Gated Attention to mitigate attention sinks and improve model performance, but it does not explicitly establish the causal mechanism between gating and streaming stability. None of the prior papers explicitly establish the causal mechanism as described in the contribution.\n\n### Mechanism\nThe mechanism involves measuring the attention sink rate under post-SDPA gating and correlating low sink rates with stable streaming across all tested models. Paper [3] systematically investigates gating-augmented attention variants and their effects, including attention sink elimination, but it does not explicitly measure attention sink rates or correlate them with streaming stability. Paper [6] empirically analyzes attention sinks in language models but does not involve post-SDPA gating or correlate sink rates with streaming stability. Paper [10] addresses attention sinks using Value-State Gated Attention but does not measure sink rates or establish a correlation with streaming stability. None of the prior papers implement the exact mechanism described in the contribution.\n\n### Evaluation\nThe evaluation demonstrates that gating reduces attention sink rates by 99.3-100% and that low sink rates perfectly predict stable streaming across all tested models. Paper [3] conducts comprehensive experiments on gating-augmented attention variants, but it does not evaluate the reduction in attention sink rates or their correlation with streaming stability. Paper [6] empirically analyzes attention sinks but does not evaluate the impact of gating on sink rates or streaming stability. Paper [10] evaluates Value-State Gated Attention but does not measure sink rate reduction or its predictive power for streaming stability. None of the prior papers use the same evaluation design.\n\n### Domain\nThe domain is attention sink analysis in transformers. Paper [1] discusses attention sinks in large language models and their mitigation through sink-aware training. Paper [3] investigates gating mechanisms in attention, including their effects on attention sinks. Paper [6] focuses on attention sinks in language models and their implications for various applications, including streaming. Paper [10] addresses attention sinks in transformers using Value-State Gated Attention. These papers collectively cover the domain of attention sink analysis in transformers.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper establishes the causal mechanism linking gating to streaming stability via attention sink elimination.  \nFACET: mechanism | FINAL: COVERED-BY 3 | reason: \"Gating mechanisms have been widely utilized... we conduct comprehensive experiments to systematically investigate gating-augmented softmax attention variants.\"  \nFACET: evaluation | FINAL: NONE | reason: No prior paper evaluates gating's reduction of attention sink rate by 99.3-100% or correlates low sink rate with stable streaming across all tested models.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 11
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Establish the causal mechanism linking gating to streaming stability via attention sink elimination.**\n\nThe purpose is specifically to show *why* gating enables streaming stability — through the causal pathway of attention sink elimination. Paper [3] explicitly investigates gating-augmented softmax attention and its effects including being \"Attention-Sink-Free,\" and connects this to streaming behavior. Paper [11] establishes the link between attention sinks and streaming stability. Paper [10] proposes gated attention to mitigate extreme-token/attention sink phenomena. However, the specific causal chain \"gating → sink elimination → streaming stability\" as a unified causal finding is most directly addressed in [3], which studies gating effects including sink-free behavior and streaming. Paper [2] also notes gating \"eliminate[s] the attention sink.\" The purpose of establishing this specific causal mechanism is covered by [3].\n\n**MECHANISM: Measure attention sink rate under post-SDPA gating and correlate low sink rate with stable streaming across all tested models.**\n\nThe mechanism involves quantifying attention sink rate as a metric and correlating it with streaming stability across models. Paper [3] conducts \"comprehensive experiments to systematically investigate gating-augmented softmax attention variants\" and studies attention-sink-free properties. Paper [6] empirically measures attention sink phenomena across models. Paper [11] correlates attention sink presence with streaming failure. The specific primitive of measuring sink rate and correlating with streaming stability is closest to [3] and [11] combined, but [3] most directly measures gating's effect on sinks empirically across models.\n\n**EVALUATION: Gating reduces attention sink rate by 99.3-100%, and low sink rate perfectly predicts stable streaming across all tested models.**\n\nThe evaluation design involves measuring attention sink rates quantitatively and testing streaming across multiple models. Paper [3] uses multi-model comparison (30 variants, 15B MoE and 1.7B dense models) to evaluate gating effects including attention sink behavior. Paper [11] evaluates streaming stability across models with attention sink metrics. The design of measuring sink rates across multiple models and correlating with streaming is used in [3] and [11]. This evaluation design (quantitative sink measurement + streaming test across models) is covered by [3] and [11].\n\n**DOMAIN: Attention sink analysis in transformers.**\n\nMultiple prior papers work directly in this domain. Papers [1], [2], [3], [4], [6], [8], [9], [10], [11], [13] all explicitly study attention sinks in transformers. This domain is clearly covered.\n\nVERDICT purpose = 3\nVERDICT mechanism = 3\nVERDICT evaluation = 3\nVERDICT domain = 11",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "PURPOSE: The contribution's purpose is to establish a specific causal chain: that gating enables stable streaming *because* it eliminates attention sinks. While prior work has established parts of this chain separately, no single paper appears to have established the full causal mechanism. Papers [2] and [3] link gating to being \"Attention-Sink-Free\", and paper [10] proposes \"Value-State Gated Attention for Mitigating Extreme-Token Phenomena\" like sinks. Separately, paper [11] links the presence of an \"Attention Sink\" to the success of \"Efficient Streaming Language Models\". However, no prior work connects all three elements to establish the specific causal pathway that is the focus of this contribution.\n\nMECHANISM: The mechanism is an analysis method: measuring the attention sink rate under a specific model configuration (gating) and correlating it with a performance outcome (stable streaming). This analysis design—correlating an internal model property with an external performance metric—is not new. For example, paper [11] analyzes attention patterns (the presence of a sink) and correlates them with the success or failure of \"Streaming Language Models,\" which is a substantively equivalent analysis design.\n\nEVALUATION: The evaluation design involves measuring two quantities: attention sink rate and streaming stability. The use of these metrics and the protocol of correlating them to validate a claim is present in prior work. Paper [11] evaluates \"Streaming Language Models\" and analyzes the role of \"Attention Sinks,\" thereby employing the same evaluation design of linking attention patterns to streaming performance, even though the intervention (adding a sink token vs. gating) differs.\n\nDOMAIN: The domain is \"attention sink analysis in transformers\". This is a well-established area of research. Numerous prior papers operate in this domain, including [1] (\"Attention Sink Forges Native MoE\"), [6] (\"When Attention Sink Emerges in Language Models\"), and [11] (\"Efficient Streaming Language Models with Attention Sinks\").\n\nVERDICT purpose = NONE\nVERDICT mechanism = 11\nVERDICT evaluation = 11\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper establishes this causal chain. Papers [2] and [3] link gating to being \"attention-sink-free\", and paper [11] links the *presence* of an attention sink to streaming stability. However, no paper connects these three elements to propose that gating *enables* streaming stability *by means of* eliminating the sink. In fact, this contradicts the mechanism in [11]."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     2
+    ],
+    "evaluation": [
+     2
+    ],
+    "domain": [
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose:\nThe contribution's purpose is to rule out model degradation as an alternative explanation for streaming stability gains. None of the prior papers explicitly address this specific empirical relationship. While some papers discuss gated attention mechanisms (e.g., [2], [3], [8]) or streaming applications ([25]), none establish or investigate the same relationship between streaming stability gains and model degradation. Therefore, the purpose is **NONE**.\n\n### Mechanism:\nThe mechanism involves evaluating full-attention perplexity of gated versus baseline models to confirm that gated models are not simply weaker. Paper [2] conducts a comprehensive comparison of gated attention variants, including experiments on perplexity for gated and baseline models, which aligns with the mechanism described. Paper [3] also discusses gated attention and its empirical effects but does not explicitly evaluate perplexity in the same way. Paper [5] critiques perplexity as a metric but does not use it for gated model comparison. Thus, the mechanism is **COVERED** by [2].\n\n### Evaluation:\nThe evaluation design involves comparing full-attention perplexity between gated and baseline models. Paper [2] performs a similar evaluation design, comparing perplexity across gated and baseline models. Paper [5] critiques perplexity but does not use it in the same evaluation design. Paper [10] uses perplexity for data pruning but does not compare gated versus baseline models. Therefore, the evaluation design is **COVERED** by [2].\n\n### Domain:\nThe domain is LLM evaluation and ablation control. Papers [2], [3], [8], and [25] all operate within the general application area of LLM evaluation and ablation control, including gated attention mechanisms and streaming applications. While the specific sub-problem differs, the domain is **COVERED**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 2  \nVERDICT evaluation = 2  \nVERDICT domain = 2  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses ruling out model degradation as an alternative explanation for streaming stability gains, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Rule out model degradation as an alternative explanation for streaming stability gains.**\n\nThe specific purpose is to confirm that gated models haven't simply become weaker models (which would trivially explain streaming stability gains). This is a control/confound-elimination purpose specific to the relationship between gating, model quality, and streaming stability. Paper [8] (Gated Sparse Attention) discusses gated attention improving training stability for long-context language models, and Paper [2] examines gating-augmented softmax attention variants comprehensively. However, neither paper specifically establishes the relationship \"gated models are not degraded, therefore streaming stability gains are genuine\" — that specific confound-elimination purpose doesn't appear. No prior paper reports this same empirical relationship (gating preserves full-attention quality, ruling out degradation as explanation for streaming gains).\n\n**MECHANISM: Evaluate full-attention perplexity of gated vs. baseline models.**\n\nThis mechanism is measuring perplexity as a quality check to compare model variants. Papers [2] and [8] both compare gated attention variants against baselines using perplexity metrics. Paper [2] explicitly conducts \"comprehensive comparison over 30 variants\" of gated models, which would naturally include perplexity comparisons. Paper [12] (Gated Linear Attention) also evaluates model variants using perplexity. The primitive of \"compare perplexity of gated vs. non-gated models\" is clearly present in [2] and [8].\n\n**EVALUATION: Gated models maintain comparable or slightly better full-attention perplexity (12.71-12.79 vs 12.82 baseline).**\n\nThe evaluation design here is: measure perplexity on full-attention models, compare gated variant to baseline numerically. This is a standard perplexity comparison design used in [2], [8], [12], and [16]. Paper [2] explicitly compares gated model variants using perplexity metrics. The design (perplexity comparison between model variants) is well-established across multiple prior papers.\n\n**DOMAIN: LLM evaluation / ablation control.**\n\nLLM evaluation is clearly covered by numerous papers including [1], [2], [5], [8], [10], [12], [25]. This is squarely within the existing area of LLM evaluation and architecture comparison.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 2\nVERDICT evaluation = 2\nVERDICT domain = 2",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper contains the objective of ruling out model degradation as an alternative explanation for streaming stability gains. Paper [25] addresses streaming stability but does not perform ablations to isolate degradation as a confound. No other paper matches this specific empirical control purpose even under different terminology."
+     }
+    }
+   }
+  }
+ ]
+}

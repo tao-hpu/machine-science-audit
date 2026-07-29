@@ -1,0 +1,287 @@
+{
+ "paper_id": "FA0029",
+ "title": "Answerability-Gain Rewards for Evidence-Label-Free GRU-Mem Gating: An Empirical Investigation",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     27
+    ],
+    "mechanism": [
+     9
+    ],
+    "evaluation": [
+     2,
+     5
+    ],
+    "domain": [
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to replace expensive evidence-position labels for training GRU-Mem update/exit gates in recurrent memory agents. None of the prior papers explicitly address this specific objective. While several papers (e.g., [2], [6], [12]) discuss training or optimizing memory agents for long-context tasks, they do not focus on replacing evidence-position labels or solving the specific problem of training GRU-Mem update/exit gates. These papers address broader or different challenges, such as memory efficiency, end-to-end training, or memory curation, but not the specific purpose of this contribution.\n\n### Mechanism\nThe mechanism involves using answerability-gain rewards, a dense per-chunk signal measuring the change in answer confidence (teacher-forced log-likelihood of the correct answer) after each memory update, combined with per-step cost penalties for early exit. This mechanism is partially covered by [9] (PACR), which introduces a dense, model-intrinsic reward based on the evolving belief in the correct answer, encoding the inductive bias that confidence should increase along a reasoning trajectory. While [9] does not explicitly target memory updates or GRU-Mem gates, the underlying primitive of using dense, confidence-based rewards to guide reinforcement learning is substantively equivalent. Additionally, [8] (ConfClip) and [23] (Dense Reward for Free) also explore dense reward signals, but they do not specifically combine these with penalties for early exit or focus on memory updates, making [9] the closest match.\n\n### Evaluation\nThe evaluation is conducted on RULER-QA across context lengths from 28K to 224K tokens against outcome-only reward baselines. This evaluation design is covered by [5], which systematically evaluates memory-augmented methods on long-context question-answering tasks requiring diverse reasoning strategies. While the specific dataset (RULER-QA) and context lengths differ, the evaluation design — benchmarking memory-augmented agents on long-context QA tasks — is substantively equivalent. Additionally, [18] (LongBench) provides a multitask benchmark for long-context understanding, which overlaps in evaluation design principles, though it is not specific to memory agents. Thus, the evaluation design is covered.\n\n### Domain\nThe domain is long-context recurrent memory agents. This domain is covered by multiple prior papers, including [2], [6], and [12], all of which focus on memory agents or memory-augmented systems for long-context tasks. While the specific implementation details and datasets differ, the general application area of long-context recurrent memory agents is well-established in these works.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 9  \nVERDICT evaluation = 5  \nVERDICT domain = 2  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses replacing expensive evidence-position labels for training GRU-Mem update/exit gates in recurrent memory agents, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 27
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Replace expensive evidence-position labels for training GRU-Mem update/exit gates in recurrent memory agents.**\n\nThe purpose is specifically about eliminating the need for costly position-level supervision labels when training gating mechanisms in recurrent memory agents. Paper [6] (UMA) trains memory agents end-to-end with RL to avoid brittle query-time processing, but its purpose is unifying memory operations, not replacing position labels. Paper [2] (MemAgent) uses RL to optimize long-text tasks end-to-end, avoiding manual annotation — this is close but focuses on the agent workflow, not specifically on replacing evidence-position labels for gate training. Paper [27] (FreePRM) explicitly addresses \"training PRMs without ground-truth step-level labels\" — the purpose of replacing expensive step-level supervision labels with a weaker signal. This is structurally equivalent: both aim to replace costly intermediate-step labels (position labels / process labels) with automatically derived signals. The underlying objective — eliminate expensive intermediate supervision labels for a sequential decision process — is the same problem class.\n\nPaper [27] covers this purpose.\n\n---\n\n**MECHANISM: Answerability-gain rewards = dense per-chunk signal measuring change in answer confidence (teacher-forced log-likelihood of correct answer) after each memory update, combined with per-step cost penalties.**\n\nThe core primitive is: measure the *change* in model confidence (log-likelihood of correct answer) after each processing step, use that delta as a dense reward signal. Paper [9] (PACR) proposes \"a dense, model-intrinsic reward computed directly from the model's evolving belief in the correct answer... the probability of the ground-truth answer should have a progressively ascending trend\" — this is essentially the same primitive: delta in answer confidence as a dense per-step reward. Paper [8] (ConfClip) also uses confidence-weighted rewards for RL in LLMs to address sparse binary feedback. Paper [23] (Dense Reward for Free in RLHF) converts sparse sequence-level rewards to dense token-level rewards using the reward model. Paper [1] uses follow-up likelihood as reward. The closest match is [9]: PACR explicitly uses the model's evolving belief/confidence in the correct answer as a dense reward, measuring progression — this is the same primitive as answerability-gain (delta in log-likelihood of correct answer per step). The per-step cost penalty for early exit is a standard step-cost shaping, covered by potential-based reward shaping literature [10, 11, 15].\n\nPaper [9] covers the core mechanism (confidence-delta as dense per-step reward); [10]/[11] cover the cost penalty component.\n\n---\n\n**EVALUATION: Evaluated on RULER-QA across context lengths 28K–224K tokens against outcome-only reward baselines.**\n\nRULER is a named benchmark family for long-context evaluation. Paper [2] (MemAgent) evaluates on long-context benchmarks including RULER. Paper [6] (UMA) evaluates on long-context QA benchmarks. The evaluation design — using a named long-context benchmark (RULER), varying context lengths, comparing against baselines — is a standard long-context evaluation design used in prior work. Paper [2] explicitly uses RULER as an evaluation benchmark. The design (RULER benchmark + context-length scaling + baseline comparison) is covered.\n\nPaper [2] covers this evaluation design.\n\n---\n\n**DOMAIN: Long-context recurrent memory agents.**\n\nPapers [2], [6], [3], [4], [12] all work in the domain of long-context processing with memory-augmented LLM agents. This is clearly covered.\n\nPaper [2] covers this domain.\n\n---\n\nVERDICT purpose = 27\nVERDICT mechanism = 9\nVERDICT evaluation = 2\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 27
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe purpose is to replace expensive, fine-grained supervision (evidence-position labels) for training a policy (memory update/exit gates) with a cheaper, automatically derived signal. This is substantively equivalent to the purpose of paper [27], which aims to \"address [the] challenge\" that \"training PRMs typically requires step-level labels... which can be costly and difficult to obtain at scale\" by creating a framework \"for training PRMs without access to ground-truth step-level labels.\" Both seek to replace costly, step-level supervision with a weakly supervised alternative.\n\n**MECHANISM**\nThe mechanism is a dense reward signal calculated as the change in the model's confidence in the final correct answer after each intermediate step (a memory update). This is the same primitive as the \"Progressively Ascending Confidence Reward (PACR)\" from paper [9], which is described as \"a dense, model-intrinsic reward computed directly from the model's evolving belief in the correct answer.\" Both mechanisms use the change in log-likelihood of the ground-truth answer as a dense reward for intermediate actions.\n\n**EVALUATION**\nThe evaluation design involves testing a memory-augmented agent on a long-context question-answering benchmark (RULER-QA) across a range of increasing context lengths. This evaluation design is not new; paper [5] explicitly describes its contribution as \"a systematic evaluation of memory-augmented methods on long-context dialogues annotated for question-answering tasks,\" which is the same validation setup. Similarly, paper [18] introduces \"LongBench,\" a benchmark explicitly created for this evaluation design.\n\n**DOMAIN**\nThe application domain is long-context recurrent memory agents. This is a well-established area. For example, paper [2] introduces \"MemAgent,\" an \"RL-based Memory Agent\" for \"Long-Context LLM,\" and paper [6] proposes a framework for \"End-to-End Training of Memory Agents for Long-Context Reasoning.\" These papers operate in the same general application area.\n\nVERDICT purpose = 27\nVERDICT mechanism = 9\nVERDICT evaluation = 5\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     6
+    ],
+    "mechanism": [
+     6,
+     11
+    ],
+    "evaluation": [
+     6,
+     11
+    ],
+    "domain": [
+     1,
+     10
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": [
+        6,
+        11
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        6,
+        11
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        10
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to rigorously test whether dense answerability-gain rewards outperform simpler outcome-only rewards. This is a specific empirical relationship being tested. Paper [6] explores the use of outcome-based rewards versus process-level rewards in search-augmented LLM agents, but it does not explicitly test the comparative performance of dense answerability-gain rewards against outcome-only rewards. Similarly, paper [11] discusses the limitations of outcome-based rewards in multi-turn search agents and proposes information-gain-based rewards, but it does not rigorously test the specific relationship between answerability-gain rewards and outcome-only rewards. No prior paper explicitly establishes or tests this relationship.  \n**Conclusion:** NONE.\n\n### Mechanism\nThe mechanism involves comprehensive experiments on RULER-QA (28K-224K tokens) comparing answerability-gain rewards against outcome-only reward training across eight evaluation conditions. Paper [6] uses reinforcement learning to train search-augmented agents with process-level rewards, which is conceptually similar to the use of answerability-gain rewards. Paper [11] also employs information-gain-based rewards, which are dense and process-oriented, in multi-turn search settings. Both papers involve mechanisms that are substantively equivalent to the use of dense, process-level rewards like answerability-gain rewards.  \n**Conclusion:** [6], [11].\n\n### Evaluation\nThe evaluation design involves comparing the performance of dense answerability-gain rewards and outcome-only rewards using exact match as the metric and a win/loss split across eight evaluation conditions. Paper [6] evaluates the impact of process-level rewards versus outcome-only rewards using exact match as a metric, which is the same evaluation design. Paper [11] also evaluates the effectiveness of information-gain-based rewards using exact match and other metrics in multi-turn search settings, which aligns with the evaluation design of the contribution.  \n**Conclusion:** [6], [11].\n\n### Domain\nThe domain is long-context recurrent memory agents. Paper [1] explicitly focuses on long-context question answering with memory-augmented methods, which aligns with the general application area of long-context recurrent memory agents. Paper [10] also addresses long-context memory agents, specifically for temporal reasoning in multi-session dialogues. Both papers operate in the same general application area.  \n**Conclusion:** [1], [10].\n\n---\n\n**Final Verdicts**  \nVERDICT purpose = NONE  \nVERDICT mechanism = [6], [11]  \nVERDICT evaluation = [6], [11]  \nVERDICT domain = [1], [10]  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 6 | reason: Paper [6] explicitly investigates the use of dense answerability-gain rewards versus simpler outcome-only rewards in search-augmented LLM agents, stating: \"These approaches usually rely on outcome-based rewards (e.g., exact match), implicitly assuming that optimizing for final answers will also yield effective intermediate search behavior.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Rigorously test whether dense answerability-gain rewards outperform simpler outcome-only rewards.**\n\nPaper [6] \"Beyond Outcome Reward: Decoupling Search and Answering Improves LLM Agents\" explicitly compares outcome-based rewards against richer reward signals for search-augmented agents, asking whether outcome-only rewards are sufficient. Paper [11] \"Information Gain-based Policy Optimization\" similarly tests whether outcome-based rewards alone are adequate versus information-gain-based intermediate rewards. Paper [26] \"StepSearch\" also compares sparse/global-only rewards against step-wise dense rewards for QA agents. However, the specific purpose here is testing *answerability-gain* rewards (a specific formulation tied to whether retrieved context makes a question answerable) against outcome-only rewards. Papers [6], [11], and [26] all pursue the same objective at the problem-class level: \"does adding dense intermediate rewards improve over outcome-only rewards for search/QA agents?\" This is substantively equivalent — same gap being closed, same target quantity.\n\n**MECHANISM: Comprehensive experiments on RULER-QA (28K-224K tokens) comparing answerability-gain against outcome-only reward training across eight evaluation conditions.**\n\nThe mechanism here is a controlled comparison experiment (ablation/substitution) across multiple evaluation conditions. Paper [6] runs experiments comparing outcome-based vs. richer reward signals across multiple benchmarks. Paper [11] similarly runs comparative experiments across multiple conditions. Paper [26] runs comparative experiments on multi-hop QA. The RULER-QA benchmark is specific, but the experimental design (compare two reward formulations across multiple conditions) is a standard controlled comparison design that appears in [6], [11], and [26]. Per the finding-type rules, mechanism is judged at design level — controlled comparison of reward formulations across multiple benchmarks/conditions is covered.\n\n**EVALUATION: Negative result: 63.19% vs 63.48% average exact match with a 4-4 win/loss split, showing no consistent improvement over outcome-only rewards.**\n\nThe evaluation design uses exact match as the metric for QA tasks, comparing two training conditions. Exact match for QA evaluation is used in papers [6], [11], [26], and [1]. The win/loss split analysis is a standard comparative reporting method. The evaluation design (exact match on QA benchmarks comparing reward formulations) is covered by [6] and [11].\n\n**DOMAIN: Long-context recurrent memory agents.**\n\nPaper [1] \"Evaluating Long-Term Memory for Long-Context Question Answering\" works in long-context QA with memory-augmented methods. Paper [10] \"Memory-T1\" works with multi-session memory agents using RL. Paper [8] evaluates LLMs on long-context tasks. The domain of long-context memory agents is covered by [1] and [10], even if the specific recurrent architecture differs.\n\nVERDICT purpose = 6\nVERDICT mechanism = 6\nVERDICT evaluation = 6\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     13,
+     17
+    ],
+    "mechanism": [
+     6,
+     8
+    ],
+    "evaluation": [
+     6,
+     13
+    ],
+    "domain": [
+     5,
+     8
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to explain why dense rewards fail and point to remedies. None of the prior papers explicitly address this purpose. While several papers discuss issues with reward design (e.g., [1], [4], [5], [9], [16], [17]), they focus on different aspects such as sparse rewards, reward hacking, or general reward shaping, rather than specifically analyzing the failure of dense rewards and proposing remedies. For example, [1] revisits sparse rewards but does not analyze dense reward failure. Similarly, [4] and [17] focus on reward hacking, which is a different problem. No prior paper establishes the same empirical relationship or purpose.\n\n### Mechanism\nThe mechanism identifies an early-exit bias caused by the answerability-gain signal, which biases the agent toward exiting after encountering the first piece of evidence, harming multi-hop reasoning. Paper [8] identifies a related issue of misaligned decision boundaries in deep search agents, where agents prematurely terminate searches due to outcome-centric training. This is substantively equivalent to the early-exit bias described in the contribution, as both mechanisms involve premature termination due to biased signals. The vocabulary differs, but the underlying primitive is the same: a bias in decision-making that leads to suboptimal multi-step reasoning.\n\n### Evaluation\nThe evaluation suggests multi-step lookahead rewards or evidence-diversity bonuses as alternatives to address the identified limitation. Paper [13] introduces StepSearch, which also addresses sparse rewards in multi-hop reasoning by proposing a step-wise proximal policy optimization framework. While the specific benchmarks or datasets may differ, the evaluation design — proposing and validating alternative reward structures to improve multi-hop reasoning — is substantively equivalent. Thus, the evaluation facet is covered.\n\n### Domain\nThe domain is long-context recurrent memory agents. Papers [5], [8], [12], [13], and [18] all operate in the same general application area of multi-turn or multi-hop reasoning agents, particularly in contexts requiring long-term memory or iterative reasoning. For example, [5] and [13] focus on multi-turn search agents, and [12] and [18] address long-context reasoning in LLMs. While the specific tasks or datasets may differ, the general domain is the same.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 8  \nVERDICT evaluation = 13  \nVERDICT domain = 5  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 1 | reason: Paper [1] discusses the failure of dense rewards in goal-reaching tasks and advocates for sparse rewards as a remedy, aligning with the objective of explaining dense reward failures and pointing to solutions. Quoted phrase: \"Despite this simplicity, such formulations are often overlooked in favor of dense rewards due to th[is].\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Explain why the dense reward fails and point to remedies.**\n\nThe contribution's purpose is to diagnose a specific failure mode of a dense/information-gain reward in a multi-turn search agent setting, and suggest fixes. Paper [5] introduces information gain-based policy optimization for multi-turn search agents and discusses reward design. Paper [13] (StepSearch) explicitly addresses why sparse rewards underperform on multi-hop QA and proposes step-wise rewards as a remedy. Paper [8] identifies a root cause of failure in deep search agents (excessive searching due to misaligned decision boundaries) and proposes remedies. However, none of these papers specifically pursue the purpose of explaining why a *dense* (answerability-gain) reward fails — they either explain sparse reward failure or different failure modes. The closest is [13], which explains underperformance on multi-hop QA from sparse rewards and proposes fixes, but the contribution here is about diagnosing dense reward failure specifically. Still, at the problem-class level, \"explain why a reward signal fails on multi-hop questions and suggest remedies\" is substantively covered by [13].\n\n**MECHANISM: Analysis identifying an early-exit bias from answerability-gain signal biasing agent toward exiting after first evidence piece.**\n\nThis is a specific analytical finding: the answerability-gain reward creates an early-exit bias that hurts multi-hop integration. Paper [8] identifies a related issue — agents \"cannot accurately judge when to stop searching and start answering\" due to \"outcome-centric training\" — but this is about over-searching, not early-exit bias from a dense reward. Paper [13] discusses that step-wise rewards can hurt multi-hop QA but doesn't identify an early-exit bias mechanism from answerability gain. Paper [5] introduces the information gain reward but doesn't analyze this failure mode. No prior paper identifies the specific primitive of \"answerability-gain signal → early-exit bias → failure on multi-hop integration.\" This appears genuinely absent.\n\n**EVALUATION: The identified limitation explains the negative result; suggests multi-step lookahead rewards or evidence-diversity bonuses.**\n\nThe evaluation design here is essentially a qualitative/analytical explanation of a negative result plus proposed remedies — not a benchmark or metric. This is a discussion/analysis section rather than a formal evaluation design. Looking at prior papers: [13] uses step-wise reward analysis on multi-hop QA benchmarks; [5] uses standard QA benchmarks with RL training. The \"evaluation\" here is more of a theoretical/analytical argument explaining observed results, which is a generic analytical move. No specific named benchmark, metric, or protocol is introduced. This is a generic analytical/discussion design that appears in many papers. Paper [13] uses a similar design of explaining negative results on multi-hop QA and proposing alternatives.\n\n**DOMAIN: Long-context recurrent memory agents.**\n\nPapers [5], [8], [13] all work in multi-turn LLM-based search agents. Paper [15] addresses long-context LLM evaluation. The domain of \"long-context recurrent memory agents\" is a specific sub-area of LLM-based agents, which is covered by the general area addressed in [5], [8], [13]. The recurrent memory aspect is a specific architectural instance within the broader LLM agent area.\n\nVERDICT purpose = 13\nVERDICT mechanism = NONE\nVERDICT evaluation = 13\nVERDICT domain = 5",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper identifies or names an \"early-exit bias\" caused by an answerability-gain signal biasing agents toward exiting after the first piece of evidence, specifically hurting multi-hop questions requiring integration of multiple evidence pieces. Paper [5] (IGPO) and [13] (StepSearch) discuss sparse rewards and multi-hop underperformance, but neither diagnoses this specific mechanistic bias. Paper [8] discusses excessive searching but not the opposite early-exit bias from an information-gain signal. No quoted phrase from any prior paper captures this specific empirical mechanism."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 17
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "purpose: No prior paper has the purpose of explaining why a dense reward signal fails by causing a specific \"early-exit bias\" in multi-hop reasoning agents. Other papers discuss failures of sparse rewards ([5], [13]), the opposite problem of excessive searching ([8]), or general reward hacking ([4], [17]), but not this specific failure mechanism for dense rewards.\n\nmechanism: The analysis identifies that a greedy, short-term reward signal leads to a globally suboptimal outcome, which is a form of premature convergence or getting stuck in a local optimum. This is a classic analytical primitive, covered by [6] which analyzes \"premature convergence caused by blind spots\" in metaheuristics, and [14] which notes that reward hacking occurs when \"exploiting the loophole is easier than solving the task\".\n\nevaluation: The evaluation design consists of identifying a limitation or failure mode and then proposing remedies based on that diagnosis. This design is covered by multiple prior papers, for instance [6], which states, \"To address the issue of premature convergence caused by blind spots, we propose LTMA+\".\n\ndomain: The domain is long-context agents, specifically those based on LLMs performing multi-turn reasoning or information-seeking tasks. This application area is covered by several papers, including [8] which works on \"Deep search agents, which autonomously iterate through multi-turn web-based reasoning\".\n\nVERDICT purpose = NONE\nVERDICT mechanism = 6\nVERDICT evaluation = 6\nVERDICT domain = 8",
+      "stage2": "FACET: purpose: Explain why the dense reward fails and point to remedies. | FINAL: COVERED-BY [17] | reason: This paper identifies reward hacking as a specific failure mode of the learned (dense) reward function in RLHF and proposes to systematically investigate reward shaping techniques as a remedy. The quote is: \"RLHF is susceptible to \\emph{reward hacking}, where the agent exploits flaws in the reward function rather than learning the intended behavior... To bridge this gap, [we propose] a systematic investigation into shaping techniques\"."
+     }
+    }
+   }
+  }
+ ]
+}

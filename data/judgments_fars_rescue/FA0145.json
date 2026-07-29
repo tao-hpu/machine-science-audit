@@ -1,0 +1,414 @@
+{
+ "paper_id": "FA0145",
+ "title": "Disagreement-Gated Judge KV Reuse: A Training-Free Safety Signal for Multi-Agent LLM Systems",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     11
+    ],
+    "mechanism": [
+     11,
+     13,
+     17,
+     20
+    ],
+    "evaluation": [
+     1
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": [
+        13,
+        17
+       ]
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to provide a training-free safety signal to preserve LLM-judge consistency when KV cache reuse is used to accelerate multi-agent inference. Paper [1] explicitly addresses the problem of KV cache reuse failing in multi-agent LLM judge systems, highlighting the inconsistency issues that arise during judge-centric inference. This aligns with the stated purpose of the contribution, as both aim to address the reliability of LLM-judge consistency under KV cache reuse.\n\n### Mechanism\nThe mechanism involves running two structurally different KV reuse methods (Naive Reuse and KVCOMM) in parallel, gating on their disagreement, and falling back to dense prefill when they disagree. Paper [13] and [17] describe dual-modular redundancy (DMR) and voting circuits for fault tolerance, where multiple redundant systems are run in parallel, and disagreements are resolved through voting mechanisms. While the specific application differs, the underlying primitive — using disagreement between parallel systems to ensure reliability — is substantively equivalent.\n\n### Evaluation\nThe evaluation uses HumanEval with Llama-3.2-3B-Instruct to measure Judge Consistency Rate and agreement rates between methods. Paper [1] evaluates KV cache reuse strategies on HumanEval, among other benchmarks, to assess judge consistency and agreement rates. The evaluation design — using HumanEval and measuring judge consistency — is directly covered by [1].\n\n### Domain\nThe domain is multi-agent LLM judge inference with KV cache reuse. Paper [1] explicitly addresses multi-agent LLM judge inference and the use of KV cache reuse in this context. While the specific methods differ, the application area is the same, making the domain covered.\n\n---\n\nVERDICT purpose = 1  \nVERDICT mechanism = 13, 17  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 20
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Provide a training-free safety signal to preserve LLM-judge consistency when KV cache reuse is used to accelerate multi-agent inference.**\n\nPaper [1] is the closest: it explicitly studies \"when KV cache reuse fails\" for LLM judges in multi-agent systems and identifies that reuse strategies harm judge consistency. However, [1] diagnoses the problem rather than providing a safety signal/method to preserve consistency. The purpose of [1] is to *show* the failure, not to *fix* it with a training-free signal. No other paper pursues the objective of \"preserve LLM-judge consistency under KV cache reuse via a training-free gating mechanism.\" Paper [20] proposes an abstention mechanism for reranking to handle failures, which is thematically related (abstain when uncertain), but the target problem (LLM-judge consistency under KV cache reuse) is distinct. The purpose here is genuinely not covered by any prior paper.\n\n---\n\n**MECHANISM: Run two structurally different KV reuse methods in parallel, gate on their disagreement, accept when they agree, fall back to dense prefill when they disagree.**\n\nThis is structurally a \"disagreement-based gating / ensemble with fallback\" primitive. Paper [11] proposes N-Version Programming for DRL with fault tolerance via redundancy and voting. Paper [27] proposes automated N-Version Programming with LLMs for fault-tolerant systems. Paper [13] proposes dual-modular redundancy with a two-stage voting system. Paper [16]/[19] introduce \"Query by Committee\" — choose the next query based on maximal disagreement among committee members. Paper [20] proposes an abstention mechanism based on model disagreement for reranking: \"we introduce a protocol for evaluating abstention strategies\" where the system abstains (falls back) when models disagree. The DG-JKR mechanism — run two variants, agree→accept winner, disagree→fallback — is precisely the dual-modular redundancy / disagreement-based abstention primitive. Paper [20] is particularly close: it uses disagreement between models to trigger abstention/fallback in an IR setting. Papers [11], [13], [27] cover the N-version/dual-modular redundancy voting primitive. The underlying primitive (run two variants, gate on disagreement, fall back when they disagree) is covered by [20] (disagreement→abstention) and [11]/[13]/[27] (dual-modular redundancy with voting/fallback).\n\n---\n\n**EVALUATION: On HumanEval with Llama-3.2-3B-Instruct, DG-JKR reaches 74.38% Judge Consistency Rate, +8.13pp over Naive Reuse; methods agree on 83% of cases.**\n\nPaper [1] explicitly uses HumanEval as one of its benchmarks (alongside GSM8K, MMLU) and measures Judge Consistency Rate in the same multi-agent LLM judge setting. The evaluation design (HumanEval benchmark, Judge Consistency Rate metric, comparison of KV reuse methods) is directly from [1]. This is clearly covered.\n\n---\n\n**DOMAIN: Multi-agent LLM judge inference / KV cache reuse.**\n\nPaper [1] operates in exactly this domain: \"Multi-agent LLM systems... aggregated by an LLM judge... KV cache reuse across partially shared contexts.\" Paper [2], [3], [4], [5], [6], [7] all operate in the KV cache reuse for LLM inference domain. Paper [8] operates in multi-agent LLM judge evaluation. This domain is thoroughly covered.\n\n---\n\nVERDICT purpose = NONE\nVERDICT mechanism = 20\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of providing a training-free safety signal specifically to preserve LLM-judge consistency under KV cache reuse in multi-agent inference. Paper [1] identifies the problem but does not provide such a signal; no other paper addresses this objective even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 11
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to provide a runtime safety signal to improve the reliability of a system, specifically to preserve consistency in an accelerated LLM judge. This falls into the general problem class of fault-tolerant system design. This objective is covered by prior work, such as [11], which proposes a framework for \"Fault-Tolerant Deep Reinforcement Learning Systems\" to \"improving their reliability\".\n\n**mechanism**: The mechanism runs two different implementations of a function in parallel, trusts the output if they agree, and triggers a fallback/error state if they disagree. This is a textbook implementation of Dual-Modular Redundancy (DMR), a specific case of N-Version Programming (NVP). This primitive is explicitly described in multiple prior papers, for example [11] whose framework is \"Based on N-Version Programming\" and [13] which proposes a \"complementary dual-modular redundancy (CDMR) scheme\".\n\n**evaluation**: The evaluation design involves measuring the consistency of an LLM judge on the HumanEval benchmark when KV cache reuse is applied. This exact evaluation design is used in [1], which states \"Across GSM8K, MMLU, and HumanEval, we find that reuse strategies that are effective for execution agents can fail catastrophically in judge-centric inference,\" thereby establishing the benchmark and metric semantics for this problem.\n\n**domain**: The application domain is the intersection of multi-agent systems, LLM-as-judge, and KV cache reuse. This specific domain is explicitly established by [1], titled \"When KV Cache Reuse Fails in Multi-Agent Systems: Cross-Candidate Interaction is Crucial for LLM Judges\".\n\nVERDICT purpose = 11\nVERDICT mechanism = 11\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     8,
+     19
+    ],
+    "mechanism": null,
+    "evaluation": [
+     1,
+     26
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 19
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution aims to demonstrate that algorithmic disagreement is a genuinely informative uncertainty signal rather than an arbitrary gating heuristic. Prior papers discussing disagreement-based uncertainty include [6], [8], and [19]. However, none of these papers establish the **specific empirical relationship** that disagreement is an informative uncertainty signal in the context of gating decisions. For example, [6] conceptualizes disagreement as a basis for uncertainty but does not empirically validate its informativeness for gating. Similarly, [8] uses disagreement as a measure of forecast uncertainty but does not address its informativeness in decision-making gates. [19] discusses disagreement in the context of generalization error but does not establish the same relationship. Thus, no prior paper reports or establishes the **same empirical relationship**.\n\n#### Mechanism:\nThe contribution compares disagreement gating against a random gating baseline while holding the fallback rate constant. This mechanism is a controlled comparison of gating strategies, which is conceptually similar to randomized benchmarking protocols in papers like [13], [16], and [18]. However, these papers focus on benchmarking noise or gate fidelity in quantum systems, not gating strategies for uncertainty estimation. Papers like [20] and [14] discuss disagreement-based active learning but do not involve a random gating baseline or controlled fallback rate. No prior paper uses this **specific experimental mechanism** for comparing disagreement gating to random gating.\n\n#### Evaluation:\nThe evaluation design involves measuring the performance improvement (+5.63 percentage points) of disagreement gating over random gating with statistical significance (p < 0.05). Papers like [1], [2], [4], and [11] use statistical significance testing and performance metrics in the context of LLM-as-a-Judge evaluations. For example, [1] quantifies uncertainty in LLM-as-a-Judge evaluations, and [2] constructs confidence intervals for bias correction. These papers use **similar evaluation designs** (statistical significance testing and performance metrics) even though the specific benchmark instance differs. Thus, the evaluation design is **covered**.\n\n#### Domain:\nThe contribution operates in the domain of uncertainty estimation for LLM judges. Papers like [1], [2], [4], and [11] explicitly address uncertainty quantification and reliability in LLM-as-a-Judge evaluations. For example, [1] introduces methods for quantifying uncertainty in LLM judges, and [4] benchmarks LLM-based judges. These papers work in the **same general application area** of uncertainty estimation for LLM judges, even if the specific sub-problem or instance differs. Thus, the domain is **covered**.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 19 | reason: Paper [19] explicitly demonstrates the empirical relationship between algorithmic disagreement and its informativeness as an uncertainty signal, quoting: \"the average test error of deep neural networks can be estimated via the prediction disagreement of models, which does not require labels.\"\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper explicitly compares disagreement gating against a random gating baseline while holding fallback rate constant, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Demonstrate that algorithmic disagreement is a genuinely informative uncertainty signal rather than an arbitrary gating heuristic.**\n\nThis purpose is about validating disagreement as a meaningful uncertainty signal (not just showing it works, but proving it's informative vs. arbitrary). Papers [7] and [8] address \"disagreement as a measure of uncertainty\" — paper [8] explicitly is titled \"Disagreement as a Measure of Uncertainty\" and presents evidence that forecaster disagreement provides a useful measure of forecast uncertainty. Paper [7] is \"Measuring Forecast Uncertainty by Disagreement.\" However, these are in economic forecasting contexts, not LLM judges. The purpose — demonstrating disagreement is genuinely informative vs. arbitrary — is substantively the same relationship being established. Paper [8] specifically argues disagreement is a valid uncertainty proxy, which is the same claim. This covers the purpose at the problem-class level.\n\n**MECHANISM: Compares the disagreement gate against a random gating baseline holding fallback rate constant.**\n\nThis is a controlled comparison: disagreement-based selection vs. random selection at the same coverage/fallback rate. This is essentially a selective prediction / reject option experiment where the gating criterion is compared to a random baseline at iso-coverage. Papers [22], [25], [26], [28], [29] all deal with reject option / selective classification, but none specifically describe comparing a disagreement gate to a random gate at fixed fallback rate as their mechanism. Paper [19] (\"Assessing Generalization of SGD via Disagreement\") compares disagreement-based estimates but not against random gating. The specific primitive — \"compare disagreement gating to random gating at fixed fallback rate\" — is a controlled ablation design. This is a generic experimental move (swap the gating criterion, hold coverage constant), which per the rules doesn't establish coverage unless a prior paper validated the same claim. No prior paper appears to use this exact mechanism to validate disagreement as an uncertainty signal in any domain.\n\n**EVALUATION: Disagreement gating beats random gating by +5.63 pp with p < 0.05.**\n\nThe evaluation design is: compare two gating strategies at fixed fallback rate, report accuracy difference with a p-value (hypothesis test). This is a standard statistical comparison design. Papers [1], [2], [11] use statistical frameworks for LLM-as-judge evaluation. Paper [2] uses confidence intervals and statistical principled UQ. Paper [11] uses McDonald's omega for reliability. The specific design of \"compare gating strategies at iso-coverage with a significance test\" doesn't appear explicitly in prior papers. However, the statistical hypothesis testing framework (p < 0.05 comparison) is generic. Per the rules, generic experimental moves don't establish coverage unless the same claim is validated. No prior paper uses this specific evaluation design (iso-coverage gating comparison with significance test) for this claim.\n\n**DOMAIN: Uncertainty estimation for LLM judges.**\n\nPapers [1], [2], [3], [4], [11] all work in the domain of LLM-as-a-judge evaluation and uncertainty/reliability. Paper [1] is explicitly \"Black-box Uncertainty Quantification Method for LLM-as-a-Judge.\" This clearly covers the domain.\n\nVERDICT purpose = 8\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper compares a disagreement-based gating mechanism against a random gating baseline while holding fallback rate constant; the active learning and reject-option papers use disagreement differently and none introduce a random gating control condition for this purpose.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports a +5.63 percentage point accuracy gain of disagreement gating over random gating with p < 0.05 or any numerically equivalent claim under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": 23
+      },
+      "evaluation": {
+       "covered_by": 26
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**PURPOSE**: The contribution's purpose is to demonstrate that algorithmic disagreement is an informative signal for uncertainty. This exact empirical relationship has been established in prior work across different domains. For example, [8] shows that \"forecaster disagreement provides a useful measure of forecast uncertainty\" in economics, and [19] notes that \"the average test error of deep neural networks can be estimated via the prediction disagreement of models.\"\n\n**MECHANISM**: The mechanism is a controlled experiment comparing a disagreement-based gate to a random baseline while holding the fallback rate constant. This is a standard analysis protocol in the field of selective classification (also known as classification with a reject option), where new methods for abstaining on uncertain inputs are benchmarked against random abstention at equivalent coverage rates to prove their utility, as seen in the general approach of papers like [23] and [26].\n\n**EVALUATION**: The evaluation design consists of a direct performance comparison between two methods (disagreement gating vs. random gating) on a quantitative metric, supported by a statistical significance test (p-value). This is a standard validation framework for demonstrating the superiority of a proposed method over a baseline, and it is a common evaluation design in papers that introduce new classification or rejection methods, such as those in the selective classification literature [22, 26, 29].\n\n**DOMAIN**: The application area is uncertainty estimation for LLM judges. This exact domain is explicitly addressed by several prior papers. For instance, [1] introduces a \"Black-box Uncertainty Quantification Method for LLM-as-a-Judge,\" and [2] proposes a framework for \"statistically principled uncertainty quantification\" in LLM-as-a-Judge evaluations.\n\nVERDICT purpose = 8\nVERDICT mechanism = 23\nVERDICT evaluation = 26\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     12,
+     17
+    ],
+    "evaluation": [
+     8,
+     12,
+     17,
+     23
+    ],
+    "domain": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        12,
+        17
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        8,
+        12,
+        17
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to demonstrate that the mechanism generalizes across different candidate generation regimes. No prior paper explicitly establishes or reports this empirical relationship. While papers like [8] and [12] discuss candidate generation and multi-agent workflows, they do not address generalization across distinct regimes or validate this specific relationship. Thus, the purpose is **NONE**.\n\n### Mechanism\nThe mechanism evaluates DG-JKR under both Progressive Refinement and Parallel Exploration candidate-generation settings. Papers [12], [16], and [17] discuss parallel and sequential search paradigms, which are substantively equivalent to Progressive Refinement and Parallel Exploration as candidate-generation strategies. For example, [12] explores scalable parallel and sequential search reasoning, and [17] introduces parallel recursive best-first AND/OR search. These mechanisms align with the underlying primitives of Progressive Refinement and Parallel Exploration. Thus, the mechanism is **COVERED** by [12] and [17].\n\n### Evaluation\nThe evaluation reports consistent improvements across both candidate-generation regimes, with stable functional improvements of 80.00% ± 0.62%. Papers [8], [12], and [17] use similar evaluation designs, such as reporting performance improvements across regimes or setups. For instance, [8] evaluates KV cache reuse strategies across different contexts, and [12] measures search scaling across parallel and sequential setups. These evaluation designs are substantively equivalent, even though the specific benchmarks and metrics differ. Thus, the evaluation is **COVERED** by [8], [12], and [17].\n\n### Domain\nThe contribution operates in the domain of multi-agent LLM workflows. Papers [1], [2], [3], [4], [5], [6], [7], and [8] all address multi-agent systems powered by LLMs, covering various aspects of workflows, orchestration, and optimization. For example, [1] investigates multi-agent workflows outperforming single-agent baselines, and [5] proposes query-specific orchestration for multi-agent workflows. These papers clearly operate in the same general application area. Thus, the domain is **COVERED** by [1], [2], [3], [4], [5], [6], [7], and [8].\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 12, 17  \nVERDICT evaluation = 8, 12, 17  \nVERDICT domain = 1, 2, 3, 4, 5, 6, 7, 8  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly demonstrates the mechanism generalizing across different candidate generation regimes, even under alternative terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Show the mechanism generalizes across different candidate generation regimes.**\n\nThe purpose is to demonstrate that a specific mechanism (DG-JKR) generalizes across two distinct candidate-generation paradigms (Progressive Refinement and Parallel Exploration). This is about showing cross-regime generalization of a specific LLM judge mechanism. Paper [8] is the closest — it explicitly studies how KV cache reuse strategies behave differently across agent types in multi-agent LLM systems, examining generalization of efficiency strategies across different inference regimes. However, [8]'s purpose is to show that reuse *fails* to generalize, not to demonstrate that a mechanism *does* generalize across candidate-generation regimes. No prior paper establishes the same empirical relationship (same variables: DG-JKR or equivalent cross-candidate interaction mechanism, across progressive vs. parallel generation regimes). The specific relationship being demonstrated is not covered.\n\n**MECHANISM: Evaluates DG-JKR under both Progressive Refinement and Parallel Exploration candidate-generation settings.**\n\nThe mechanism here is running a controlled comparison across two candidate-generation paradigms (sequential/iterative refinement vs. parallel generation). Paper [8] compares KV cache reuse strategies across different agent roles (execution vs. judge) in multi-agent LLM systems. Papers [12] addresses hybrid sequential and parallel search in LLM reasoning. The design of \"evaluate under both sequential/progressive and parallel candidate generation\" is a generic experimental shape (swap the generation regime, measure performance), but paper [12] explicitly combines \"parallel and sequential search reasoning\" as its core mechanism in an LLM context. However, the specific primitive of evaluating a judge mechanism under both regimes is not substantively equivalent to any prior paper's mechanism.\n\n**EVALUATION: Achieves consistent improvements in both regimes; reports stable functional improvements of 80.00% +/- 0.62%.**\n\nThe evaluation design involves reporting performance metrics with confidence intervals across two experimental conditions (regimes). This is a standard controlled comparison with stability reporting. Paper [8] uses benchmarks GSM8K, MMLU, HumanEval with performance metrics across conditions — same benchmark family and metric semantics. The design of \"measure improvement across conditions with stability statistics\" is a generic experimental shape present in many papers. Paper [8] uses the same benchmark family (GSM8K, MMLU, HumanEval) and reports performance comparisons across conditions, which matches the evaluation design.\n\n**DOMAIN: Multi-agent LLM workflows.**\n\nMultiple prior papers operate in the domain of multi-agent LLM workflows: [1], [2], [3], [4], [5], [6], [7], [8] all explicitly address multi-agent LLM systems. This is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 8\nVERDICT domain = 8",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper contains the same objective of demonstrating that a specific judge/aggregation mechanism generalizes across distinct candidate-generation regimes (Progressive Refinement vs. Parallel Exploration). Paper [8] is the closest (it studies judge inference under multi-agent candidate generation) but its purpose is to show KV cache reuse fails for judges, not to show generalization across generation regimes. No other paper matches even under different terminology.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper evaluates the same system (DG-JKR or any equivalent cross-candidate interaction judge) under both a sequential/refinement-based and a parallel/independent candidate-generation setting as a paired experimental design. Paper [12] combines parallel and sequential search but in a RAG retrieval context with no judge evaluation component. Paper [8] studies judge inference but only under a single generation paradigm. No quoted phrase from any prior paper describes evaluating a judge mechanism across both progressive refinement and parallel exploration candidate-generation settings."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 23
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 23
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: COVERED. [23] and [24] share the same purpose of testing for generalization; [23] asks \"Does attentional control strategy generalize across different visual search tasks?\" and [24] aims to \"Assess[] the generality of strategy optimization across distinct attentional tasks.\"\n\nmechanism: COVERED. [12] uses the same analysis design, comparing performance under \"single-query sequential search\" versus \"approaches that generate multiple independent queries per step,\" which are analogous to the contribution's \"Progressive Refinement\" and \"Parallel Exploration\" regimes.\n\nevaluation: COVERED. [23] and [24] use the same evaluation design by measuring performance metrics across different tasks/settings to test for generalization, with [23] looking for \"significant correlations in strategy metrics between different visual search tasks.\"\n\ndomain: COVERED. [1], [2], [3], [4], [5], [6], [7], and [8] all operate in the domain of \"Multi-agent LLM workflows\" or \"LLM-based multi-agent systems.\"\n\nVERDICT purpose = 23\nVERDICT mechanism = 12\nVERDICT evaluation = 23\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     9,
+     21,
+     23
+    ],
+    "mechanism": [
+     23,
+     26
+    ],
+    "evaluation": [
+     18,
+     21,
+     23
+    ],
+    "domain": [
+     23,
+     26
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        9,
+        21
+       ]
+      },
+      "mechanism": {
+       "covered_by": [
+        23,
+        26
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        18,
+        21
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        23,
+        26
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to characterize the cost-consistency tradeoff of a method, including its overhead. Paper [9] discusses a cost-benefit analysis of low latency via added utilization, which involves quantifying tradeoffs between latency and bandwidth usage. Paper [21] analyzes latency-cost tradeoffs in cloud computing and storage systems, focusing on resource-sharing variability and methods to reduce latency. Both papers address tradeoffs involving cost and performance metrics, making them substantively equivalent in purpose.\n\n### Mechanism\nThe mechanism involves a comprehensive cost-consistency analysis quantifying latency incurred by dual-method execution and dense fallback. Paper [23] (Mirror Speculative Decoding) and Paper [26] (Parallel Speculative Decoding with Adaptive Draft Length) both analyze latency overheads in speculative decoding methods, including fallback mechanisms and dual-method execution. These papers quantify latency impacts and tradeoffs in inference systems, making their mechanisms substantively equivalent.\n\n### Evaluation\nThe evaluation acknowledges a 4.6x latency overhead while demonstrating significant consistency gains. Paper [18] (Tailbench) provides a benchmark suite and evaluation methodology for latency-critical applications, focusing on tail latency metrics and consistency validation. Paper [21] (Queues with Redundancy) evaluates latency-cost tradeoffs using a similar validation framework. Both papers use established evaluation designs for latency and consistency analysis, making the evaluation facet covered.\n\n### Domain\nThe domain is inference efficiency analysis. Paper [23] (Mirror Speculative Decoding) and Paper [26] (Parallel Speculative Decoding with Adaptive Draft Length) both operate in the domain of inference efficiency, specifically targeting latency and performance tradeoffs in large language model (LLM) inference. This matches the general application area, making the domain covered.\n\n---\n\nVERDICT purpose = 9, 21  \nVERDICT mechanism = 23, 26  \nVERDICT evaluation = 18, 21  \nVERDICT domain = 23, 26  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 23
+      },
+      "mechanism": {
+       "covered_by": 23
+      },
+      "evaluation": {
+       "covered_by": 23
+      },
+      "domain": {
+       "covered_by": 23
+      },
+      "single_paper_covers_all": 23
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Characterize the cost-consistency tradeoff of the method honestly, including its overhead.**\n\nThe purpose is to empirically characterize a latency/overhead vs. consistency tradeoff for a specific inference method (dual-method execution with dense fallback). Paper [23] (Mirror Speculative Decoding) explicitly addresses the \"speed-accuracy tradeoff\" in LLM inference, noting that \"increasing draft size elevates acceptance rates but introduces additional latency overhead exacerbating the speed-accuracy tradeoff.\" Paper [26] (Parallel Speculative Decoding) also characterizes overhead vs. quality tradeoffs in speculative decoding. Both papers pursue the same objective: honestly characterizing the cost-quality tradeoff of an LLM inference method including its overhead. This is substantively equivalent at the problem-class level.\n\n**MECHANISM: Comprehensive cost-consistency analysis quantifying latency incurred by dual-method execution and dense fallback.**\n\nThe mechanism is measuring latency from running two methods (a primary and a fallback) and reporting the overhead. Paper [23] quantifies latency overhead from draft model execution plus verification, and paper [26] analyzes the \"mutual waiting problem\" from asynchronous dual-model execution. Both use the same analytical primitive: measure the latency cost of running dual components (draft + target, or primary + fallback) and report the overhead. This is equivalent to the dual-method execution overhead analysis described here.\n\n**EVALUATION: Acknowledges a 4.6x latency overhead while demonstrating significant consistency gains.**\n\nThe evaluation design is: report a concrete latency overhead multiplier alongside a consistency/quality gain metric. Paper [23] uses this exact design — reporting latency overhead numbers alongside acceptance rate/quality improvements. Paper [26] similarly reports latency overhead alongside quality metrics. This is a standard evaluation design in the speculative decoding literature: measure overhead cost vs. quality benefit simultaneously.\n\n**DOMAIN: Inference efficiency analysis.**\n\nPapers [23] and [26] both operate in the domain of LLM inference efficiency analysis. This is the same general application area. Paper [18] (TailBench) also covers latency analysis for inference systems. The domain is clearly covered.\n\nVERDICT purpose = 23\nVERDICT mechanism = 23\nVERDICT evaluation = 23\nVERDICT domain = 23",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

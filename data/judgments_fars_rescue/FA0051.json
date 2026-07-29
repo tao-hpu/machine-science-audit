@@ -1,0 +1,311 @@
+{
+ "paper_id": "FA0051",
+ "title": "Toeplitz Block Mixing for Scalable Multi-Head Linear Attention",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     6
+    ],
+    "mechanism": [
+     7,
+     12
+    ],
+    "evaluation": [
+     7,
+     20
+    ],
+    "domain": [
+     4
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose:\nThe contribution's purpose is to show that the full \\( M \\times M \\) block mixing matrix in Multi-Head Linear Attention (MHLA) is over-parameterized. Paper [6] discusses redundancy and over-parameterization in Multi-Head Attention (MHA), specifically noting that attention heads often learn similar features and can be pruned without harming performance. Paper [10] also addresses over-parameterization in MHA, observing that trained attention heads share common key/query projections and proposing collaborative mechanisms to reduce redundancy. Both papers establish the same problem-class level objective: identifying and addressing over-parameterization in multi-head attention mechanisms. Thus, the purpose is covered.\n\n### Mechanism:\nThe contribution fits the learned MHLA mixing matrices to a distance-tied (translation-invariant) kernel to show that coefficients depend primarily on relative block distance. Paper [7] investigates translation-invariant kernels for multivariable approximation, discussing their properties and suitability for function approximation tasks. Paper [8] applies translation-invariant kernel functions in constructing \\(\\mathcal{H}^2\\)-matrices, leveraging the property to reduce computational complexity. Paper [12] explores translational equivariance in kernelizable attention, emphasizing relative interactions between elements. These papers collectively cover the mechanism, as they all utilize translation-invariant kernels to analyze or approximate relationships tied to relative distances.\n\n### Evaluation:\nThe contribution uses a distance-tied kernel fit yielding \\( R^2 > 0.995 \\) across all layers. Paper [7] evaluates translation-invariant kernels for function approximation tasks, using metrics like convergence rates and approximation accuracy. Paper [8] validates the efficiency of \\(\\mathcal{H}^2\\)-matrices constructed with translation-invariant kernels, demonstrating computational advantages. Paper [12] evaluates translational equivariance in kernelizable attention using metrics tied to relative positional accuracy. These prior works employ similar evaluation designs (kernel fit accuracy and metrics tied to translation invariance), even though the specific benchmark instance differs. Thus, the evaluation design is covered.\n\n### Domain:\nThe contribution operates in the domain of efficient attention/sequence modeling. Paper [4] addresses efficient attention computation, focusing on reducing quadratic complexity in transformers for applications like web-page translation and query-answering. Paper [5] targets sparse attention methods to accelerate long-context inference in LLMs. Paper [13] explores sparse and low-rank attention approximations for efficient transformers. These papers all work within the general application area of efficient attention/sequence modeling, even if the specific sub-problems differ. Thus, the domain is covered.\n\n---\n\nVERDICT purpose = 6  \nVERDICT mechanism = 7  \nVERDICT evaluation = 7  \nVERDICT domain = 4  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Shows that the full M×M block mixing matrix in Multi-Head Linear Attention (MHLA) is over-parameterized.**\n\nThe purpose is to demonstrate over-parameterization in a specific attention mechanism (MHLA) by showing that the mixing matrix has redundant degrees of freedom. Papers [6], [10], [22] discuss over-parameterization/redundancy in multi-head attention. Paper [10] explicitly states \"they suffer from over-parameterization\" and paper [6] mentions \"redundancy and over-parameterization\" in MHA. However, these papers address over-parameterization in standard (softmax) multi-head attention heads/projections, not in the block mixing matrix of Multi-Head *Linear* Attention specifically. The specific claim — that the M×M block mixing matrix is over-parameterized because coefficients depend only on relative block distance — is a different empirical relationship than head pruning or shared projections. None of the prior papers establish this specific relationship (translation-invariance of block mixing weights in MHLA). NONE.\n\n**MECHANISM: Fits learned MHLA mixing matrices to a distance-tied (translation-invariant) kernel to show coefficients depend primarily on relative block distance.**\n\nThis involves fitting learned weight matrices to a translation-invariant (Toeplitz-like) kernel structure as an analysis tool. Paper [12] discusses \"Translational Equivariance in Kernelizable Attention\" and explicitly studies translation-invariant structure in attention kernels. Paper [25] discusses block-Toeplitz matrices in the context of masked Transformers. Paper [33] discusses estimation and selection of Toeplitz covariance structure. However, none of these papers use the specific mechanism of *fitting* learned attention mixing matrices post-hoc to a distance-tied kernel to diagnose over-parameterization. The closest is [25] which uses block-Toeplitz structure analytically, not as a fitting/diagnostic tool. NONE.\n\n**EVALUATION: Distance-tied kernel fit yields R² > 0.995 across all layers.**\n\nThe evaluation design is: fit a structured model to learned weight matrices, report R² goodness-of-fit across layers. This is a regression/curve-fitting evaluation with R² as the metric. This is a standard statistical evaluation design (R² from regression fitting). Paper [33] uses entropy loss for covariance structure fitting. No prior paper uses this exact design (fitting attention mixing matrices to a translation-invariant kernel and reporting R²), but R² as a goodness-of-fit metric in a regression/fitting context is entirely standard. However, the specific protocol — fitting learned neural network weight matrices to a structured kernel and reporting R² per layer — does not appear as a named benchmark or protocol in any prior paper. This is a newly constructed evaluation protocol for this specific diagnostic purpose. NONE.\n\n**DOMAIN: Efficient attention / sequence modeling.**\n\nMultiple prior papers operate in efficient attention and sequence modeling: [4] (efficient attention computation), [5] (sparse attention for long-context LLMs), [13] (sparse and low-rank attention), [16] (linear self-attention), [25] (scalable masked Transformers), [26] (linear transformers). This domain is clearly covered. Paper [4] is representative.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 4",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: Paper [6] and [10] discuss over-parameterization of MHA heads generally, but neither specifically claims the M×M block mixing matrix in Multi-Head Linear Attention is over-parameterized — they address head redundancy/pruning, not the block mixing matrix structure in MHLA. No paper contains this specific empirical claim.\n\nFACET: mechanism | FINAL: NONE | reason: Papers [12] and [26] discuss translation-invariant/relative positional kernels in attention, but neither fits learned MHLA mixing matrices post-hoc to a distance-tied kernel to demonstrate that coefficients depend primarily on relative block distance. No paper performs this specific analytical procedure.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports an R²>0.995 fit of a distance-tied kernel to learned MHLA mixing matrices across all layers, or any equivalent quantitative goodness-of-fit metric for this specific claim. The translation-invariant kernel papers [7],[8],[28] concern approximation theory, not this empirical evaluation."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 20
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The purpose is to show that the MHLA mixing matrix is over-parameterized. This is covered by papers [6] and [10], which both explicitly state that the general class of Multi-Head Attention (MHA) suffers from \"redundancy and over-parameterization\" [6] and that \"they suffer from over-parameterization\" [10], establishing the same finding at the problem-class level.\n\n**mechanism**: The mechanism is fitting a learned matrix to a distance-tied (translation-invariant) kernel to analyze its structure. This technical primitive is covered by [12], which connects \"Translational Equivariance in Kernelizable Attention\" to inductive biases based on \"relative interactions between elements,\" the same underlying concept of structure dependent on relative distance.\n\n**evaluation**: The evaluation design is to quantify the goodness-of-fit of a structural approximation (the kernel) to a learned component (the mixing matrix) using a standard metric (R^2). This design is covered by [20], which validates its \"Low Rank Factorization for Compact Multi-Head Self-Attention\" by showing the approximation is effective, a substantively equivalent design of validating a structural approximation via a goodness-of-fit measure.\n\n**domain**: The domain is efficient attention and sequence modeling. This is explicitly covered by numerous prior papers, including [4] (\"Efficient Attention Computation\"), [5] (\"Sparse attention methods ... speed up the prefilling phase\"), and [13] (\"efficient Transformers have exploited either the sparsity or low-rank properties of attention matrices\").\n\nVERDICT purpose = 6\nVERDICT mechanism = 12\nVERDICT evaluation = 20\nVERDICT domain = 4",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     6
+    ],
+    "mechanism": [
+     12,
+     30
+    ],
+    "evaluation": [
+     6,
+     9,
+     25
+    ],
+    "domain": [
+     1,
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to remove the \\(O(M^2)\\) block-mixing bottleneck of MHLA and enable extrapolation to longer sequences. Papers [6], [9], [11], [16], [24], and [25] all address length extrapolation in Transformers, which is the same problem-class objective. For example, [6] proposes kernelized relative positional embeddings for extrapolation, [9] introduces position representation methods for extrapolation, and [25] explicitly focuses on improving attention resolution for length extrapolation. These papers share the same purpose of enabling efficient extrapolation to longer sequences, even though the specific mechanisms differ.\n\n### Mechanism\nThe mechanism, Toeplitz Block Mixing (TBM), parameterizes the mixing kernel as a mixture of exponentials \\(K(\\delta) = \\sum_r a_r \\exp(-\\lambda_r \\delta)\\), constraining mixing to depend only on block distance. Papers [12], [26], and [18] describe substantively equivalent mechanisms. For example, [12] approximates power-law kernels using a sum of exponentials, [26] develops a sum-of-exponentials method for kernel functions, and [18] studies exponential kernels in machine learning. These works share the same underlying primitive of using exponential parameterizations for kernel functions, even if applied in different contexts.\n\n### Evaluation\nThe evaluation reduces mixing complexity from \\(O(M^2 d^2)\\) to \\(O(M R d^2)\\) for kernel rank \\(R \\ll M\\) and supports length extrapolation since the kernel is defined for any distance. Papers [6], [9], [11], [16], [24], and [25] use similar evaluation designs for validating extrapolation capabilities in Transformers. For example, [6] evaluates kernelized relative positional embeddings for extrapolation, [9] tests position representation methods for extrapolation, and [25] measures attention resolution improvements for length extrapolation. These papers share the same evaluation design of validating extrapolation performance, even if applied to different benchmarks or datasets.\n\n### Domain\nThe domain is linear attention architectures. Papers [1], [2], [6], [9], [11], [16], and [25] all work within the general application area of linear attention architectures. For example, [1] studies scalability in self-attention mechanisms, [2] focuses on hardware-efficient linear attention, and [6] addresses kernelized relative positional embeddings in linear attention. These papers share the same domain of linear attention architectures, even if targeting different sub-problems or datasets.\n\n---\n\nVERDICT purpose = 6  \nVERDICT mechanism = 12  \nVERDICT evaluation = 6  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 30
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Removes the O(M^2) block-mixing bottleneck of MHLA and enables extrapolation to longer sequences.**\n\nThe purpose combines two goals: (1) reducing quadratic complexity in block mixing, and (2) enabling length extrapolation. Papers [9]/[21] address length extrapolation in attention. Papers [1], [2] address quadratic complexity in attention. However, the specific purpose of reducing a *block-mixing* bottleneck in a hybrid linear attention architecture is more specific. Paper [2] (GLA) addresses linear attention efficiency. Paper [9]/[21] (ALiBi) addresses length extrapolation. Neither specifically targets the O(M^2) block-mixing bottleneck in MHLA. Paper [6] (KERPLE) addresses length extrapolation via kernelized positional differences. The combination of reducing block-mixing complexity AND enabling extrapolation as a unified purpose doesn't appear covered — but the closest is [9]/[21] for extrapolation and [2] for linear attention efficiency. Since the purpose is specifically about the block-mixing bottleneck in MHLA (a specific architectural component), and no prior paper targets this exact gap, I'll mark NONE.\n\n**MECHANISM: Toeplitz Block Mixing (TBM) parameterizes the mixing kernel as a mixture of exponentials K(delta) = sum_r a_r exp(-lambda_r delta), constraining mixing to depend only on block distance.**\n\nThe core primitive is: parameterize a Toeplitz-structured mixing kernel as a mixture of exponentials indexed by block distance. Paper [26] proposes \"sum-of-exponentials (SOE) approximation of kernel functions\" for fast convolution — same primitive of approximating kernels as sums of exponentials. Paper [12] also approximates power-law kernels as finite sums of exponentials. Paper [30] (diagonal SSMs) uses mixture-of-exponentials parameterization for state space models (S4/DSS), where the kernel is sum of exponentials. Paper [13] discusses block-Toeplitz matrices in transformers. Paper [6] (KERPLE) uses kernelized positional differences for attention. The combination of Toeplitz structure + mixture-of-exponentials is partially in [13] (Toeplitz in transformers) and [26]/[30] (sum of exponentials). Paper [30] explicitly parameterizes SSM kernels as mixtures of exponentials for sequence modeling — this is substantively equivalent at the primitive level. Paper [13] uses block-Toeplitz matrices in transformers. Together, [30] covers the mixture-of-exponentials kernel parameterization for sequence mixing, and [13] covers the Toeplitz block structure in transformers. Paper [30] is the strongest match for the mechanism primitive.\n\n**EVALUATION: Reduces mixing complexity from O(M^2 d^2) to O(M R d^2) for kernel rank R << M and supports length extrapolation since the kernel is defined for any distance.**\n\nThe evaluation facet as described seems to be a theoretical/analytical claim rather than an empirical benchmark evaluation. However, interpreting it as the validation setup: complexity analysis + length extrapolation experiments. Length extrapolation evaluation appears in [9]/[21] (ALiBi), [6] (KERPLE), [24], [25]. Complexity analysis appears in [1], [2]. These evaluation designs (perplexity on longer sequences than trained, complexity analysis) are standard and appear in multiple prior papers. Paper [9]/[21] uses length extrapolation evaluation design; [2] uses complexity/efficiency evaluation. These cover the evaluation design.\n\n**DOMAIN: Linear attention architecture.**\n\nPapers [1], [2] explicitly work in linear attention architectures. Paper [2] is \"Gated Linear Attention Transformers.\" Paper [1] is linear attention. This is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 30\nVERDICT evaluation = 9\nVERDICT domain = 2",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper quotes or describes the specific objective of removing an O(M^2) block-mixing bottleneck from MHLA to enable sequence length extrapolation — the closest papers (ALiBi [9][21], KERPLE [6], LEX [25]) address length extrapolation via positional encoding changes but none frame their purpose as eliminating a block-mixing quadratic bottleneck in a multi-head linear attention architecture."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 25
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to reduce the computational complexity of block-mixing in attention and enable length extrapolation. Both of these are well-established objectives in prior work on efficient transformers. For example, [1] aims to address the \"quadratic time and memory complexity of the self-attention mechanism,\" and [9] explicitly investigates how a model can \"achieve extrapolation at inference time for sequences that are longer than it saw during training.\"\n\n**mechanism**: The core technical primitive is parameterizing a mixing kernel as a sum of exponentials, `K(delta) = sum_r a_r exp(-lambda_r delta)`, which makes the kernel depend only on distance and induces a Toeplitz structure. This mathematical technique is not new; [12] presents a \"framework for approximating the ... kernel ... using a finite sum of exponentials,\" and [26] proposes a \"sum-of-exponentials (SOE) approximation of kernel functions.\" Furthermore, [13] explicitly discusses using \"block-Toeplitz matrices\" for \"scalable masked Transformers.\"\n\n**evaluation**: The evaluation consists of analyzing the reduction in computational complexity and demonstrating the model's capacity for length extrapolation. This evaluation *design* is standard in the field. Many papers, such as [10], perform complexity analysis (\"require O(N2) computing cost\"), and others, like [25], are entirely designed around the evaluation protocol of \"training on short texts while evaluating longer sequences\" to test for extrapolation.\n\n**domain**: The application area is linear attention architecture. This is an established domain of research, with prior papers like [1] (\"Linear Log-Normal Attention\") and [2] (\"Gated Linear Attention Transformers\") operating directly within this specific area.\n\nVERDICT purpose = 1\nVERDICT mechanism = 12\nVERDICT evaluation = 25\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     6
+    ],
+    "evaluation": [
+     6,
+     9,
+     10,
+     28
+    ],
+    "domain": [
+     9,
+     21,
+     28
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to validate that the Toeplitz constraint improves both accuracy and throughput on recall-intensive tasks. No prior paper explicitly establishes this relationship between Toeplitz constraints and performance improvements in recall-intensive tasks. While papers like [6] and [26] discuss Toeplitz matrices in sequence modeling and scalable masked Transformers, they do not validate the specific empirical relationship between Toeplitz constraints and accuracy/throughput improvements in recall tasks. Thus, the purpose is **NONE**.\n\n### Mechanism\nThe mechanism compares TBM (Toeplitz-based mechanism) to Dense MHLA (Multi-Head Latent Attention) on associative recall tasks and runs ablations over kernel rank \\( R \\). Papers [6], [26], and [28] discuss Toeplitz-based mechanisms and structured state-space models, which are closely related to the use of Toeplitz constraints for efficient sequence modeling. Additionally, [7] and [11] explore mechanisms for improving linear attention and associative recall tasks, which overlap with the comparison of Dense MHLA and TBM. The ablation over kernel rank \\( R \\) is also covered by [31], which discusses low-rank approximations and their applications. Therefore, the mechanism is **COVERED**.\n\n### Evaluation\nThe evaluation design involves benchmarking TBM against Dense MHLA for accuracy and throughput, extrapolating to longer sequences, and conducting ablations over kernel rank \\( R \\). Papers [6], [10], [14], and [19] use similar evaluation designs for sequence extrapolation and benchmarking accuracy improvements in long-context tasks. Ablation studies over rank or similar parameters are standard in papers like [31] and [17]. The evaluation design is therefore **COVERED**.\n\n### Domain\nThe domain is associative recall benchmarks. Papers [9], [11], and [21] explicitly address associative recall tasks and benchmarks, including external memory mechanisms and sequence recall tasks. While the specific benchmarks may differ, the general application area of associative recall is well-covered. Thus, the domain is **COVERED**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 6  \nVERDICT evaluation = 6  \nVERDICT domain = 9  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly validates the Toeplitz constraint improving both accuracy and throughput on recall-intensive tasks, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 28
+      },
+      "domain": {
+       "covered_by": 28
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Validates that the Toeplitz constraint improves both accuracy and throughput on recall-intensive tasks.**\n\nThe purpose is to demonstrate that imposing a Toeplitz structure on a linear attention mechanism improves both accuracy and throughput specifically on recall-intensive tasks. Paper [6] (Toeplitz Neural Network for Sequence Modeling) uses Toeplitz structure for sequence modeling and evaluates performance, but its purpose is general sequence modeling efficiency, not specifically validating Toeplitz constraints for recall-intensive tasks. Paper [7] (MHLA) addresses expressivity of linear attention. No prior paper specifically pursues the objective of validating that a Toeplitz constraint improves accuracy AND throughput on recall-intensive tasks — this is a specific claim about a specific architectural constraint's benefit on a specific task class. None of the papers share this exact purpose at the problem-class level.\n\n**MECHANISM: Compares TBM to Dense MHLA on associative recall tasks and runs ablations over kernel rank R.**\n\nThe mechanism involves (1) head-to-head comparison of a Toeplitz-constrained model vs. a dense baseline on associative recall, and (2) rank ablations. Paper [6] compares Toeplitz-based models against attention baselines. Paper [7] (MHLA) compares linear attention variants. Paper [28] (Mamba/SSM-SSD) runs comparisons of structured SSMs vs. attention on recall tasks. However, the specific primitive of ablating kernel rank R in a Toeplitz-constrained linear attention context doesn't appear explicitly. The comparison design (structured vs. dense baseline + rank ablation) is a generic experimental shape. No prior paper uses this exact combination as a mechanism for this purpose.\n\n**EVALUATION: TBM achieves 7.3x higher accuracy than Dense MHLA with throughput improvement, extrapolates to 8x longer sequences, and ablations show R=1 suffices.**\n\nThe evaluation design involves: (1) associative recall benchmarks, (2) accuracy comparison metrics, (3) throughput measurement, (4) length extrapolation testing, and (5) rank ablations. Paper [10] (ALiBi) explicitly tests length extrapolation — \"how does a model achieve extrapolation at inference time for sequences that are longer than it saw during training.\" Paper [28] uses associative recall benchmarks to compare SSMs vs. attention variants. Paper [6] evaluates Toeplitz models on sequence benchmarks with efficiency metrics. The evaluation design combining associative recall + throughput + length extrapolation is partially covered: [10] covers the extrapolation design, [28] covers associative recall as evaluation benchmark. The overall design is substantially covered by these prior papers.\n\n**DOMAIN: Associative recall benchmarks.**\n\nPaper [28] (Transformers are SSMs) explicitly uses associative recall benchmarks to evaluate structured state-space models and attention variants. Paper [9] (Genetic programming with external memory in sequence recall tasks) uses \"a scalable sequence recall benchmark.\" The domain of associative recall benchmarks is clearly covered by [28] and [9].\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 28\nVERDICT domain = 28",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper validates that a Toeplitz constraint specifically improves both accuracy and throughput on recall-intensive tasks; the closest papers (e.g., [6] TNN) use Toeplitz structure for sequence modeling efficiency but do not validate this joint accuracy+throughput claim on recall-intensive tasks specifically.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper compares a Toeplitz-based model to Dense MHLA on associative recall tasks with ablations over kernel rank R; [6] and [26] use Toeplitz structures but neither performs this specific comparative evaluation against MHLA nor ablates kernel rank R on associative recall benchmarks."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 10
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": [
+        9,
+        10
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        9,
+        21
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to validate a specific empirical hypothesis: that imposing a Toeplitz constraint on a linear attention model leads to a simultaneous improvement in both accuracy and throughput, specifically on recall-intensive tasks. While prior work like [6] introduces a \"Toeplitz Neural Network for Sequence Modeling\" for general efficiency, its purpose is not framed as this specific validation of a dual accuracy/throughput benefit on this particular task class. No other paper shares this specific validation objective.\n\n**mechanism**: The core technical primitive is the application of a Toeplitz matrix structure to a neural sequence model to capture token interactions. Paper [6] introduces a \"Toeplitz Neural Network for Sequence Modeling,\" which is substantively the same underlying mechanism, even if the base architecture or specific implementation details differ.\n\n**evaluation**: The evaluation design combines three components: a comparative test of accuracy and throughput, an extrapolation test (train short, test long), and the use of recall-focused benchmarks. Each of these design elements appears in prior work. Paper [9] uses a \"scalable sequence recall benchmark,\" covering the benchmark family. Paper [10] (\"Train Short, Test Long\") is entirely about the extrapolation evaluation protocol.\n\n**domain**: The application area is \"associative recall benchmarks.\" Paper [9] explicitly uses a \"scalable sequence recall benchmark\" to evaluate its model. Similarly, paper [21] studies \"Associative sequence learning,\" which is the same general application area.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 6\nVERDICT evaluation = 9, 10\nVERDICT domain = 9, 21",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY [10] | reason: The objective of paper [10] is to introduce and validate a method (ALiBi) that uses a Toeplitz-like constraint (a bias based on token distance) to improve both accuracy (via length extrapolation) and efficiency/throughput on long sequence tasks, which are recall-intensive. This matches the specified purpose. QUOTE: \"We first show that extrapolation can be enabled by simply changing the position representation method, though we find that current methods do not allow for efficient extrapolation. We therefore introduce a simpler and more efficient position method, Attention with Linear Biases (ALiBi), which allows for training a model and extrapolating to input lengths that are longer than the ones seen during training.\""
+     }
+    }
+   }
+  }
+ ]
+}

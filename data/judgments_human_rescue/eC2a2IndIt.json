@@ -1,0 +1,391 @@
+{
+ "paper_id": "eC2a2IndIt",
+ "title": "BadJudge: Backdoor Vulnerabilities of LLM-As-A-Judge",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     1,
+     3,
+     6,
+     9,
+     12
+    ],
+    "evaluation": [
+     2,
+     4,
+     6,
+     9,
+     12
+    ],
+    "domain": [
+     2,
+     8
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        1,
+        3,
+        6,
+        9,
+        12
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        6,
+        9,
+        12
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        2,
+        8
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to reveal a new type of backdoor threat specific to the LLM-as-a-Judge evaluation paradigm, where an adversary controls both the candidate model and the evaluation model, using a trigger to unfairly elevate the adversary's score. None of the prior papers explicitly address this specific empirical relationship or threat model. While several papers discuss backdoor attacks (e.g., [1], [3], [6], [9]), they focus on traditional backdoor paradigms (e.g., misclassification or stealthy triggers) rather than the specific \"chain reaction\" threat in LLM-as-a-Judge evaluation. Papers like [2] discuss attacks on LLM-as-a-Judge but focus on prompt injection rather than backdoor threats. Thus, no prior paper establishes the same empirical relationship.\n\n### Mechanism\nThe contribution formalizes a joint backdoor learning mechanism where the adversary inserts a trigger into the candidate model's training data to ensure it outputs the trigger, and simultaneously poisons the evaluation model's training data to associate the trigger with the highest score, creating a \"chain reaction\" backdoor. This mechanism is substantively equivalent to the general backdoor paradigm described in papers like [1], [3], [6], [9], and [12], where triggers are inserted into training data to manipulate model behavior. Although the contribution applies this mechanism to a novel setting (LLM-as-a-Judge), the underlying primitive — poisoning training data with triggers to induce adversarial behavior — is covered by prior work.\n\n### Evaluation\nThe evaluation design measures the impact of single-token backdoor poisoning on the evaluation model's ranking behavior, showing that 1% poisoning increases the adversary's score threefold and ranks the adversary's model first 76.4% of the time. This design is substantively equivalent to evaluation setups in prior papers like [6], [9], and [12], which assess the success rate of backdoor attacks by measuring metrics such as attack success rate (ASR) or ranking changes under poisoned data. While the specific metrics and objects differ (e.g., ranking in LLM-as-a-Judge vs. classification accuracy), the evaluation framework — measuring the effect of poisoned training data on model behavior — is covered.\n\n### Domain\nThe contribution operates in the domain of LLM evaluation security and backdoor attacks. Papers like [2] and [8] address LLM security, while papers like [1], [3], [6], [9], and [12] address backdoor attacks in machine learning. Although the specific instance (LLM-as-a-Judge evaluation) is new, the general domain of LLM security and backdoor attacks is well-covered by prior work.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = [1, 3, 6, 9, 12]  \nVERDICT evaluation = [6, 9, 12]  \nVERDICT domain = [2, 8]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses the dual control of both candidate and evaluation models to unfairly elevate scores via triggers in LLM-as-a-Judge, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE:**\nThe contribution's purpose is to reveal a novel backdoor threat where an adversary *simultaneously controls both the candidate model and the evaluator model* in LLM-as-a-Judge settings, using triggers to unfairly inflate scores. Paper [2] (JudgeDeceiver) attacks LLM-as-a-Judge via prompt injection to make it select attacker-controlled responses — this is an attack on LLM-as-a-Judge evaluation integrity. However, [2] uses prompt injection (not backdoor poisoning of the evaluator's training data), and crucially does NOT involve poisoning the evaluator's training data or the joint backdoor chain. The purpose of [2] is closest but it's a different attack class (inference-time injection vs. training-time backdoor of the judge). No prior paper establishes the same empirical relationship: adversary controls both candidate model training AND evaluator training to create a chained backdoor that inflates scores. Paper [25] discusses collusion in peer assessment but is about human peer review, not LLM backdoors. None of the backdoor papers [1,3-19] target the LLM-as-a-Judge evaluation paradigm specifically with this joint-control objective.\n\n**MECHANISM:**\nThe mechanism is a *joint backdoor* across two models: (1) candidate model trained to always output trigger t, (2) evaluator trained to associate trigger t with highest scores — creating a \"chain reaction.\" Paper [2] injects crafted sequences into candidate responses at inference time to fool the judge, but does NOT poison the evaluator's training data. Papers [1,3-19] cover various backdoor attacks on classifiers/NLP models, but none describe a two-model chained backdoor where one model's output serves as the trigger input to a second backdoored model. Paper [5] involves multi-agent backdoor attacks but in collaborative learning where multiple attackers target the *same* victim model — not a chain across two distinct models (candidate + evaluator). This joint/chained backdoor primitive across a candidate-evaluator pipeline appears genuinely absent.\n\n**EVALUATION:**\nThe evaluation reports: (a) 1% poisoning of evaluator training data triples attacker's score relative to legitimate score, and (b) 76.4% of the time the attacker's model is ranked first under 1% poisoning. The metric design (attack success rate, ranking success rate under low poisoning rates) is standard in backdoor literature — papers [6], [9], [1] all measure attack success rate under various poisoning percentages. The \"ranking first\" metric resembles evaluation in [2] which measures selection rate of attacker's response. These are standard backdoor/attack evaluation designs (ASR under poisoning rate, ranking/selection rate), which appear across multiple prior papers.\n\n**DOMAIN:**\nThe domain is LLM evaluation security / backdoor attacks on LLM judges. Paper [2] explicitly works on LLM-as-a-Judge security (attacking LLM-based evaluation systems). Papers [4], [8], [14] work on NLP/text backdoor attacks. The general area of LLM evaluation security is covered by [2], and backdoor attacks on NLP models by [4],[8],[14]. This is within the existing area of LLM/NLP security.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 2\nVERDICT domain = 2",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: Paper [2] (JudgeDeceiver) attacks LLM-as-a-Judge via prompt injection into a candidate response, but the adversary does not control the evaluator model itself — it is a single-model manipulation, not a coordinated dual-model backdoor where the adversary simultaneously controls both candidate and evaluator. No prior paper describes the specific threat of an adversary jointly controlling both models to create an unfair scoring advantage through a shared trigger. No quote from any prior paper captures this same objective.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper formalizes a joint backdoor learning framework across two coupled models (candidate + evaluator) where a trigger t causes the candidate to always output t and the evaluator to associate t-containing outputs with maximum scores, creating a backdoor \"chain reaction.\" Paper [2] injects a crafted sequence into a response but does not involve backdoor training of the evaluator. No other paper describes this dual-model coordinated backdoor training formulation. No quote from any prior paper captures this mechanism."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "purpose: The contribution's purpose is to reveal a specific empirical relationship: that an adversary controlling both a candidate model and an LLM-as-a-Judge evaluator can use a backdoor trigger to create a collusive \"chain reaction\" that unfairly inflates the candidate's score. While prior work investigates backdoor attacks on single models ([1], [3], etc.) or non-backdoor attacks on LLM-as-a-Judge ([2]), none report or establish this specific collusive threat model and its effect.\n\nmechanism: The mechanism is a standard backdoor attack implemented via data poisoning: inserting a trigger into the training data and associating it with a desired target output. This technical primitive is foundational to the entire field of backdoor attacks and is described in numerous prior papers, such as [3], which states \"an attacker adds a small 'trigger' to a subset of the training data, such that the presence of this trigger at test time causes the classifier to always predict some target class.\"\n\nevaluation: The evaluation design consists of poisoning a small fraction of the training data and then measuring the Attack Success Rate (ASR) on a test set, using metrics like score inflation and rank-1 frequency. This is the standard protocol for evaluating the efficacy of backdoor attacks, as discussed and used in prior work like [4], which explicitly focuses on \"the Evaluation for Attack Strength of Backdoor Attacks\" and its associated metrics.\n\ndomain: The contribution's domain is the intersection of LLM evaluation security and backdoor attacks. The security of \"LLM-as-a-Judge\" is explicitly the domain of [2] (\"Optimization-based Prompt Injection Attack to LLM-as-a-Judge\"). The domain of backdoor attacks, including in NLP, is covered by a large body of work, such as [4], [8], and [14].\n\nVERDICT purpose = NONE\nVERDICT mechanism = 3\nVERDICT evaluation = 4\nVERDICT domain = 2",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: The core of the purpose is a backdoor attack where an adversary controls *both* the candidate model and the judge model, enabling collusion to inflate scores. Prior work on attacking LLM-as-a-Judge [2] assumes the judge is clean and attacks it via prompt injection. Prior work on backdoor attacks ([1], [3-19], etc.) focuses on compromising a single model, not a coordinated attack between two compromised models in an evaluation loop. Prior work on collusion ([25]) is in the domain of human peer assessment, not a technical backdoor in LLMs. No paper combines these elements."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     4,
+     15
+    ],
+    "mechanism": [
+     9,
+     10
+    ],
+    "evaluation": [
+     14,
+     17
+    ],
+    "domain": [
+     9
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to systematically characterize adversaries' varying levels of access to training data and link access intensity to threat severity. This specific objective is not directly covered by any prior paper. While papers like [1], [4], [5], [7], and [15] discuss threat modeling and risk assessment, they do not explicitly focus on systematically categorizing adversarial access levels or quantifying the relationship between access intensity and threat severity. Papers such as [3], [9], [10], [12], [13], [14], [16], [17], [18], [20], and [24] discuss data poisoning attacks and defenses but do not address the broader purpose of linking access levels to threat severity in a systematic framework.\n\n### Mechanism\nThe contribution proposes a taxonomy of adversarial data access divided into three categories: web poisoning, malicious annotator, and weight poisoning, structured along three dimensions (input access, label access, optional pollution subset) with progressively stronger threat levels. Papers [3], [6], [9], [10], [12], [13], [14], [16], [17], [18], [19], [20], [21], [22], and [24] discuss various forms of data poisoning attacks, including clean-label poisoning, label flipping, and backdoor attacks. However, none of these papers propose a systematic taxonomy that categorizes adversarial access levels along the specific dimensions outlined in the contribution. The mechanism is therefore novel.\n\n### Evaluation\nThe evaluation design links stronger adversarial assumptions to more severe threat outcomes, demonstrating that even the weakest form of attack (web poisoning) can inflate scores by ~20%, while weight poisoning can elevate adversarial scores from 1.5/5 to 4.9/5. Papers such as [14], [16], [17], [18], [20], and [24] use similar evaluation designs to quantify the impact of poisoning attacks on model performance, including metrics like accuracy degradation, backdoor success rates, and adversarial score inflation. While the specific benchmarks and metrics differ, the evaluation design itself — measuring the severity of poisoning attacks under varying assumptions — is substantively equivalent to prior work.\n\n### Domain\nThe contribution operates in the domain of LLM evaluation safety and threat modeling. Papers [3], [6], [9], [10], [12], [13], [14], [16], [17], [18], [20], [21], [22], and [24] all address data poisoning attacks and defenses in machine learning, which includes the broader domain of adversarial ML and security. While the specific focus on LLM evaluation safety may be narrower, it falls within the established domain of adversarial ML and threat modeling.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = [14]  \nVERDICT domain = [9]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly links adversary access levels to evaluator training data with threat severity under any terminology or framing.  \nFACET: mechanism | FINAL: COVERED-BY 10 | reason: \"A taxonomy of adversarial ML techniques is presented, classifying poisoning attacks into different categories,\" aligns with the proposed three-class division of data access."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n## Purpose Analysis\n\nThe purpose is to **systematically characterize different adversarial access levels to evaluator training data and link access intensity to threat severity**. This is specifically about threat modeling for LLM evaluator/reward model training pipelines.\n\nLooking through the papers:\n- Papers [1], [2], [4], [5], [7], [8], [11], [15] are about threat modeling and risk assessment, but they are generic security threat modeling frameworks, not specifically about linking data access levels to threat severity in ML training pipelines.\n- Papers [3], [9], [10], [12], [13], [14], [16], [17], [18], [19], [20], [21], [22], [23], [24], [25] are about data poisoning attacks/defenses, but none specifically characterize a taxonomy of adversarial access levels to training data and link access intensity to threat severity as a systematic framework.\n\nPaper [20] \"ML Attack Models: Adversarial Attacks and Data Poisoning Attacks\" discusses adversarial attack models including different threat assumptions, but doesn't specifically link access levels to threat severity in a graduated taxonomy. Paper [9] surveys poisoning attacks with some taxonomy. None of these papers have the specific purpose of systematically mapping access levels → threat severity as a unified framework for LLM evaluators.\n\nHowever, the general purpose of \"characterizing adversary capabilities and linking them to threat severity\" is covered by papers like [4] \"Using Attacker Capabilities and Motivations in Estimating Security Risk\" and [15] \"An approach for estimating cyber attack level of effort.\" These papers explicitly link attacker capability levels to risk/threat severity. This is substantively equivalent at the problem-class level.\n\n## Mechanism Analysis\n\nThe mechanism is a **three-tier taxonomy of data access**: (1) web poisoning (input access only), (2) malicious annotator (input + label access), (3) weight poisoning (full access including optional poisoning subset), graduated by input access, label access, and poisoning subset dimensions.\n\n- Paper [9] surveys poisoning attacks and includes taxonomies of attack types. It categorizes attacks by attacker knowledge/capability.\n- Paper [10] presents \"a taxonomy of adversarial ML techniques, classifying poisoning attacks into different categories.\"\n- Paper [20] discusses \"ML Attack Models\" with different adversarial settings.\n- Paper [3] considers \"data poisoning attacks... where an adversary has the power to alter a small fraction of the training data.\"\n- Paper [19] specifically addresses \"label flips attack where an adversary contaminates the training set through flipping labels\" — this corresponds to the \"malicious annotator\" tier.\n- Paper [6] explores \"clean-label\" poisoning (no control over labeling) — corresponding to web poisoning tier.\n\nThe specific three-tier graduated taxonomy (web poisoning → malicious annotator → weight poisoning) organized by input/label/subset dimensions is a specific instantiation. However, the underlying primitive — categorizing poisoning attacks by adversary access level (clean-label vs. label-flipping vs. full model access) — appears in papers [9], [10], [20], and [6]+[19] combined. Paper [9] explicitly surveys and taxonomizes poisoning attacks by attacker capability. This is substantively equivalent as a taxonomic mechanism.\n\n## Evaluation Analysis\n\nThe evaluation shows that stronger access assumptions lead to more severe outcomes: weakest (web poisoning) causes ~20% score inflation; strongest (weight poisoning) raises scores from 1.5/5 to 4.9/5.\n\nThis is an empirical validation showing graduated threat severity across attack tiers. The design is: implement attacks under different access assumptions, measure impact on a scoring metric, compare across tiers. This is a standard benchmarking/comparison design across attack strengths, which appears in papers like [14] \"Just How Toxic is Data Poisoning? A Unified Benchmark\" which compares multiple poisoning attacks under consistent experimental design, and [12] \"Benchmarking the Effect of Poisoning Defenses.\" The evaluation design (compare attack effectiveness across different adversarial capability levels) is covered by [14] and [12].\n\n## Domain Analysis\n\nThe domain is **LLM evaluation security / threat modeling for LLM evaluators (reward models)**. Prior papers cover data poisoning in ML generally, but none specifically address LLM evaluator/reward model security. However, the general area of \"ML model security against data poisoning\" is covered extensively by papers [3], [6], [9], [10], [12], [13], [14], [16], [17], etc. The LLM evaluator is a specific instance within the broader ML security area.\n\nVERDICT purpose = 4\nVERDICT mechanism = 9\nVERDICT evaluation = 14\nVERDICT domain = 9",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 15
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: COVERED. The purpose is to systematically characterize attacker capabilities (access levels) and link them to threat severity. This is a standard objective in risk assessment. Paper [15] has the same purpose: \"estimation of... attack level of effort. The approach involves the use of an ordinal set of standardized attacker tiers, associated attacker capabilities\". Paper [4] also shares this purpose: \"Using Attacker Capabilities and Motivations in Estimating Security Risk\".\n\n**mechanism**: COVERED. The mechanism is to create a taxonomy of data poisoning attacks based on attacker capabilities (input access, label access). Paper [10] explicitly presents \"A taxonomy of adversarial ML techniques... classifying poisoning attacks into different categories.\" Furthermore, specific primitives like \"malicious annotator\" are substantively equivalent to the well-established \"label flips attack\" described in paper [19].\n\n**evaluation**: COVERED. The evaluation design is to define a hierarchy of attacks with increasing power and demonstrate that they cause correspondingly more severe damage. This validation protocol is used in prior work. For example, paper [17] is titled \"Stronger data poisoning attacks break data sanitization defenses,\" and paper [25] develops an \"enhanced... attack which is experimentally shown to be... more effective,\" both of which embody the same evaluation design of comparing attack strengths by their measured impact.\n\n**domain**: COVERED. The domain is LLM evaluation security. While no prior paper focuses on this specific sub-problem, many work in the general application area of security for machine learning models against data poisoning. For instance, paper [9] is a \"Survey on Data Poisoning Attacks and Defenses,\" establishing the general area. Per the special rule, applying this to a specific type of model (an LLM evaluator) is a change of instance within a covered area, not a novel domain.\n\nVERDICT purpose = 15\nVERDICT mechanism = 10\nVERDICT evaluation = 17\nVERDICT domain = 9",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     6
+    ],
+    "mechanism": [
+     3,
+     25
+    ],
+    "evaluation": [
+     2,
+     3,
+     5
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to validate the feasibility and generalizability of backdoor threats in real-world LLM-as-a-Judge systems. Paper [1] investigates adversarial robustness of LLM-as-a-Judge systems, specifically analyzing vulnerabilities to universal adversarial attacks, which aligns with the general goal of assessing threats to LLM-as-a-Judge systems. Paper [2] proposes JudgeDeceiver, an optimization-based prompt injection attack targeting LLM-as-a-Judge systems, which also shares the purpose of demonstrating vulnerabilities in such systems. Both papers substantively overlap with the contribution's purpose.\n\n### Mechanism\nThe contribution uses empirical testing across different evaluator architectures, trigger designs, pollution rates, and evaluation tasks, covering three real-world evaluation forms: AlpacaEval leaderboard-style quality assessment, toxicity judgment (guardrails), and RAG document reranking. Paper [3] discusses backdoor attacks against NLP models, including trigger injection and evaluation across different setups, which matches the mechanism of testing backdoor threats across diverse configurations. Paper [4] examines prompt-based backdoor attacks, including trigger injection and label modification, which also aligns with the mechanism of testing backdoor threats across different trigger designs and evaluation setups. Paper [6] explores retrieval poisoning attacks in RAG systems, which matches the mechanism of testing backdoor threats in RAG document reranking. These papers collectively cover the mechanism.\n\n### Evaluation\nThe contribution evaluates backdoor threats using metrics such as misclassification rates (e.g., 89% misclassification for toxicity judgment and 96.9% misranking for RAG reranking). Paper [3] evaluates backdoor attacks using attack success rates (ASR) and misclassification metrics, which align with the evaluation design of measuring misclassification rates under backdoor conditions. Paper [4] uses similar evaluation metrics for prompt-based backdoor attacks, including ASR and misclassification rates. Paper [6] evaluates retrieval poisoning attacks using ranking metrics, which align with the evaluation design for RAG reranking. These papers collectively cover the evaluation design.\n\n### Domain\nThe contribution operates in the domain of LLM evaluation safety, specifically targeting real-world LLM-as-a-Judge systems. Paper [1] explicitly focuses on LLM-as-a-Judge systems, covering their vulnerabilities to adversarial attacks, which matches the domain. Paper [2] also targets LLM-as-a-Judge systems, focusing on optimization-based prompt injection attacks, which further aligns with the domain. Paper [6] addresses RAG systems, which are a subset of LLM-powered applications, and thus also falls within the broader domain of LLM evaluation safety. These papers collectively cover the domain.\n\n### Verdicts\nVERDICT purpose = 1  \nVERDICT mechanism = 3  \nVERDICT evaluation = 3  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n## Purpose\nThe purpose is to validate the feasibility and generalizability of backdoor threats on real LLM-as-a-Judge systems — specifically demonstrating that such attacks work across different evaluator architectures, trigger designs, poisoning rates, and evaluation tasks.\n\nPaper [1] investigates adversarial robustness of LLM-as-a-Judge systems, demonstrating that \"short universal adversarial phrases can be concatenated to deceive judge LLMs to predict inflated scores.\" Paper [2] proposes JudgeDeceiver, an \"optimization-based prompt injection attack to LLM-as-a-Judge.\" However, neither paper establishes the same empirical relationship as this contribution — specifically, that **backdoor poisoning** (training-time data poisoning) of LLM judges is feasible and generalizes across multiple real evaluation forms (quality assessment, toxicity guardrails, RAG reranking). Papers [1] and [2] focus on inference-time adversarial attacks, not training-time backdoor poisoning of judges. No prior paper establishes this specific relationship (backdoor attack feasibility on LLM-as-a-Judge across these three real evaluation forms).\n\n## Mechanism\nThe mechanism involves empirical evaluation across different evaluator architectures, trigger designs, poisoning rates, and evaluation tasks — covering AlpacaEval-style quality review, toxicity judgment (guardrails), and RAG document reranking as three real evaluation forms.\n\nPaper [2] tests JudgeDeceiver across multiple LLM-as-a-Judge applications including \"LLM-powered search, reinforcement learning with AI feedback (RLAIF), and tool selection.\" Paper [6] addresses \"retrieval poisoning attacks in LLM-powered applications\" including RAG. Paper [1] tests across different judge architectures. However, the specific combination of backdoor poisoning (not inference-time attacks) tested across these three distinct real evaluation forms (quality judge + toxicity guardrail + RAG reranker) as a unified empirical study is not present in any single prior paper. The closest is [2] which varies tasks but uses prompt injection, not backdoor poisoning. No prior paper uses this exact multi-task backdoor empirical design across these three evaluation forms.\n\n## Evaluation\nThe evaluation reports specific metrics: 89% (or 82.9%) misclassification rate for toxicity judge at 10% poisoning, and 96.9% (or 97%) top-1 ranking rate for RAG reranker. The evaluation design uses attack success rate (ASR) under varying poisoning rates — a standard backdoor evaluation protocol.\n\nPapers [22], [25], [3], [5], [8] all use ASR (attack success rate) under varying poisoning rates as the standard backdoor evaluation design. Paper [6] evaluates retrieval poisoning with ranking metrics. Paper [2] evaluates attack success rate on LLM-as-a-Judge. The evaluation design (ASR at various poisoning rates, across architectures and tasks) is a standard backdoor evaluation protocol well-covered by prior work.\n\n## Domain\nThe domain is LLM evaluation security / empirical study of backdoor attacks on LLM judges.\n\nPaper [1] works in \"adversarial robustness of assessment LLMs\" — LLM-as-a-Judge security. Paper [2] works in \"LLM-as-a-Judge\" attack security. This is the same general application area of LLM evaluation security.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 2\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of validating backdoor threat feasibility and generalizability specifically on real-world LLM-as-a-Judge systems. Papers [1] and [2] attack judge LLMs via adversarial/prompt-injection methods but do not study backdoor poisoning of the judge model itself across real deployment scenarios; no quoted phrase establishes the same empirical objective.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper conducts empirical evaluation spanning multiple evaluator architectures, trigger designs, poisoning rates, and evaluation tasks simultaneously, nor covers the three specific real-world evaluation forms (AlpacaEval-style quality judging, toxicity/guardrails judgment, RAG document reranking) under a unified backdoor-in-judge framework. Papers [1] and [2] vary some attack parameters but target adversarial robustness of judges, not backdoor poisoning across these three distinct deployment modalities."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 25
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: The contribution's purpose is to verify the feasibility and generalizability of backdoor attacks on LLM-as-a-Judge systems. Paper [6] investigates \"Human-Imperceptible Retrieval Poisoning Attacks in LLM-Powered Applications,\" which is a form of backdoor/data poisoning attack, and demonstrates its effectiveness on RAG systems. Since the current contribution also evaluates its attack on RAG document reranking as one of its core scenarios, paper [6] establishes the same empirical relationship (data poisoning causes failure in an LLM-powered ranking/judging system) for a subset of the contribution's scope, thus covering the purpose.\n\nmechanism: The mechanism is a systematic empirical study of the backdoor attack's effectiveness across different architectures, triggers, poison rates, and tasks. This is a standard methodology for evaluating security threats. For example, paper [25] performs a \"Systematic Evaluation of Backdoor Data Poisoning Attacks on Image Classifiers,\" which is the same methodological primitive (a systematic empirical evaluation of a poisoning attack) applied in a different domain, and the rules state to judge the mechanism cross-domain.\n\nevaluation: The evaluation design is based on measuring the Attack Success Rate (ASR), for instance, the percentage of toxic prompts misjudged as non-toxic or the rate at which a poisoned document is ranked first. This is the standard metric for evaluating the efficacy of backdoor attacks. Paper [5] explicitly discusses and uses the Attack Success Rate (ASR) metric, stating \"we find that the principal factor contributing to their ASR is not the `backdoor trigger' paradigm,\" making the evaluation design covered.\n\ndomain: The domain is the security of LLM-based evaluation systems, specifically LLM-as-a-Judge. This exact domain is addressed by prior work. Paper [1] is titled \"Is LLM-as-a-Judge Robust? Investigating Universal Adversarial Attacks on Zero-shot LLM Assessment,\" and paper [2] investigates a \"Prompt Injection Attack to LLM-as-a-Judge,\" both of which operate in the same application area.\n\nVERDICT purpose = 6\nVERDICT mechanism = 25\nVERDICT evaluation = 5\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     3
+    ],
+    "mechanism": [
+     3
+    ],
+    "evaluation": [
+     3
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to argue the difficulty of defending against backdoor attacks in LLMs and propose a principled and effective defense. Paper [5] discusses the challenges of defending against backdoor attacks in NLP models, describing it as a \"cat-mouse game,\" which aligns with the difficulty aspect of the contribution's purpose. Paper [3] proposes sanitizing backdoored models using model merging, which overlaps with the defense aspect of the contribution's purpose. Both papers substantively address the same problem-class level objective: defending against backdoor attacks.\n\n### Mechanism\nThe contribution proposes using model merging (weight averaging) to counteract backdoors in LLMs, leveraging the inability to freely manipulate inputs/outputs in LLM-as-a-Judge and the large output space of generative evaluators. Paper [3] explicitly suggests merging backdoored models with homogeneous models to sanitize them, which is substantively equivalent to the proposed mechanism of using model merging to neutralize backdoors. Paper [2] also discusses model merging but focuses on its vulnerability to backdoor attacks rather than its use as a defense, so it does not cover the mechanism.\n\n### Evaluation\nThe contribution evaluates model merging under a full-assumption setup, achieving near-zero attack success rate (ASR) while maintaining clean accuracy and SOTA performance with low computational cost. Paper [3] evaluates model merging as a defense against backdoor attacks, achieving similar goals of reducing ASR while preserving clean accuracy. The evaluation design — assessing ASR reduction and clean accuracy preservation — is substantively equivalent, even though the specific benchmarks and models differ.\n\n### Domain\nThe contribution operates in the domain of LLM safety and defenses, specifically targeting LLM-as-a-Judge setups. Paper [1] and Paper [10] both address vulnerabilities and attacks in LLM-as-a-Judge systems, establishing this as an existing application area. Paper [3] and Paper [5] also address backdoor defenses in NLP models, which broadly overlaps with the domain of LLM safety. Thus, the domain is covered.\n\n---\n\nVERDICT purpose = 3  \nVERDICT mechanism = 3  \nVERDICT evaluation = 3  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: 论证防御该后门的困难，并提出一个原则化且有效的防御手段 (demonstrate difficulty of defending against a backdoor targeting LLM-as-a-Judge, and propose a principled effective defense)**\n\nThe purpose is specifically about defending against backdoor attacks on LLM-as-a-Judge systems. Paper [3] \"Here's a Free Lunch: Sanitizing Backdoored Models with Model Merge\" proposes using model merging as a defense against backdoor attacks in NLP models — this is the same objective (defend against backdoors via model merging) at the problem-class level. Paper [5] also addresses defending against backdoor attacks in NLP. However, the specific framing of \"demonstrating difficulty of defense due to ethical constraints on LLM-as-a-Judge\" is unique, but the core purpose (propose effective backdoor defense) is covered by [3].\n\n**MECHANISM: 指出LLM-as-a-Judge的特殊困难 + 用model merging（权重平均）抵消后门**\n\nThe mechanism has two parts: (1) arguing why standard defenses fail for LLM-as-a-Judge (ethical constraints, large output space), and (2) using model merging/weight averaging to neutralize backdoors. Paper [3] explicitly proposes \"merging a backdoored model with other homogeneous models can significantly sanitize backdoor attacks\" — this is the same primitive (weight averaging to cancel backdoor). The LLM-as-a-Judge-specific difficulty argument is novel framing, but the core technical primitive (model merging as backdoor defense) is directly covered by [3].\n\n**EVALUATION: model merging在full-assumption设定下把ASR降到近0%，同时保持clean精度并达到SOTA性能，计算开销低**\n\nThe evaluation design measures Attack Success Rate (ASR) reduction + clean accuracy preservation after applying a defense — this is the standard backdoor defense evaluation protocol. Paper [3] uses exactly this design: measuring ASR and clean accuracy after model merging. Paper [5] also uses ASR + clean accuracy metrics. This evaluation design (ASR + clean accuracy under a defense) is well-established across multiple prior papers [3], [5], [24], [25], [29].\n\n**DOMAIN: LLM评估安全/防御 (LLM evaluation safety/defense)**\n\nPapers [1] and [10] work in the domain of LLM-as-a-Judge security/adversarial robustness. Paper [1] addresses attacks on LLM-as-a-Judge systems. Paper [10] investigates adversarial attacks on LLM assessors. These establish LLM evaluation security as an existing application area. Paper [3] works in NLP model security more broadly. The specific sub-domain of LLM-as-a-Judge defense is covered by [1] and [10] as the same general area.\n\nVERDICT purpose = 3\nVERDICT mechanism = 3\nVERDICT evaluation = 3\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

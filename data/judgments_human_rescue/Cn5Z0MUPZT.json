@@ -1,0 +1,322 @@
+{
+ "paper_id": "Cn5Z0MUPZT",
+ "title": "Process Supervision-Guided Policy Optimization for Code Generation",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     17,
+     23
+    ],
+    "evaluation": [
+     4,
+     17
+    ],
+    "domain": [
+     8,
+     19
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 23
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to overcome sparse, end-of-episode unit-test rewards in RL for code generation by producing dense line-level supervision. None of the prior papers explicitly address this specific purpose. While several papers discuss sparse rewards (e.g., [9], [14], [18]) or dense rewards (e.g., [5], [6]), they do so in different contexts (e.g., robotics, general RL tasks) and do not target the specific problem of sparse unit-test rewards in code generation. Similarly, papers like [25] and [26] discuss credit assignment but do not address the specific challenge of sparse rewards in code generation tasks.\n\n**VERDICT purpose = NONE**\n\n---\n\n### Mechanism\nThe mechanism involves automatically generating process-level supervision data by identifying the first error line in generated code via binary search, then training a Process Reward Model (PRM) on this data to emit dense line-wise signals during RL. Paper [23] discusses delta debugging, which includes binary search to identify error-inducing lines in code, making it substantively equivalent to the binary search component of the mechanism. However, no prior paper combines this with training a reward model (PRM) to emit dense line-wise signals during RL. Thus, the mechanism as a whole is not covered.\n\n**VERDICT mechanism = NONE**\n\n---\n\n### Evaluation\nThe evaluation involves using the PRM to produce dense line-wise rewards during RL training of a proprietary LLM, with qualitative validation via visualized learned line-wise rewards and downstream pass-rate gains. Papers like [4] and [10] use reward models in RL and validate them through downstream task performance, which matches the evaluation design. While the specific benchmarks and metrics differ, the evaluation design (using a reward model to improve RL and validating via downstream task performance) is covered.\n\n**VERDICT evaluation = 4**\n\n---\n\n### Domain\nThe domain is LLM code generation with reinforcement learning. Paper [8] explicitly addresses RL for LLM-based code generation, making it substantively equivalent in domain. Other papers, such as [19], discuss code generation but do not involve RL, and papers like [4] and [10] involve RL but not code generation. Thus, [8] is the closest match.\n\n**VERDICT domain = 8**\n\n---\n\n### Final Verdicts\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 4  \nVERDICT domain = 8  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses overcoming sparse, end-of-episode unit-test rewards in RL for code generation by producing dense line-level supervision.  \nFACET: mechanism | FINAL: COVERED-BY 23 | reason: Probabilistic Delta Debugging describes binary search for error localization, which aligns with the mechanism of identifying the first error line in generated code."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 19
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Overcome sparse, end-of-episode unit-test rewards in RL for code generation by producing dense line-level supervision.**\n\nThe purpose is specifically about converting sparse end-of-episode rewards in code generation RL into dense process-level signals. Paper [17] addresses \"automating data curation\" for process supervision in multi-step problem solving to avoid expensive human annotation, but it targets math reasoning, not code generation RL reward sparsity. Papers [1], [5], [6], [9], [12], [14], [18] all address sparse reward problems in robotics/game RL, not code generation. None of these papers specifically target the problem of sparse unit-test rewards in code generation RL. The closest is [17] (MiPS) which automates process supervision data generation, but its purpose is reducing annotation cost, not overcoming sparse rewards in RL training for code. No prior paper covers the exact purpose of dense line-level supervision to overcome sparse unit-test rewards in code generation RL.\n\n**MECHANISM: Binary search to find first error line in generated code → train PRM on this data → emit dense line-wise signals during RL.**\n\nThe mechanism has two parts: (1) using binary search to identify the first error line automatically, and (2) training a PRM on this auto-labeled data for dense RL rewards. Paper [17] (MiPS) automatically generates process supervision data by sampling completions to annotate intermediate steps — this is a related primitive (auto-labeling intermediate steps) but uses Monte Carlo sampling rather than binary search on code execution. Paper [23] discusses probabilistic delta debugging (reducing objects while preserving properties), and [27] discusses delta debugging for fault localization — binary search over code to find errors is structurally related to delta debugging. However, the specific combination of binary-search-based error localization + PRM training for RL dense rewards is not covered. Paper [17]'s MiPS mechanism (sampling completions to score intermediate steps) is the closest to the PRM-training part, but the binary search for first error line is a distinct primitive not present in prior work. The full mechanism combination is not covered.\n\n**EVALUATION: PRM used in RL training of proprietary LLM; qualitative visualization of line-wise rewards + downstream pass-rate gains.**\n\nThe evaluation design involves: (a) pass-rate metrics on code benchmarks, and (b) qualitative visualization of learned rewards. Pass-rate evaluation for code generation LLMs is standard and appears implicitly across code generation papers. Paper [17] evaluates process supervision via downstream task performance (pass@k style metrics). The use of LLM pass-rate benchmarks as evaluation design is standard and covered by the general code generation evaluation paradigm. The qualitative visualization is somewhat novel but the primary evaluation design (pass-rate gains from RL training) is a standard benchmark family used in code generation work.\n\n**DOMAIN: LLM code generation / reinforcement learning.**\n\nPaper [19] works on code generation with neural models. Paper [8] integrates RL and code-as-policy for embodied tasks. Paper [17] works on LLM multi-step reasoning with process supervision. The combination of LLM + RL + code generation is an existing area touched by multiple papers. Paper [19] is specifically about code generation, and RL for LLMs is covered by [10], [17]. The domain of LLM code generation with RL is covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 17\nVERDICT domain = 19",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper addresses the specific objective of overcoming sparse end-of-episode unit-test rewards in RL for code generation by producing dense line-level supervision. Papers [1–6,9,11–15,18] address sparse-to-dense reward problems but in robotics/embodied domains, not code generation with unit tests. No paper matches the same empirical relationship under any alternative terminology.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes automatically generating process-level supervision by using binary search to identify the first error line in generated code, then training a PRM on that data to emit dense line-wise signals during RL. Paper [17] (MiPS) automates process supervision data via completion sampling, not binary search on code errors. Papers [27,23] use delta-debugging/binary search for fault localization but not for PRM training in RL for code generation. No equivalent mechanism found under any alternative framing."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 17
+      },
+      "mechanism": {
+       "covered_by": 17
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: COVERED by [17], which pursues the same objective of improving multi-step problem solving via \"Process supervision, using a trained verifier to evaluate the intermediate steps,\" which is substantively equivalent to the contribution's goal of producing \"dense line-level supervision\" to overcome sparse end-of-episode rewards. Multiple other papers, such as [12] and [14], also explicitly state the purpose of tackling sparse reward problems in RL.\n\n**mechanism**: COVERED by [17], which introduces \"Model-induced Process Supervision (MiPS),\" a method that trains a verifier to evaluate intermediate steps using automatically generated data. This is the same core mechanism as training a Process Reward Model (PRM); the contribution's use of binary search to find the first error line is a specific method for automatic data generation, a known primitive from the delta debugging literature [23, 27].\n\n**evaluation**: COVERED by [17], which uses the same evaluation design of training a reasoning model with its proposed process supervision method and then measuring performance gains on downstream benchmarks (e.g., GSM8K). The contribution applies this identical design to a different domain (code generation), which does not make the evaluation design itself novel.\n\n**domain**: COVERED by [8], which operates in the same application area by proposing a framework that integrates \"Reinforcement Learning and Code-as-policy\" for Large Language Models in embodied tasks.\n\nVERDICT purpose = 17\nVERDICT mechanism = 17\nVERDICT evaluation = 17\nVERDICT domain = 8",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     7,
+     19
+    ],
+    "evaluation": [
+     9,
+     14,
+     16
+    ],
+    "domain": [
+     8
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to determine how to properly integrate PRMs into RL training for code generation and distill a practical usage recipe. No prior paper explicitly addresses this specific empirical relationship or integration strategy for PRMs in RL training for code generation. While several papers discuss reward shaping (e.g., [5], [9], [17], [24]) or warm-start RL ([22], [26]), none establish the same empirical relationship or practical recipe for PRM integration strategies in RL training for code generation. Thus, the purpose is **not covered**.\n\n### Mechanism\nThe contribution's mechanism involves systematic experiments comparing PRM integration strategies (DenseReward, ValueInit, and combined DenseReward & ValueInit) and PRM data selection strategies, with the key finding that using PRMs concurrently as both dense rewards and value-function initialization yields the largest improvement. Papers such as [9] and [24] discuss dense reward shaping and potential-based reward shaping, and [7] explores reward initialization in preference-based RL. However, none of these papers combine dense rewards and value-function initialization concurrently as a mechanism for PRM integration. Therefore, the mechanism is **not covered**.\n\n### Evaluation\nThe evaluation involves ablation studies on LiveCodeBench (LCB) and InHouseBench (IHB), showing relative improvements in performance metrics. Papers such as [9], [16], and [19] conduct ablation studies and benchmark comparisons for reward shaping methods, and [26] evaluates warm-start RL approaches. While the specific benchmarks (LCB and IHB) are new, the evaluation design (ablation studies and relative performance metrics) is standard and appears in prior work. Thus, the evaluation is **covered**.\n\n### Domain\nThe domain is LLM code generation and reinforcement learning. Papers such as [8] and [14] address RL applications in code generation and text generation, respectively, and [5] discusses using LLMs for reward shaping in RL. These works establish the domain of LLM code generation and RL as a known application area. Therefore, the domain is **covered**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 9  \nVERDICT domain = 8  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses integrating PRMs into RL training for code generation or distilling a practical usage recipe.  \nFACET: mechanism | FINAL: COVERED-BY 7 | reason: \"investigate the issue of a high degree of variability in the initialized reward models...compounds the issue of degenerate reward functions\" aligns with systematic experiments on PRM strategies and initialization effects."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Determine how to properly integrate PRMs (Process Reward Models) into RL training for code generation and distill a practical usage recipe.**\n\nThe purpose is specifically about understanding how PRMs integrate into RL training pipelines — comparing integration strategies (dense reward, value initialization) to find the best combination. None of the prior papers address PRMs in RL for code generation. Paper [14] (\"Beyond Sparse Rewards\") uses LLM critique to produce intermediate-step rewards in text generation RL, which is thematically related (dense/intermediate rewards in LLM RL), but its purpose is to address reward sparsity in text generation, not to systematically compare PRM integration strategies or produce a usage recipe for code generation RL. No prior paper establishes the same empirical relationship (PRM integration strategies → RL performance for code generation). The closest is [14], but it doesn't study PRMs as a distinct model class or compare integration strategies (DenseReward vs. ValueInit vs. combined).\n\n**MECHANISM: Systematic experiments comparing PRM integration strategies (DenseReward, ValueInit, combined) and PRM data selection; key finding that concurrent use as dense reward + value-function initialization yields largest improvement.**\n\nPaper [22] (\"Analyzing and Overcoming Degradation in Warm-Start RL\") addresses warm-starting value functions from pretrained policies, which partially overlaps with ValueInit. Paper [14] uses LLM-generated intermediate rewards as dense reward signals in RL, overlapping with DenseReward. However, no prior paper combines both primitives (dense reward shaping + value function initialization from a process reward model) and systematically compares them as integration strategies for a PRM. The combination and the systematic comparison across these specific strategies is not present. Paper [7] (\"Data Driven Reward Initialization for Preference based RL\") addresses reward model initialization but not value function initialization from a PRM. No single paper covers the combined mechanism.\n\n**EVALUATION: Ablation on LiveCodeBench and internal benchmark; Table 1 comparing DenseReward/ValueInit/combined; Table 2 for data selection.**\n\nThe evaluation design is a controlled ablation comparing component combinations on a named coding benchmark (LiveCodeBench). Paper [14] uses ablation studies comparing reward integration strategies on text generation benchmarks. The evaluation design (ablation/component comparison on a named benchmark with relative improvement metrics) is a standard design used across many prior papers. LiveCodeBench is a named benchmark family used in LLM code evaluation. The design of \"compare integration strategies via ablation on a named benchmark\" is a standard experimental design present in papers like [14] and [19]. However, LiveCodeBench as a specific named benchmark doesn't appear in prior papers here. The evaluation design (ablation comparing reward strategies on a benchmark) is generically present in [14] and [19].\n\n**DOMAIN: LLM code generation / reinforcement learning.**\n\nPaper [14] works in LLM text generation with RL. Paper [8] works in LLM code generation (Code World Models with LLMs). The domain of LLM + RL is covered by [14], and LLM code generation is covered by [8]. The combination of RL training for LLM code generation is the specific area, but both constituent areas appear in prior papers.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 14\nVERDICT domain = 8",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the objective of determining how to properly integrate PRMs into RL training specifically for code generation and distilling a practical usage recipe. Paper [14] uses LLM critique for intermediate rewards in text generation but does not study PRM integration strategies or produce a usage recipe for code RL. No other paper matches this specific objective even under different terminology.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper systematically compares PRM integration strategies (DenseReward, ValueInit, combined) or PRM data selection strategies in the context of RL for code generation. Paper [22] addresses warm-start RL and value function initialization but does not involve PRMs, code generation, or the specific finding that concurrent use as dense reward and value-function initialization yields the largest gain. No equivalent experimental design or finding exists in any prior paper even under different framing."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 19
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "purpose: The contribution's purpose is to determine the best integration strategy for Process Reward Models (PRMs) in RL for code generation, finding that combining dense rewards and value initialization is optimal. No prior paper reports this specific empirical relationship; while papers discuss using models for rewards (e.g., [5], [14]) or warm-starting RL ([22], [26]), none compare these integration strategies to find that their combination is superior.\n\nmechanism: The mechanism is a systematic experimental comparison of different integration strategies (DenseReward, ValueInit, combined). This is a standard analysis protocol, and paper [19] uses the same mechanism design to \"compare reward shaping, hints, and curricula\" to determine their relative impact on performance.\n\nevaluation: The evaluation design consists of measuring performance improvement on benchmarks (LiveCodeBench, InHouseBench) relative to a baseline. This is a standard evaluation protocol, and paper [16] uses the same design, as indicated by its title \"Benchmarking Potential Based Rewards for Learning Humanoid Locomotion.\"\n\ndomain: The domain is reinforcement learning for LLM-based code generation. Paper [8] operates in the exact same domain, as it considers \"Code World Models, world models generated by a Large Language Model (LLM) in the form of Python code for model-based Reinforcement Learning (RL).\"\n\nVERDICT purpose = NONE\nVERDICT mechanism = [19]\nVERDICT evaluation = [16]\nVERDICT domain = [8]",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the specific objective of conducting a methodological study to determine the best practices for integrating preference reward models (PRMs) with reinforcement learning specifically for the domain of code generation and then distilling these findings into a practical recipe. While some papers use language models for rewards (e.g., [14] for text generation, [5] for robotics), their purpose is to introduce a novel framework, not to perform a comparative analysis of integration techniques to establish a set of best practices or a \"recipe\"."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     8
+    ],
+    "mechanism": [
+     8,
+     17
+    ],
+    "evaluation": [
+     8,
+     15,
+     23
+    ],
+    "domain": [
+     1,
+     2,
+     5,
+     15
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": [
+        8,
+        17
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        8,
+        23
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        2,
+        5,
+        15
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose is to demonstrate that the PRM-guided RL recipe improves code-generation pass rate, especially in long-horizon scenarios. Paper [8] discusses the efficacy of PRM in iterative step-level process refinement for reasoning tasks, which is conceptually similar to using PRM for improving long-horizon code generation. However, no prior paper explicitly establishes the empirical relationship between PRM-guided RL and improved pass rates in code generation, particularly for long-horizon scenarios. Thus, the purpose is **not covered**.\n\n### Mechanism\nThe mechanism involves applying the PRM recipe (dense reward + value initialization) to RL training of the in-house LLM and analyzing Pass@1 as a function of response length. Paper [8] uses PRM as a step-by-step feedback mechanism during training, which aligns with the dense reward concept. Paper [17] discusses warm-start RL with prior policies, which is conceptually similar to value initialization. Together, these papers cover the underlying primitives of dense reward shaping and value initialization, even though they do not apply them specifically to code generation. Thus, the mechanism is **covered**.\n\n### Evaluation\nThe evaluation design measures pass rate improvement on benchmarks (LiveCodeBench and an in-house benchmark) and analyzes PRM's impact on long responses. Paper [23] evaluates LLMs for code generation using benchmarks like HumanEval and MBPP, which are conceptually similar to LiveCodeBench. Paper [8] uses PRM to improve reasoning accuracy, which involves step-level feedback and iterative refinement, aligning with the statistical framework of measuring improvement across response lengths. These prior works cover the evaluation design, even though the specific benchmarks differ. Thus, the evaluation is **covered**.\n\n### Domain\nThe domain is LLM code generation with reinforcement learning. Papers [1], [2], [5], and [15] all address LLM-based code generation using RL techniques, making the domain clearly covered. While the specific sub-problem (PRM-guided RL for long-horizon pass rate improvement) is new, it falls within the broader area of LLM code generation with RL. Thus, the domain is **covered**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 8, 17  \nVERDICT evaluation = 8, 23  \nVERDICT domain = 1, 2, 5, 15  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 8 | reason: Paper [8] explicitly examines the efficacy of PRM in improving reasoning accuracy, which aligns with the objective of demonstrating PRM-guided RL's improvement in code-generation pass rate, especially in long-horizon scenarios."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 15
+      },
+      "domain": {
+       "covered_by": 15
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Demonstrate that PRM-guided RL recipe improves code-generation pass rate, especially in long-horizon scenarios.**\n\nThe purpose is to show that using a Process Reward Model (PRM) as dense reward + value initialization improves RL training for code generation, with particular focus on long-horizon (long response) scenarios. Paper [8] examines \"the efficacy of PRM in the improvement of LLMs' reasoning abilities\" and uses step-level reward models to navigate reasoning — this is about PRM improving reasoning, not specifically code generation pass rate or long-horizon code scenarios. Papers [1], [2], [5], [15] use RL for code generation but none specifically demonstrate PRM-guided RL improving pass rate as a function of response length. No prior paper establishes the same empirical relationship: PRM-as-dense-reward improving code generation specifically for long-horizon responses. This purpose appears uncovered.\n\n**MECHANISM: Apply PRM as dense reward + value init to RL training, analyze Pass@1 as function of generated response length.**\n\nPaper [8] uses PRM with PPO/reject sampling for reasoning tasks — it applies step-level reward models during RL training, which is the same primitive of using PRM as a dense reward signal. Paper [15] (CodeRL) uses a critic model to provide dense token/step-level feedback during RL training for code generation. The combination of PRM-as-dense-reward + value initialization applied to RL training is partially covered by [8] (PRM in RL) and [15] (dense rewards in code RL), but the specific combination with value initialization from PRM is not explicitly covered. However, the core primitive — using a process/step reward model as dense reward in RL — is covered by [8].\n\n**EVALUATION: Pass rate on LiveCodeBench and in-house benchmark; Pass@1 as function of response length (Figure 3).**\n\nLiveCodeBench is a named benchmark family used for evaluating code generation. Papers [1], [2], [5], [15] evaluate code generation using pass@k metrics on coding benchmarks (HumanEval, MBPP, etc.). The evaluation design — measuring Pass@1 on a code benchmark — is the same design used in [15] and [1], just with a different benchmark instance (LiveCodeBench vs. HumanEval). The per-length analysis is a breakdown/ablation, which is a generic experimental shape. The named benchmark family (LiveCodeBench) is newer, but the evaluation design (Pass@k on coding benchmarks) is covered by [15].\n\n**DOMAIN: LLM code generation / reinforcement learning.**\n\nPapers [1], [2], [5], [15] all work in LLM code generation with reinforcement learning — this is clearly covered. Paper [15] explicitly combines pretrained LMs with deep RL for code generation.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 8\nVERDICT evaluation = 15\nVERDICT domain = 15",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of demonstrating that a PRM-guided RL recipe improves code-generation pass rate specifically in long-horizon scenarios. StepCoder (1) and CodeRL (15) use RL for code generation but do not employ a process reward model guiding RL training, and none of the PRM-related papers (8, 20) target code generation pass rate in long-horizon settings."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 23
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "purpose: The contribution is a finding that a PRM-guided RL recipe improves code generation pass rate, particularly for long-horizon problems. While prior work uses RL for code generation and other work uses PRMs for general reasoning, no prior paper appears to establish this specific empirical relationship between PRM-guided RL and code generation pass rate as a function of length. Paper [8] examines PRM efficacy for general reasoning, but the variables (reasoning accuracy) are different from the contribution's (code-generation pass rate).\n\nmechanism: The mechanism is applying a Process-Supervised Reward Model (PRM) as a dense reward for reinforcement learning. This technical primitive is described in paper [8], which states \"The Process-Supervised Reward Model (PRM), typically furnishes LLMs with step-by-step feedback during the training phase, akin to Proximal Policy Optimization (PPO)\". This is the same underlying approach.\n\nevaluation: The evaluation design is measuring the Pass@1 rate on code generation benchmarks (LiveCodeBench and an in-house one). This is a standard evaluation design for program synthesis. Paper [23] confirms this design is standard, noting that LLM program synthesis ability \"has been intensively tested and verified on datasets including HumanEval and MBPP,\" which use pass rate metrics.\n\ndomain: The domain is applying reinforcement learning to improve LLM code generation. This is the explicit domain of several prior papers. For example, paper [1] is titled \"StepCoder: Improve Code Generation with Reinforcement Learning from Compiler Feedback\" and paper [2] proposes \"RLCF, that further trains a pre-trained LLM via reinforcement learning\" for models of code.\n\nVERDICT purpose = NONE\nVERDICT mechanism = [8]\nVERDICT evaluation = [23]\nVERDICT domain = [1]",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY [1] | reason: Paper [1] has the same objective: it identifies the challenge of using RL for \"lengthy code generated by LLMs in response to complex human requirements\" (long-horizon scenarios) and proposes a solution using a \"step-level value function\" (a PRM-like mechanism) to improve performance. The paper's purpose is to demonstrate this solution works. Quote: \"However, the lengthy code generated by LLMs in response to complex human requirements makes RL exploration a challenge. To address this issue, we propose StepCoder, which introduces a step-level value function to provide a more fine-grained reward for RL exploration.\""
+     }
+    }
+   }
+  }
+ ]
+}

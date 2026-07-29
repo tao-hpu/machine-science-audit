@@ -1,0 +1,256 @@
+{
+ "paper_id": "vuuYbA1vB2",
+ "title": "Enhancing Mathematical Reasoning in Language Models Through Focused Differentiation Training",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1
+    ],
+    "mechanism": [
+     9,
+     19
+    ],
+    "evaluation": [
+     1
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 19
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to improve LLMs' ability to distinguish correct and incorrect responses in multi-step mathematical reasoning, addressing limitations of token/logit-level methods like DPO that struggle with semantic differences and rely on stronger models or manual intervention. Paper [1] explicitly addresses the same problem of enhancing LLM robustness and factuality in long-chain mathematical reasoning, noting DPO's limitations in identifying detailed errors. Paper [7] also targets improving fine-grained quality in multi-step reasoning tasks, specifically mathematical reasoning, by addressing limitations in preference annotations. Both papers share the same problem-class objective of improving mathematical reasoning accuracy by addressing semantic gaps in preference optimization methods.\n\n### Mechanism\nThe mechanism, Focused Differentiation Training (FDT), decomposes the final hidden state into shared and distinguishing semantic components, fine-tuning the output layer's weight matrix to amplify distinguishing components. This mechanism is novel. While papers [9], [12], and [26] discuss discriminant analysis methods (e.g., Fisher's Discriminant Analysis, DeepLDA) for improving class separability, these approaches focus on linear or nonlinear discriminant analysis for classification tasks, not decomposing hidden states into semantic components for preference optimization. Papers [8], [16], and [21] discuss fine-tuning methods that mitigate feature distortion or adjust layer-wise learning rates, but none propose decomposing hidden states into semantic components or amplifying distinguishing components. No prior paper introduces a substantively equivalent mechanism.\n\n### Evaluation\nThe evaluation uses GSM8K, MATH, and MMLU-redux benchmarks, reporting improvements in mathematical reasoning accuracy. Papers [1], [7], [22], and [24] all use GSM8K or similar multi-step reasoning benchmarks (e.g., SC-Math6, reasoning traces) to evaluate mathematical reasoning performance. Paper [17] introduces LILA, a unified benchmark for mathematical reasoning, which overlaps with the evaluation design here. The evaluation design — using standard benchmarks for multi-step reasoning tasks — is covered by these prior works.\n\n### Domain\nThe domain is large language model mathematical reasoning and preference alignment. Papers [1], [7], [22], and [24] all operate in the same general application area of mathematical reasoning for LLMs, even if they target different specific datasets or sub-problems. This contribution does not introduce a genuinely new application area.\n\n---\n\nVERDICT purpose = 1  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": "FACET: mechanism | FINAL: COVERED-BY 19 | reason: Paper [19] discusses \"Structured Disentangled Representations,\" which aligns with the concept of decomposing hidden states into shared and distinctive semantic components for fine-tuning, satisfying the same empirical relationship."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE:**\nThe contribution aims to help LLMs better distinguish correct from incorrect responses in multi-step mathematical reasoning, specifically addressing DPO's failure to capture semantic differences at the token/logit level without relying on human annotation or stronger models.\n\nPaper [1] (Step-DPO) explicitly addresses \"DPO has shown limited benefits for long-chain mathematical reasoning, as models employing DPO struggle to identify detailed errors\" — same objective of improving preference discrimination in mathematical reasoning beyond standard DPO. Paper [7] also addresses \"overall preference annotations of responses do not fully capture the fine-grained quality of model outputs in complex multi-step reasoning tasks.\" Paper [20] similarly develops iterative preference optimization for reasoning tasks where standard DPO makes \"little improvement on reasoning tasks.\" These papers share the same problem-class objective: improving LLM preference alignment for mathematical reasoning beyond standard DPO.\n\n**MECHANISM:**\nThe contribution decomposes last-layer hidden states into shared semantic components and discriminative semantic components, then fine-tunes only the output head weight matrix W to amplify discriminative components. This is a representation decomposition + targeted head fine-tuning approach.\n\nPaper [8] (Domain-Aware Fine-Tuning) discusses \"aligning the head layer on in-distribution datasets before performing fine-tuning\" and addresses feature distortion during adaptation. Paper [21] (\"How to prepare your task head for finetuning\") analyzes \"how the choice of task head controls feature adaptation.\" Paper [9] (Deep LDA) and [12] (Deep Least Squares FDA) decompose representations into discriminative vs. shared components to amplify class separability — the same primitive of separating discriminative from shared components in a representation space. However, FDT's specific mechanism of decomposing hidden states into shared/discriminative components and fine-tuning only W to amplify discriminative ones in an RLHF/DPO context is not directly matched. Papers [9] and [12] use LDA-style decomposition but not in the context of LLM head fine-tuning for preference alignment. No prior paper combines hidden-state decomposition into shared+discriminative components with targeted output-head weight matrix fine-tuning in a preference optimization framework. This appears genuinely absent.\n\n**EVALUATION:**\nThe evaluation uses GSM8K and MATH benchmarks (standard mathematical reasoning benchmarks), MMLU-redux, on Qwen2.5 and Llama models, with Step-DPO 10K preference pairs as training data.\n\nPaper [1] (Step-DPO) uses GSM8K and MATH benchmarks explicitly. Paper [20] (Iterative Reasoning Preference Optimization) uses GSM8K and MATH. Paper [22] (PORT) uses mathematical reasoning benchmarks. These are the same benchmark family (GSM8K/MATH) with the same metric semantics (accuracy percentage). This is clearly covered.\n\n**DOMAIN:**\nThe domain is LLM mathematical reasoning and preference alignment. Papers [1], [7], [20], [22] all work in LLM mathematical reasoning with preference alignment — same application area.\n\nVERDICT purpose = 1\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes decomposing last-layer hidden states into shared vs. discriminative semantic components and fine-tuning only the output head weight matrix W to amplify the discriminative component as a plug-in for RLHF/DPO frameworks. Paper [8] touches on head-layer alignment and feature distortion but does not decompose hidden states into shared/discriminative components nor target the output head weight matrix in this way. Papers [9][12][26] use Fisher/LDA-style discriminant analysis but in entirely different contexts (dimensionality reduction, classification) with no connection to LLM preference optimization or hidden-state decomposition for RLHF/DPO."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: The contribution aims to improve LLM performance in multi-step math reasoning by better distinguishing correct/incorrect responses, addressing the failure of token-level methods like DPO to capture semantic differences. This exact purpose is shared by multiple prior papers, including [1] which notes DPO's \"limited benefits for long-chain mathematical reasoning\" and [7] which addresses how \"overall preference annotations... do not fully capture the fine-grained quality... in complex multi-step reasoning tasks, such as mathematical reasoning.\"\n\nmechanism: The proposed mechanism, FDT, decomposes the final hidden state into shared and discriminative semantic components and fine-tunes the output head to amplify the discriminative component. This is substantively equivalent to the core principle of Fisher's Discriminant Analysis (FDA) or Linear Discriminant Analysis (LDA), which seeks a projection to maximize between-class separability while minimizing within-class variance. Paper [9] introduces \"Deep Linear Discriminant Analysis (DeepLDA) which learns linearly separable latent representations... by put[ting] LDA on top of a deep neural network,\" which is the same technical primitive.\n\nevaluation: The evaluation design consists of training on preference pairs and then measuring performance on standard mathematical reasoning benchmarks like GSM8K and MATH. This is a standard evaluation protocol for this domain, and the specific dataset used (Step-DPO 10K) comes from prior work [1], which would have used the same evaluation design of testing on \"long-chain mathematical reasoning\" benchmarks.\n\ndomain: The application area is large language model mathematical reasoning and preference alignment. This is explicitly the domain of several prior papers, including [1] (\"Step-wise Preference Optimization for Long-chain Reasoning of LLMs — Mathematical reasoning\"), [7] (\"Step-level Value Preference Optimization for Mathematical Reasoning\"), and [22] (\"Preference Optimization on Reasoning Traces\" to \"improve the mathematical reasoning performances\").\n\nVERDICT purpose = 1\nVERDICT mechanism = 9\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     19
+    ],
+    "evaluation": [
+     16,
+     20
+    ],
+    "domain": [
+     1,
+     3,
+     6,
+     16,
+     18
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 19
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        3,
+        6,
+        18
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to theoretically explain why FDT improves the distinction between correct and incorrect responses. None of the prior papers explicitly establish or report this specific empirical relationship. While some papers (e.g., [11], [16]) discuss reasoning improvements or reward model optimization, they do not address the theoretical explanation of FDT's ability to enhance the separation of correct and incorrect logits. Therefore, no prior paper covers this purpose.\n\n### Mechanism\nThe mechanism involves theoretical analysis via two theorems: Theorem 1 proves FDT adjusts head weights \\( W \\) based on error differences, and Theorem 2 demonstrates FDT controls shared semantic components' influence on logits using the concept of \\(\\eta\\)-subexponential distributions/vectors. Paper [19] and [21] discuss subexponential concentration inequalities, but they do not apply these concepts to FDT or the specific theoretical framework described here. Similarly, no prior paper combines these mechanisms to analyze FDT's impact on logits. Thus, the mechanism is uncovered.\n\n### Evaluation\nThe evaluation consists of qualitative theoretical proofs (Appendix A.2) and empirical comparison (Figure 2) of reward margins between FDT and DPO, showing FDT increases the margin between correct and incorrect logits. Paper [16] evaluates DPO empirically, but the evaluation design here (reward margin comparison specific to FDT) is not reused in any prior paper. The theoretical proof design is also unique, as no prior paper provides a similar setup for analyzing FDT's impact. Therefore, the evaluation is uncovered.\n\n### Domain\nThe domain is large language model (LLM) mathematical reasoning and theoretical analysis. Papers such as [1], [3], [6], and [18] address LLM reasoning or theorem proving, which falls within the same general application area. Although this contribution focuses on FDT and its theoretical analysis, the domain is covered because it operates within the broader area of LLM reasoning.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [1, 3, 6, 18]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses the empirical relationship of FDT enhancing correct/incorrect response distinction.  \nFACET: mechanism | FINAL: COVERED-BY 19 | reason: \"We derived new concentration inequalities for the sum of subexponential random variables\" aligns with η-subexponential distribution/vector concept in Theorem 2.  \nFACET: evaluation | FINAL: COVERED-BY 16 | reason: \"Empirical reward margin comparison between RLHF and DPO\" matches the claim of FDT increasing positive/negative logits margin shown in Figure 2.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 19
+      },
+      "evaluation": {
+       "covered_by": 20
+      },
+      "domain": {
+       "covered_by": 16
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: 从理论上说明 FDT 为何能提升正确/错误响应的区分能力**\n\nThe purpose is to theoretically explain why a specific training method (FDT) improves discrimination between correct and incorrect responses in LLM reasoning. Paper [16] compares RLHF vs DPO theoretically, analyzing how preference optimization affects policy learning, but its purpose is comparative analysis of paradigms, not explaining why a specific method improves correct/incorrect discrimination margins. Paper [20] (SimPO) analyzes reward margins between chosen/rejected responses, but theoretically explains SimPO's design rather than a \"correct vs incorrect\" distinction mechanism. No prior paper establishes the same empirical/theoretical relationship — explaining why a specific fine-tuning method improves correct-vs-incorrect logit margins. None of the papers target this specific theoretical purpose.\n\n**MECHANISM: Theorem proving with η-subexponential distributions to analyze weight updates and logit control**\n\nThe mechanism involves formal theorems about how training updates correct attention head weights differentially based on correct/incorrect responses, and uses η-subexponential distribution concepts to bound shared semantic component influence on logits. Papers [19] and [21] deal with subexponential concentration inequalities, which is the same mathematical primitive (subexponential random variables/distributions) used in Theorem 2. Paper [19] explicitly derives \"concentration inequalities for the sum of subexponential random variables\" — the η-subexponential concept is the same mathematical primitive even if applied to a different domain. However, the full mechanism (combining weight update analysis + subexponential bounding for logit control) is not covered as a unified approach. The subexponential primitive itself is covered by [19]/[21].\n\n**EVALUATION: Theorem proofs + empirical reward margin comparison (Figure 2 vs DPO)**\n\nThe evaluation design combines formal proofs (appendix) with empirical reward margin comparison between methods. Paper [20] (SimPO) explicitly compares reward/preference margins between SimPO and DPO, measuring margin differences between chosen and rejected responses — the same evaluation design of comparing logit/reward margins between a proposed method and DPO baseline. This is the same evaluation design (margin comparison against DPO) even if applied to a different method.\n\n**DOMAIN: LLM mathematical reasoning / theoretical analysis**\n\nThe domain is LLMs with a focus on mathematical reasoning and theoretical analysis of training methods. Paper [16] works on theoretical analysis of LLM preference learning (RLHF/DPO), which is the same general area of theoretical analysis of LLM training. Paper [20] also works on LLM preference optimization. These cover the domain of theoretical/empirical analysis of LLM training methods.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 19\nVERDICT evaluation = 20\nVERDICT domain = 16",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper provides a theoretical explanation for why FDT improves discrimination between correct and incorrect responses; [11] is the closest (contrastive prompting improves reasoning) but offers no theoretical analysis of the discrimination mechanism, only empirical results."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     2
+    ],
+    "mechanism": [
+     2
+    ],
+    "evaluation": [
+     2,
+     6
+    ],
+    "domain": [
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to empirically demonstrate that Fine-tuned Direct Preference Optimization (FDT) outperforms traditional RLHF methods in mathematical reasoning tasks. Paper [2] (\"Step-DPO\") shares a similar purpose, as it explicitly addresses the limitations of RLHF and DPO in mathematical reasoning and aims to enhance reasoning robustness and factuality. Paper [12] (\"Improve Mathematical Reasoning in Language Models by Automated Process Supervision\") also aligns with this purpose, as it focuses on improving reasoning performance in multi-step mathematical tasks. Both papers share the same problem-class level objective of improving mathematical reasoning performance relative to existing methods like RLHF/DPO.\n\n### Mechanism\nThe contribution's mechanism involves comparing FDT against DPO/Step-DPO baselines across multiple models and datasets, using accuracy as the primary metric. Paper [2] (\"Step-DPO\") employs a substantively equivalent mechanism, as it compares Step-DPO against DPO and RLHF baselines for mathematical reasoning tasks, using accuracy as a key evaluation metric. Paper [4] (\"Step-Controlled DPO\") also uses a similar mechanism, comparing stepwise error supervision methods against DPO baselines for mathematical reasoning. Both papers utilize the same technical primitive of baseline comparison with accuracy as the main metric.\n\n### Evaluation\nThe evaluation design involves testing FDT on GSM8K, MATH, and MMLU-redux datasets across two models (Qwen2.5-3B and Llama-3.2-3B), with consistent superiority over baselines. Paper [6] (\"Are We Done with MMLU?\") and Paper [9] (\"MMLU-Pro\") both use MMLU-based benchmarks for evaluating LLM performance, which matches the evaluation design at the benchmark family level. Paper [8] (\"Achieving >97% on GSM8K\") uses GSM8K for evaluating mathematical reasoning, and Paper [13] (\"MMLU-Pro+\") extends MMLU for higher-order reasoning evaluation. These prior papers collectively cover the evaluation design, as they use the same benchmark families (MMLU, GSM8K) and accuracy metrics.\n\n### Domain\nThe contribution operates in the domain of large language model (LLM) mathematical reasoning. Paper [2] (\"Step-DPO\"), Paper [4] (\"Step-Controlled DPO\"), Paper [8] (\"Achieving >97% on GSM8K\"), and Paper [12] (\"Improve Mathematical Reasoning in Language Models by Automated Process Supervision\") all address mathematical reasoning tasks for LLMs, covering the same general application area. While specific datasets or sub-problems may differ, the domain remains substantively equivalent.\n\n---\n\nVERDICT purpose = 2  \nVERDICT mechanism = 2  \nVERDICT evaluation = 6  \nVERDICT domain = 2  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": 2
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: 实证证明 FDT 相对传统 RLHF 方法在数学推理上的优越性**\n\nThe purpose is to empirically demonstrate that FDT outperforms traditional RLHF/DPO methods on mathematical reasoning. Paper [2] (Step-DPO) explicitly aims to \"enhance the robustness and factuality of LLMs\" on mathematical reasoning and compares against DPO baselines. Paper [4] (SCDPO) similarly proposes a method for \"enhanced mathematical reasoning\" and demonstrates superiority over DPO. Paper [18] studies \"multiple algorithms that learn from feedback\" on \"improving LLM reasoning capabilities\" and compares them. However, none of these papers report the specific empirical relationship \"FDT > DPO/Step-DPO on math reasoning\" — they report their own method's superiority. The purpose here is to establish FDT's superiority, which is a different claim. That said, at the problem-class level, the purpose \"show method X outperforms DPO on math reasoning\" is the same class as papers [2] and [4], which demonstrate their respective methods outperform DPO on math reasoning. This is the same objective at the problem-class level.\n\n**MECHANISM: 在多模型多数据集上与 DPO/Step-DPO 基线对比,以 accuracy 为主指标**\n\nThe mechanism is multi-model, multi-dataset comparison against DPO/Step-DPO baselines using accuracy as the primary metric. Paper [2] (Step-DPO) compares against DPO baselines on mathematical reasoning datasets using accuracy. Paper [4] (SCDPO) also compares against DPO on math benchmarks with accuracy. Paper [18] compares multiple RL algorithms on reasoning tasks. This is a standard controlled comparison design — the same primitive of \"compare proposed method vs. DPO baseline on math benchmarks with accuracy\" appears in [2] and [4].\n\n**EVALUATION: GSM8K/MATH/MMLU-redux 三数据集、Qwen2.5-3B 与 Llama-3.2-3B 两模型**\n\nThe evaluation uses GSM8K and MATH benchmarks (standard math reasoning benchmarks) with accuracy metrics. Paper [2] (Step-DPO) uses GSM8K and MATH benchmarks. Paper [4] (SCDPO) also evaluates on GSM8K and MATH. Paper [8] targets GSM8K specifically. Paper [18] evaluates on math reasoning benchmarks. The benchmark family (GSM8K/MATH) is well-established and used in [2], [4], [8], [18]. MMLU-redux is a variant of MMLU, which appears in [6] (\"MMLU-redux\" is introduced there as a cleaned version). The evaluation design — using GSM8K/MATH with accuracy, comparing methods — is covered by [2] and [4].\n\n**DOMAIN: 大语言模型数学推理**\n\nThe domain is LLM mathematical reasoning. Papers [2], [4], [8], [12], [17], [18] all work in LLM mathematical reasoning. This is clearly covered.\n\nVERDICT purpose = 2\nVERDICT mechanism = 2\nVERDICT evaluation = 2\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

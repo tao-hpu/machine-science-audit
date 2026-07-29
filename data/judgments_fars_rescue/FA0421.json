@@ -1,0 +1,314 @@
+{
+ "paper_id": "FA0421",
+ "title": "Farkas Dual Rays Do Not Improve LLM-Based Optimization Model Repair",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": [
+     8
+    ],
+    "domain": [
+     8
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to test whether Farkas dual ray multipliers improve constraint ranking for truncated IIS feedback in LLM repair of infeasible optimization models. No prior paper explicitly addresses this purpose. Papers such as [1], [2], [6], [11], and [14] discuss infeasibility diagnosis and resolution in optimization models, but none test the specific hypothesis about Farkas dual ray multipliers improving IIS constraint ranking for LLM-based repair. Papers like [3], [5], [9], and [12] focus on IIS characterization or identification but do not address the use of Farkas dual rays for ranking constraints in the context of LLM repair. Thus, the purpose is uncovered.\n\n### Mechanism\nThe mechanism involves extracting the Farkas dual ray \\( y \\) from HiGHS (with presolve disabled) for an infeasible LP, ranking IIS constraints by \\( |y_i| \\) descending, and providing the top-K constraints (with or without normalized weights) to the LLM for one-step repair. Papers such as [3], [5], [6], [9], [12], and [21] discuss Farkas dual rays or IIS-related methods, but none describe the specific mechanism of ranking IIS constraints by \\( |y_i| \\) descending and integrating this ranking into an LLM repair pipeline. While [3] generalizes Farkas' lemma to semidefinite systems and [21] discusses exact duals and certificates of infeasibility, neither paper applies these concepts to ranking IIS constraints for LLM-based repair. Thus, the mechanism is uncovered.\n\n### Evaluation\nThe evaluation design involves a training-free feedback interface with three conditions (IIS-TopK baseline, DualRay-TopK, DualRay+Weights) on MAMO-Optimization, with IIS/dual ray computed on LP relaxations for MIPs. Papers such as [8], [13], and [16] discuss LLM-based optimization modeling and evaluation setups, but none use the specific evaluation design described here. While [8] introduces OptiHive for LLM-based optimization pipelines and [16] benchmarks LLMs on network optimization problems, neither paper employs the same feedback interface design or conditions. Thus, the evaluation is uncovered.\n\n### Domain\nThe domain is LLM-based optimization modeling and solver-in-the-loop repair. Papers such as [8], [13], and [16] clearly operate in this domain. For example, [8] discusses enhancing LLM-based solvers, [13] addresses optimization modeling with LLMs, and [16] benchmarks LLMs on optimization problems. Although the specific sub-problem of infeasible optimization model repair is new, the general application area of LLM-based optimization modeling is covered. Thus, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 8  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper tests Farkas dual ray multipliers for constraint ranking in truncated IIS feedback for LLM repair; no equivalent objective found.  \nFACET: mechanism | FINAL: NONE | reason: No prior paper describes extracting Farkas dual ray, ranking IIS constraints by |y_i|, and using top-K for LLM repair; no equivalent mechanism found.  \nFACET: evaluation | FINAL: NONE | reason: No prior paper presents a training-free feedback interface with the same three conditions on MAMO-Optimization; no equivalent evaluation setup found.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Test whether Farkas dual ray multipliers give better constraint ranking for truncated IIS feedback in LLM repair of infeasible optimization models.**\n\nThe purpose is specifically about using dual ray multipliers to *rank* constraints for LLM-based repair feedback. Paper [1] ranks feasible clusters from infeasible LPs, but for guiding decision-makers toward feasibility strategies, not LLM repair. Papers [6], [11], [14] analyze infeasible LPs/MIPs for repair, but not via LLM feedback or dual-ray ranking for LLM consumption. No prior paper pursues the objective of \"rank IIS constraints via Farkas dual ray magnitudes to improve LLM repair feedback quality.\" The closest is [1] (ranking constraints from infeasible LP) but the objective is fundamentally different (K-best feasible clusters vs. ranking for LLM repair). None cover this purpose at the problem-class level.\n\n**MECHANISM: Extract Farkas dual ray y from solver, rank IIS constraints by |y_i| descending, provide top-K to LLM.**\n\nPaper [3] discusses Farkas' lemma for semidefinite programming and IIS supports as vertices of the alternative polyhedron — it connects Farkas certificates to IIS structure. Paper [18] provides Farkas-type infeasibility certificates for LMIs. Paper [21] discusses exact duals and Farkas certificates for conic LPs. Papers [3], [18], [21] all involve Farkas certificates in the context of infeasibility analysis, but none use the Farkas dual ray magnitudes as a *ranking signal* for constraint prioritization fed to an LLM. The primitive of \"use Farkas multiplier magnitudes to rank/prioritize constraints\" does not appear in any prior paper — the Farkas lemma papers use certificates for existence/infeasibility proofs, not as a ranking heuristic. No prior paper covers this mechanism.\n\n**EVALUATION: Three-condition comparison (IIS-TopK baseline, DualRay-TopK, DualRay+Weights) on MAMO-Optimization benchmark; LP relaxation for MIPs.**\n\nPaper [8] (OptiHive) evaluates LLM-based optimization solvers with comparisons across conditions. Paper [13] constructs an industrial-scale optimization modeling benchmark. Paper [4] explores LLM capabilities with multi-problem evaluation. The evaluation design here is an ablation/condition-swap experiment on an LLM optimization benchmark (MAMO-Optimization), which is a named benchmark. Paper [13] constructs MAMO-Optimization itself. The evaluation design — comparing feedback variants on an LLM optimization benchmark — is used in papers like [8] which compare solver pipeline variants on optimization benchmarks. The design (compare feedback conditions on a named LLM optimization benchmark) is covered by [8]'s framework of comparing LLM solver variants on benchmark problems.\n\n**DOMAIN: LLM-based optimization modeling / solver-in-the-loop repair.**\n\nPaper [8] explicitly works in \"LLM-based solvers\" for optimization with \"iterative repair loops.\" Paper [13] constructs benchmarks for LLM-based optimization modeling. Paper [16] benchmarks LLMs on network optimization problems. This domain is clearly covered by [8] and [13].\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 8\nVERDICT domain = 8",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper tests whether Farkas dual ray multipliers specifically improve constraint ranking for truncated IIS feedback in LLM-based repair of infeasible optimization models. Papers on IIS analysis (e.g., [6], [11], [14]) and LLM optimization (e.g., [8], [13]) are separate; none combines Farkas dual ray magnitudes as a ranking signal for LLM repair feedback.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes extracting the Farkas dual ray y from a solver (HiGHS or otherwise) with presolve disabled, ranking IIS constraints by |y_i| descending, and feeding the top-K (with or without normalized weights) to an LLM for one-step repair. [18] and [21] discuss Farkas certificates for infeasibility theoretically, but none implements this as a constraint-ranking mechanism for LLM prompting."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "purpose: The objective is to test the hypothesis that Farkas dual ray multipliers provide a better signal for ranking constraints than standard IIS, specifically for the task of guiding an LLM to repair an infeasible optimization model. None of the prior papers pose this specific empirical question; papers on infeasibility like [3] and [18] are theoretical, and papers on LLMs for optimization like [8] and [16] do not investigate this specific repair signal.\n\nmechanism: The core technical primitive is ranking constraints by the magnitude of their corresponding Farkas dual ray multipliers (`|y_i|`) to identify the most critical ones causing infeasibility. While papers like [3] connect the *support* of a Farkas certificate to an Irreducible Infeasible Subsystem (IIS), none of the provided papers propose using the *magnitudes* of the dual ray components as a continuous ranking signal for guiding repair.\n\nevaluation: The evaluation design involves a controlled comparison of different feedback signals (IIS vs. DualRay) provided to an LLM, measured on a benchmark of optimization problems (MAMO-Optimization). This design is an instance of the established protocol of benchmarking LLM performance on optimization tasks, as seen in prior work like [8] which evaluates an LLM-based optimization framework that depends on \"iterative repair loops\".\n\ndomain: The application area is \"LLM-based optimization modeling / solver-in-the-loop repair\". This exact domain is shared by multiple prior papers. For instance, [8] introduces \"OptiHive, a framework that enhances any solver-generation pipeline\" for \"LLM-based solvers\" and explicitly notes their dependence on \"iterative repair loops\".\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = [8]\nVERDICT domain = [8]",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the objective of empirically testing Farkas dual ray multipliers as a method for ranking constraints to provide feedback for repairing infeasible models, particularly for an LLM.\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes the mechanism of extracting a Farkas dual ray and using the magnitude of its components (|y_i|) to rank constraints by their contribution to infeasibility for the purpose of repair."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     12,
+     19
+    ],
+    "evaluation": null,
+    "domain": [
+     1,
+     2,
+     5,
+     13,
+     20,
+     23
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        5,
+        13,
+        20,
+        23
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to rigorously isolate the effect of constraint ranking from confounds and report the outcome. None of the prior papers explicitly establish or report the same empirical relationship between constraint ranking and its isolated effect. While some papers (e.g., [1], [5], [13], [20], [23]) discuss infeasibility repair or irreducible infeasible subsystems, they do not isolate the specific effect of constraint ranking or rigorously disentangle it from confounds. Therefore, no prior paper covers this purpose.\n\n### Mechanism\nThe mechanism involves controlled experiments holding model (Qwen2.5-7B), K=5, and greedy decoding fixed across three feedback conditions, with extended experiments varying K, samples, and model scale (32B, 72B). Papers such as [12], [14], and [15] discuss experimental design and controlled setups, but none of them use the same experimental design or methodology for isolating constraint ranking effects in infeasibility repair. The mechanism is therefore uncovered.\n\n### Evaluation\nThe evaluation design involves identical repair rates (1/31, 3.23%) across three feedback methods for the same instance (EasyLP 425, IIS size=2) and 0/16 repair rates in the truncation regime (IIS>K). Papers such as [1], [5], [13], [20], and [23] discuss infeasibility repair and irreducible subsystems, but none use the same evaluation design or metrics (e.g., repair rates for identical instances across feedback methods or truncation regimes). The evaluation design is therefore uncovered.\n\n### Domain\nThe domain is feedback-format ablation for infeasibility repair. Papers such as [1], [5], [13], [20], and [23] address infeasibility repair and irreducible infeasible subsystems, which fall within the same general application area. Although the specific instance (feedback-format ablation) is new, the domain itself is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [1, 5, 13, 20, 23]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper rigorously isolates the effect of constraint ranking from confounds and reports the outcome under the same empirical relationship.  \nFACET: mechanism | FINAL: NONE | reason: No prior paper conducts controlled experiments holding Qwen2.5-7B, K=5, and greedy decoding fixed across feedback conditions, nor extends experiments varying K, samples, and model scale (32B, 72B).  \nFACET: evaluation | FINAL: NONE | reason: No prior paper reports identical repair rates (1/31, 3.23%) across all feedback methods, repairing the same instance (EasyLP 425, IIS size=2), nor shows 0/16 repair in truncation regime (IIS>K).  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Rigorously isolate the effect of constraint ranking from confounds and report the outcome.**\n\nThe purpose is to isolate whether the *ordering/ranking* of constraints in feedback affects infeasibility repair rates. Looking through all prior papers: [11] (RIFT) isolates the impact of prompt topology/ordering on LLM performance, but that's about instruction ordering in prompts, not constraint ranking in infeasibility repair. [19] investigates prompt variations for LLM-based rankers, but the purpose is ranking quality, not infeasibility repair. No prior paper establishes or reports the empirical relationship \"constraint ranking order does/does not affect infeasibility repair rates.\" The closest thematic neighbors ([1],[2],[5],[13],[20],[23],[29]) are about finding/computing IIS but don't study feedback format ablations. None cover the same variables and direction of effect.\n\n**MECHANISM: Controlled experiments holding model, K, and decoding fixed across feedback conditions, plus extended experiments varying K, samples, and model scale.**\n\nThis is a controlled ablation design — fixing confounds and varying one factor. This is a standard experimental design primitive. [12] (Designing Experiments and Analyzing Data) and [14] (Optimization using design of experiments) explicitly cover controlled experimental design. [11] uses controlled conditions to isolate structural effects. [16] runs experiments across multiple LLM variants of varying sizes to probe preferences. The mechanism of \"hold everything fixed, vary one factor, then extend across scales\" is a standard controlled experiment design covered by [12] and [14].\n\n**EVALUATION: All three feedback methods produce identical results: 1/31 (3.23%) repair rate, repairing the same instance; truncation regime shows 0/16 for all methods.**\n\nThis is the actual finding/result, not an evaluation design. As an evaluation design, it uses a repair-rate metric on a fixed benchmark of LP instances with IIS-based feedback. The evaluation design (measuring repair success rate across feedback conditions on optimization problem instances) doesn't match any named benchmark family or protocol in the prior papers. The prior papers don't use this specific evaluation design — none measure infeasibility repair rates on LP instances. This appears genuinely new as an evaluation design.\n\n**DOMAIN: Feedback-format ablation for infeasibility repair.**\n\nThe domain is LLM-assisted infeasibility repair of constraint systems. Prior papers [1],[2],[5],[13],[20],[23],[29] work on infeasibility/IIS analysis of constraint systems. Papers [3],[17],[18],[22],[28] work on feedback in educational/review contexts. None of the prior papers work in the area of LLM-based infeasibility repair with feedback format variations. However, [1],[2],[5],[13],[20],[23],[29] cover the constraint infeasibility domain broadly, and feedback-format ablation for LLM-based repair could be seen as a sub-instance of the constraint infeasibility area. The domain of \"automated infeasibility repair using LLMs with feedback\" is arguably a new specific instance within constraint satisfaction, but the general area of constraint infeasibility is covered by [1],[2],[5],[13],[20],[23],[29].\n\nVERDICT purpose = NONE\nVERDICT mechanism = 12\nVERDICT evaluation = NONE\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the objective of rigorously isolating the effect of constraint ranking from confounds to report that outcome; [11] (RIFT) disentangles structure from content in LLM instruction-following but is a different domain and different empirical relationship entirely; no paper in the set targets constraint ranking isolation in infeasibility repair contexts.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports the specific finding that all three feedback methods yield identical 1/31 repair rates on the same instance (EasyLP 425, IIS size=2) with 0/16 repair in the truncation regime; this is a concrete numerical experimental result unique to the contribution under review and no prior paper contains an equivalent claim even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 19
+      },
+      "evaluation": {
+       "covered_by": 19
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "PURPOSE: The contribution's purpose is to establish a specific empirical finding: that the format of constraint ranking in feedback has no effect on infeasibility repair outcomes. No prior paper investigates or reports this specific empirical relationship between these variables, which is the requirement for covering the purpose of a finding-type contribution.\n\nMECHANISM: The mechanism is a controlled experiment that varies one condition (feedback format) while holding others (model, decoding) fixed, supplemented by sensitivity analysis on other parameters (K, scale). This is a standard experimental design, used for example in [19] to \"provide a systematic understanding of the impact of specific components and wordings used in prompts\" by isolating and varying them.\n\nEVALUATION: The evaluation design consists of applying different methods to a benchmark of problem instances and measuring the success rate (\"repair rate\"). This is a standard benchmark-based evaluation protocol, and its design is equivalent to that used in [19] to evaluate different \"zero-shot ranking methods\" on information retrieval benchmarks.\n\nDOMAIN: The domain is the analysis and repair of infeasible constraint systems. This general application area is explicitly addressed by multiple prior papers, including [2] \"Analyzing Infeasible Constraint Systems\".\n\nVERDICT purpose = NONE\nVERDICT mechanism = 19\nVERDICT evaluation = 19\nVERDICT domain = 2",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper describes an experiment designed to isolate the effect of constraint ranking on user performance or understanding. Papers on experimental design [12, 14] are general, and papers conducting experiments [11, 17, 18, 19] do so to isolate different variables, such as prompt structure or the presence of LLM feedback in other domains, not the ranking of constraints for debugging infeasibility."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     18
+    ],
+    "mechanism": [
+     4,
+     18
+    ],
+    "evaluation": [
+     4,
+     18
+    ],
+    "domain": [
+     4,
+     18
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to show that simple regeneration (Best-of-2 inference scaling) outperforms solver-feedback repair methods on this benchmark. No prior paper explicitly establishes this empirical relationship between regeneration and repair methods for optimization modeling. Papers like [18], [22], and [25] discuss self-repair or self-debugging approaches but do not compare them against simple regeneration methods or demonstrate the superiority of regeneration. Thus, the purpose is **NONE**.\n\n### Mechanism\nThe mechanism involves comparing solver-feedback repair configurations against simple Best-of-2 inference scaling (2 samples, temperature 0.7, select first correct) on the same 7B model. Papers [4], [9], [10], [12], and [15] extensively discuss Best-of-N sampling as a mechanism for inference-time scaling, including its effectiveness and variations. While the specific configuration (Best-of-2, temperature 0.7) is new, the underlying primitive of Best-of-N sampling is covered. Therefore, the mechanism is **COVERED** by these papers.\n\n### Evaluation\nThe evaluation design involves measuring Pass@1 performance to compare Best-of-2 inference scaling against repair methods. Papers [4], [9], [10], [12], and [15] use similar evaluation designs for Best-of-N sampling, including Pass@1 metrics and comparisons across sampling configurations. Although the specific benchmark instance differs, the evaluation design (Pass@1 metric and comparative framework) is reused. Thus, the evaluation is **COVERED**.\n\n### Domain\nThe domain is inference-time scaling versus repair methods for optimization modeling. Papers [18], [22], and [25] address repair methods for code generation, while papers [4], [9], [10], [12], and [15] focus on inference-time scaling for reasoning tasks. Both repair and inference-time scaling are established areas, and optimization modeling falls within the broader domain of reasoning tasks. Therefore, the domain is **COVERED**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 4  \nVERDICT evaluation = 4  \nVERDICT domain = 4  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly demonstrates that simple regeneration beats solver-feedback repair on this benchmark, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 18
+      },
+      "mechanism": {
+       "covered_by": 18
+      },
+      "evaluation": {
+       "covered_by": 18
+      },
+      "domain": {
+       "covered_by": null
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "domain"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Show that simple regeneration beats solver-feedback repair on this benchmark.**\n\nThe purpose is to demonstrate empirically that simple resampling (Best-of-2) outperforms iterative solver-feedback repair. Paper [18] \"Is Self-Repair a Silver Bullet for Code Generation?\" directly investigates whether self-repair actually improves over simpler baselines, finding that \"its efficacy thus remains poorly understood\" and questioning repair's value. This is the same empirical relationship: regeneration/resampling vs. repair, with the finding that repair may not be superior. Paper [29] also revisits self-debugging and compares against baselines. Paper [18] is the closest match — it establishes the same relationship (simple regeneration competitive with or better than repair) in code generation.\n\n**MECHANISM: Compare solver-feedback repair configurations against simple Best-of-2 inference scaling on the same 7B model.**\n\nThe mechanism is a controlled comparison of repair vs. Best-of-N sampling on the same model. Paper [18] uses exactly this design: comparing self-repair against simple resampling baselines on the same model. Paper [26] \"On Sample-Efficient Code Generation\" also compares sampling strategies against repair. The primitive — \"run repair methods and Best-of-N sampling on the same model, compare pass rates\" — is present in [18] and [26].\n\n**EVALUATION: Best-of-2 achieves 65.12% Pass@1, outperforming all repair methods.**\n\nThe evaluation design uses Pass@1 as the metric and compares repair vs. sampling configurations. Paper [18] uses Pass@1 (or equivalent pass-rate metrics) to compare self-repair against resampling baselines. Paper [29] similarly uses pass-rate metrics comparing self-debugging against sampling baselines. The evaluation design (pass-rate metric, repair vs. sampling comparison) is covered by [18].\n\n**DOMAIN: Inference-time scaling vs repair for optimization modeling.**\n\nThe domain is optimization modeling (mathematical programming / constraint solving). None of the prior papers address optimization modeling (LP/MIP formulation, etc.) as their application area. The prior papers cover code generation, math reasoning, LLM alignment, and general reasoning — not optimization modeling specifically. However, the broader area could be argued as \"code/program generation with solver feedback.\" The closest is code generation with execution feedback ([18], [25], [29]), but optimization modeling (generating solver-ready formulations) is a distinct application area not covered by any prior paper.\n\nVERDICT purpose = 18\nVERDICT mechanism = 18\nVERDICT evaluation = 18\nVERDICT domain = NONE",
+      "stage2": "FACET: domain | FINAL: NONE | reason: No prior paper addresses inference-time scaling versus repair specifically for optimization modeling (e.g., LP/MIP formulation); all papers focus on general reasoning, code generation, or alignment tasks, and none use equivalent terminology or framing for this domain."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 18
+      },
+      "mechanism": {
+       "covered_by": 18
+      },
+      "evaluation": {
+       "covered_by": 18
+      },
+      "domain": {
+       "covered_by": 18
+      },
+      "single_paper_covers_all": 18
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to establish a specific empirical relationship: that simple regeneration (Best-of-N) outperforms solver-feedback repair. No prior paper appears to report or establish this same relationship. While paper [18] investigates the efficacy of self-repair, its purpose is to analyze its limitations, not to show that a simpler sampling method is strictly superior.\n\n**mechanism**: The mechanism is a direct experimental comparison between a repair-based method and a simple sampling-based method (Best-of-2). Paper [18], in its goal to determine if \"Self-Repair a Silver Bullet for Code Generation?\", would necessarily employ the same comparative analysis, pitting self-repair against simpler baselines like standard sampling to measure its added value.\n\n**evaluation**: The evaluation design is to measure and compare the performance of different methods using the Pass@1 success rate on a benchmark. This is a specific instance of the Pass@k metric family, which is a standard evaluation design for code generation and related structured generation tasks, as would be used in papers like [18] \"Is Self-Repair a Silver Bullet for Code Generation?\".\n\n**domain**: The domain is applying and comparing LLM improvement techniques (inference-time scaling, repair) to \"optimization modeling\". This is a specific application within the general area of using LLMs for complex, structured generation tasks. This general area is covered by prior work on \"code generation\" [18, 25, 29] and \"math reasoning\" [13].\n\nVERDICT purpose = NONE\nVERDICT mechanism = 18\nVERDICT evaluation = 18\nVERDICT domain = 18",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 18 | reason: The paper's purpose is to analyze the efficacy of self-repair for code generation, and it concludes that it is often inferior to a simpler baseline. Quote: \"Our analysis reveals that self-repair is often less effective than simple resampling\"."
+     }
+    }
+   }
+  }
+ ]
+}

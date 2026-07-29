@@ -1,0 +1,279 @@
+{
+ "paper_id": "FA0306",
+ "title": "Order-Robustness Audit of Gradient Masking Methods for Continual Learning in LLMs",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     16,
+     25
+    ],
+    "mechanism": [
+     1,
+     24
+    ],
+    "evaluation": [
+     1,
+     24,
+     25
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 16
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 24
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose:\nThe contribution's purpose is to test whether the published ranking of gradient masking methods holds under a different task ordering. Paper [24] (\"The Effect of Task Ordering in Continual Learning\") investigates the effect of task ordering on continual learning performance, showing that reordering tasks significantly affects catastrophic forgetting. This aligns with the contribution's purpose of examining task ordering effects, albeit in a broader context. Paper [16] (\"Optimal Task Order for Continual Learning of Multiple Tasks\") also explores task ordering, proposing strategies for optimizing it and analyzing its impact on learning performance. Both papers establish the empirical relationship between task ordering and performance, covering the purpose.\n\n### Mechanism:\nThe contribution audits FGGM, MIGU, and an SFT baseline on TRACE under an alternative task order. Paper [1] introduces FGGM and compares it to magnitude-based methods like MIGU, describing the technical primitives of both approaches. Paper [19] (\"Lookahead: a Far-Sighted Alternative of Magnitude-based Pruning\") discusses magnitude-based methods, which are relevant to MIGU's mechanism. Paper [13] (\"Prior Gradient Mask Guided Pruning-Aware Fine-Tuning\") also uses gradient masking techniques, though in a different context. These papers collectively cover the mechanisms of FGGM and MIGU, as they describe substantively equivalent primitives.\n\n### Evaluation:\nThe contribution evaluates ranking reversal using the TRACE benchmark under an alternative task order, reporting metrics like TRACE-OP points and seed-level performance. Paper [1] evaluates FGGM using continual learning benchmarks, including metrics for catastrophic forgetting, which aligns with the evaluation design. Paper [24] evaluates task ordering effects on continual learning performance using synthetic and naturalistic datasets, which is substantively equivalent to the evaluation design of the contribution. Paper [17] (\"When Benchmarks are Targets\") discusses sensitivity of LLM leaderboards to perturbations, including task ordering, and uses similar evaluation metrics to analyze ranking effects. These papers collectively cover the evaluation design.\n\n### Domain:\nThe contribution operates in the domain of continual learning for LLMs, specifically focusing on gradient masking and the TRACE benchmark. Paper [1] addresses catastrophic forgetting in continual learning for LLMs, introducing FGGM as a solution. Paper [24] investigates task ordering effects in continual learning, which is part of the same application area. Paper [11] (\"Elastic Variational Continual Learning with Weight Consolidation\") also operates in continual learning for neural networks, addressing catastrophic forgetting. These papers cover the domain.\n\n---\n\nVERDICT purpose = 16  \nVERDICT mechanism = 1  \nVERDICT evaluation = 24  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 24
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Test whether the published ranking of gradient masking methods holds under a different task ordering.**\n\nThe purpose is specifically to check whether a reported ranking between methods (FGGM vs MIGU) is stable or reverses under a different task order. Paper [24] \"The Effect of Task Ordering in Continual Learning\" investigates how task ordering affects continual learning performance and shows that reordering tasks significantly affects catastrophic forgetting. Paper [1] introduces FGGM and reports its advantage over MIGU, but does not test ranking stability under alternative orderings. Paper [24] is about task ordering effects on CL performance broadly, not specifically about whether a published ranking between two specific gradient masking methods reverses — but the relationship being tested (task order → method ranking change) is closely related. However, [24] doesn't specifically test \"does the published ranking of method A vs method B hold under a different order?\" — it tests forgetting amounts. Paper [25] is about rank reversal in multicriteria ranking for spectrum sensing, not CL methods. The specific purpose — verifying ranking stability of gradient masking methods under alternative task ordering — is not directly established by any prior paper. Paper [24] comes closest but tests forgetting magnitude, not method-vs-method ranking reversal. I'll mark this as NONE since no prior paper establishes the same empirical relationship (ranking reversal between these specific methods under task reordering).\n\n**MECHANISM: Audit FGGM and MIGU plus SFT baseline on TRACE under alternative Order 2 (front-loading numerical reasoning, Qwen2-1.5B).**\n\nThe mechanism is a controlled comparison/ablation: run existing methods under a different task ordering and compare results. Paper [24] uses exactly this design — reordering tasks and measuring CL performance across methods. Paper [1] introduces FGGM and compares against MIGU. The mechanism of \"run CL methods under different task orderings and compare\" is directly present in [24]. This is a standard controlled comparison design that [24] employs.\n\n**EVALUATION: Ranking reversal measured by TRACE-OP points across 3 seeds.**\n\nThe evaluation design uses the TRACE benchmark with TRACE-OP metric, multi-seed comparison. Paper [1] uses TRACE benchmark and TRACE-OP metric. Multi-seed comparison is a standard design present in many papers. The TRACE benchmark family is used in [1]. So the evaluation design (TRACE benchmark + TRACE-OP metric + multi-seed) is covered by [1].\n\n**DOMAIN: Continual learning for LLMs (gradient masking, TRACE benchmark).**\n\nPaper [1] works directly in continual learning for LLMs with gradient masking on TRACE. Paper [24] works in continual learning (though not specifically LLMs). The domain of continual learning for LLMs is covered by [1].\n\nVERDICT purpose = NONE\nVERDICT mechanism = 24\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: Paper [24] studies task ordering effects on continual learning performance broadly, but its purpose is to exploit ordering to *improve* performance, not to test whether the published ranking of gradient masking methods specifically holds under different task orderings. No paper examines whether a pre-established ranking of gradient masking methods is stable/robust across different task orderings — that specific objective appears nowhere in the prior papers under any alternative framing."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 25
+      },
+      "mechanism": {
+       "covered_by": 24
+      },
+      "evaluation": {
+       "covered_by": 25
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose:** The purpose is to test whether a published ranking of methods is stable when the task ordering is changed, looking for a potential \"ranking reversal\". This objective is substantively equivalent to the purpose of [25], which is to \"evaluate the rank reversal effect on the performance of CSSs based on multi-criteria ranking under poor environment\". Both aim to check for ranking instability under changing conditions.\n\n**mechanism:** The mechanism is to take two existing methods (FGGM, MIGU) and a baseline, run them on a standard benchmark (TRACE) but with a modified condition (an alternative task order), and compare the results. This experimental design is covered by [24], which investigates \"the effect of task ordering on continual learning performance\" by conducting \"an extensive series of empirical experiments\" that involve reordering tasks.\n\n**evaluation:** The evaluation design is to compare the benchmark scores of two methods and observe a \"ranking reversal,\" where the method that was superior under one condition becomes inferior under another. This evaluation concept is explicitly the subject of [25], which investigates the \"Rank Reversal Effect on Multicriteria Ranking\".\n\n**domain:** The domain is continual learning for large language models (LLMs), specifically using gradient masking techniques. This is explicitly the domain of [1], which introduces a method for \"Continual Learning\" to mitigate catastrophic forgetting in \"large language models\" using \"Gradient Masking\".\n\nVERDICT purpose = 25\nVERDICT mechanism = 24\nVERDICT evaluation = 25\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     4
+    ],
+    "mechanism": [
+     4
+    ],
+    "evaluation": [
+     4,
+     24
+    ],
+    "domain": [
+     1,
+     4
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": 4
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Per-Facet Reasoning:\n\n**Purpose:**  \nThe contribution aims to quantify each method's robustness to task ordering in continual learning. Paper [4] explicitly investigates the effect of task ordering on continual learning performance, conducting experiments to show how reordering tasks impacts catastrophic forgetting. Paper [5] also examines task order influence, proposing strategies for optimizing task sequences to improve learning performance. Both papers share the same objective of analyzing robustness to task ordering, making the purpose covered.  \n\n**Mechanism:**  \nThe contribution defines \"Order Sensitivity\" as the TRACE-OP drop from default order to Order 2 and compares drops and BWT across methods. Paper [4] computes the distance between tasks to modify continual learning performance, which involves analyzing task order effects but does not use the specific TRACE-OP metric or comparison framework. Paper [15] introduces measures of sequence transferability but does not define or use TRACE-OP or the specific comparison of drops and BWT. No prior paper uses the same mechanism for quantifying order sensitivity, making this facet uncovered.  \n\n**Evaluation:**  \nThe evaluation compares methods (MIGU, FGGM, SFT) using metrics like TRACE-OP drop and BWT on Order 2. Paper [4] conducts empirical experiments on task ordering effects, using metrics to validate continual learning performance under different task orders. Paper [15] evaluates sequence transferability impacts on continual learning, employing metrics to assess task sequence properties. Both papers use evaluation designs that involve metrics and comparisons across task orders, making the evaluation covered.  \n\n**Domain:**  \nThe contribution operates in the domain of order-robustness evaluation in continual learning. Paper [4] explicitly addresses task ordering effects in continual learning, and Paper [5] investigates optimal task order strategies in the same domain. Both papers work within the general application area of continual learning and task order robustness, making the domain covered.  \n\n---\n\n### Verdicts:  \nVERDICT purpose = 4  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 4  \nVERDICT domain = 4  ",
+      "stage2": "FACET: mechanism | FINAL: COVERED-BY 4 | reason: Paper [4] explicitly investigates the effect of task ordering on continual learning performance and empirically demonstrates how reordering tasks impacts catastrophic forgetting, aligning with the TRACE-OP drop concept under a different framing. Quoted phrase: \"we show that reordering tasks significantly affects the amount of catastrophic forgetting.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 24
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Quantify each method's robustness to task ordering.**\n\nPaper [1] explicitly addresses \"order-sensitivity, where the performance of the tasks largely varies based on the order of the task arrival sequence.\" Paper [4] investigates \"the effect of task ordering on continual learning performance\" and measures how reordering affects catastrophic forgetting. Paper [15] investigates \"impacts of sequence transferability on continual learning\" and task order selection. These papers share the same objective: quantifying/understanding how robust continual learning methods are to task ordering. Paper [1] is the closest match, explicitly naming \"order-sensitivity\" as a problem to tackle and measuring performance variation across task orders.\n\n**MECHANISM: Define Order Sensitivity as TRACE-OP drop from default order to Order 2, compare drops and BWT across methods.**\n\nThe specific mechanism here is: (1) define a metric (drop in a specific metric between two orderings), and (2) compare BWT across methods under different orderings. Paper [1] defines and measures order-sensitivity by comparing performance across task orderings. Paper [4] conducts \"extensive series of empirical experiments\" comparing forgetting across reordered tasks. Paper [15] \"propose two novel measures that capture the total transferability of a task sequence\" and compares methods. However, the specific primitive of \"compute drop between default and alternate order, compare BWT\" is a standard controlled comparison design. Paper [1] uses essentially the same primitive: measure performance variation across orderings and compare methods. Paper [4] also does this — measuring catastrophic forgetting differences across orderings and comparing approaches.\n\n**EVALUATION: MIGU shows smallest drop (3.71) vs FGGM (5.07) and SFT (9.49); MIGU best BWT on Order 2.**\n\nThe evaluation design uses BWT metric and accuracy drop across task orderings to compare continual learning methods. Paper [1] uses the same evaluation design (comparing methods on order-sensitivity using standard CL metrics). Paper [4] uses the same design: compare CL methods across task orderings using forgetting metrics. Paper [24] (FGGM) explicitly compares MIGU and FGGM using BWT and accuracy metrics in continual learning settings. The evaluation design — comparing methods using BWT and accuracy drop across orderings — is covered by [1], [4], and [24].\n\n**DOMAIN: Order-robustness evaluation in continual learning.**\n\nPapers [1], [4], [5], [15], [23] all work in continual learning with task ordering as a concern. This is clearly the same application area.\n\nVERDICT purpose = 1\nVERDICT mechanism = 4\nVERDICT evaluation = 24\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     14,
+     22
+    ],
+    "mechanism": [
+     11,
+     15
+    ],
+    "evaluation": [
+     14
+    ],
+    "domain": [
+     6,
+     31
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 14
+      },
+      "mechanism": {
+       "covered_by": 15
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to explain the mechanism behind FGGM's order sensitivity. Paper [21] (\"Curriculum-Meta Learning for Order-Robust Continual Relation Extraction\") explicitly addresses order sensitivity in continual learning, proposing methods to mitigate it. Paper [14] (\"The Effect of Task Ordering in Continual Learning\") investigates how task ordering affects catastrophic forgetting, connecting task order to continual learning performance. Both papers share the same objective of understanding and addressing order sensitivity in continual learning systems. Therefore, the purpose is **covered**.\n\n#### Mechanism:\nThe contribution analyzes consecutive task-pair Jaccard similarity of FGGM's binary masks under different orderings, identifying a low-overlap disruption mechanism. Paper [15] (\"Quantum Algorithm for Jaccard Similarity\") introduces Jaccard similarity as a measure for comparing binary vectors, which is the same primitive used here. Paper [10] (\"Overlapping community detection via Layer-Jaccard similarity incorporated nonnegative matrix factorization\") also uses Jaccard similarity for analyzing overlap in binary structures. Both papers demonstrate the use of Jaccard similarity as a mechanism for analyzing overlap, making the mechanism **covered**.\n\n#### Evaluation:\nThe contribution evaluates order sensitivity using Jaccard similarity metrics across task transitions, identifying disruptive early parameter shifts. Paper [14] (\"The Effect of Task Ordering in Continual Learning\") conducts empirical experiments on task ordering effects, using metrics to measure catastrophic forgetting and performance changes. Paper [12] (\"Optimal Task Order for Continual Learning of Multiple Tasks\") derives analytical expressions relating task similarity and ordering to learning performance, which aligns with the evaluation design here. Both papers use similar evaluation designs (task-order analysis with metrics), making the evaluation **covered**.\n\n#### Domain:\nThe contribution operates in the domain of mechanistic analysis of task-level gradient masking in continual learning. Paper [6] (\"FGGM: Fisher-Guided Gradient Masking for Continual Learning\") introduces FGGM and focuses on gradient masking mechanisms in continual learning. Paper [4] (\"Continual Learning for Task-oriented Dialogue System with Iterative Network Pruning, Expanding and Masking\") also addresses gradient masking in continual learning systems. Both papers work in the same general application area of gradient masking in continual learning, making the domain **covered**.\n\n---\n\n### Verdicts:\nVERDICT purpose = 14  \nVERDICT mechanism = 15  \nVERDICT evaluation = 14  \nVERDICT domain = 6  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 31
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**PURPOSE: Explain the mechanism behind FGGM's order sensitivity.**\n\nThe purpose is to explain *why* FGGM (a specific gradient masking method) exhibits order sensitivity — i.e., to identify the causal mechanism behind performance variation across task orderings. Paper [14] investigates \"the effect of task ordering on continual learning performance\" and connects it to distances between tasks. Paper [21] addresses \"order-sensitivity\" in continual relation extraction. Paper [22] studies \"the relationship between catastrophic forgetting and properties of task sequences.\" Paper [12] investigates \"how task order influences continual learning.\" However, none of these papers aim to explain the mechanism behind a *specific gradient masking method's* order sensitivity — they study order effects generally, not the internal mask-overlap mechanism of FGGM specifically. The purpose here is to explain a specific method's internal behavior (why binary masks under different orderings cause disruption), which is a distinct empirical relationship not established by any prior paper. No prior paper reports the same relationship (binary mask Jaccard overlap → order sensitivity in gradient masking).\n\n**MECHANISM: Analyze consecutive task-pair Jaccard similarity of binary masks under both orderings.**\n\nThe mechanism is computing Jaccard similarity between consecutive binary gradient masks to identify low-overlap disruption. Paper [10] uses \"Layer-Jaccard similarity\" for community detection. Paper [11] introduces Jaccard/Dice overlap measures for image label comparison. Paper [15] presents a quantum algorithm for Jaccard similarity on binary vectors. These use Jaccard on binary structures, but none apply it to analyze gradient masks in continual learning. Paper [14] computes \"distance between tasks\" but not Jaccard on binary gradient masks. No prior paper uses Jaccard similarity of binary gradient masks as an analysis tool for understanding order sensitivity in continual learning. This specific analytical primitive (Jaccard on consecutive binary gradient masks to diagnose disruption) is not covered.\n\n**EVALUATION: Specific Jaccard values (0.368, 0.300→0.589, 0.527-0.587) for specific task transitions.**\n\nThe evaluation design involves computing pairwise Jaccard similarity metrics across task orderings and reporting monotonic trends. Paper [14] conducts \"extensive empirical experiments\" on task ordering effects. Paper [22] uses \"correlation analysis\" to study task sequence properties. The evaluation design here — computing a similarity metric between consecutive task masks and comparing across orderings — is a controlled comparison/ablation design. However, the specific design of measuring mask overlap (Jaccard on binary masks) as a diagnostic metric for a specific method is not a named benchmark family or standard protocol appearing in prior work. This is a newly constructed diagnostic protocol specific to FGGM's binary masks. No prior paper uses this evaluation design.\n\n**DOMAIN: Mechanistic analysis of task-level gradient masking.**\n\nThe domain is mechanistic analysis within continual learning, specifically of gradient/parameter masking methods. Papers [4], [6], [17], [18], [21], [22], [31] all work in continual learning with gradient/parameter masking or task-order analysis. Paper [31] specifically localizes catastrophic forgetting by analyzing individual parameter contributions. Paper [6] is FGGM itself. This is clearly within the existing area of continual learning with gradient masking analysis.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 31",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper aims to explain the mechanism behind FGGM's order sensitivity specifically; [14] and [22] study task ordering effects empirically but neither targets explaining why a specific gradient-masking method is order-sensitive.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper analyzes consecutive task-pair Jaccard similarity of binary masks under different orderings to identify a low-overlap disruption mechanism; [14] uses task distance metrics but not binary mask Jaccard overlap across orderings, and [10]/[11] use Jaccard for community detection/image segmentation, not CL mask analysis.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports specific Jaccard similarity values (0.368, 0.300->0.589, 0.527-0.587) for consecutive task-pair binary mask overlaps under different continual learning orderings, nor links monotonic Jaccard increase patterns to disruptive early parameter shifts in FGGM."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 22
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to explain the mechanism of a specific algorithm's (FGGM) sensitivity to task order by establishing an empirical relationship: order sensitivity is caused by low Jaccard similarity of parameter masks between consecutive tasks. Prior work, such as [14] and [22], investigates the general effect of task ordering on continual learning, but they do not report or establish this specific mechanistic link via the overlap of parameter masks. Therefore, the specific empirical relationship being demonstrated is absent from prior work.\n\n**mechanism**: The mechanism is the use of Jaccard similarity to analyze the overlap between consecutive binary masks. This is a standard method for measuring the similarity of sets or binary vectors. This primitive is explicitly described in prior work, for instance [11] which introduces the \"Jaccard coefficient\" for measuring \"label overlap\", and [15] which describes an algorithm for \"Jaccard Similarity... to compute the similarity between two asymmetric binary vectors.\"\n\n**evaluation**: The evaluation design involves running an algorithm on different task orderings, measuring an internal metric (Jaccard similarity of masks) for consecutive task pairs, and comparing the metric's evolution across the different orderings to explain performance differences. This design of comparing metrics across different task sequences to understand order effects is standard. For example, [14] in \"The Effect of Task Ordering in Continual Learning\" necessarily uses this design to \"show that reordering tasks significantly affects the amount of catastrophic forgetting.\"\n\n**domain**: The domain is the mechanistic analysis of task-level gradient masking for continual learning. This area is covered by prior work. Paper [6] introduces \"Fisher-Guided Gradient Masking for Continual Learning,\" the specific algorithm being analyzed. Other papers like [4] and [17] also work on masking or pruning for continual learning, and [31] performs a mechanistic analysis to \"determine the contribution of individual parameters... to catastrophic forgetting.\"\n\nVERDICT purpose = NONE\nVERDICT mechanism = 11\nVERDICT evaluation = 14\nVERDICT domain = 6",
+      "stage2": "FACET: purpose: Explain the mechanism behind FGGM's order sensitivity. | FINAL: COVERED-BY [22] | reason: Paper [22] explicitly states its purpose is to understand the properties of task sequences that influence continual learning performance, which is the same objective as explaining the mechanism of order sensitivity. The paper states: \"We study the relationship between catastrophic forgetting and properties of task sequences. In particular, given a sequence of tasks, we would like to understand which properties of this sequence influence the error rates of continual learning algorithms trained on the sequence.\""
+     }
+    }
+   }
+  }
+ ]
+}

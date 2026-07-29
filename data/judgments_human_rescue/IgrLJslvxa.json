@@ -1,0 +1,184 @@
+{
+ "paper_id": "IgrLJslvxa",
+ "title": "PoisonBench: Assessing Large Language Model Vulnerability to Poisoned Preference Data",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "resource",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     2
+    ],
+    "mechanism": [
+     7
+    ],
+    "evaluation": [
+     14
+    ],
+    "domain": [
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose:\nThe contribution's purpose is to systematically evaluate the vulnerability of preference learning (偏好学习) in LLM alignment to data poisoning attacks, addressing the lack of unified task definitions and standardized evaluation protocols. Paper [1] discusses preference poisoning attacks on reward model learning, which is a core component of aligning automated decisions with user preferences, but does not provide a systematic framework for evaluating vulnerabilities. Paper [2] investigates vulnerabilities in RLHF methods for LLM alignment, highlighting the sensitivity of these methods to poisoning attacks, but does not address preference learning specifically or propose a standardized evaluation framework. No prior paper explicitly establishes the same purpose of systematically evaluating preference learning's poisoning vulnerabilities with unified task definitions and protocols.\n\n### Mechanism:\nThe contribution introduces POISONBENCH, a benchmark with two evaluation sub-tasks: content injection (inducing specific entities in responses) and alignment deterioration (breaking harmlessness/alignment goals under trigger inputs). Both attack types modify a small amount of pairwise preference data across eight real-world scenarios. Paper [7] discusses exploiting instruction tuning by injecting specific examples into training data to achieve content injection, which aligns with the content injection sub-task mechanism. Paper [11] similarly demonstrates poisoning instruction-tuned datasets to manipulate model predictions under trigger phrases, aligning with both content injection and alignment deterioration mechanisms. These mechanisms are substantively equivalent to the contribution's approach of modifying preference data to achieve targeted poisoning effects.\n\n### Evaluation:\nThe contribution evaluates 22 widely used LLMs across different scales and architectures, varying poisoning ratios from 0.01% to 5%. Paper [14] introduces a unified benchmark for data poisoning and backdoor attacks, focusing on consistent experimental design across poisoning methods, which aligns with the evaluation design principle of systematic benchmarking. Paper [10] evaluates instruction tuning backdoor vulnerabilities using poisoned training data, employing a similar systematic evaluation design. Paper [7] also evaluates poisoned instruction tuning setups, but none of these papers use the exact POISONBENCH benchmark or its specific poisoning ratio variation. However, the evaluation design (systematic benchmarking of poisoning effects) is covered.\n\n### Domain:\nThe contribution operates in the domain of LLM alignment safety and data poisoning benchmarks. Paper [2] explicitly investigates vulnerabilities in RLHF methods for LLM alignment, which is the same general application area. Paper [7] and Paper [11] also address poisoning attacks in instruction tuning for LLM alignment, which falls within the same domain. While the contribution targets preference learning specifically, this is a narrower instance within the broader LLM alignment safety domain, making the domain covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 7  \nVERDICT evaluation = 14  \nVERDICT domain = 2  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 1 | reason: Paper [1] explicitly states \"Learning reward models from pairwise comparisons is a fundamental component in a number of domains... as part of a broad goal of aligning automated decisions with user preferences,\" which aligns with the objective of preference learning being central to LLM alignment."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: 系统评估偏好学习阶段投毒脆弱性的框架（针对preference learning/RLHF，而非instruction tuning）**\n\nPaper [2] directly investigates poisoning vulnerabilities in RLHF/DPO alignment: \"we investigate the vulnerabilities\" of RLHF methods including DPO. Paper [1] studies \"Preference Poisoning Attacks on Reward Model Learning\" — directly targeting preference learning poisoning. Paper [7] investigates instruction tuning exploitation including content injection, but focuses on instruction tuning rather than preference learning. The contribution's purpose is specifically to build a *systematic benchmark framework* for preference learning poisoning — papers [1] and [2] pursue the same objective (assess poisoning vulnerability in preference learning), even if they don't frame it as a benchmark. The gap claimed (\"no unified framework\") is a framing distinction, not a different objective. Papers [1] and [2] cover the purpose at the problem-class level.\n\n---\n\n**MECHANISM: 构建基准，含两个子任务（content injection + alignment deterioration），通过修改少量成对偏好数据实现，覆盖多场景**\n\nPaper [7] explicitly introduces \"content injection by injecting training examples that mention target content\" for instruction tuning — the same content injection primitive. Paper [2] modifies preference pairs to poison DPO/RLHF — same mechanism of modifying pairwise preference data. Paper [14] builds a \"Unified Benchmark for Backdoor and Data Poisoning Attacks\" with multiple attack types evaluated systematically — same benchmark-construction primitive. However, the specific combination of (1) pairwise preference data modification + (2) two sub-tasks (content injection + alignment deterioration) in a benchmark format for preference learning is partially covered: [7] covers content injection via data poisoning, [2] covers alignment deterioration via preference data poisoning. The mechanism as a whole (benchmark with these two specific sub-tasks over preference pairs) is substantially assembled from [7] (content injection attack design) and [2] (preference pair poisoning for alignment). Paper [14] covers the benchmark-construction design. Together these cover the mechanism.\n\n---\n\n**EVALUATION: 用基准评测22个LLM，投毒比例从0.01%到5%变化**\n\nPaper [14] uses a \"Unified Benchmark\" to evaluate multiple models/attacks with varying poisoning rates — same evaluation design (benchmark + poisoning rate sweep + multiple models). Paper [2] evaluates poisoning across different poisoning rates and models. Paper [7] evaluates content injection attacks across models. The design of \"sweep poisoning rates, evaluate multiple LLMs on a benchmark\" is present in [14] and [2]. This is a standard evaluation design (poisoning rate sensitivity + multi-model comparison) covered by prior work.\n\n---\n\n**DOMAIN: LLM对齐安全 / 数据投毒基准**\n\nPapers [2], [7], [11], [16], [23], [24], [28] all work in LLM alignment security. Paper [14] works in data poisoning benchmarks for ML. The domain of LLM alignment safety and data poisoning is clearly covered by multiple prior papers.\n\n---\n\nVERDICT purpose = 2\nVERDICT mechanism = 7\nVERDICT evaluation = 14\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     5,
+     9
+    ],
+    "evaluation": [
+     5
+    ],
+    "domain": [
+     1,
+     2,
+     3,
+     9,
+     19
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        3,
+        19,
+        9
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to reveal how model scale, preference learning methods, poisoning concentration, and trigger variants affect LLM vulnerability to poisoning attacks, exposing weaknesses in current preference learning techniques. No prior paper explicitly establishes this empirical relationship. While papers like [1], [3], and [19] discuss vulnerabilities in LLMs and backdoor attacks, they do not systematically analyze the specific factors mentioned (model scale, preference learning methods, poisoning concentration, trigger variants) or their effects on poisoning vulnerability. Thus, the purpose is **not covered**.\n\n### Mechanism\nThe contribution uses a systematic empirical analysis across 22 models, 8 scenarios, and two attack types, employing techniques like varying poisoning ratios for least-squares regression fitting, comparing scale effects across model suites, and testing extrapolated trigger generalization. Papers like [9] and [21] conduct large-scale evaluations of attacks, but they do not employ the same mechanism (least-squares regression for log-linear relationships, extrapolated trigger testing). Similarly, [5] examines scaling behavior under prompt injection attacks but does not use the same analysis techniques. Thus, the mechanism is **not covered**.\n\n### Evaluation\nThe evaluation design involves three findings: (1) parameter scaling does not necessarily improve poisoning resilience, with varying effects across model suites; (2) log-linear relationship between attack efficacy and poisoning ratio validated via least-squares regression (SciPy R² ≈ 1.00); (3) poisoning effects generalize to extrapolated triggers. Papers like [9], [21], and [5] conduct evaluations of scaling behavior and attack efficacy, but none use the same evaluation design (e.g., log-linear regression or extrapolated trigger testing). Thus, the evaluation is **not covered**.\n\n### Domain\nThe domain is LLM alignment safety and poisoning vulnerability analysis. Papers like [1], [3], [19], and [9] address LLM vulnerabilities, backdoor attacks, and alignment-breaking attacks, all within the same general application area of LLM safety and poisoning vulnerability. Although this contribution targets specific sub-problems (e.g., preference learning weaknesses, extrapolated triggers), the domain is **covered** under the general area of LLM safety.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [1, 3, 19, 9]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly reveals the empirical relationship between model scale, preference learning methods, poisoning concentration, and trigger variants affecting LLM vulnerability, nor exposes weaknesses in current preference learning techniques.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper systematically conducts empirical analysis across 22 models, 8 scenarios, and two attack types, nor employs least-squares regression for poisoning ratio variation, nor tests extrapolated trigger generalization.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports findings matching the three specific claims regarding parameter scaling effects, log-linear poisoning ratio relationships, or extrapolated trigger generalization."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 5
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Revealing how model scale, preference learning method, poisoning concentration, and trigger variants affect LLM vulnerability to poisoning attacks, exposing weaknesses in current preference learning techniques.**\n\nThis is a specific empirical relationship: how these variables (scale, RLHF/preference learning method, poison ratio, trigger generalization) jointly affect backdoor/poisoning vulnerability in LLMs trained with preference learning. Paper [2] surveys vulnerabilities in LLMs including backdoor attacks but doesn't establish the specific empirical relationships about scale effects, poison concentration log-linearity, or trigger extrapolation. Paper [9] does comprehensive assessment of jailbreak attacks with ablation studies but focuses on jailbreaks, not poisoning of preference-learned models. Paper [21] benchmarks poisoning attacks but on standard classifiers, not preference-learned LLMs. No prior paper specifically investigates how model scale and preference learning methods interact with poisoning vulnerability, nor establishes the log-linear poison ratio relationship or trigger extrapolation in this context. The specific empirical relationships (scale doesn't guarantee robustness, log-linear poison ratio effect, trigger extrapolation) in the context of preference-learned LLMs appear uncovered.\n\n**MECHANISM: Systematic empirical analysis across 22 models/8 scenarios/two attack types: varying poison ratios with least-squares regression fitting, comparing scale effects across model suites, testing extrapolated trigger generalization.**\n\nPaper [5] studies scaling behavior of LLMs under prompt injection attacks, varying model sizes and measuring attack success — this is a similar systematic empirical approach examining scale effects. Paper [9] conducts large-scale evaluation with ablation studies across multiple jailbreak methods. Paper [21] provides unified benchmarking of poisoning attacks with systematic experimental design. However, the specific combination of least-squares regression on poison ratios and extrapolated trigger testing is more specific. The general design of \"vary poison ratio, measure attack success, compare across model scales\" is a standard empirical analysis protocol present in papers like [5] and [21].\n\n**EVALUATION: Three findings: (1) scale doesn't guarantee robustness; (2) log-linear relationship between attack efficacy and poison ratio (R²≈1.00); (3) extrapolated triggers generalize.**\n\nPaper [5] explicitly studies \"scaling behavior\" of LLMs under attacks, examining how model scale affects vulnerability — this covers finding (1)'s evaluation design. Paper [21] tests poisoning attacks across varying conditions. The log-linear regression fitting (finding 2) and trigger extrapolation testing (finding 3) are more specific evaluation designs. However, the evaluation design of \"measure attack success vs. poison ratio\" appears in papers like [6] and [21]. The extrapolated trigger evaluation design seems genuinely novel as a protocol.\n\n**DOMAIN: LLM alignment safety / poisoning vulnerability analysis.**\n\nPapers [1], [2], [3], [4], [9], [19] all work in LLM security/safety, including backdoor/poisoning attacks on LLMs. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 5\nVERDICT evaluation = 5\nVERDICT domain = 2",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of systematically revealing how model scale, preference learning method, poisoning concentration, and trigger variants jointly affect LLM vulnerability to poisoning attacks to expose weaknesses in current preference learning techniques. Paper [2] surveys adversarial attacks broadly but does not empirically investigate these specific factors. Paper [9] benchmarks jailbreak attacks but not poisoning under preference learning. No paper quotes can be found that match this specific empirical objective even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: The contribution's purpose is to establish empirical relationships between several factors (model scale, preference learning method, poison concentration, trigger variants) and LLM vulnerability to poisoning. This objective, at the problem-class level of \"investigating how model scale affects vulnerability,\" is covered by prior work. For example, [5] investigates the \"Scaling Behavior of Machine Translation with Large Language Models under Prompt Injection Attacks,\" and [8] studies how to transfer \"Adversarial Attacks Across Sizes,\" both of which share the core purpose of understanding the relationship between model size and attack success.\n\nmechanism: The mechanism is a systematic empirical analysis involving varying parameters (e.g., poison ratio), comparing model families of different sizes, and testing for generalization. This is a standard experimental design for characterizing model vulnerabilities. For instance, [9] performs a \"large-scale evaluation of various jailbreak attacks\" with \"comprehensive measurement and ablation studies,\" and [5] employs the same mechanism of varying model scale to measure its effect on vulnerability, which is equivalent to \"comparing different model suites of different sizes.\"\n\nevaluation: The evaluation design consists of standard analysis protocols used to present the findings: analyzing scaling laws by plotting a metric against model size, fitting a dose-response curve (attack success vs. poison ratio) using regression, and performing generalization tests on held-out trigger variants. These evaluation designs are not new; [5] uses a scaling law analysis design (\"Scaling Behavior...\"), and [8] uses a generalization/transferability test design (\"Transferring Adversarial Attacks Across Sizes\").\n\ndomain: The domain is LLM alignment security and poisoning vulnerability analysis. This general application area is well-established in the prior work. Multiple papers, such as [1] (\"Revoke Backdoors for Generative Large Language Models\"), [2] (\"Survey of Vulnerabilities in Large Language Models\"), and [19] (\"Defending Against Alignment-Breaking Attacks via Robustly Aligned LLM\"), operate within the same domain of LLM security and attacks.\n\nVERDICT purpose = 5\nVERDICT mechanism = 9\nVERDICT evaluation = 5\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

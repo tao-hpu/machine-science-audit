@@ -1,0 +1,284 @@
+{
+ "paper_id": "FA0163",
+ "title": "Execution-Signature Recycling: Deduplicating Unit-Test Failure Feedback for Test-Time Code Scaling",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     6,
+     16,
+     28
+    ],
+    "evaluation": [
+     16,
+     17
+    ],
+    "domain": [
+     7,
+     10,
+     16
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": [
+        6,
+        28
+       ]
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": [
+        7,
+        10
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to reduce redundant execution feedback across candidates in best-of-N code generation. Paper [5] (\"ModeX: Evaluator-Free Best-of-N Selection for Open-Ended Generation\") shares a substantively equivalent purpose, as it aims to improve best-of-N selection efficiency by reducing reliance on external evaluators and optimizing inference-time selection strategies. While the specific mechanism differs, the overarching goal of optimizing best-of-N generation by reducing redundancy aligns.\n\n### Mechanism\nThe mechanism, Execution-Signature Recycling (ESR), clusters candidate programs by their execution signature (sets of failing tests and error types) and conditions subsequent generations on a deduplicated failure bank in a two-round exploration/exploitation procedure. Paper [6] (\"Software Behavior and Failure Clustering: An Empirical Study of Fault Causality\") describes clustering executions based on internal execution events (e.g., statement profiles) to categorize faulty behaviors, which is substantively equivalent to clustering based on execution signatures. Additionally, Paper [28] (\"Igor: Crash Deduplication Through Root-Cause Clustering\") employs clustering techniques to deduplicate crash reports based on root causes, which aligns with the deduplication aspect of ESR. Both papers share the underlying primitive of clustering execution data to reduce redundancy.\n\n### Evaluation\nThe evaluation uses HumanEval+ with Qwen2.5-Coder-7B-Instruct under a 16-generation budget, measuring Pass@1. Paper [17] (\"HumanEval-XL: A Multilingual Code Generation Benchmark for Cross-lingual Natural Language Generalization\") uses the HumanEval benchmark family, which matches the evaluation design. While HumanEval+ is a specific instance, the benchmark family and metric semantics (Pass@1) are shared, making the evaluation covered.\n\n### Domain\nThe domain is test-time scaling/inference-time compute for code generation. Paper [7] (\"Natural Language to Code Translation with Execution\") operates in the same general application area of code generation, as does Paper [10] (\"PerfCodeGen: Improving Performance of LLM Generated Code with Execution Feedback\"). Both papers address inference-time strategies for code generation, making the domain covered.\n\n---\n\nVERDICT purpose = 5  \nVERDICT mechanism = 6, 28  \nVERDICT evaluation = 17  \nVERDICT domain = 7, 10  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 16
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": 16
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose: Reduce redundant execution feedback across candidates in best-of-N code generation\n\nLooking for papers that aim to reduce redundancy in execution feedback when generating multiple code candidates. Paper [16] (Majority Voting for Code Generation) uses runtime execution signatures across multiple generations to identify representative solutions — this is about aggregating/deduplicating execution results across candidates. Paper [20] (Fast Best-of-N Decoding via Speculative Rejection) aims to reduce wasted computation in best-of-N generation. Paper [7] (Natural Language to Code Translation with Execution) selects among multiple generated programs using execution results. None of these specifically target *reducing redundant execution feedback* across candidates — [16] uses signatures for voting/selection, not to reduce redundancy in feedback. Paper [20] reduces compute waste but not execution feedback redundancy. The purpose of deduplicating failure signals to avoid redundant conditioning is not directly covered.\n\nHowever, [16] does cluster by execution signatures to avoid redundant evaluation — this is close but the purpose is selection, not reducing redundant feedback for subsequent generation. I'll mark this as the closest but note the distinction is meaningful. Actually, re-reading: [16]'s purpose is selection/voting, not reducing redundant execution feedback for iterative generation. NONE seems appropriate.\n\n## Mechanism: Execution-Signature Recycling — clusters candidates by (failing tests + error types), deduplicates into a failure bank, conditions subsequent generation in two-round explore/exploit\n\nPaper [16] uses \"runtime execution signatures on test inputs\" to cluster/group programs for majority voting. This is the same primitive of grouping by execution signature. However, [16] uses it for selection, not for conditioning subsequent generation with a deduplicated failure bank. Paper [7] uses execution results to filter/select programs. Paper [30] (Self-Debugging) uses execution feedback to condition subsequent generation. Paper [19] uses self-generated tests with execution feedback for iterative debugging. Paper [24] uses execution semantics for RL-based code generation. The specific combination of: (1) clustering by execution signature, (2) building a deduplicated failure bank, (3) two-round explore/exploit conditioning — this combination is not present. [16] covers the clustering-by-execution-signature primitive. The \"deduplicated failure bank conditioning subsequent generation\" aspect is not covered. The mechanism is partially covered by [16] for the clustering primitive, but the overall ESR mechanism (deduplication + failure bank + two-round conditioning) is not substantively equivalent to any single prior paper.\n\n## Evaluation: HumanEval+ with Qwen2.5-Coder-7B-Instruct, 16-generation budget, Pass@1\n\nHumanEval is a well-established benchmark family used in many prior papers. Papers [21], [17], [26] use HumanEval variants. Pass@1 is used in [7], [16], [21], and others. The evaluation design (HumanEval benchmark family + Pass@k metric) is covered by multiple prior papers. [16] specifically evaluates code generation with execution signatures using Pass@1 on coding benchmarks.\n\n## Domain: Test-time scaling / inference-time compute for code generation\n\nPaper [16] explicitly works on test-time inference strategy for code generation. Paper [20] works on inference-time alignment (best-of-N). Paper [7] works on code generation with execution at inference time. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 16\nVERDICT evaluation = 16\nVERDICT domain = 16",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the objective of reducing redundant execution feedback across candidates in best-of-N code generation. Paper [20] addresses fast best-of-N via speculative rejection (efficiency of candidate generation, not deduplicating execution feedback), and paper [16] uses execution signatures for majority voting but does not aim to reduce redundant execution feedback. No paper matches this specific objective even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 10
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to \"Reduce redundant execution feedback across candidates in best-of-N code generation.\" While many prior works use execution feedback, none state the objective of making the feedback signal itself more efficient by deduplicating it across a batch of candidates. For instance, papers like [30] aim to \"teach a large language model to debug\" and [11] proposes a \"self-iteration code generation framework,\" focusing on enabling the feedback loop rather than optimizing the feedback signal's redundancy.\n\n**mechanism**: The mechanism is \"Execution-Signature Recycling (ESR),\" which clusters programs by execution signature, deduplicates the failures, and conditions subsequent generations on this compact failure bank. While prior work contains the constituent primitives, no single paper combines them into a substantively equivalent mechanism. For example, [16] uses \"runtime execution signatures\" for selection (voting), not for conditioning a new generation, and [28] performs \"Crash Deduplication Through Root-Cause Clustering\" for human analysis, not for feeding back into a generative model. The core primitive of clustering and deduplicating feedback from a batch of N candidates to guide subsequent generation is not present.\n\n**evaluation**: The evaluation design consists of measuring Pass@1 on a HumanEval-family benchmark (HumanEval+). This evaluation design is standard in the field of code generation. For example, [17] introduces and uses \"HumanEval-XL,\" and [21] performs \"Multilingual Benchmarking on HumanEval-X,\" both of which use the same benchmark family and evaluation protocol design, even if the specific dataset instance or model differs.\n\n**domain**: The domain is \"Test-time scaling / inference-time compute for code generation.\" This is a well-established application area. Numerous prior papers operate in this domain, including [10] which improves code \"with Execution Feedback,\" [16] which proposes a \"test-time inference strategy,\" and [30] which teaches models to \"Self-Debug\" at inference time.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 17\nVERDICT domain = 10",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior work states the objective of reducing redundant execution feedback from a batch of N candidate programs to make a subsequent generation step more efficient; related work focuses on test case reduction or crash deduplication for human analysis.\nFACET: mechanism | FINAL: NONE | reason: No prior work describes the full procedure of clustering candidate programs by execution signature, creating a compact/deduplicated failure bank, and using it to condition a second round of generation. Related works use clustering of programs/crashes for different goals, such as selection [16] or human analysis [28], not for conditioning a subsequent generative step."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     19,
+     30
+    ],
+    "mechanism": [
+     1,
+     19
+    ],
+    "evaluation": [
+     1,
+     22
+    ],
+    "domain": [
+     22
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 19
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 22
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**Purpose:**  \nThe purpose is to provide a statistically rigorous evaluation of the method. Paper [23] investigates pre-registration and pre-analysis plans to reduce p-hacking and publication bias, which aligns with the goal of ensuring statistical rigor. Paper [19] discusses bootstrap and Monte Carlo methods for hypothesis testing, emphasizing rigorous statistical inference. Both papers share the same objective of enhancing statistical rigor in evaluations.  \n\n**Mechanism:**  \nThe mechanism uses pre-registered decision rules and paired bootstrap confidence intervals across multiple random seeds. Paper [23] explicitly discusses pre-registration and pre-analysis plans, which match the pre-registered decision rules. Papers [1], [2], [6], [8], [13], and [20] all discuss bootstrap confidence intervals, including paired bootstrap methods, making the mechanism covered.  \n\n**Evaluation:**  \nThe evaluation design involves constructing a 95% confidence interval to assess the ESR vs Self-Debug difference. Papers [1], [2], [6], [8], [13], and [20] extensively discuss bootstrap confidence intervals and their construction, including for statistical comparisons. This matches the evaluation design, as the use of bootstrap confidence intervals is a standard statistical validation method.  \n\n**Domain:**  \nThe domain is test-time scaling/inference-time compute for code generation. Papers [22] and [28] address code generation and self-debugging in large language models, which is the same general application area. While the specific focus on test-time scaling is narrower, it falls within the broader domain of code generation.  \n\n**Verdict Lines:**  \nVERDICT purpose = 19  \nVERDICT mechanism = 1  \nVERDICT evaluation = 1  \nVERDICT domain = 22  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 30
+      },
+      "mechanism": {
+       "covered_by": 19
+      },
+      "evaluation": {
+       "covered_by": 22
+      },
+      "domain": {
+       "covered_by": 22
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Provide a statistically rigorous evaluation of the method.**\n\nThe purpose here is to rigorously evaluate whether a method (ESR vs Self-Debug) shows a statistically significant difference. Paper [30] \"Should significance testing be abandoned in machine learning?\" directly addresses statistical rigor in ML evaluation. Paper [22] \"Revisit Self-Debugging with Self-Generated Tests for Code Generation\" evaluates self-debugging methods. Paper [23] discusses pre-registration and pre-analysis plans for reducing p-hacking, which is about rigorous statistical evaluation. However, the specific purpose of \"statistically rigorous evaluation of a code generation method\" combining pre-registration with bootstrap CIs is most directly addressed by [22] (which evaluates self-debugging for code generation) and [30] (statistical rigor in ML). Paper [22] explicitly evaluates ESR vs Self-Debug in the code generation domain. The purpose of providing statistically rigorous evaluation of a method is covered by [30] which asks whether significance testing should be used in ML evaluations.\n\n**MECHANISM: Pre-registered decision rules and paired bootstrap confidence intervals across multiple random seeds.**\n\nBootstrap confidence intervals are covered extensively by papers [1], [2], [6], [8], [13], [19], [20]. Pre-registration is covered by [23]. The combination of paired bootstrap CIs with pre-registered decision rules and multiple random seeds is a standard statistical methodology. Paper [19] covers bootstrap hypothesis testing. Paper [6] covers bootstrap CI methods comparatively. The paired bootstrap across multiple seeds is a standard design covered by these bootstrap papers.\n\n**EVALUATION: 95% CI on ESR vs Self-Debug difference is [-0.81, 2.24], includes zero.**\n\nThis is a specific numerical result, but as an evaluation design, it uses bootstrap confidence intervals to compare two methods — a design covered by [1], [6], [8], [19]. The evaluation design (bootstrap CI comparison of two methods) is standard and covered. Paper [22] specifically evaluates ESR vs Self-Debug for code generation, making this the most directly relevant prior paper for the evaluation design applied to this specific object.\n\n**DOMAIN: Test-time scaling / inference-time compute for code generation.**\n\nPaper [22] \"Revisit Self-Debugging with Self-Generated Tests for Code Generation\" directly operates in code generation with self-debugging (test-time compute). Paper [28] \"Teaching Large Language Models to Self-Debug\" also operates in code generation with inference-time debugging. Both cover the domain of test-time compute for code generation.\n\nVERDICT purpose = 30\nVERDICT mechanism = 19\nVERDICT evaluation = 22\nVERDICT domain = 22",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     8,
+     18
+    ],
+    "mechanism": [
+     8,
+     9,
+     18
+    ],
+    "evaluation": [
+     8,
+     9,
+     18
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution reports a negative result about cross-sample feedback aggregation, specifically showing that ESR does not significantly outperform simpler per-sample Self-Debug feedback. No prior paper explicitly reports or establishes this same empirical relationship. While papers like [7] and [24] discuss aggregation methods (e.g., functional consensus or ensemble prediction), they focus on positive results or different aggregation paradigms (e.g., functional voting or ensemble wisdom) rather than directly comparing cross-sample aggregation against simpler per-sample baselines. None of the prior papers substantively address the same negative finding about cross-sample feedback aggregation.\n\n### Mechanism\nThe mechanism compares ESR against a per-sample Self-Debug baseline under identical generation budgets. Papers [9], [13], and [14] describe self-debugging approaches, which involve iterative refinement using execution feedback, and [7] discusses functional aggregation methods. However, none of these papers explicitly compare cross-sample aggregation against per-sample feedback under matched compute budgets. The mechanism of this contribution — direct comparison of ESR and Self-Debug under identical generation budgets — is not substantively equivalent to any prior paper.\n\n### Evaluation\nThe evaluation design involves comparing ESR (87.60%) and Self-Debug (86.99%) with confidence intervals to assess statistical significance. Papers [9], [13], and [14] use similar evaluation designs, including statistical comparisons of performance metrics (e.g., accuracy or correctness) across different methods. For example, [9] evaluates Self-Debugging using accuracy metrics, and [13] assesses iterative refinement methods with statistical comparisons. The evaluation design — statistical comparison of methods using confidence intervals — is covered by these prior papers.\n\n### Domain\nThe domain is test-time scaling/inference-time compute for code generation. Papers [1], [2], [6], and [8] all address test-time scaling in code generation, including frameworks for improving inference-time performance. For example, [1] introduces a hybrid test-time scaling framework for code generation, and [6] explores test-time scaling for low-resource programming languages. The domain of test-time scaling for code generation is clearly covered by these prior papers.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 9  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly reports a negative result about cross-sample feedback aggregation, even under different terminology or framing.  \nFACET: mechanism | FINAL: COVERED-BY 9 | reason: \"Self-Debugging... teaches a large language model to debug its predicted program via few-shot demonstrations,\" aligns with comparing ESR against a per-sample Self-Debug baseline under identical generation budget."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 18
+      },
+      "mechanism": {
+       "covered_by": 18
+      },
+      "evaluation": {
+       "covered_by": 18
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Report a negative result about cross-sample feedback aggregation.**\n\nThe purpose is specifically to show that aggregating feedback across samples (ESR) does NOT significantly outperform a simpler per-sample baseline (Self-Debug). Paper [18] \"Is Self-Repair a Silver Bullet for Code Generation?\" explicitly investigates whether self-repair provides meaningful gains and reports negative/nuanced results about self-repair's efficacy for code generation. Paper [25] \"How Many Tries Does It Take?\" also investigates iterative self-repair across models and benchmarks, reporting on when self-repair helps or doesn't. Paper [18] is the closest match — it directly reports negative findings about self-repair's effectiveness, which is the same empirical relationship (self-repair/feedback-based refinement does not reliably outperform simpler baselines).\n\n**MECHANISM: Compares ESR against a per-sample Self-Debug baseline under identical generation budget.**\n\nThe mechanism is a controlled comparison of a cross-sample feedback aggregation method vs. a per-sample Self-Debug baseline at matched compute/budget. Paper [18] explicitly compares self-repair variants against baselines under controlled conditions (same number of samples/budget). Paper [25] also compares iterative self-repair against baselines across models. Paper [9] introduces Self-Debugging itself. The design of \"compare feedback aggregation method vs. Self-Debug baseline at matched budget\" is directly present in [18], which performs exactly this kind of iso-compute comparison between self-repair and simpler baselines.\n\n**EVALUATION: ESR (87.60%) does not significantly outperform Self-Debug (86.99%); difference CI includes zero.**\n\nThe evaluation design involves reporting pass rates with confidence intervals to assess statistical significance of differences between two code generation methods. Paper [18] uses the same evaluation design: reporting performance metrics with statistical analysis comparing self-repair variants against baselines on code generation benchmarks. Paper [25] similarly reports performance comparisons across methods on HumanEval and similar benchmarks. The CI-includes-zero statistical framing is a standard statistical framework applied to the same benchmark family (code generation benchmarks like HumanEval/similar).\n\n**DOMAIN: Test-time scaling / inference-time compute for code generation.**\n\nPapers [1], [2], [6], [7], [8] all explicitly work in test-time scaling for code generation or reasoning. Paper [1] is \"S*: Test Time Scaling for Code Generation\" — directly the same domain. Paper [9], [14], [18], [25] work in inference-time feedback/self-repair for code generation, which is the same general area.\n\nVERDICT purpose = 18\nVERDICT mechanism = 18\nVERDICT evaluation = 18\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe contribution's purpose is to report a negative result: that a complex cross-sample feedback aggregation method does not significantly outperform a simpler, per-sample iterative method (Self-Debug). This investigates the relative efficacy of sequential vs. parallel/aggregate test-time scaling strategies. Paper [8] pursues the exact same objective, asking \"at equal token budget and compute, is it better to run multiple independent chains in parallel, or to run fewer chains that iteratively refine through sequential steps?\". It establishes the same relationship and direction of effect (sequential methods are at least as good as, if not better than, parallel/aggregate ones).\n\n**MECHANISM**\nThe mechanism is a direct comparison of a cross-sample aggregation method (ESR) against a per-sample iterative method (Self-Debug) under an identical compute budget. Paper [8] uses the exact same analysis design, explicitly stating it compares parallel versus sequential methods \"at equal token budget and compute\".\n\n**EVALUATION**\nThe evaluation design consists of comparing the performance of two methods on a benchmark and using the statistical significance of the difference (a confidence interval including zero) to support a claim. This is a standard evaluation protocol. Paper [8] uses the same design, conducting a \"comprehensive evaluation across... benchmarks\" to find that one method \"consistently outperforms\" another, which is the same design of comparing benchmark scores to make a claim.\n\n**DOMAIN**\nThe domain is test-time scaling and inference-time compute applied to code generation. Paper [1] is explicitly situated in this domain, with the title \"S*: Test Time Scaling for Code Generation\". Several other papers, including [4], [6], and [7], also operate in the same general application area.\n\nVERDICT purpose = 8\nVERDICT mechanism = 8\nVERDICT evaluation = 8\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

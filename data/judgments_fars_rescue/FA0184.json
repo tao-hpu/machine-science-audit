@@ -1,0 +1,295 @@
+{
+ "paper_id": "FA0184",
+ "title": "Velocity-Forecast Sampling for Flow-Matching Heads: A Negative Result",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     11
+    ],
+    "mechanism": [
+     1,
+     4
+    ],
+    "evaluation": [
+     11,
+     12
+    ],
+    "domain": [
+     1,
+     11
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to \"speed up inference of flow-matching heads in autoregressive image generation.\" Paper [1] explicitly addresses accelerating flow-matching models, stating: \"We propose FastFlow, a plug-and-play adaptive inference framework that accelerates generation in flow matching models.\" Paper [12] also targets inference acceleration for autoregressive image generation, stating: \"We introduce Grouped Speculative Decoding (GSD), a novel, training-free acceleration method for AR image models.\" Both papers share the same objective of inference acceleration for flow-matching or autoregressive models, making the purpose covered.\n\n### Mechanism\nThe contribution mechanism, Velocity-Forecast Sampling (VFS), speculatively reuses velocity predictions across ODE steps, verifying via MSE-based drift detection and falling back to standard sampling on rejection. Paper [4] describes a training-free conditional sampling method for flow matching models using importance sampling and resampling techniques, which shares the primitive of training-free acceleration for flow-matching models. Paper [12] introduces speculative decoding for autoregressive image generation, which involves draft generation and verification, sharing the speculative reuse and fallback primitive. Paper [18] discusses relaxed speculative decoding for autoregressive image generation, which similarly involves speculative acceleration with fallback mechanisms. These papers collectively cover the mechanism.\n\n### Evaluation\nThe contribution evaluates VFS on NextStep-1.1 with GenEval, achieving competitive speedup and moderate quality scores. Paper [12] evaluates Grouped Speculative Decoding (GSD) for autoregressive image generation using standard benchmarks and metrics, sharing the speculative decoding evaluation design. Paper [18] evaluates relaxed speculative decoding using theoretical analysis and empirical benchmarks, also sharing the speculative decoding evaluation design. Both papers reuse speculative decoding evaluation designs, making the evaluation covered.\n\n### Domain\nThe contribution operates in the domain of inference acceleration for flow-matching heads in autoregressive image generation. Paper [1] explicitly addresses inference acceleration for flow-matching models, stating: \"FastFlow identifies denoising steps that produce only negligible changes and skips them.\" Paper [12] targets autoregressive image generation acceleration, stating: \"We introduce Grouped Speculative Decoding (GSD), a novel, training-free acceleration method for AR image models.\" Both papers work in the same general application area, making the domain covered.\n\n---\n\nVERDICT purpose = 1  \nVERDICT mechanism = 4  \nVERDICT evaluation = 12  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 11
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 11
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Speed up inference of flow-matching heads in autoregressive image generation.**\n\nPaper [11] \"Continuous Speculative Decoding for Autoregressive Image Generation\" explicitly targets accelerating continuous visual AR models' inference speed. Paper [1] \"FastFlow\" targets accelerating flow matching models' inference. Paper [28] targets accelerating flow-matching-based TTS inference. The purpose of speeding up flow-matching inference in AR image generation is covered by [11] (continuous AR image generation) and [1] (flow matching acceleration). Paper [11] states \"continuous visual autoregressive (AR) models...slow inference speed\" — same objective.\n\n**MECHANISM: Velocity-Forecast Sampling (VFS) — training-free speculative reuse of velocity predictions across ODE steps, with MSE-based drift detection and fallback.**\n\nThe core primitive is: speculatively reuse/cache intermediate computation (velocity predictions) across steps, verify via a drift/error metric, fall back on rejection. Paper [20] \"Cache Me if You Can\" caches block outputs across diffusion steps and reuses them when the change is small (error-based acceptance). Paper [1] \"FastFlow\" identifies denoising steps that can be skipped/reused in flow matching via adaptive inference. Paper [11] uses speculative decoding for continuous AR image generation with a verification/rejection mechanism. The MSE-based drift detection + fallback is closest to [20]'s block caching with error thresholding, and [1]'s adaptive step reuse. However, VFS specifically reuses velocity predictions across ODE steps (not network blocks) with speculative-decoding-style rejection — this is a combination. Paper [1] describes \"plug-and-play adaptive inference framework that accelerates generation in flow matching models\" by \"identifying denoising steps that produce only [small changes]\" — this is substantively equivalent: training-free reuse of flow-matching computations based on detected redundancy. The MSE-based drift detection as a verification gate also appears in [20]'s caching logic. Paper [28] also inspects sampling trajectories to prune steps in flow-matching TTS. The combination of speculative reuse + MSE verification + fallback in flow matching is most directly covered by [1] (adaptive reuse in flow matching) and [20] (cache-and-verify with error threshold).\n\n**EVALUATION: GenEval benchmark on NextStep-1.1, measuring speedup and generation quality.**\n\nGenEval is a named benchmark family for image generation quality evaluation. Paper [11] evaluates on image generation benchmarks with quality metrics and speedup measurements. Paper [12] \"Grouped Speculative Decoding\" evaluates AR image generation acceleration with speedup and quality metrics. Paper [13] \"LANTERN\" evaluates on visual AR models with quality and speedup. The evaluation design (speedup ratio + generation quality benchmark like GenEval/FID/IS on AR image generation) is used across [11], [12], [13], [18]. GenEval specifically appears as a named benchmark in the AR image generation acceleration literature. This design is covered.\n\n**DOMAIN: Inference acceleration for flow-matching heads in autoregressive image generation.**\n\nPaper [11] works in continuous autoregressive image generation acceleration. Paper [1] works in flow matching model acceleration for image/video generation. Paper [12], [13], [18] all work in autoregressive image generation acceleration. This domain is clearly covered by multiple papers.\n\nVERDICT purpose = 11\nVERDICT mechanism = 1\nVERDICT evaluation = 11\nVERDICT domain = 11",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     3,
+     13
+    ],
+    "evaluation": [
+     3,
+     6
+    ],
+    "domain": [
+     1,
+     3
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to report that the proposed method does not help. None of the prior papers explicitly report or establish the same empirical relationship — that a method (VFS) is Pareto-dominated by a simpler baseline (ODE step reduction) in terms of quality-speed tradeoff. While some papers discuss Pareto frontiers (e.g., [6], [8], [9], [10], [12], [14]), they focus on optimization or tradeoff analysis rather than reporting a negative result about a specific method being dominated. No prior paper establishes the same relationship.\n\n### Mechanism\nThe mechanism involves systematically comparing VFS against simple ODE step reduction on the quality-speed Pareto frontier. Papers [13], [15], [16], [17], and [18] discuss ODE solvers or flow-matching methods, but none specifically compare VFS against simple ODE step reduction in the context of quality-speed tradeoffs. Papers [6], [8], [9], [10], and [14] discuss Pareto frontier analysis, but they do not involve the same systematic comparison mechanism. Thus, no prior paper uses this exact mechanism.\n\n### Evaluation\nThe evaluation design involves demonstrating that VFS is Pareto-dominated by the 10-step ODE baseline in terms of quality (GenEval scores) and speedup. Papers [6], [8], [9], [10], [12], and [14] all use Pareto frontier analysis as an evaluation design, which matches the contribution's evaluation design. Although the specific benchmarks and metrics differ, the design of evaluating tradeoffs on a Pareto frontier is substantively equivalent.\n\n### Domain\nThe domain is inference acceleration for flow-matching heads in autoregressive image generation. Papers [1], [3], [4], [15], [16], [17], and [18] all address flow-matching or related techniques in generative modeling, including autoregressive image generation. While the specific sub-problem or dataset may differ, the general application area of generative modeling and inference acceleration is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 6  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly reports that the proposed method does not help, even under different terminology or framing.  \nFACET: mechanism | FINAL: COVERED-BY 13 | reason: \"Variable step variable order to achieve faster convergence with better accuracy and lesser maximum error\" aligns with systematic evaluation comparing VFS against simple ODE step reduction on the quality-speed Pareto frontier."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**PURPOSE: Report that the proposed method does not help.**\n\nThe purpose here is to report a negative result — that a specific method (VFS) fails to improve over a simpler baseline on a quality-speed Pareto frontier. I need to find a prior paper that reports the same empirical relationship: a proposed acceleration method being Pareto-dominated by a simpler baseline. None of the prior papers appear to report this specific negative finding about VFS or an equivalent method being dominated by simple ODE step reduction. Papers [3], [15], [16], [20] discuss acceleration of flow/diffusion models but report positive results for their methods. No prior paper establishes the same relationship (proposed acceleration method < simple baseline on quality-speed tradeoff).\n\n**MECHANISM: Systematic evaluation comparing VFS against simple ODE step reduction on the quality-speed Pareto frontier.**\n\nThe mechanism is a controlled comparison on a quality-speed Pareto frontier between a proposed method and a simple baseline. Papers [6], [8], [9], [10], [12], [13], [14] discuss Pareto frontier analysis but in unrelated domains (embedded systems, forest management, multi-objective RL, machine translation). Papers [3], [15], [16], [20] compare acceleration methods for diffusion/flow models but don't specifically use Pareto frontier comparison as the analytical primitive in this way. The generic shape of \"compare two methods on a quality-speed tradeoff\" is a standard experimental design, but no prior paper uses this specific protocol (Pareto frontier comparison of VFS vs. ODE step reduction) — however, quality-speed Pareto frontier comparisons for generative model samplers appear implicitly in [3] and [20]. Paper [3] compares flow generator matching against baselines on quality-speed tradeoffs. This is substantively equivalent as a mechanism.\n\n**EVALUATION: VFS is Pareto-dominated — specific numbers on GenEval benchmark.**\n\nThe evaluation design uses GenEval benchmark metrics and speedup measurements to compare methods. GenEval is a named benchmark for image generation. Papers [3], [15], [16], [20] evaluate flow/diffusion acceleration methods using standard image generation benchmarks (FID, etc.) and speedup metrics. The design of \"measure quality metric + speedup, compare methods\" is standard and appears in [3], [15], [16], [20]. This evaluation design is covered.\n\n**DOMAIN: Inference acceleration for flow-matching heads in autoregressive image generation.**\n\nThe domain is inference acceleration for generative models, specifically flow-matching based image generation. Papers [3], [15], [16], [20] all work in inference acceleration for flow/diffusion-based image generation models. This domain is covered by [3] and [15] in particular.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 3\nVERDICT evaluation = 3\nVERDICT domain = 3",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper among the 32 listed reports that a proposed method does not help — none contain an equivalent objective of reporting a method's failure or null result, even under different terminology or framing."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     1,
+     3,
+     5,
+     6,
+     9,
+     10,
+     11,
+     33
+    ],
+    "evaluation": [
+     1,
+     3,
+     5,
+     6,
+     8,
+     9,
+     10,
+     17,
+     18,
+     33
+    ],
+    "domain": [
+     3,
+     10,
+     15,
+     17
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        1,
+        3,
+        5,
+        6,
+        9,
+        10,
+        11
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        1,
+        3,
+        5,
+        6,
+        8,
+        9,
+        10,
+        17
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        3,
+        10,
+        17
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to explain why speculative velocity reuse fails. None of the prior papers explicitly report or establish the same empirical relationship or failure mechanism for speculative velocity reuse. While speculative decoding and acceleration methods are discussed in several papers (e.g., [16], [18], [23]), they do not address the specific failure of speculative velocity reuse or its limiting factors.\n\n### Mechanism\nThe contribution analyzes two limiting factors: classifier-free guidance (CFG) disrupting velocity-field smoothness and the flow-matching (FM) head being a small share of latency. Papers [1], [5], [6], [9], and [11] analyze classifier-free guidance (CFG) mechanisms, including its theoretical foundations, trade-offs, and structural errors. Paper [3] discusses flow matching in the context of visual synthesis acceleration, and [10] addresses FM head efficiency challenges. These papers collectively cover the primitives of CFG's impact on smoothness and FM head latency, even if they do not combine them in the same analysis.\n\n### Evaluation\nThe contribution evaluates CFG acceptance rates (12-21% per step) and FM head latency (~31% of per-token latency, capping speedup at ~1.45x). Papers [3], [8], [10], and [17] evaluate flow matching and diffusion models using similar metrics and validation setups, such as latency analysis and speedup quantification. Papers [1], [5], [6], and [9] evaluate CFG mechanisms, including acceptance rates and their impact on generation quality. These prior works collectively cover the evaluation design, even if applied to different benchmarks or objects.\n\n### Domain\nThe contribution operates in the domain of inference acceleration for flow-matching heads in autoregressive image generation. Papers [3], [10], and [17] address flow matching and diffusion models in the context of generative image synthesis, which is the same general application area. While the contribution targets a specific sub-problem (FM head acceleration), the domain is covered by these prior works.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 1, 3, 5, 6, 9, 10, 11  \nVERDICT evaluation = 1, 3, 5, 6, 8, 9, 10, 17  \nVERDICT domain = 3, 10, 17  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses the objective of explaining why speculative velocity reuse fails, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 33
+      },
+      "domain": {
+       "covered_by": 15
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Explain why speculative velocity reuse fails.**\n\nThe contribution's purpose is to diagnose/explain the failure mode of a specific acceleration technique (speculative velocity reuse) for flow-matching heads. I need to find a prior paper that establishes the same empirical relationship — explaining why a speculative reuse/caching approach fails. Paper [15] discusses feature caching for diffusion models and notes that \"at timesteps with significant intervals, the feature similarity in diffusion models decreases substantially, leading to a pronounced increase in error\" — this is about why caching/reuse fails, but it's about feature caching in diffusion transformers, not velocity reuse in FM heads, and doesn't involve CFG as the disrupting mechanism. No prior paper specifically explains why speculative velocity reuse fails due to CFG disrupting velocity-field smoothness. The relationship being established (CFG → disrupted smoothness → low acceptance rate for velocity reuse) is not reported in any prior paper.\n\n**MECHANISM: Analysis of two limiting factors — CFG disrupts velocity-field smoothness, and FM head is a small share of latency.**\n\nThe mechanism involves: (1) analyzing CFG's effect on velocity field smoothness, and (2) profiling latency breakdown (Amdahl's law-style analysis). Paper [1] analyzes CFG mechanisms in diffusion models, showing how CFG affects trajectories. Papers [33] and [34] discuss Amdahl's law for bottleneck analysis. However, the specific combination — using CFG's effect on smoothness as an explanation for low acceptance rates in speculative reuse, combined with latency profiling — is not found as a combined analytical primitive in any single prior paper. The CFG-smoothness analysis papers ([1], [5], [6], [9], [11]) don't connect to speculative reuse acceptance rates. The Amdahl's law papers ([33], [34]) are about multicore scaling, not FM head latency profiling. No prior paper uses this combined analytical mechanism.\n\n**EVALUATION: CFG yields 12-21% per-step acceptance; FM head is ~31% of per-token latency, capping speedup at ~1.45x.**\n\nThe evaluation design involves: (1) measuring acceptance rates under CFG conditions, and (2) profiling latency breakdown to compute theoretical speedup ceiling. Paper [22] analyzes \"disparate speed-up rates across tasks\" for speculative decoding — this is an empirical analysis of speedup rates. Papers [33] and [34] use Amdahl's law to compute theoretical speedup ceilings from bottleneck fractions. The latency profiling + theoretical ceiling computation is a standard Amdahl's law analysis design (covered by [33]/[34]). The acceptance rate measurement is a standard speculative decoding evaluation metric used in [18], [19], [24], [30], [32]. These evaluation designs (acceptance rate measurement + Amdahl-style ceiling analysis) appear in prior work.\n\n**DOMAIN: Inference acceleration for flow-matching heads in autoregressive image generation.**\n\nThe domain is inference acceleration for generative models. Paper [15] covers acceleration of diffusion transformers for image synthesis. Paper [20] covers diffusion transformer acceleration. Papers [3], [10] cover flow matching for image generation. The general area of inference acceleration for image generation models is well-covered. The specific sub-problem (FM heads in AR image generation) is a narrower instance of this existing area.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 33\nVERDICT domain = 15",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explains why speculative velocity reuse fails in flow matching models; the CFG/velocity-field papers analyze CFG mechanisms generally but none frame their analysis around the failure of velocity reuse as a speculative acceleration strategy.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper identifies the two-factor analysis that (1) CFG disrupts velocity-field smoothness and (2) the FM head is a small share of total latency as joint limiting factors for speculative velocity reuse; paper [1] and others analyze CFG properties but none connect this to velocity reuse failure or latency share of the FM head."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 15
+      },
+      "mechanism": {
+       "covered_by": [
+        6,
+        33
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        18,
+        33
+       ]
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**PURPOSE:** Paper [15] reports the same empirical relationship, explaining that feature reuse in diffusion models fails because \"feature similarity in diffusion models decreases substantially\" over time, which is substantively equivalent to explaining the failure of velocity reuse due to state changes.\n\n**MECHANISM:** The analysis method is a combination of two existing primitives: analyzing the negative impact of CFG on sampling trajectories, which is also done in [6] (\"unconditional score... may inadvertently interfere with the trajectory\"), and applying Amdahl's Law-style latency breakdown, a standard analysis method discussed in [33].\n\n**EVALUATION:** The evaluation design is a combination of standard protocols: measuring acceptance rate, which is a standard metric in the speculative decoding literature (e.g., [18] notes \"low acceptance rates\"), and performing a latency breakdown to calculate theoretical speedup, a standard performance analysis design from systems research (e.g., [33]).\n\n**DOMAIN:** The general application area of accelerating generative image models using flow matching is covered by prior work. For instance, [3] works on \"Boosting Latent Diffusion with Flow Matching\" to achieve \"faster... synthesis\" for images.\n\nVERDICT purpose = 15\nVERDICT mechanism = 6, 33\nVERDICT evaluation = 18, 33\nVERDICT domain = 3",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

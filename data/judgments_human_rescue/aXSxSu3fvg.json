@@ -1,0 +1,174 @@
+{
+ "paper_id": "aXSxSu3fvg",
+ "title": "Training Semi-Supervised Deep Learning Models with Heuristic Early Stopping Rules",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     4
+    ],
+    "mechanism": [
+     4,
+     11
+    ],
+    "evaluation": [
+     4,
+     11
+    ],
+    "domain": [
+     26
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 26
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to address the lack of objective methodology for determining when to stop training semi-supervised deep learning (SSDL) models, specifically to prevent overfitting and error propagation from noisy pseudo-labels, with a focus on healthcare/mHealth data. Paper [4] discusses early stopping methods that use unlabeled samples and confidence-based criteria to prevent overfitting, which aligns with the general objective of stopping training to avoid overfitting in semi-supervised learning. Paper [7] also addresses the issue of error propagation from noisy pseudo-labels in SSDL, focusing on confidence-based pseudo-label selection to mitigate classification errors. Both papers share the same problem-class level objective of improving SSDL training by addressing overfitting and noisy pseudo-labels.\n\n### Mechanism\nThe contribution proposes three heuristic early-stopping criteria: (1) layer-wise weight-change stabilization, (2) minimizing validation cross-entropy loss, and (3) sliding-window confidence-based pseudo-label counting, combined via a ranking mechanism. Paper [2] introduces an early stopping criterion based on local gradient statistics, which is conceptually similar to layer-wise weight-change stabilization (criterion 1). Paper [4] proposes confidence-based early stopping using unlabeled samples, which aligns with criterion 3 (pseudo-label confidence). Paper [7] discusses confidence-based pseudo-label selection, which overlaps with criterion 3 as well. However, no prior paper combines these criteria into a ranking-based mechanism as described in the contribution.\n\n### Evaluation\nThe evaluation uses subject-dependent longitudinal 4-fold cross-validation on mHealth clinical-trial data. Paper [7] evaluates confidence-based pseudo-label selection in SSDL using cross-validation, which matches the general evaluation design of validating pseudo-label-based methods in SSDL. Paper [4] also uses confidence-based early stopping methods validated on text classification datasets, which aligns with the evaluation design of testing early stopping criteria in SSDL. Both papers reuse standard evaluation designs (cross-validation and confidence-based validation) for similar claims, making the evaluation facet covered.\n\n### Domain\nThe contribution applies semi-supervised deep learning to mHealth/digital-health prediction. Paper [26] applies semi-supervised learning to disease diagnosis from medical images, which falls within the broader healthcare domain. Paper [7] applies SSDL to tabular data, which is a general domain that includes healthcare applications. Both papers address semi-supervised learning in healthcare-related areas, making the domain facet covered.\n\n---\n\nVERDICT purpose = 4  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 4  \nVERDICT domain = 26  ",
+      "stage2": "FACET: mechanism | FINAL: COVERED-BY 4 | reason: Paper [4] describes an early stopping method based on confidence and class distribution of unlabeled samples, which aligns with the pseudo-label confidence criterion (probability > theta) proposed. Quoted phrase: \"The proposed method is based on confidence and class distribution of unlabeled samples.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 26
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## PURPOSE\n\nThe purpose is: provide an objective methodology for *when to stop training* SSDL models, specifically to prevent overfitting and error propagation from noisy pseudo-labels in healthcare/mHealth data with many missing labels.\n\nPaper [4] proposes \"an early stopping method that uses unlabeled samples\" for semi-supervised settings, addressing overfitting in low-resource settings. Paper [11] evaluates \"different early stopping rules (ESR) and their combinations for stopping the training of multi layer perceptrons.\" Paper [2] proposes \"a novel early stopping criterion\" to prevent poor generalization. However, none of these specifically target the SSDL (iterative pseudo-labeling loop) context where error propagation from noisy pseudo-labels is the core concern. Paper [4] is closest — it uses confidence of unlabeled samples for early stopping in semi-supervised text classification, which is substantively equivalent at the problem-class level: \"when to stop training in a semi-supervised setting to prevent overfitting with noisy pseudo-labels.\" This is the same objective.\n\n## MECHANISM\n\nThe three criteria are: (1) layer-wise weight-change (Euclidean norm) stabilization; (2) validation cross-entropy loss minimization; (3) sliding-window count of high-confidence pseudo-labels (probability > theta). Combined via rank aggregation.\n\n- Criterion 2 (validation loss) is standard and covered by [9], [11], [2].\n- Criterion 1 (weight-change norm) is covered by [2] (\"local statistics of the computed gradients\") and [11] (evaluates multiple ESRs including weight-based).\n- Criterion 3 (confidence of pseudo-labels via threshold) is covered by [4] (\"based on confidence and class...\") and [7] (\"confidence-based pseudo-labeling\").\n- Rank aggregation of multiple criteria is covered by [24] (\"weighted rank aggregation to achieve multiple query criteria\") and [29] (multi-criteria active learning with rank aggregation).\n\nThe combination of all three into a rank-aggregation framework for SSDL stopping is partially assembled from these pieces. Paper [11] explicitly evaluates \"combinations\" of early stopping rules for MLPs. Paper [24] uses rank aggregation for combining multiple criteria. The individual primitives are all present across prior work.\n\n## EVALUATION\n\nThe evaluation design uses subject-dependent longitudinal 4-fold cross-validation on clinical trial mHealth data with a binary outcome. The CV design (k-fold cross-validation with subject-dependent splits) is a standard evaluation design used broadly. Paper [11] uses cross-validation for evaluating early stopping rules. The specific mHealth clinical trial dataset is unique, but the evaluation *design* (k-fold CV, binary classification metrics) is standard and covered by [11] and others.\n\n## DOMAIN\n\nThe domain is semi-supervised deep learning for mHealth/digital-health prediction. Paper [26] applies semi-supervised learning to medical images. Paper [5] reviews SSL across application domains including healthcare. However, mHealth/digital-health with wearable sensor data for clinical trial compliance is a specific sub-area. Paper [26] covers medical image diagnosis. The general area of \"semi-supervised learning for healthcare\" is present in [26] and [5], making this COVERED as a sub-instance of healthcare ML.\n\nVERDICT purpose = 4\nVERDICT mechanism = 11\nVERDICT evaluation = 11\nVERDICT domain = 26",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     3
+    ],
+    "mechanism": [
+     3
+    ],
+    "evaluation": [
+     3,
+     5
+    ],
+    "domain": [
+     18
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": null
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "domain"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to demonstrate that heuristic early-stopping criteria (especially when combined) improve semi-supervised learning (SSDL) performance over training without a stopping rule. Paper [3] evaluates different early stopping rules and their combinations for training multi-layer perceptrons (MLPs) and discusses their impact on classification tasks, which aligns with the purpose of improving performance through early stopping. While [3] does not explicitly focus on SSDL, the purpose is equivalent at the problem-class level: improving performance by applying early stopping rules. Therefore, the purpose is **covered** by [3].\n\n### Mechanism\nThe mechanism involves comparing each early-stopping criterion and their combination against a benchmark (no stopping criterion) across seven metrics on held-out test folds. Paper [3] evaluates combinations of early stopping rules for MLPs, which is substantively equivalent to the mechanism of comparing individual and combined stopping criteria against a baseline. The specific metrics or models differ, but the underlying mechanism of evaluating stopping rules and their combinations is the same. Thus, the mechanism is **covered** by [3].\n\n### Evaluation\nThe evaluation design involves comparing combined criteria versus a benchmark using metrics like AUC, accuracy, F1, sensitivity, etc., on held-out test folds. Paper [3] evaluates early stopping rules and their combinations using classification tasks and metrics, which is substantively equivalent in evaluation design. The specific metrics and datasets differ, but the evaluation design of comparing stopping rules using classification metrics is the same. Therefore, the evaluation is **covered** by [3].\n\n### Domain\nThe domain of the contribution is mHealth depression/homework-compliance prediction, which falls under the broader area of mHealth applications. None of the prior papers explicitly address mHealth or depression/homework-compliance prediction. While [3] focuses on classification tasks, it does not operate in the mHealth domain. Therefore, the domain is **uncovered**.\n\n---\n\nVERDICT purpose = 3  \nVERDICT mechanism = 3  \nVERDICT evaluation = 3  \nVERDICT domain = NONE  ",
+      "stage2": "FACET: domain | FINAL: NONE | reason: No prior paper explicitly addresses mHealth depression or homework-compliance prediction, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 18
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Demonstrate that heuristic early-stopping criteria (especially combined) improve SSDL performance over training without a stopping rule.**\n\nThe purpose is specifically about showing that early-stopping criteria improve semi-supervised deep learning (SSDL) performance — combining early stopping with SSL. Paper [3] (\"Evaluation of robustness and performance of Early Stopping Rules with Multi Layer Perceptrons\") evaluates \"different early stopping rules (ESR) and their combinations for stopping the training of multi layer perceptrons... before reaching a predefined maximum number of epochs\" and focuses on whether combinations improve over single criteria. This is substantively equivalent: same relationship (combined stopping criteria outperform single/no criteria), same direction of effect. Paper [2] also addresses quantifying early stopping criteria. However, neither [2] nor [3] is in the SSDL context — but per the purpose rule, the relationship being demonstrated (combined heuristic stopping criteria improve performance over no stopping rule) is the same empirical claim. Paper [3] is the closest match.\n\n**MECHANISM: Compare each criterion and the combined criterion against a benchmark (no stopping criterion) across seven metrics on held-out test folds.**\n\nPaper [3] evaluates \"different early stopping rules (ESR) and their combinations\" using classification metrics, comparing against baselines. This is a controlled comparison of individual vs. combined stopping criteria — the same design. Paper [2] also compares stopping criteria quantitatively. The generic shape (compare variants against a no-stopping benchmark across multiple metrics) is present in [3].\n\n**EVALUATION: AUC, Accuracy, F1, Sensitivity metrics across held-out test folds comparing combined vs. benchmark.**\n\nThe evaluation design uses standard classification metrics (AUC, Accuracy, F1, Sensitivity) on held-out test folds. Paper [3] uses classification metrics to evaluate early stopping rules on classification tasks. Paper [15] and [9] also use standard classification evaluation metrics. The design (multi-metric classification evaluation on held-out data) is covered by [3] and [9]. This is a standard evaluation design, not a newly constructed benchmark or protocol.\n\n**DOMAIN: mHealth depression / homework-compliance prediction.**\n\nThe domain is mHealth depression/homework-compliance prediction. Paper [18] addresses \"Suicidal Ideation Detection Using Semi-Supervised Learning\" — this is mental health detection using SSL, which is the same general application area (mental health/depression detection with ML). No prior paper specifically addresses mHealth homework-compliance prediction, but [18] covers the mental health + SSL application area broadly. The domain facet asks about the general area, and mental health detection with semi-supervised learning is covered by [18].\n\nVERDICT purpose = 3\nVERDICT mechanism = 3\nVERDICT evaluation = 3\nVERDICT domain = 18",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 18
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: Paper [3] covers this purpose by stating it will \"evaluate different early stopping rules (ESR) and their combinations,\" which is the same objective as demonstrating that combined criteria improve performance.\nmechanism: Paper [3] covers this mechanism, as its stated purpose to \"evaluate different early stopping rules (ESR) and their combinations\" necessitates a comparative analysis of individual and combined rules against some baseline, which is the same analysis method used in the contribution.\nevaluation: Paper [5] covers this evaluation design by explicitly discussing the use of standard metrics \"such as Accuracy, $F_\\beta$-Score\" for evaluating neural network classifiers, which is the same metric-based comparison design used here.\ndomain: Paper [18] covers this domain by working in the same general application area of computational mental health, specifically \"Suicidal Ideation Detection Using Semi-Supervised Learning Technique\".\n\nVERDICT purpose = 3\nVERDICT mechanism = 3\nVERDICT evaluation = 5\nVERDICT domain = 18",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

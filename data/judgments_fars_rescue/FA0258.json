@@ -1,0 +1,307 @@
+{
+ "paper_id": "FA0258",
+ "title": "Suppression-Contrast Tokens: Evaluating Reverse Layer-Contrast for Secret Elicitation",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     4
+    ],
+    "evaluation": [
+     4,
+     7
+    ],
+    "domain": [
+     7
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to recover secrets that a language model encodes but refuses to reveal, based on a \"present then suppressed\" hypothesis. This is distinct from general knowledge extraction or probing tasks, as it specifically targets the recovery of suppressed or hidden information that the model encodes but does not output. While several prior papers explore knowledge extraction (e.g., [6], [11], [7]), none explicitly address the \"present then suppressed\" hypothesis or the recovery of secrets that the model actively refuses to reveal. For example, [6] focuses on general knowledge retrieval from model parameters, and [7] explores eliciting latent knowledge but does not address suppression or refusal mechanisms. Thus, no prior paper covers this purpose.\n\n### Mechanism\nThe mechanism, Suppression-Contrast Tokens (SCT), ranks candidate tokens by a suppression gap, defined as the difference between mid-layer log-probabilities and final-layer log-probabilities, reversing the direction used in DoLa's final-minus-mid approach. This mechanism is a novel adaptation of contrastive decoding techniques, specifically tailored to exploit suppression dynamics in token probabilities. While [4] (DoLa) and [5] (LayerCake) use contrastive decoding between layers, they focus on improving generation quality or factuality, not on recovering suppressed information. Similarly, [15], [28], and [31] explore layer-contrastive decoding but do not reverse the direction of contrast or apply it to secret recovery. No prior paper uses this specific suppression-gap mechanism for token ranking, making it novel.\n\n### Evaluation\nThe evaluation compares SCT's performance on the Taboo/Direct benchmark, achieving a 5.33% TR@5 versus the logit-lens baseline's 4.33%. This evaluation design — comparing token recovery rates on a benchmark — is not novel. For example, [4] (DoLa) and [5] (LayerCake) evaluate contrastive decoding methods using similar benchmark-based comparisons of token recovery or generation quality. While the specific benchmark (Taboo/Direct) is new, the evaluation design (benchmark comparison with recovery metrics) is standard and covered by prior work.\n\n### Domain\nThe domain is AI safety and mechanistic interpretability, specifically secret elicitation from LLM internals. This domain is well-covered by prior work, such as [7] (Eliciting Latent Knowledge), [11] (Knowledge Storage and Extraction), and [13] (Layer-Wise Probing). These papers explore related areas of understanding and extracting knowledge from LLMs, including probing hidden representations and eliciting latent knowledge. While the specific focus on suppressed secrets is narrower, it falls within the broader domain of AI safety and interpretability.\n\n---\n\n**VERDICT purpose = NONE**  \n**VERDICT mechanism = NONE**  \n**VERDICT evaluation = 4**  \n**VERDICT domain = 7**  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses recovering secrets encoded but suppressed by a language model under the 'present then suppressed' hypothesis.  \nFACET: mechanism | FINAL: COVERED-BY 4 | reason: DoLa (2023-09-07) describes \"contrasting the differences in logits obtained from projecting the later layers versus earlier,\" which aligns with the suppression-contrast token mechanism, albeit in reverse direction."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Recover secrets that a language model encodes but refuses to reveal, based on a 'present then suppressed' hypothesis.**\n\nThe purpose is specifically about eliciting information that a model has internally encoded but actively suppresses in its output — a \"present then suppressed\" framing. Paper [7] (\"Eliciting Latent Knowledge from Quirky Language Models\") is the closest: it aims to \"find patterns in a capable neural network's activations that robustly track the true state of the world\" even when the model's output is untrusted/wrong, and finds that \"especially in middle layers\" the model encodes correct information it doesn't output. Paper [12] (\"The First to Know\") uses logit distributions to reveal \"hidden knowledge\" including \"defending against\" harmful outputs. Paper [8] explores latent state persistence — whether LLMs maintain unexpressed internal representations. However, none of these specifically frame the problem as \"recover secrets the model refuses to reveal\" via a suppression hypothesis. Paper [7] is the closest in spirit (latent knowledge vs. expressed output), but its purpose is about systematic errors/quirky behavior, not safety-induced suppression of secrets. The \"present then suppressed\" framing — where safety alignment actively suppresses a known secret — is not directly covered by any prior paper's stated objective.\n\nNo prior paper covers the exact purpose of recovering safety-suppressed secrets using a suppression hypothesis. **NONE.**\n\n---\n\n**MECHANISM: Suppression-Contrast Tokens (SCT): rank tokens by mid-layer log-prob minus final-layer log-prob (logit-lens projections), reversing DoLa's direction.**\n\nPaper [4] (DoLa) explicitly computes \"differences in logits obtained from projecting the later layers versus earlier layers\" — final-minus-mid. The SCT mechanism is literally the sign-reversal of DoLa: mid-minus-final instead of final-minus-mid. Paper [2] (Multilingual Contrastive Decoding via Layer Skipping) also builds on DoLa and modifies layer selection. Paper [32] (LogitLens4LLMs) extends logit lens analysis to modern LLMs. Paper [31] (ActLCD) uses layer-contrastive decoding with active selection. Paper [5] (LayerCake) does token-aware contrastive decoding within layers. The core primitive — computing a gap between logit-lens projections at different layers — is directly present in DoLa [4] and its variants. The SCT mechanism is DoLa with the subtraction reversed; the underlying primitive (layer-wise logit-lens contrast) is covered by [4], and the specific direction reversal is a straightforward modification of the same primitive. Paper [4] covers this.\n\n**COVERED by [4]** (and also [2], [32]).\n\n---\n\n**EVALUATION: On Taboo/Direct, SCT reaches 5.33% TR@5 vs logit-lens 4.33% (+23.1% relative, +1.0pp absolute).**\n\nThe evaluation design involves: comparing a proposed decoding method against a baseline (logit-lens) on a specific benchmark (Taboo/Direct), using a top-K token recall metric (TR@5). The metric TR@5 (token recall at rank 5) is a retrieval-style metric. The benchmark \"Taboo/Direct\" appears to be a newly constructed or specialized benchmark for secret elicitation. The evaluation design — comparing layer-contrastive decoding variants using a recall@K metric — resembles designs in [4] (DoLa evaluates on factuality benchmarks comparing layer strategies), [2], [31], etc. However, TR@5 on a secret-elicitation benchmark (Taboo/Direct) appears to be a newly defined metric/protocol for this specific task. The benchmark itself seems novel (secret elicitation game), and TR@5 as applied here is a new evaluation design for this purpose. No prior paper uses this specific evaluation design (secret recall from LLM internals with TR@K).\n\n**NONE** — the evaluation design (TR@K on a secret-elicitation benchmark) is genuinely new.\n\n---\n\n**DOMAIN: AI safety / mechanistic interpretability (secret elicitation from LLM internals).**\n\nPaper [7] works in mechanistic interpretability / eliciting latent knowledge from LLMs. Paper [12] works in AI safety / hidden knowledge in LVLMs. Paper [32] works in mechanistic interpretability (logit lens for LLMs). Paper [8] works on LLM internal representations. The domain of \"AI safety / mechanistic interpretability\" is clearly covered by [7] and [12].\n\n**COVERED by [7]** (and [12], [32]).\n\n---\n\nVERDICT purpose = NONE\nVERDICT mechanism = 4\nVERDICT evaluation = NONE\nVERDICT domain = 7",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the specific objective of recovering secrets a model encodes but actively suppresses/refuses to reveal under a 'present then suppressed' hypothesis — [7] (ELK) is closest but targets robustly tracking true world-state via activations when outputs are untrusted, not recovering refused/suppressed secrets specifically; no quoted phrase from any paper matches this same objective.\n\nFACET: evaluation | FINAL: NONE | reason: The specific numerical result (SCT 5.33% TR@5 vs logit-lens 4.33%, +23.1% relative, +1.0pp absolute on Taboo/Direct) is a concrete empirical finding unique to the target paper; no prior paper contains this named comparison, these metrics, or these values."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: Paper [7] covers this purpose by defining the Eliciting Latent Knowledge (ELK) problem, which \"aims to find patterns in a capable neural network's activations that robustly track the true state of the world... where the model's output is untrusted.\" This is substantively equivalent to recovering secrets that a model encodes but refuses to reveal.\n\n**mechanism**: Paper [4] covers this mechanism's primitive, \"Decoding by Contrasting Layers (DoLa),\" which \"obtains the next-token distribution by contrasting the differences in logits obtained from projecting the later layers versus earlier layers.\" The contribution's mechanism is a direct modification (reversing the subtraction order) of this established layer-contrasting primitive.\n\n**evaluation**: Paper [7] covers this evaluation design by introducing \"12 datasets and a corresponding suite of 'quirky' language models\" for the express purpose of evaluating methods that elicit latent knowledge. This establishes the benchmark family and validation protocol that the contribution uses.\n\n**domain**: Paper [7] covers this domain by establishing the research area of \"Eliciting Latent Knowledge (ELK),\" which is a sub-field of AI safety and mechanistic interpretability focused on recovering suppressed information from LLM internals.\n\nVERDICT purpose = 7\nVERDICT mechanism = 4\nVERDICT evaluation = 7\nVERDICT domain = 7",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     1,
+     12
+    ],
+    "evaluation": [
+     1,
+     11
+    ],
+    "domain": [
+     11
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 11
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 11
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to rigorously test whether reverse layer-contrast decoding works, using pre-registered criteria and a negative control. No prior paper explicitly tests reverse layer-contrast decoding with pre-registered criteria or a negative control setup. While papers like [11] and [15] discuss layer-contrast decoding methods, they focus on improving factuality or mitigating hallucinations rather than rigorously validating the mechanism with pre-registered criteria and controls. Papers [1], [2], [3], and [7] discuss negative controls in epidemiology and observational studies, but they do not address reverse layer-contrast decoding or its validation in AI safety contexts. Thus, the purpose is **NONE**.\n\n### Mechanism\nThe mechanism involves pre-registering four success criteria (premise support, improvement threshold, direction control, statistical significance) and running a DoLa-direction negative control on Taboo and User Gender benchmarks. Papers [12] and [13] discuss pre-registration in predictive modeling and psychology, providing general frameworks for pre-registration but not specific to reverse layer-contrast decoding or DoLa-direction controls. Papers [11], [15], and [19] describe DoLa-based decoding methods, but they do not incorporate pre-registration or negative controls as part of their validation. Papers [1], [2], [3], and [7] discuss negative controls but in epidemiological contexts, not in AI safety or decoding methods. Thus, the mechanism is **NONE**.\n\n### Evaluation\nThe evaluation design uses a DoLa-direction negative control to confirm suppression direction signal (Criterion 3 passes). Papers [11], [15], [19], and [22] all use DoLa-based decoding methods and evaluate their effectiveness in mitigating hallucinations or improving factuality. While the specific benchmarks (Taboo and User Gender) differ, the evaluation design — contrasting layer outputs and validating decoding performance — is substantively equivalent. Papers [1], [2], [3], and [7] discuss negative controls but do not use them in decoding evaluations. Thus, the evaluation is **11**.\n\n### Domain\nThe domain is AI safety and mechanistic interpretability, specifically secret elicitation from LLM internals. Papers [11], [15], [19], and [22] all operate in the domain of AI safety and mechanistic interpretability, focusing on decoding strategies to improve LLM reliability and reduce hallucinations. While the specific application (secret elicitation) is narrower, it falls within the broader domain of AI safety and interpretability. Thus, the domain is **11**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 11  \nVERDICT domain = 11  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 11 | reason: Paper 11 explicitly proposes and evaluates a decoding strategy (DoLa) to test whether reverse layer-contrast improves factuality, aligning with the same objective of rigorously testing reverse layer-contrast.  \nFACET: mechanism | FINAL: COVERED-BY 12 | reason: Paper 12 discusses pre-registration of success criteria and its application in predictive modeling, satisfying the same mechanism of pre-registering criteria and running evaluations."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 11
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Rigorously test whether reverse layer-contrast actually works, using pre-registered criteria and a negative control.**\n\nThe purpose is to validate (or falsify) a specific mechanistic claim about reverse layer-contrast in LLM internals, using pre-registration and negative controls. Papers [1], [2], [3], [7] discuss negative control methods in epidemiology/observational studies, but these are about causal inference bias detection, not validating whether a specific AI mechanism works. Papers [12] and [13] discuss pre-registration for predictive modeling and psychology research respectively — [12] specifically addresses pre-registration to improve reproducibility in predictive modeling, which is thematically related but the purpose is \"introduce pre-registration to ML\" not \"test whether a specific mechanism works.\" Paper [27] pre-registers a confirmatory analysis to test a specific phenomenon, which is closer — but it's in gesture-speech physics. None of the prior papers share the purpose of rigorously testing whether reverse layer-contrast in LLMs works. The closest is [27] (pre-registering to confirm/disconfirm a specific effect), but the specific relationship being tested (reverse layer-contrast for secret elicitation) is absent from all prior work.\n\n**MECHANISM: Pre-register four success criteria and run a DoLa-direction negative control.**\n\nThe mechanism combines (a) pre-registration of explicit success criteria and (b) a directional negative control using DoLa. Paper [27] uses pre-registration of confirmatory analysis criteria in an empirical study. Papers [1], [2], [3], [7] describe negative control methodology including specificity controls. Paper [11] introduces DoLa (layer-contrast decoding). No single paper combines pre-registered success criteria with a DoLa-direction negative control. However, the underlying primitives — pre-registration of criteria ([12], [13], [27]) and negative controls ([1], [2], [3]) — are both present in prior work. The combination as applied here is not found in any single paper, but the question is whether the primitives are covered. Pre-registration of success criteria is in [12]/[13]/[27]; negative control design is in [1]/[2]/[3]. The specific DoLa-direction negative control is novel as a primitive combination, but the negative control concept is covered by [1]/[2]/[3] and pre-registration by [12]/[13].\n\n**EVALUATION: The DoLa-direction control collapses to 0.20% TR@5 vs 4.33% logit lens, confirming suppression direction carries signal.**\n\nThe evaluation design uses TR@5 (top-rank at 5) metric on Taboo and User Gender benchmarks, comparing a DoLa-direction control against logit lens. These are newly constructed benchmarks for secret elicitation from LLM internals. No prior paper uses TR@5 on these specific benchmarks or this evaluation protocol for mechanistic interpretability of secret elicitation. The evaluation design itself — comparing a directional negative control against a baseline probe on a custom benchmark with a specific metric — does not appear in any prior paper in the same design sense.\n\n**DOMAIN: AI safety / mechanistic interpretability (secret elicitation from LLM internals).**\n\nPaper [5] works on contrastive decoding across model layers for NLP tasks. Paper [11] (DoLa) works on LLM factuality via layer contrast. Papers [8], [14], [15], [19], [20], [21], [22], [25] all work on LLM internals/decoding. However, the specific domain of \"AI safety / mechanistic interpretability for secret elicitation from LLM internals\" — using internal representations to extract hidden information — is touched on by [10] which surfaces biases in LLMs using contrastive input decoding, and [5]/[11] which work on LLM layer representations. The general area of LLM mechanistic interpretability is covered by [5], [8], [11], [14], [15], [19], [20], [21], [22].\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 11",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the objective of rigorously testing whether reverse layer-contrast works using pre-registered criteria and a negative control in an LLM decoding context. Papers [12] and [13] cover pre-registration generally, and papers [1–3,7] cover negative controls in epidemiology, but none combines both to test a specific LLM layer-contrast mechanism. No quoted phrase from any paper satisfies the same objective.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper pre-registers four specific success criteria (premise support, improvement threshold, direction control, statistical significance) and runs a DoLa-direction negative control on Taboo and User Gender benchmarks. Paper [11] introduces DoLa layer contrasting and [12] discusses pre-registration for predictive modeling, but neither paper contains a mechanism combining these elements. No quoted phrase satisfies the same specific procedural design.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports a DoLa-direction control collapsing to a specific TR@5 value versus a logit lens baseline to confirm a suppression-direction signal criterion. Paper [11] evaluates DoLa on factuality benchmarks and [8] adapts DoLa to T5, but neither contains a quoted result or design matching this specific control experiment confirming Criterion 3 via directional collapse."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        1,
+        12
+       ]
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 11
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: No prior paper appears to test the specific empirical question of whether *reverse* layer-contrast works, nor do they do so using a pre-registered negative control design; the purpose is to establish a new finding about this specific technique's validity.\n\n**mechanism**: The mechanism combines two established methodological primitives: pre-registration, as detailed in papers like [12] (\"Pre-registration for Predictive Modeling\"), and negative control experiments, which are the subject of papers like [1] (\"On 'Negative control methods'\").\n\n**evaluation**: The evaluation design is a negative control study, where a treatment is compared against a control expected to have no effect. This is a standard validation framework detailed in multiple prior papers, such as [1], which states \"Negative control methods (NCM) are developed based on the idea that negative controls should be tested with negative results.\"\n\n**domain**: The domain of AI safety and mechanistic interpretability of LLMs is covered by multiple prior papers, including [11] which addresses LLM factuality (an AI safety goal) by \"contrasting the differences in logits obtained from projecting the later layers versus earlier layers\" (an interpretability method).\n\nVERDICT purpose = NONE\nVERDICT mechanism = 1, 12\nVERDICT evaluation = 1\nVERDICT domain = 11",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the objective of conducting a rigorous test of *reverse* layer-contrast. While papers discuss layer-contrast decoding ([5], [11]), pre-registration ([12], [13]), and negative controls ([1], [2], [3]) as separate concepts, none combine them into a single research goal to specifically test the reverse-contrast hypothesis using pre-registered criteria and a formal negative control."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     7,
+     11
+    ],
+    "mechanism": [
+     12
+    ],
+    "evaluation": [
+     11,
+     16,
+     18
+    ],
+    "domain": [
+     1,
+     11
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 18
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Per-Facet Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to report that the method fails and characterize why. This requires prior work that explicitly reports failure and analyzes the reasons behind it. Paper [7] (\"Resultados 'no positivos' y resultados 'negativos': ¿Por qué cuentan?\") discusses the importance of reporting negative or non-positive results and analyzing their implications, which aligns with the purpose of characterizing failure. No other paper explicitly focuses on reporting failure and analyzing its causes in the context of AI safety or mechanistic interpretability.\n\n#### Mechanism:\nThe contribution evaluates SCT against pre-registered criteria and tests generalization to binary-attribute secrets (User Gender). Paper [12] (\"Challenges and Opportunities in Pre-registration of Coordinated Data Analysis\") and [13] (\"Challenges and Opportunities in Pre-registration of Coordinated Data Analysis: A Template and Tutorial\") both discuss pre-registration as a methodological framework for structured evaluation, which matches the mechanism of evaluating SCT against pre-registered criteria. Additionally, Paper [18] (\"LogitLens4LLMs\") applies logit lens analysis to LLMs, which overlaps with the mechanism of testing SCT against binary-attribute secrets, as both involve probing LLM internals for interpretability purposes.\n\n#### Evaluation:\nThe evaluation design involves assessing SCT's performance against pre-registered criteria (e.g., premise support, improvement thresholds, confidence intervals) and comparing it to logit lens performance on User Gender secrets. Paper [18] (\"LogitLens4LLMs\") uses logit lens analysis to evaluate LLMs, which matches the evaluation design of comparing SCT to logit lens performance. Paper [12] and [13] also discuss pre-registration frameworks, which align with the structured evaluation design used here. These papers collectively cover the evaluation design.\n\n#### Domain:\nThe domain is AI safety and mechanistic interpretability, specifically secret elicitation from LLM internals. Papers [1], [5], [8], [17], and [25] all address privacy risks, attribute inference attacks, or sensitive attribute leakage in machine learning models, which fall within the broader domain of AI safety and interpretability. While these papers focus on privacy and inference attacks, they operate in the same general application area of understanding and mitigating risks in AI systems.\n\n---\n\n### Verdicts:\nVERDICT purpose = 7  \nVERDICT mechanism = 12  \nVERDICT evaluation = 18  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 11
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Report that the method fails and characterize why.**\n\nThe purpose is to report a negative/null result about a specific method (SCT) failing pre-registered criteria and characterize the failure modes. Paper [11] is the closest in spirit — it reports that function vectors fail to satisfy a predicted relationship (steering and decoding succeed/fail together), characterizing why the method doesn't work as expected. However, the specific relationship being reported differs: [11] reports a dissociation between steering and decoding, while this contribution reports failure against pre-registered quantitative thresholds. No prior paper reports the same empirical relationship (SCT failing its own pre-registered criteria). Papers [7] and [14] discuss negative/replication results in general but don't report the same variables/direction. The purpose here is specifically \"SCT fails its pre-registered criteria\" — no prior paper establishes this same relationship.\n\n**MECHANISM: Evaluate SCT against pre-registered criteria and test generalization to binary-attribute secrets.**\n\nThe mechanism involves evaluating a method against pre-registered quantitative criteria (a structured validation protocol) and testing generalization. Papers [12] and [13] discuss pre-registered coordinated data analysis as a methodology. Paper [11] uses a cross-task, cross-model evaluation design to test function vectors. The pre-registration evaluation design (checking against pre-specified thresholds) is covered by [12]/[13] as a standard analysis protocol. Testing generalization to a new attribute type is a standard substitution experiment.\n\n**EVALUATION: SCT fails 3 of 4 criteria with specific quantitative thresholds; comparison to logit lens baseline.**\n\nThe evaluation design involves: (1) checking against pre-registered quantitative thresholds, and (2) comparing to a logit lens baseline. Paper [11] uses logit lens as a comparison baseline across tasks and models. Paper [18] extends logit lens analysis to modern LLMs. The logit-lens-as-baseline design appears in [11]. The pre-registered threshold checking design appears in [12]/[13]. These are standard evaluation designs (benchmark comparison + baseline comparison).\n\n**DOMAIN: AI safety / mechanistic interpretability (secret elicitation from LLM internals).**\n\nPaper [11] works in mechanistic interpretability of LLMs (function vectors, activation steering, logit lens). Paper [18] works in mechanistic interpretability (logit lens for LLMs). Paper [3] works on knowledge extraction from LLM internals. Paper [4] works on probing hidden knowledge in LLMs. These all operate in the same general application area of understanding/probing LLM internals.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 12\nVERDICT evaluation = 11\nVERDICT domain = 11",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the same objective of reporting that a specific method (function vectors / logit lens decoding) fails and characterizing why it fails. Paper [11] is the target paper itself. The closest candidates ([18] on logit lens, [3] on knowledge extraction) do not share the purpose of diagnosing and characterizing method failure; they apply or extend methods rather than report and explain their breakdown."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 11
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": 11
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to report the finding that a specific method (SCT) fails against its own criteria. For a \"finding\" contribution, this facet is covered only if a prior paper reports the same empirical relationship (same variables, same effect). No prior paper investigates the SCT method, so none report on its performance or failure.\n\n**mechanism**: The mechanism is the analysis method used, which is to evaluate a technique against pre-registered criteria and test its generalization. The protocol of using pre-registration to define evaluation criteria is explicitly proposed and described in [12] and [13], which introduce \"pre-registered coordinated data analysis\".\n\n**evaluation**: The evaluation design consists of checking results against pre-defined numerical thresholds (e.g., \"premise support only ~9.3% (vs 30% threshold)\") and comparing performance against a baseline method. This design is covered by [16], which evaluates diagnostic methods against established \"CDC Criteria\" and also compares them to \"Alternative Interpretive Approaches\".\n\n**domain**: The domain is AI safety / mechanistic interpretability, focusing on eliciting secrets from LLM internals. This general area is covered by [11], which investigates a core mechanistic interpretability problem involving function vectors and the logit lens (\"Function Vectors Operate Beyond the Logit Lens\").\n\nVERDICT purpose = NONE\nVERDICT mechanism = 12\nVERDICT evaluation = 16\nVERDICT domain = 11",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY [11] | reason: The paper's purpose is to report the failure of a core prediction in activation steering: \"the prediction: steering and decoding succeed or fail together. Across 12 tasks, 6 models from 3 families, and 4,032 directed cross-template pairs, we find the opposite.\""
+     }
+    }
+   }
+  }
+ ]
+}

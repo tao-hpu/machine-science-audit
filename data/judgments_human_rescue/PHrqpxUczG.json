@@ -1,0 +1,249 @@
+{
+ "paper_id": "PHrqpxUczG",
+ "title": "LogQuant: Log-Distributed 2-Bit Quantization of KV Cache with Superior Accuracy Preservation",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     5,
+     7
+    ],
+    "mechanism": [
+     15
+    ],
+    "evaluation": [
+     3,
+     12,
+     15
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": 15
+      },
+      "evaluation": {
+       "covered_by": 15
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to find a more reliable basis for estimating token importance in the KV cache, moving away from heuristics like \"later tokens are more important\" or early attention predictions. This specific objective is not directly addressed in any prior paper. While many papers (e.g., [1], [3], [5], [7], [13]) discuss token importance in the context of KV cache compression, they focus on methods for identifying or leveraging saliency for compression, not on discovering a new empirical basis for estimating token importance. None of these papers explicitly aim to replace existing heuristics with a new, empirically grounded basis for token importance estimation.\n\n**VERDICT purpose = NONE**\n\n---\n\n### Mechanism\nThe mechanism involves analyzing attention heads across multiple models and downstream tasks, observing that high attention spikes occur at positions that follow a logarithmic distribution as distance from the current token increases. This specific observation — the logarithmic sparsity pattern of attention spikes — is not present in any prior paper. Papers like [15] and [19] analyze attention patterns, but they do not report this specific logarithmic distribution of attention spikes. For example, [15] clusters attention patterns but does not identify a logarithmic sparsity trend, and [19] focuses on attention sinks rather than spike distributions.\n\n**VERDICT mechanism = NONE**\n\n---\n\n### Evaluation\nThe evaluation consists of qualitative visualizations of attention distributions (e.g., Figures 1 and 3). This type of qualitative observation is a common evaluation design in attention analysis papers. For instance, [15] and [19] both use visualizations of attention patterns to support their findings. While the specific visualizations in this contribution are new, the evaluation design (qualitative observation of attention patterns) is not novel.\n\n**VERDICT evaluation = 15**\n\n---\n\n### Domain\nThe domain is LLM inference and KV cache compression. This is a well-established application area, extensively covered by prior papers such as [1], [3], [5], [7], and [13]. While this contribution may target a specific sub-problem (finding a new basis for token importance estimation), it still falls within the broader domain of LLM inference and KV cache optimization.\n\n**VERDICT domain = 1**  \n\n---\n\n### Final Verdicts\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 15  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 5 | reason: Paper [5] explicitly discusses token importance indicators in KV cache reduction, challenging reliance on attention scores and introducing value vector norms as a more reliable basis, aligning with the same objective. Quote: \"Recent works have explored token pruning for KV cache reduction in LLMs, relying solely on attention scores as a token importance indicator. However, our investigation into value vector norms revealed a notably non-uniform pattern questioning their reliability.\"\n\nFACET: mechanism | FINAL: COVERED-BY 15 | reason: Paper [15] analyzes attention head behavior and clusters attention patterns, observing systematic trends in attention distribution relative to token distance, which aligns with the described mechanism. Quote: \"Previous works have found some primitive patterns of attention head behavior by heuristic analytical methods... we clearly cluster the attention patterns, revealing systematic trends in attention distribution as token distance increases.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Find a more reliable basis for estimating token importance in KV cache (neither \"later tokens are more important\" nor early-attention-based prediction)**\n\nPapers [1], [3], [4], [5], [6], [8] all address token importance estimation for KV cache compression. However, the specific purpose here is to find a *new reliability criterion* by identifying what's wrong with existing heuristics and proposing a logarithmic-distance-based observation as the foundation. Paper [5] is closest — it explicitly argues \"Attention Score is not All You Need for Token Importance Indicator in KV Cache Reduction\" and questions existing importance metrics. Paper [3] also identifies intrinsic attention structures. But the specific purpose of establishing that high-attention spikes follow a log-distance distribution as a *more reliable* basis is not directly stated in any prior paper. Paper [5] challenges attention-score-only approaches but proposes value norms, not log-distance patterns. Paper [8] discusses \"persistence of importance\" but doesn't frame it as finding a log-distance reliability criterion. No prior paper's purpose is substantively equivalent to \"find that log-distance distribution of spikes is the reliable basis.\"\n\n**MECHANISM: Analyze attention heads across models/tasks, observe that high-attention spike positions follow a log distribution with distance (sparser farther away)**\n\nPaper [3] (FastGen) identifies \"intrinsic structure of attention modules\" including heads that focus on local context vs. long-range, and constructs adaptive KV cache based on recognized patterns. Paper [7] (RazorAttention) observes \"most attention heads primarily focus on the local context.\" Paper [15] analyzes BERT attention distances and clusters attention head behavior. Paper [19] studies attention sink phenomena and how attention distributions are established. None of these specifically observe or report that high-attention spike positions follow a *logarithmic distribution* with distance. Paper [3] distinguishes local vs. long-range but doesn't characterize the log-distance density of spikes. This specific empirical observation (log-sparse distribution of spike positions) appears absent from prior work.\n\n**EVALUATION: Qualitative observation via attention distribution visualization (Figure 1/3); serves as motivation, no independent numbers**\n\nPaper [3] uses attention pattern visualization to motivate their method. Paper [15] uses attention analysis and visualization on BERT. Paper [19] visualizes attention distributions to study attention sinks. Paper [12] explicitly does \"Attention Analysis and Visualization on Multimodal Models.\" Using attention distribution visualization as qualitative motivation for a downstream method is a standard design present in multiple prior papers (e.g., [3], [7], [19]).\n\n**DOMAIN: LLM inference / KV cache compression**\n\nPapers [1], [2], [3], [4], [5], [6], [7], [8], [9], [13] all operate in LLM inference / KV cache compression. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 3\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of finding a *more reliable basis* for token importance that is explicitly neither \"recency bias\" nor \"early-attention prediction\" — the closest papers (e.g., [3], [8]) use attention scores or persistence hypotheses but do not frame their purpose as rejecting both of those specific failure modes simultaneously.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper reports the empirical observation that high-attention spike positions follow a log-distributed (increasingly sparse) pattern as distance from the current position grows across multiple models and tasks; [3] notes local vs. long-range head types and [19] discusses attention sinks but neither quantifies or observes the logarithmic spatial distribution of spike positions as a finding."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 15
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: COVERED. The purpose is to find a reliable basis for token importance by establishing an empirical relationship between attention spike location and distance. Prior work has already established this same relationship, even if not using the exact term \"logarithmic\". For example, [7] states \"Our investigation reveals that: i) Most attention heads primarily focus on the local c[ontext]\", and [15] performs a \"systematic analysis specific on the attention patterns\" by clustering heads \"based on their attention patterns over relative positions\", both of which investigate and establish the same relationship between attention and distance.\n\n**mechanism**: COVERED. The mechanism is the analysis method used to obtain the finding: analyzing attention heads across models and tasks to observe the distribution of attention spikes. This is a standard analysis protocol. [15] uses this exact method to \"cluster the attention heads of BERT based on their attention patterns over relative positions\", and [3] uses the same approach by conducting \"targeted profiling to discern the intrinsic structure of attention modules\".\n\n**evaluation**: COVERED. The evaluation design is qualitative observation of attention patterns through visualization. This is a standard design for analyzing attention mechanisms. [12] is a paper explicitly on \"Attention Analysis and Visualization\", and [15] also relies on this type of analysis to characterize attention patterns.\n\n**domain**: COVERED. The domain is LLM inference and KV cache compression. This is the explicit domain of numerous prior papers, including [1] (\"ZipCache: Accurate and Efficient KV Cache Quantization\"), [3] (\"Adaptive KV Cache Compression for LLMs\"), and [7] (\"Efficient KV Cache Compression\").\n\nVERDICT purpose = 7\nVERDICT mechanism = 15\nVERDICT evaluation = 12\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     4
+    ],
+    "mechanism": null,
+    "evaluation": [
+     4
+    ],
+    "domain": [
+     4
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to achieve better accuracy retention under 2-bit high compression rates compared to existing KV cache compression methods. Paper [4] (\"KIVI: A Tuning-Free Asymmetric 2bit Quantization for KV Cache\") explicitly addresses 2-bit quantization for KV cache compression, aiming to preserve accuracy under extreme compression. This matches the problem-class level objective of improving accuracy retention at high compression rates. Paper [18] (\"GEAR: An Efficient KV Cache Compression Recipe for Near-Lossless Generative Inference of LLM\") also focuses on minimizing accuracy loss during KV cache compression, but it does not specifically emphasize 2-bit quantization. Therefore, [4] is the closest match.\n\n### Mechanism\nThe contribution mechanism, LogQuant, combines selective retention of full precision for salient tokens based on logarithmic distribution windows with 2-bit quantization. Paper [3] (\"ZipCache: Accurate and Efficient KV Cache Quantization with Salient Token Identification\") uses a saliency-based approach to identify and preserve critical tokens during KV cache compression, which aligns with the selective retention aspect of LogQuant. Paper [4] (\"KIVI\") employs asymmetric 2-bit quantization but does not incorporate selective retention based on token saliency. Paper [18] (\"GEAR\") uses token-dropping and quantization but does not employ logarithmic distribution windows or selective retention. Thus, [3] covers the saliency-based mechanism, but no prior paper combines this with logarithmic distribution windows and 2-bit quantization.\n\n### Evaluation\nThe evaluation uses GSM8K and LongBench across multiple models and tasks, comparing accuracy under compression rates to baselines like KiVi and H2O. Paper [4] (\"KIVI\") evaluates 2-bit quantization methods on LLM inference tasks, including comparisons to baselines, which matches the evaluation design. Paper [3] (\"ZipCache\") evaluates saliency-based compression methods on LLM tasks, but it does not focus on 2-bit quantization. Paper [18] (\"GEAR\") evaluates compression methods across LLM tasks but does not emphasize 2-bit quantization or the same benchmark family. Therefore, [4] matches the evaluation design most closely.\n\n### Domain\nThe contribution operates in the domain of LLM inference and KV cache quantization. Papers [1]-[15], [18], and others all address KV cache compression for LLM inference, making this domain well-covered. Specifically, papers like [4] (\"KIVI\"), [3] (\"ZipCache\"), and [18] (\"GEAR\") focus on KV cache quantization techniques for LLM inference, which is the same general application area.\n\n---\n\nVERDICT purpose = 4  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 4  \nVERDICT domain = 4  ",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper explicitly describes the selective retention of full precision for key tokens using logarithmic distribution windows combined with 2-bit quantization."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: 在 2-bit 高压缩率下比现有 KV cache 压缩方法更好地保留精度**\n\nThe purpose is to improve accuracy retention at high compression ratios (specifically 2-bit) for KV cache compression. Paper [4] (KIVI) explicitly targets 2-bit KV cache quantization. Paper [2] (KVQuant) targets sub-4-bit precision KV cache quantization, noting \"existing solutions fail to represent activations accurately in sub-4-bit precision.\" Paper [3] (ZipCache) targets \"significant performance degradation at high compression ratios.\" Paper [18] (GEAR) also targets near-lossless KV cache compression. All of these share the same objective: improve accuracy at high KV cache compression ratios. Paper [4] is the closest match as it specifically targets 2-bit quantization.\n\n**MECHANISM: 对数分布窗口选择性保留关键 token 全精度 + 2-bit 量化结合**\n\nThe mechanism combines: (1) a log-spaced token selection pattern (keeping recent tokens fully, then sampling at logarithmically decreasing density for older tokens), and (2) combining token eviction/selection with quantization. \n\nFor the log-spacing pattern: no prior paper describes using logarithmically-spaced windows to select which tokens to keep at full precision. Paper [10] (RazorAttention) preserves all token information differently. Paper [11] (PyramidKV) uses pyramidal allocation. Paper [18] (GEAR) combines eviction with quantization but uses low-rank approximation for residuals. Paper [3] (ZipCache) combines saliency-based token identification with quantization. Paper [6] uses mixed-precision quantization based on importance. None of these use a log-distribution-based positional window pattern for token selection. The log-spacing primitive (denser recent, sparser distant) is not present in any prior paper.\n\n**EVALUATION: GSM8K + LongBench across multiple models, comparing at 2-bit vs 4-bit**\n\nThe evaluation uses GSM8K and LongBench benchmarks across multiple LLM families, comparing KV cache compression methods at different bit widths. Paper [4] (KIVI) evaluates on GSM8K and LongBench with similar models. Paper [2] (KVQuant) evaluates on similar benchmarks. Paper [18] (GEAR) also uses LongBench-style evaluation. The evaluation design (LongBench + math reasoning benchmarks, multi-model comparison of KV cache methods) is clearly established in prior work, particularly [4] and [18]. This is a covered evaluation design.\n\n**DOMAIN: LLM 推理 / KV cache 量化**\n\nThis is clearly the same domain as papers [1], [2], [3], [4], [5], [6], [8], [9], [10], [11], [15], [18] — all operate in LLM inference with KV cache compression/quantization.\n\nVERDICT purpose = 4\nVERDICT mechanism = NONE\nVERDICT evaluation = 4\nVERDICT domain = 4",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes the specific combination of logarithmically-spaced sparse token retention windows (full precision for recent tokens, then progressively sparser sampling at logarithmic intervals across the full context) fused with 2-bit quantization for the remaining tokens. GEAR [18] combines sparse retention with quantization but uses uniform/importance-based selection, not logarithmic spacing. KIVI [4] uses 2-bit quantization but no logarithmic eviction pattern. No paper uses the specific log-distributed window structure (2W recent full, W/2 skip-one, W/4 skip-more, 3W tail) described here."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     1
+    ],
+    "mechanism": null,
+    "evaluation": [
+     1
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to accelerate quantization/dequantization without affecting attention results, thereby improving throughput. Several prior papers address similar objectives of improving throughput and memory efficiency during LLM inference by optimizing KV cache operations. For example:\n- **[1]**: \"Efficiently serving large language models (LLMs) requires batching of many requests to reduce the cost per request... the key-value (KV) cache... becomes the new bottleneck in speed and memory usage.\"\n- **[4]**: \"Efficient deployment of Large Language Models (LLMs) requires batching multiple requests together to improve throughput... Quantization has emerged as an effective technique for KV cache compression.\"\n- **[13]**: \"Large Language Models (LLMs) face significant deployment challenges due to their substantial memory requirements and the computational demands of auto-regressive text generation process... Quantization reduces memory consumption and improves throughput.\"\nThese papers share the same high-level objective of improving throughput and memory efficiency during LLM inference, even though the specific techniques differ.\n\n#### Mechanism:\nThe contribution's mechanism leverages the position-agnostic property of attention during decoding to ignore the absolute position of KV cache entries, enabling high-precision tokens to be concatenated with quantized tokens to enhance memory locality. None of the prior papers explicitly describe this mechanism. While many papers (e.g., **[1], [4], [13]**) discuss KV cache quantization and compression, they focus on techniques like mixed precision quantization, saliency-based compression, or tensor decomposition, rather than exploiting position-agnostic properties or concatenating tokens for memory locality. This mechanism appears genuinely novel.\n\n#### Evaluation:\nThe evaluation uses a standard setup: H100 48G MIG + HuggingFace pipeline, measuring throughput and batch size improvements on Llama3.1-8B. Several prior papers use similar evaluation designs for KV cache quantization and LLM inference efficiency:\n- **[1]**: \"We evaluate our method on NVIDIA GPUs with large batch sizes and long context lengths.\"\n- **[4]**: \"We measure inference latency and memory usage on large batch sizes and context lengths.\"\n- **[13]**: \"We critically analyze quantization approaches by measuring throughput and memory consumption during LLM inference.\"\nThese papers employ similar evaluation designs (benchmarking throughput, memory usage, and batch size improvements on GPUs), even though the specific models and hardware setups differ. Thus, the evaluation design is covered.\n\n#### Domain:\nThe contribution operates in the domain of LLM inference/system efficiency. Many prior papers address the same general domain:\n- **[1]**: \"Efficiently serving large language models (LLMs)...\"\n- **[4]**: \"Efficient deployment of Large Language Models (LLMs)...\"\n- **[13]**: \"Large Language Models (LLMs) face significant deployment challenges...\"\nThese papers all focus on improving LLM inference efficiency, making the domain covered.\n\n---\n\n### Verdicts:\nVERDICT purpose = 1  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper explicitly addresses the position-agnostic property of KV cache entries or the concatenation of high-precision and quantized tokens to enhance memory locality."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: 在不影响注意力结果的前提下加速量化/反量化, 提升吞吐**\n\nThe purpose is to accelerate KV cache quantization/dequantization to improve inference throughput without affecting attention results. Papers [1], [2], [3], [4], [5], [6], [7], [8], [13] all target KV cache quantization for LLM inference efficiency. Paper [7] (AlignedKV) specifically mentions \"Reducing Memory Access of KV-Cache with Precision-Aligned Quantization\" targeting inference speed. Paper [1] (KIVI) explicitly mentions \"loading of the KV cache causes the computational core to be idle, which limits the inference speed.\" These papers share the same objective: compress KV cache via quantization to improve throughput. This purpose is covered.\n\n**MECHANISM: 利用解码阶段注意力对 KV token 顺序不变的性质(position-agnostic), 将高精度 token 与量化 token 拼接以增强内存局部性**\n\nThe specific mechanism exploits the permutation-invariance of attention scores over KV tokens during decoding to ignore absolute positions of KV cache entries, then concatenates high-precision tokens with quantized tokens to improve memory locality. Paper [7] (AlignedKV) discusses \"Precision-Aligned Quantization\" and reducing memory access, which involves grouping tokens by precision. Paper [1] (KIVI) stores full-precision tokens separately from quantized ones. However, the key primitive here — explicitly exploiting attention's order-invariance over KV tokens to justify reordering/concatenating mixed-precision entries for memory locality — is not clearly articulated in any prior paper. Papers [25], [28], [29] discuss permutation invariance but in unrelated contexts (RNNs, vision, pooling). No prior paper explicitly uses the position-agnostic property of KV attention during decoding as the justification for reordering KV cache entries to improve memory locality during dequantization. This appears uncovered.\n\n**EVALUATION: H100 48G MIG + HuggingFace pipeline, 平均 prompt 512/最大输出 2000, Llama3.1-8B: 吞吐提升约 25%, batch size 提升 60%**\n\nThe evaluation design measures throughput and batch size improvements for LLM inference with KV cache quantization on a specific GPU setup. Papers [1], [2], [4], [7], [11] all evaluate throughput/memory improvements for KV cache quantization on LLMs using similar metrics (throughput, memory usage, batch size). Paper [1] explicitly measures throughput improvements and batch size. Paper [7] measures memory access reduction. The evaluation design (throughput benchmark + batch size comparison on LLM inference) is standard in this literature and covered by multiple prior papers.\n\n**DOMAIN: LLM 推理 / 系统效率**\n\nThe domain is LLM inference and system efficiency. Papers [1], [2], [3], [4], [5], [6], [7], [8], [11], [12], [13], [17] all operate in LLM inference/system efficiency. This is clearly covered.\n\nVERDICT purpose = 1\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes exploiting the position-agnostic property of KV cache attention during decoding to concatenate high-precision and quantized tokens while ignoring absolute positions for memory locality. The closest papers (KIVI, ZipCache, No Token Left Behind) use mixed-precision KV quantization but none describe the position-invariance property as the enabling mechanism for merging high-precision and quantized entries to improve memory locality."
+     }
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,293 @@
+{
+ "paper_id": "oF6e2WwxX0",
+ "title": "TIS-DPO: Token-level Importance Sampling for Direct Preference Optimization With Estimated Weights",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     5
+    ],
+    "mechanism": [
+     8
+    ],
+    "evaluation": [
+     2
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to address the inefficiency in Direct Preference Optimization (DPO) caused by treating a whole response as a single arm, ignoring token-level reward differences. Paper [5] introduces Token-level Direct Preference Optimization (TDPO), which explicitly focuses on token-level optimization, identifying the same inefficiency in DPO's sequence-level reward treatment. Paper [24] also highlights the mismatch between sequence-level preference labels and token-level autoregressive generation, aiming to provide token-level rewards. Both papers share the same problem-class objective: improving optimization efficiency by addressing token-level reward granularity.\n\n### Mechanism\nThe contribution mechanism is TIS-DPO, which uses importance sampling to assign token-level weights based on their rewards, ensuring unbiased optimization. Papers [8], [9], [10], and [11] discuss importance sampling in reinforcement learning, including its application to policy optimization and unbiased estimation. Paper [5] introduces TDPO, which applies token-level optimization but does not explicitly use importance sampling. Paper [24] proposes token-level continuous rewards but does not use importance sampling either. Papers [8], [9], [10], and [11] collectively cover the mechanism at the primitive level: importance sampling for unbiased optimization.\n\n### Evaluation\nThe contribution evaluates TIS-DPO by comparing its performance against baseline methods (standard DPO and others) on harmlessness, helpfulness alignment, and summarization tasks. Papers [2], [5], [6], and [24] evaluate DPO variants and token-level optimization methods across similar benchmarks, including alignment tasks and summarization. These papers use comparable evaluation designs, such as per-dataset performance metrics and qualitative comparisons. The evaluation design is therefore covered.\n\n### Domain\nThe contribution operates in the domain of LLM preference alignment, specifically improving DPO for alignment tasks. Papers [1], [2], [4], [5], [6], [12], [13], [16], and [24] all work within the same general application area of LLM preference alignment, addressing various aspects of DPO and token-level optimization. The domain is covered.\n\n---\n\nVERDICT purpose = 5  \nVERDICT mechanism = 8  \nVERDICT evaluation = 2  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Fix DPO's treatment of a whole response as a single arm, ignoring that different tokens have different rewards, hurting optimization efficiency.**\n\nPaper [5] (TDPO) explicitly addresses token-level DPO, noting \"the generation of these responses occurs in a token level, following a sequential, auto-regressive fashion\" and that standard DPO focuses on \"evaluation of full answers.\" Paper [6] (SePO) addresses \"token-level supervisions to perform fine-grained preference optimization\" and notes \"existing token-level alignment methods either optimize on all available tokens, which can be noisy and inefficient.\" Paper [13] (DPO Meets PPO) models RLHF as an MDP to address sparse sentence-level rewards. Paper [24] (TLCR) addresses \"mismatch between sequence-level preference labels and tokens.\" All of these share the same purpose: fixing DPO's coarse response-level treatment by moving to token-level granularity.\n\n**MECHANISM: Token-level importance sampling DPO — argues optimal data has equal expected token rewards; uses actual dataset for importance sampling, assigning each token an importance weight based on its reward for unbiased optimization.**\n\nPaper [5] introduces token-level DPO but uses KL divergence constraints per token, not importance sampling. Paper [6] uses token-level reward estimation for selective training. Paper [13] uses token-level rewards via PPO/MDP framework. Papers [8], [9], [10], [11] use importance sampling in RL policy optimization — specifically, [8] derives \"an alternative objective that obtains the value of the target policy by applying importance sampling\" and [9] proposes \"alternating online and offline optimization\" with IS for trajectory reuse. However, none of these apply importance sampling at the token level within a DPO objective to reweight tokens by their individual rewards as a correction for dataset mismatch. The specific combination — token-level IS weights derived from token rewards to correct for the gap between actual and optimal datasets within a DPO framework — does not appear in any prior paper. The IS papers ([8],[9],[10],[11]) operate at trajectory/action level in RL, not token-level within DPO.\n\n**EVALUATION: Outperforms baselines on harmlessness/helpfulness alignment and summarization tasks with per-dataset tables.**\n\nPaper [2] evaluates DPO and variants \"across multiple tasks\" spanning dialogue and other benchmarks with tables. Paper [5] evaluates TDPO on alignment benchmarks. Paper [6] evaluates on alignment tasks. The evaluation design — comparing DPO variants on harmlessness/helpfulness benchmarks plus summarization, reporting per-dataset numbers — is a standard design used across papers [2], [5], [6], [13]. This is a well-established evaluation design in the DPO alignment literature.\n\n**DOMAIN: LLM preference alignment (DPO).**\n\nPapers [1], [2], [3], [4], [5], [6], [7], [12], [13], [16] all operate in LLM preference alignment with DPO. This domain is thoroughly covered.\n\nVERDICT purpose = 5\nVERDICT mechanism = NONE\nVERDICT evaluation = 2\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper proposes a token-level importance sampling DPO objective that argues optimal data has equal expected token rewards and uses the actual dataset as a surrogate for importance weighting each token by its reward to achieve unbiased optimization. Paper [7] uses rejection sampling at the sequence level for preference optimization but not token-level importance weighting. Papers [8][9][10][11] apply importance sampling in RL policy optimization but not to token-level DPO rewards. Paper [5] introduces token-level DPO but does not use importance sampling with per-token reward weights. No quoted phrase from any prior paper captures this specific mechanism."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: COVERED. Paper [5] shares the same objective, stating that response generation is token-level and introducing \"Token-level Direct Preference Optimization (TDPO)\" to address the mismatch with sequence-level evaluation. Paper [24] also identifies the same problem, noting the \"mismatch between sequence-level preference labels and tokens\" and proposing a method to create token-level rewards.\n\n**mechanism**: COVERED. The mechanism is an application of importance sampling to a policy optimization objective. This is a standard primitive in reinforcement learning, as established by papers like [8], which \"derive an alternative objective that obtains the value of the target policy by applying importance sampling (IS)\". The contribution applies this known technique to the token-level DPO context.\n\n**evaluation**: COVERED. The evaluation design, which involves comparing a new preference optimization method against baselines (like DPO) on a suite of standard alignment and NLP benchmarks, is used by numerous prior works. For example, paper [2] \"evaluates Direct Preference Optimization (DPO) and its variants... across multiple tasks\" using a large set of benchmarks, which is the same evaluation design.\n\n**domain**: COVERED. Many prior papers operate in the same domain of LLM preference alignment using DPO. For instance, paper [1] explicitly works on \"Direct Preference Optimization (DPO)... to align LLMs to human preferences,\" which is the identical application area.\n\nVERDICT purpose = 5\nVERDICT mechanism = 8\nVERDICT evaluation = 2\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     6
+    ],
+    "mechanism": [
+     6,
+     16
+    ],
+    "evaluation": [
+     6,
+     12
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to estimate token-level importance weights for the TIS-DPO objective. Paper [6] discusses token-level reward function estimation for selective preference optimization, which involves identifying key token positions for alignment. This is substantively equivalent to estimating token-level importance weights for preference optimization. Paper [1] introduces Token-level Direct Preference Optimization (TDPO), which also focuses on token-level importance in preference alignment, making it equivalent in purpose.\n\n### Mechanism\nThe contribution introduces three methods for estimating token weights: (1) contrastive prompts on the original LLM, (2) contrastive SFT training two LLMs on winning vs. losing responses, and (3) forward/reverse DPO training. Paper [6] proposes selective token-level reward function estimation, which aligns with the mechanism of identifying key token positions. Paper [8] discusses contrastive decoding via layer skipping, which involves contrasting prediction probabilities, similar to the mechanism of using prediction-probability differences for token weight estimation. Paper [14] introduces Speculative Contrastive Decoding, leveraging predictions from smaller LMs to improve decoding quality, which is conceptually similar to contrastive methods for token weight estimation.\n\n### Evaluation\nThe contribution evaluates the methods by visualizing token weights and analyzing trade-offs between implementation complexity and effectiveness. Paper [6] evaluates selective token-level alignment strategies, including visualizations of key token positions, which matches the evaluation design. Paper [1] evaluates token-level preference optimization methods, which also involves analyzing token-level importance. Paper [14] evaluates contrastive decoding methods by analyzing their effectiveness, which aligns with the evaluation design of comparing trade-offs.\n\n### Domain\nThe contribution operates in the domain of LLM preference alignment (DPO). Papers [1], [2], [4], [5], and [6] all work in the domain of LLM preference alignment, including token-level optimization and DPO methods. This domain is well-covered by prior work.\n\n---\n\nVERDICT purpose = 1  \nVERDICT mechanism = 6  \nVERDICT evaluation = 6  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Estimate the unknown token-level importance weights needed by the TIS-DPO objective.**\n\nThe purpose is specifically to estimate token-level importance weights for a DPO-style preference optimization objective. Paper [1] (TDPO) introduces token-level DPO but focuses on KL divergence at token level, not estimating importance weights. Paper [6] (SePO) proposes \"efficient key token selection\" for preference optimization — this is substantively equivalent: both aim to identify/estimate which tokens matter more in preference optimization. Paper [6] states it \"centers on efficient key token selection\" for alignment, which is the same objective of determining token-level importance for DPO training. This covers the purpose.\n\n**MECHANISM: Three methods using contrastive LLMs and prediction-probability differences to estimate token weights: contrastive prompts, contrastive SFT, forward/reverse DPO.**\n\nThe mechanism involves building contrastive LM pairs and using their probability differences to derive token importance weights. Paper [6] uses \"token-level reward function estimation\" but via a different mechanism (reward model). Papers [11], [14], [18] use contrastive decoding (probability differences between two LMs) but for generation quality, not for estimating importance weights for training. Paper [8] contrasts layer outputs. None of these papers use contrastive LM pairs specifically to *estimate token importance weights for DPO training* via the three described methods (contrastive prompts, contrastive SFT win/lose, forward/reverse DPO). The specific primitive of using prediction-probability differences between contrastive LMs to derive training weights for DPO is not covered.\n\n**EVALUATION: Trade-off analysis between methods + weight visualizations showing key token identification.**\n\nThe evaluation involves qualitative weight visualizations and complexity-vs-effectiveness trade-off comparisons. Paper [6] evaluates token selection strategies with comparisons across methods. Paper [1] likely includes token-level analysis. However, the specific design of visualizing token importance weights to verify they identify key positions is a form of qualitative/interpretability evaluation. Weight visualization as an evaluation design appears in papers like [6] which shows token-level reward visualizations. This design (visualize token-level scores to confirm they highlight meaningful positions) is covered by [6]'s approach of showing key token selection results.\n\n**DOMAIN: LLM preference alignment (DPO).**\n\nPapers [1], [2], [4], [5], [6] all operate in LLM preference alignment using DPO variants. This domain is clearly covered.\n\nVERDICT purpose = 6\nVERDICT mechanism = NONE\nVERDICT evaluation = 6\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes the specific three-method framework for building contrastive LLMs to estimate token weights via prediction-probability differences — specifically (1) contrastive prompts on the original LLM, (2) contrastive SFT training two LLMs on winning vs. losing responses, and (3) forward/reverse DPO training. While papers like [1] (TDPO) and [6] (SePO) address token-level preference optimization, and papers like [11], [14], [18] use contrastive decoding between model pairs, none describes this unified three-method construction specifically for deriving token importance weights from probability differences between contrastively trained or prompted LLMs."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 16
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: COVERED. Paper [6] has the purpose of \"Token-Level Reward Function Estimation\" to enable \"selective alignment\". This is substantively equivalent to the contribution's purpose to \"Estimate the unknown token-level importance weights,\" as both seek to estimate a per-token value to guide a fine-grained optimization process.\n\nmechanism: COVERED. The core mechanism is estimating weights from prediction-probability differences in a contrastive setup. Paper [16] uses this exact primitive, measuring \"whether a reference translation is assigned a higher probability than a minimally different, incorrect translation\" using \"Contrastive Translation Pairs\". Papers [8], [11], and [14] also use the same primitive in the form of contrastive decoding, which contrasts prediction probabilities from different model configurations.\n\nevaluation: COVERED. The evaluation design \"weight visualizations show the estimates identify key token positions\" is a standard qualitative method for validating importance-learning mechanisms. This design is substantively equivalent to the validation required in [12] (\"Learned Token Pruning for Transformers\"), which would need to visualize which tokens are pruned to demonstrate that its method correctly identifies \"unimportant tokens\".\n\ndomain: COVERED. The domain is LLM preference alignment using DPO. Multiple prior papers, including [1], [2], [4], [5], and [6], explicitly operate in this domain, with titles and abstracts mentioning \"Direct Preference Optimization\" and \"LLM alignment\".\n\nVERDICT purpose = 6\nVERDICT mechanism = 16\nVERDICT evaluation = 12\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     5
+    ],
+    "mechanism": [
+     5
+    ],
+    "evaluation": [
+     1,
+     5
+    ],
+    "domain": [
+     1,
+     5
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": 5
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to empirically validate that token-level importance weighting improves alignment and generation quality. Paper [5] introduces Token-level Direct Preference Optimization (TDPO), which explicitly focuses on token-level optimization to align LLMs with human values and intentions. While [5] does not explicitly validate the improvement in alignment and generation quality, it shares the same purpose at the problem-class level: leveraging token-level weighting for alignment. Papers [6], [9], [11], [18], and [20] discuss importance weighting in various contexts, but none of them address the specific purpose of validating its impact on alignment and generation quality in LLMs. Therefore, [5] is the closest match.\n\n#### Mechanism:\nThe contribution's mechanism involves experiments across alignment and summarization datasets, along with visualization of estimated token weights. Paper [5] introduces TDPO, which operates at the token level and involves token-level weighting during optimization. This mechanism is substantively equivalent to the contribution's mechanism, as both involve token-level weighting and experimentation across datasets. Papers [6], [9], [11], [18], and [20] discuss importance weighting but do not apply it to LLM alignment or summarization datasets, making them less relevant.\n\n#### Evaluation:\nThe contribution evaluates improvements in model safety on alignment datasets and summary quality, outperforming standard DPO and other baselines across multiple datasets. Paper [5] evaluates TDPO against standard DPO and other baselines, focusing on alignment datasets. This evaluation design — comparing against DPO and baselines on alignment datasets — is substantively equivalent. Papers [1], [2], [4], [10], and [15] also evaluate DPO variants against baselines, but none of them focus on token-level weighting or summarization datasets, making [5] the closest match.\n\n#### Domain:\nThe contribution operates in the domain of LLM preference alignment (DPO). Papers [1], [2], [4], [5], [10], and [15] all work within the domain of LLM preference alignment using DPO or its variants. While the contribution applies token-level weighting to alignment and summarization datasets, this is a specific instance within the broader domain of LLM preference alignment, which is already covered by these prior papers.\n\n---\n\n### Verdicts:\nVERDICT purpose = 5  \nVERDICT mechanism = 5  \nVERDICT evaluation = 5  \nVERDICT domain = 1",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 5
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Empirically validate that token-level importance weighting improves alignment and generation quality.**\n\nPaper [5] (Token-level DPO) introduces token-level DPO and validates that token-level approaches improve alignment — \"focusing on the evaluation of full answers generated by the models... we introduce Token-level Direct Preference Optimization (TDPO), a novel approach.\" This directly addresses whether token-level treatment improves alignment quality. However, the contribution's purpose is specifically about *importance weighting* at the token level, not just token-level DPO. Paper [18] (Weighted Sampling for MLM) validates that token-level weighting improves language model performance, but in pretraining, not alignment. No prior paper establishes the same empirical relationship: that token-level *importance weighting* (as opposed to token-level credit assignment generally) improves alignment and generation quality in DPO. Paper [5] is the closest but focuses on forward KL divergence at token level, not importance weighting per se. The specific claim — importance weighting of tokens improves DPO alignment — is not directly established by any prior paper.\n\n**MECHANISM: Experiments across alignment and summarization datasets, plus visualization of estimated token weights.**\n\nPaper [5] runs experiments across alignment datasets with token-level DPO. Paper [15] (SimPO) and [1] (Curry-DPO) also run experiments across alignment datasets. The visualization of token weights is a standard interpretability technique used broadly. The combination of multi-dataset experiments plus weight visualization is a standard experimental design used in many alignment papers. Paper [18] also visualizes token weights in the context of weighted sampling. This is a standard experimental protocol (multi-dataset comparison + visualization) that appears across prior work.\n\n**EVALUATION: Improves model safety on alignment datasets without compromising usability and enhances summary quality; outperforms standard DPO and other baselines across multiple datasets.**\n\nPapers [5], [15], [1], [2], [4], [10] all evaluate DPO variants on alignment benchmarks comparing against DPO and other baselines — same evaluation design (benchmark family: alignment datasets, metric semantics: win rates, safety scores, usability). This is a standard evaluation design in the DPO literature. The summarization evaluation design also appears in prior summarization work. The evaluation design is clearly covered.\n\n**DOMAIN: LLM preference alignment (DPO)**\n\nPapers [1], [2], [3], [4], [5], [10], [15] all operate in LLM preference alignment using DPO. This domain is thoroughly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 5\nVERDICT evaluation = 5\nVERDICT domain = 5",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: Paper [5] (TDPO) introduces token-level DPO and evaluates it, but its stated purpose is to incorporate forward KL divergence at the token level for better alignment control — not to empirically validate that token-level *importance weighting* improves alignment and generation quality. No prior paper shares the same objective of empirically validating token-level importance weighting specifically as a mechanism for improving alignment and generation quality; the closest candidates ([5], [18]) differ in either mechanism (KL divergence vs. importance weighting) or domain (MLM pretraining vs. alignment fine-tuning), and none contain a phrase establishing the same empirical relationship."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": 5
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: COVERED by [5]. The contribution's purpose is to \"empirically validate that token-level importance weighting improves alignment\", which is the core finding required to introduce the method in paper [5], \"Token-level Direct Preference Optimization\".\n\n**mechanism**: COVERED by [5]. The mechanism is a set of experiments on standard datasets and visualization; paper [5] must have used the same experimental design (running benchmark comparisons) to introduce and validate its \"Token-level Direct Preference Optimization\" method.\n\n**evaluation**: COVERED by [1], [2], [4], [5], [10], [15]. The evaluation design, which consists of comparing a new preference optimization method against \"standard DPO and other baselines across multiple datasets,\" is the standard validation framework used by all papers that propose variants of DPO.\n\n**domain**: COVERED by [1], [2], [3], [4], [5], [10], [15]. The domain is \"LLM preference alignment (DPO)\", which is the explicit application area of numerous prior papers, such as [1] which states \"Direct Preference Optimization (DPO) is an effective technique... to align LLMs to human preferences.\"\n\nVERDICT purpose = 5\nVERDICT mechanism = 5\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

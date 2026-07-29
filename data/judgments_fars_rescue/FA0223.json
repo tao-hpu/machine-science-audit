@@ -1,0 +1,379 @@
+{
+ "paper_id": "FA0223",
+ "title": "Delta SVD-EQ: Post-Hoc Spectral Equalization for LoRA Continual Learning",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": [
+     1,
+     7
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to reduce catastrophic forgetting in sequential LoRA continual learning without any training-time modification. Several prior papers address catastrophic forgetting in continual learning, but none specifically focus on LoRA continual learning without training-time modification. Papers [1], [5], [6], [16], and [17] discuss catastrophic forgetting in continual learning broadly, but they do not explicitly target the combination of LoRA continual learning and training-free methods. Paper [16] introduces gradient-free continual learning, which is training-free, but it does not specifically address LoRA continual learning. Therefore, no prior paper fully matches the purpose.\n\n### Mechanism\nThe mechanism involves Delta SVD-EQ: computing the task-specific LoRA delta, performing SVD decomposition, and equalizing the singular value spectrum while preserving the Frobenius norm. Paper [7] (\"Spectral Surgery\") discusses post-hoc refinement of LoRA using singular value reweighting, which is conceptually similar to modifying the singular value spectrum of LoRA updates. While the specific operation (root-mean-square replacement) differs, the underlying primitive of singular value manipulation for LoRA refinement is substantively equivalent. Papers [9], [12], [14], and [21] discuss SVD and its applications broadly, but they do not address LoRA or continual learning. Paper [29] introduces weight conditioning to narrow singular value gaps, which is related but not specific to LoRA. Thus, the mechanism is covered by [7].\n\n### Evaluation\nThe evaluation claims the method satisfies four properties simultaneously: training-free, memory-free, post-hoc, and norm-preserving. Paper [7] evaluates a training-free, post-hoc LoRA refinement method, which overlaps with the evaluation design here. While [7] does not explicitly claim memory-free or norm-preserving properties, the evaluation design (post-hoc refinement of LoRA without training) is substantively equivalent. Papers [5], [16], and [20] discuss memory-free continual learning methods, but their evaluation designs differ significantly. No prior paper introduces a genuinely new evaluation design beyond standard continual learning benchmarks and metrics. Therefore, the evaluation is covered by [7].\n\n### Domain\nThe domain is LLM continual learning and parameter-efficient fine-tuning (LoRA). Papers [1], [4], [7], and [11] all work within the same general application area of LoRA continual learning or parameter-efficient fine-tuning for LLMs. While this contribution targets a specific sub-problem (training-free LoRA continual learning), the domain itself is not novel. Thus, the domain is covered by [1], [4], [7], and [11].\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 7  \nVERDICT evaluation = 7  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses reducing catastrophic forgetting in sequential LoRA continual learning without any training-time modification."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Reduce catastrophic forgetting in sequential LoRA continual learning without any training-time modification.**\n\nThe key distinguishing element is \"without any training-time modification\" (post-hoc, training-free). Paper [1] addresses LoRA continual learning via continual merging but involves training-time operations. Paper [7] explicitly describes \"Training-Free Refinement of LoRA via Gradient-Guided Singular Value Reweighting\" — this is post-hoc, training-free LoRA refinement. However, paper [7]'s purpose is improving downstream performance/efficiency of a trained LoRA, not specifically reducing catastrophic forgetting in sequential/continual learning. Papers [3], [5], [6], [8], [10], [16], [17], [19], [20] address catastrophic forgetting but not in a training-free LoRA CL setting. No prior paper combines \"reduce catastrophic forgetting in sequential LoRA CL\" with \"no training-time modification\" as the core objective. The closest is [1] (LoRA CL forgetting) but it uses training-time merging, and [7] (training-free LoRA post-hoc) but targets performance, not forgetting. Neither covers the exact purpose.\n\nVERDICT: NONE — no prior paper pursues the same objective of reducing catastrophic forgetting in sequential LoRA CL specifically via a training-free, post-hoc intervention.\n\n---\n\n**MECHANISM: Delta SVD-EQ — compute LoRA delta (BA), SVD-decompose it, replace all singular values with their RMS value (spectrum equalization preserving Frobenius norm), computed via r×r core matrix from QR decompositions.**\n\nPaper [7] performs post-hoc SVD-based reweighting of LoRA singular values — \"Spectral Surgery: Training-Free Refinement of LoRA via Gradient-Guided Singular Value Reweighting.\" However, [7] reweights singular values using gradient guidance (zeroing out detrimental directions), not equalizing them to their RMS. The primitive in [7] is selective suppression/reweighting, not equalization. Paper [29] \"Weight Conditioning\" narrows the gap between smallest and largest singular values of weight matrices — this is conceptually close to spectrum equalization. Paper [22] \"OptShrink\" performs optimal singular value shrinkage/reweighting. None of these specifically equalize all singular values to their RMS value as a norm-preserving operation applied to LoRA deltas for continual learning. The specific primitive — RMS-equalization of the singular value spectrum of a LoRA delta — does not appear in any prior paper.\n\nVERDICT: NONE — no prior paper uses RMS-based singular value equalization of LoRA deltas as the core mechanism.\n\n---\n\n**EVALUATION: Claimed to be the only CL method satisfying all four properties (training-free, memory-free, post-hoc, norm-preserving) simultaneously.**\n\nThis evaluation design is a property-checklist / comparative taxonomy claim — asserting uniqueness along multiple axes. Paper [19] (Sequoia) proposes a taxonomy of CL settings and methods with structured comparison of properties. Paper [1] compares LoRA CL methods along property axes. Paper [5] is a comparative study of CL techniques. The design of \"enumerate properties, show no prior method satisfies all simultaneously\" is a standard comparative positioning argument used in many CL papers (e.g., [1], [5], [19]). This evaluation design (property matrix / comparative positioning) appears in prior CL literature.\n\nVERDICT: [1] — comparative property-based positioning of CL methods is used in prior LoRA CL work.\n\n---\n\n**DOMAIN: LLM continual learning / parameter-efficient fine-tuning (LoRA).**\n\nPaper [1] explicitly operates in \"Parameter-efficient continual learning... for large language models (LLMs)... Low-Rank Adaptation (LoRA) continual learning.\" This is exactly the same domain.\n\nVERDICT: [1] — same domain of LoRA-based continual learning for LLMs.\n\n---\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper targets reducing catastrophic forgetting in sequential LoRA continual learning specifically without any training-time modification; [1] merges LoRAs but still requires training-time procedures; no paper matches this exact objective even under different terminology.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes SVD-decomposing a LoRA delta and replacing all singular values with their RMS value to equalize the spectrum while preserving Frobenius norm, nor the QR-based r×r core matrix shortcut; [7] reweights singular values but uses gradient guidance during/after training, not this specific equalization formula; no equivalent mechanism found under any alternative framing."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to \"Reduce catastrophic forgetting in sequential LoRA continual learning\". This exact objective is shared by prior work. Paper [1] explicitly aims to \"mitigate catastrophic forgetting\" in the context of \"LoRA continual learning\" for LLMs.\n\n**mechanism**: The mechanism is to modify a LoRA delta matrix by SVD-decomposing it and equalizing its singular values to their root-mean-square value, a process that preserves the Frobenius norm. While prior work like [7] introduces \"Training-Free Refinement of LoRA\" via \"Singular Value Reweighting\", its method is \"Gradient-Guided\", making it data-dependent. Other papers like [22] or [29] modify singular values but do so via \"shrinkage\" or to \"narrow the gap\" during training, not a post-hoc equalization. The specific primitive of replacing singular values with a constant (the RMS value) in a closed-form, data-agnostic, norm-preserving manner is not present in the cited papers.\n\n**evaluation**: The contribution is a new method for continual learning (CL), and its evaluation would involve standard CL protocols, such as training on a sequence of tasks and measuring performance (e.g., accuracy, forgetting rate) on all tasks. This evaluation *design* is standard in the field and is used or described in numerous prior papers, including [1], which also evaluates a method for \"LoRA Continual Learning\".\n\n**domain**: The application domain is \"LLM continual learning / parameter-efficient fine-tuning (LoRA)\". This domain is explicitly addressed by prior work. Paper [1] is titled \"A Single LoRA Continual Learning via Continual Merging\" and its abstract discusses \"Parameter-efficient continual learning\" for \"large language models (LLMs)\".\n\nVERDICT purpose = 1\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes the specific mechanism of performing SVD on a LoRA delta and equalizing its spectrum by replacing all singular values with their root-mean-square value. Paper [7] performs a related but distinct operation (gradient-guided reweighting of singular values), and paper [29] aims for a related goal (better conditioning by narrowing the singular value gap) but via a normalization technique during training, not a post-hoc equalization. Neither matches the specified mechanism."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     7,
+     13
+    ],
+    "mechanism": [
+     16,
+     22
+    ],
+    "evaluation": [
+     26
+    ],
+    "domain": [
+     4
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 16
+      },
+      "evaluation": {
+       "covered_by": 26
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to demonstrate forgetting reduction without harming overall performance. Several prior papers address catastrophic forgetting and methods to mitigate it, but none explicitly report or establish the same empirical relationship between forgetting reduction and overall performance improvement. For example, [1] focuses on avoiding catastrophic forgetting but does not address the trade-off with overall performance. [7] introduces CORE to mitigate forgetting but does not explicitly demonstrate the relationship between forgetting reduction and overall performance. [13] discusses backward knowledge transfer but does not provide empirical evidence of forgetting reduction alongside overall performance improvement. Therefore, no prior paper establishes the same relationship.\n\n### Mechanism\nThe mechanism involves evaluating on the FOREVER Standard CL benchmark using Qwen3-0.6B, LoRA rank 8, across 3 orders x 3 seeds. Low-Rank Adaptation (LoRA) is a well-established mechanism in continual learning, as seen in [16], [25], [31], and [23]. These papers use LoRA or similar low-rank adaptation methods for continual learning, making the mechanism substantively equivalent. The specific benchmark (FOREVER) and experimental setup do not affect the equivalence of the underlying mechanism.\n\n### Evaluation\nThe evaluation design involves measuring BWT improvement (+2.3pp), OP increase (+0.8pp), and statistical significance (paired t-test, Cohen's d). This design is covered by prior papers that use similar evaluation protocols for continual learning. For example, [26] critiques standard evaluations in continual learning and introduces desiderata for robust evaluation, which aligns with the paired t-test and statistical significance approach. [13] and [7] also use metrics like BWT and OP to assess continual learning performance. The specific benchmark instance (FOREVER) does not make the evaluation design novel.\n\n### Domain\nThe domain is text classification in continual learning, specifically using the FOREVER benchmark. Prior papers like [4], [5], [15], and [22] address continual learning for text classification, making the domain covered. While the FOREVER benchmark is specific, the general application area of text classification in continual learning is well-established.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 16  \nVERDICT evaluation = 26  \nVERDICT domain = 4  ",
+      "stage2": "1. **FACET: purpose** | **FINAL: COVERED-BY 7** | reason: Paper [7] explicitly states, \"This paper introduces a novel perspective to significantly mitigate catastrophic forgetting in continuous learning (CL), which emphasizes models' capacity to preserve existing knowledge and assimilate new information,\" which aligns with the objective of demonstrating forgetting reduction without harming overall performance."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": 22
+      },
+      "evaluation": {
+       "covered_by": 26
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Demonstrate forgetting reduction without harming overall performance.**\n\nThis purpose is about showing that BWT (backward transfer / forgetting) improves while overall performance (OP) is maintained or improved — i.e., reducing catastrophic forgetting without accuracy degradation. Papers [13] and [22] are directly relevant: [13] \"Beyond Not-Forgetting\" explicitly addresses backward knowledge transfer and improving old task performance, and [22] O-LoRA states \"effectively mitigating catastrophic forgetting while learning new tasks\" — both pursue the same objective of reducing forgetting without harming overall performance. Paper [7] CORE also \"mitigates catastrophic forgetting\" while preserving performance. The purpose is covered.\n\n**MECHANISM: Evaluate on FOREVER Standard CL benchmark (4 text classification tasks: DBPedia, Amazon, Yahoo, AG News) with Qwen3-0.6B, LoRA rank 8, across 3 orders x 3 seeds.**\n\nThe FOREVER benchmark is a specific named benchmark for continual learning on text classification. Paper [4] uses continual learning for text classification with similar datasets (DBPedia, Amazon, Yahoo, AG News are standard NLP CL benchmarks). Paper [22] O-LoRA uses LoRA for continual learning in LLMs and evaluates on text classification tasks including these same datasets. Paper [27] LAE also uses these standard text classification datasets for CL evaluation. The use of LoRA for CL is covered by [22], [25], [27], [31]. The FOREVER benchmark specifically uses these 4 datasets — papers [4], [22], [27] use the same dataset combination. This is a standard evaluation protocol in NLP CL.\n\n**EVALUATION: BWT improves +2.3pp, OP slightly up, paired t-test p=0.059, Cohen's d=0.58, BWT improves in 6/9 runs.**\n\nThe evaluation design uses BWT and overall performance metrics (standard CL metrics), paired t-test with Cohen's d for significance, and per-run counting. BWT as a metric is standard in CL (papers [13], [22], [26] use BWT). Paired t-tests and effect sizes are standard statistical frameworks. Paper [26] \"Towards Robust Evaluations of Continual Learning\" explicitly discusses evaluation design with multiple seeds and orders. The statistical testing framework (paired t-test, effect size) is a standard validation framework appearing broadly. The specific combination of BWT + OP metrics across multiple seeds/orders is used in [22], [27], [26].\n\n**DOMAIN: Text-classification continual learning (FOREVER benchmark).**\n\nMultiple prior papers work in text classification continual learning: [4] explicitly \"continual learning on text classification,\" [5] \"multilingual continual learning for text classification,\" [15] \"continual learning for weakly supervised text classification,\" [22] evaluates on text classification tasks in CL. This domain is clearly covered.\n\nVERDICT purpose = 13\nVERDICT mechanism = 22\nVERDICT evaluation = 26\nVERDICT domain = 4",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     25,
+     32
+    ],
+    "evaluation": [
+     10,
+     25
+    ],
+    "domain": [
+     1,
+     2,
+     3
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to show that SVD-EQ stabilizes continual learning outcomes. None of the prior papers explicitly establish or report this specific empirical relationship between SVD-EQ and continual learning stability. While several papers discuss stability in continual learning (e.g., [2], [3], [4], [5], [6], [7]), they do not investigate or demonstrate the specific role of SVD-EQ in stabilizing continual learning outcomes. Therefore, the purpose is **not covered**.\n\n### Mechanism\nThe mechanism involves a per-order analysis of BWT (backward transfer) standard deviation across seeds. While some prior papers (e.g., [15], [25]) discuss random seed stability and variance in machine learning, they do not employ a per-order analysis of BWT standard deviation across seeds. The specific mechanism of analyzing BWT standard deviation per order is not present in any of the prior work. Therefore, the mechanism is **not covered**.\n\n### Evaluation\nThe evaluation design involves measuring within-order variance reductions (3-10x) and order-dependent effects on BWT (e.g., +3.5pp for Order 4, etc.). Prior papers such as [8], [9], and [10] investigate task order effects in continual learning, and [25] discusses variance across seeds in robustness verification. However, none of these papers use the specific evaluation design of measuring within-order variance reductions or order-dependent effects on BWT. Thus, the evaluation design is **not covered**.\n\n### Domain\nThe domain is continual learning stability analysis. Several prior papers ([2], [3], [4], [5], [6], [7]) explicitly focus on continual learning and its stability challenges, including the stability-plasticity dilemma and related phenomena. Therefore, the domain is **covered**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 2  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly shows SVD-EQ stabilizing continual learning outcomes under the same empirical relationship.  \nFACET: mechanism | FINAL: NONE | reason: No prior paper conducts per-order analysis of BWT standard deviation across seeds under the same framing or vocabulary.  \nFACET: evaluation | FINAL: NONE | reason: No prior paper reports within-order variance drops or order-dependent effects matching the same numerical claims.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 32
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Show SVD-EQ stabilizes continual learning outcomes (reduces variance across seeds/orders).**\n\nThe purpose is to demonstrate that a specific method (SVD-EQ) reduces outcome variance/instability in continual learning. Paper [5] studies \"stability\" in online continual learning but focuses on performance stability (forgetting/plasticity), not seed-to-seed variance reduction. Paper [8] investigates \"sequence transferability and task order selection\" and its relationship to model performance, which is related but focuses on transferability metrics, not variance stabilization. Paper [10] investigates \"effect of task ordering on continual learning performance\" and shows reordering affects catastrophic forgetting — this is about order effects on performance, not about a method stabilizing variance across seeds. No prior paper specifically establishes the empirical relationship \"method X reduces BWT standard deviation across seeds in continual learning.\" The closest is [5] which discusses stability improvements, but not seed-variance reduction specifically. None of the papers report the same variables (seed variance of BWT) and direction of effect (reduction via SVD-EQ).\n\n**MECHANISM: Per-order analysis of BWT standard deviation across seeds.**\n\nThis is a controlled analysis method: compute BWT standard deviation across multiple random seeds, broken down per task order. Paper [1] is a meta-analysis of continual learning that likely uses BWT metrics. Paper [32] discusses quantifying catastrophic forgetting across design choices. Paper [10] conducts \"extensive series of empirical experiments\" on task ordering effects. Paper [8] investigates task sequence properties. However, the specific design of computing standard deviation of BWT across seeds per order is a standard statistical analysis (multi-seed comparison with per-condition breakdown). Paper [32] explicitly discusses how \"choices we make when designing learning systems affect the amount of catastrophic forgetting\" using various testbeds — this is a per-condition variance analysis of forgetting metrics. This is a generic controlled ablation/multi-seed comparison design, which appears broadly in prior work.\n\n**EVALUATION: Within-order variance drops 3-10x (std from 2.5-4.1pp to 0.4-1.0pp); order-dependent effects.**\n\nThe evaluation design uses BWT as a metric with multi-seed variance measurement across task orders. BWT is a standard continual learning metric used in [1] and many CL papers. Multi-seed variance analysis appears in [32] and [5]. The specific quantitative results are unique to this contribution, but the evaluation design (BWT metric, multi-seed runs, per-order breakdown) is standard in the CL literature. Papers [8], [9], [10] all evaluate across multiple task orders using standard CL metrics.\n\n**DOMAIN: Continual learning stability analysis.**\n\nPapers [1], [3], [4], [5], [6], [7], [8], [9], [10], [29], [32] all work in continual learning. This is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 32\nVERDICT evaluation = 10\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper proposes or demonstrates that an SVD-based equalization method (or any analogous technique under different terminology) stabilizes continual learning outcomes; the closest papers address stability-plasticity tradeoffs or spectral normalization for GANs/robustness, but none share the same objective of using SVD equalization specifically to stabilize continual learning performance."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": 25
+      },
+      "evaluation": {
+       "covered_by": 25
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe contribution's purpose is to show that a specific technique (SVD-EQ) stabilizes continual learning outcomes, where \"stabilizes\" means reducing the variance of outcomes across different random seeds. While many prior papers discuss \"stability\" in continual learning ([3], [4], [5], [6], [7]), they refer to the stability-plasticity dilemma (i.e., preventing catastrophic forgetting), which is a different objective. Other papers investigate outcome variance across seeds ([23], [25]), but they establish the existence of the problem rather than showing a technique that solves it. Therefore, no prior paper reports or establishes this specific empirical relationship.\n\n**MECHANISM**\nThe mechanism is the analysis method used: a \"per-order analysis of BWT standard deviation across seeds.\" This is a specific application of a general analysis design: measuring the variance of an outcome metric across multiple runs with different random seeds to quantify instability. Paper [25] uses this exact analysis design to investigate the \"Extreme Variance of Certified Local Robustness Across Model Seeds,\" making its mechanism substantively equivalent.\n\n**EVALUATION**\nThe evaluation design involves measuring the standard deviation of a performance metric across random seeds to quantify a change in stability. This statistical validation framework is not new. Paper [25] uses the same evaluation design by measuring the \"Extreme Variance of Certified Local Robustness Across Model Seeds\" to quantify the instability of verification results, which is the same underlying evaluation protocol.\n\n**DOMAIN**\nThe contribution's domain is \"Continual learning stability analysis.\" The general application area is continual learning (CL). Numerous prior papers operate in this domain, including [3] which explicitly addresses the \"Stability Gap in Continual Learning,\" and many others ([1], [2], [4], [5], [6], [7], [8], [9], [10]).\n\nVERDICT purpose = NONE\nVERDICT mechanism = [25]\nVERDICT evaluation = [25]\nVERDICT domain = [3]",
+      "stage2": "FACET: purpose: Show SVD-EQ stabilizes continual learning outcomes. | FINAL: COVERED-BY [5] | reason: The objective of proposing a method to improve stability in continual learning is not new. Paper [5] has the same purpose, proposing a different method (Temporal Ensembles) for the same goal: \"propose a simple yet effective method, called Temporal Ensembles (TE), that improves both the performance and the stability of online continual learning models.\""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     2,
+     12
+    ],
+    "evaluation": null,
+    "domain": [
+     18
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 18
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to isolate the mechanism behind the improvement in spectral intervention. None of the prior papers explicitly report or establish the same empirical relationship between pre-equalization spectral concentration (rho) and backward transfer (BWT) gain, nor do they isolate the contributions of norm shrinkage and spectral redistribution in this context. While some papers (e.g., [18], [30]) discuss spectral regularization or singular values in continual learning, they do not establish the same relationship or focus on isolating mechanisms behind improvement. Therefore, the purpose is **not covered**.\n\n### Mechanism\nThe contribution uses ablations involving mean-smoothing (mean singular value manipulation, not norm-preserving) and random-spectrum (permutation of singular values, norm-preserving), as well as correlation analysis of pre-equalization spectral concentration rho with BWT gain. Papers such as [12] (optimal shrinkage of singular values), [18] (spectral regularization for continual learning), and [30] (small singular values for continual learning) involve spectral manipulations and singular value analysis, but none employ the specific ablation techniques described here (mean-smoothing and random-spectrum) or the correlation analysis of rho with BWT gain. Thus, the mechanism is **not covered**.\n\n### Evaluation\nThe evaluation design involves quantifying the contributions of norm shrinkage and spectral redistribution to BWT gain, as well as testing the correlation between rho and benefit (Pearson r=-0.027, p=0.893). Papers such as [18] and [30] use spectral regularization and singular value analysis in continual learning, but they do not employ the same evaluation design (e.g., ablation of norm shrinkage and spectral redistribution or correlation testing of rho with BWT gain). The evaluation design appears to be unique, so it is **not covered**.\n\n### Domain\nThe domain is mechanism ablation for spectral intervention, specifically in the context of continual learning. Papers such as [18], [28], and [30] address spectral regularization and singular value manipulation in continual learning, which falls within the same general application area. Although this contribution targets a specific sub-problem (mechanism ablation for spectral intervention), the domain is **covered** under the generous rule for domain equivalence.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [18]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper isolates the mechanism behind improvement with the same empirical relationship.  \nFACET: mechanism | FINAL: COVERED-BY 12 | reason: \"Optimal Shrinkage of Singular Values\" discusses singular value manipulation for recovery, aligning with mean-smoothing and random-spectrum ablations.  \nFACET: evaluation | FINAL: NONE | reason: No prior paper evaluates norm shrinkage and spectral redistribution contributions or rho correlation with BWT gain using the same claims or named designs.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 18
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**PURPOSE: Isolate the mechanism behind the improvement (of a spectral intervention in continual learning)**\n\nThe contribution aims to understand *why* a spectral regularization/equalization method improves backward transfer (BWT) in continual learning — specifically testing whether norm shrinkage vs. spectral redistribution drives the gain, and whether pre-equalization spectral concentration predicts benefit.\n\nPaper [18] (\"Learning Continually by Spectral Regularization\") directly studies spectral regularization for continual learning and investigates the mechanism behind its benefits. Paper [30] also studies singular values for continual learning. However, neither paper specifically reports the same empirical relationship (norm shrinkage vs. spectral redistribution as competing mechanisms, or correlation of spectral concentration with BWT gain). The purpose here is to isolate *which sub-component* of a spectral intervention drives improvement — this is a more specific mechanistic decomposition than what [18] or [30] pursue. That said, [18] does investigate \"why singular values matter\" for continual learning trainability, which is thematically close but not the same relationship (different variables: they study initialization effects, not norm-shrinkage vs. redistribution during training).\n\nNo prior paper establishes the same empirical relationship (norm shrinkage vs. spectral redistribution contribution to BWT, and correlation of pre-equalization rho with BWT gain). PURPOSE = NONE.\n\n**MECHANISM: Ablations using mean-smoothing (non-norm-preserving) and random-spectrum (norm-preserving permutation of singular values), plus Pearson correlation of spectral concentration with BWT gain**\n\nThe mechanism involves: (1) a controlled ablation that isolates norm change from spectral shape change by constructing two variants, and (2) a correlation analysis between a pre-intervention property and an outcome metric.\n\nPaper [18] uses ablations to study spectral regularization components in continual learning. Paper [25] uses controlled ablations to study network properties and forgetting. The specific design of \"mean-smoothing vs. random-spectrum\" ablations to disentangle norm vs. shape effects is a standard controlled ablation design. Pearson correlation analysis is a standard statistical tool. These are generic experimental shapes (controlled ablation + correlation), but the question is whether any prior paper uses this same design to validate the same claim. Paper [18] does ablations of spectral regularization components. This is a standard ablation design appearing broadly.\n\nThe ablation design (swap one component, measure outcome) is a generic experimental shape. The Pearson correlation analysis is also standard. Per the rules, generic experimental moves don't establish coverage unless validating the same claim. MECHANISM = NONE.\n\n**EVALUATION: Both norm shrinkage and spectral redistribution contribute; no correlation between rho and benefit**\n\nThe evaluation design uses: BWT as metric, Pearson r with p-value for correlation analysis, and delta-accuracy comparisons across ablation variants. BWT is used in continual learning papers [18], [25], [28], [29], [30]. Paper [18] uses BWT-style metrics for continual learning evaluation. The Pearson correlation with p-value is a standard statistical framework. However, the specific evaluation design — measuring BWT gain from ablated spectral variants and computing Pearson r between pre-equalization spectral concentration and BWT gain — is not a named benchmark family or protocol family appearing in prior work. This is a newly constructed evaluation protocol for this specific mechanistic question.\n\nPer the rules, this evaluation design is genuinely new — it's not a named benchmark family, and no prior paper uses this specific protocol (spectral ablation variants correlated with BWT). EVALUATION = NONE.\n\n**DOMAIN: Mechanism ablation for spectral intervention (in continual learning)**\n\nPapers [18] and [30] work in spectral methods for continual learning. Paper [25] works on network properties and catastrophic forgetting. The domain of \"spectral interventions in continual learning\" is clearly covered by [18] and [30].\n\nDOMAIN = 18.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 18",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the same objective of isolating the mechanism behind a spectral-equalization improvement in continual learning; the closest papers (e.g., [18], [25]) study what properties affect forgetting but do not run ablations to decompose norm shrinkage vs. spectral redistribution as competing explanations.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper designs mean-smoothing and random-spectrum ablation variants of singular value equalization, nor measures correlation of pre-equalization spectral concentration ρ with BWT gain; [18] uses spectral regularization but contains none of these specific ablation constructs.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports the specific finding that both norm shrinkage (+2.2pp, −13.3% norm) and spectral redistribution (+1.6pp) contribute independently, nor a Pearson r=−0.027 result contradicting a motivating spectral-concentration hypothesis."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 17
+      },
+      "mechanism": {
+       "covered_by": [
+        12,
+        2
+       ]
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 18
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**PURPOSE:** No prior paper reports the same empirical finding, namely that a spectral intervention's benefit comes from both norm shrinkage and spectral redistribution, and that there is no correlation between initial spectral concentration and the intervention's benefit in continual learning.\n\n**MECHANISM:** The analysis primitives are covered by prior work in other domains: \"shrinkage of singular values\" [12] is substantively equivalent to the `mean-smoothing` ablation, and the use of a \"random permutation\" in a spectral context [2] is equivalent to the `random-spectrum` ablation.\n\n**EVALUATION:** The evaluation design, which consists of a controlled ablation study and a correlation analysis to isolate the source of an empirical effect, is a standard analysis protocol covered by prior work such as [17], which \"investigate[s]... optimization via Hessian Eigenvalue Density\" to study various hypotheses.\n\n**DOMAIN:** The application area of analyzing the spectral properties of neural networks in the context of continual learning is covered by prior work, specifically [18] \"Learning Continually by Spectral Regularization\" and [30] \"Small Singular Values for Continual Learning\".\n\nVERDICT purpose = NONE\nVERDICT mechanism = [12], [2]\nVERDICT evaluation = [17]\nVERDICT domain = [18]",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY [17] | reason: The paper's stated purpose is \"To understand the dynamics of optimization in deep neural networks... we study a number of hypotheses concerning smoothness, curvature, and sharpness in the deep learning literature,\" which is to isolate the mechanism behind successful optimization."
+     }
+    }
+   }
+  }
+ ]
+}

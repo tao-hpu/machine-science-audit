@@ -1,0 +1,287 @@
+{
+ "paper_id": "FA0143",
+ "title": "Tuned-Lens-Style Affine Alignment for Encoder Truncation in Whisper ASR: An Empirical Investigation",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     3
+    ],
+    "evaluation": [
+     7,
+     13
+    ],
+    "domain": [
+     1,
+     7
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to test whether tuned-lens-style representation alignment can make Whisper encoder truncation practical for speedup. No prior paper explicitly addresses this objective. While [3] (\"Eliciting Latent Predictions from Transformers with the Tuned Lens\") explores tuned-lens-style representation alignment, its focus is on understanding iterative inference in transformers rather than enabling encoder truncation for speedup. Similarly, [7] (\"Training and Inference Efficiency of Encoder-Decoder Speech Models\") and [13] (\"Block Refinement Learning for Improving Early Exit in Autoregressive ASR\") address efficiency improvements in encoder-decoder architectures but do not test representation alignment for truncation practicality. Thus, no prior paper shares the same purpose.\n\n### Mechanism\nThe contribution's mechanism involves training affine and MLP translators to map truncated encoder states to the expected final-layer distribution across multiple depths. [3] (\"Eliciting Latent Predictions from Transformers with the Tuned Lens\") trains affine probes to decode hidden states into output distributions, which is substantively equivalent to the mechanism described here. Additionally, [6] (\"Indic-TunedLens\") applies affine transformations for interpretability in multilingual models, further confirming the mechanism's coverage. Both papers use the same primitive of mapping intermediate representations to output distributions, even if applied in different contexts.\n\n### Evaluation\nThe evaluation systematically studies truncation depths on Whisper-large-v2, focusing on encoder latency reduction. [13] (\"Block Refinement Learning for Improving Early Exit in Autoregressive ASR\") conducts a systematic study of early exit techniques across intermediate layers in autoregressive ASR models, which is substantively equivalent in evaluation design. Both contributions evaluate layer-wise truncation strategies for computational efficiency, even though the specific benchmark (Whisper-large-v2) differs. Thus, the evaluation design is covered.\n\n### Domain\nThe contribution operates in the domain of Whisper encoder-decoder ASR and encoder truncation for speedup. [1] (\"Simul-Whisper\") and [7] (\"Training and Inference Efficiency of Encoder-Decoder Speech Models\") both address Whisper-based ASR and efficiency improvements, covering the same general application area. While [1] focuses on streaming ASR and [7] on training/inference efficiency, both papers operate within the Whisper encoder-decoder ASR domain, making the domain facet covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 3  \nVERDICT evaluation = 13  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly tests tuned-lens-style representation alignment for Whisper encoder truncation to enable practical speedup."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Test whether tuned-lens-style representation alignment can make Whisper encoder truncation practical for speedup.**\n\nThe purpose is specifically about using representation alignment (tuned-lens-style translators) to enable encoder truncation for inference speedup in Whisper. Paper [3] introduces the tuned lens for interpretability (not speedup via truncation). Paper [7] addresses Whisper training/inference efficiency but focuses on padding/bucketing, not encoder truncation via representation alignment. Paper [1] addresses Whisper streaming via truncation detection but not representation alignment for speedup. No prior paper pursues the specific objective of \"use tuned-lens-style alignment to make encoder truncation practical for speedup\" — this combines two ideas (tuned lens + encoder truncation for speedup) in a way no single paper's purpose matches. The closest is [7] (Whisper efficiency) but its objective is different (padding/bucketing). No paper covers this combined purpose.\n\n**MECHANISM: Training affine and MLP translators to map truncated encoder states to expected final-layer distribution across multiple depths.**\n\nPaper [3] explicitly trains affine probes (tuned lens) for each block to decode hidden states into vocabulary distributions — this is the core primitive. The contribution applies this same mechanism (affine/MLP translators mapping intermediate states to final-layer distribution) to encoder truncation rather than interpretability. The underlying primitive — \"train affine/MLP translators to map intermediate layer representations to the final-layer distribution\" — is exactly what [3] describes. Paper [11] also uses intermediate probes for distillation with similar mechanics. The mechanism is substantively equivalent to [3].\n\n**EVALUATION: Systematic study across multiple truncation depths on Whisper-large-v2.**\n\nThe evaluation design involves: (1) a specific ASR model (Whisper-large-v2), (2) multiple truncation depth conditions, (3) measuring performance across depths. Paper [7] evaluates Whisper efficiency with standard ASR benchmarks. Paper [1] evaluates Whisper with streaming ASR metrics. The systematic multi-depth ablation on Whisper is a generic experimental shape (vary a parameter, measure accuracy), but no prior paper uses a named benchmark/protocol family specifically for encoder truncation depth studies on Whisper. However, the evaluation design of \"measure WER across model configurations on standard ASR benchmarks\" is used in [7] and [1]. The design of sweeping truncation depths is a generic ablation shape. Given the special rule, the evaluation design (ASR benchmark + WER metric + multi-configuration comparison) is covered by [7] and [1].\n\n**DOMAIN: Whisper encoder-decoder ASR / encoder truncation for speedup.**\n\nPapers [1], [7], and [20] all work in the Whisper ASR domain. Paper [7] specifically addresses Whisper inference efficiency. This is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 3\nVERDICT evaluation = 7\nVERDICT domain = 7",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper tests whether tuned-lens-style affine representation alignment can make Whisper encoder layer truncation practical for inference speedup. Paper [3] introduces the tuned lens for interpretability of LLMs, not for enabling encoder truncation in speech models. Paper [7] addresses Whisper efficiency via batching/bucketing, not representation alignment. Paper [1] handles streaming Whisper via attention-guided chunking, not layer truncation with alignment probes. No paper combines these three elements (tuned-lens-style alignment + Whisper encoder truncation + speedup objective) even under different terminology."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     9
+    ],
+    "mechanism": [
+     8,
+     9
+    ],
+    "evaluation": [
+     9
+    ],
+    "domain": [
+     7,
+     9
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution aims to characterize the tradeoff between truncation depth and speedup. This is a specific empirical relationship between truncation depth and its impact on speedup and WER. None of the prior papers explicitly report or establish this same relationship. While several papers discuss speed-accuracy tradeoffs (e.g., [2], [10], [11], [13], [14], [15], [17]), these focus on general speed-accuracy dynamics in cognitive tasks, motor processes, or neural mechanisms, not truncation depth in encoder-decoder architectures. Papers like [7], [9], and [18] discuss deep encoder architectures and their efficiency, but they do not characterize the specific depth-speedup tradeoff empirically.\n\n#### Mechanism:\nThe mechanism involves measuring WER and speedup at different truncation depths using trained translators. Paper [7] discusses shallow-to-deep training for neural machine translation, which involves analyzing encoder depth, but it does not measure WER and speedup at varying truncation depths. Paper [9] explores deep encoder and shallow decoder setups for multilingual translation, which touches on efficiency but does not use the same measurement protocol. Paper [18] investigates reducing transformer depth while maintaining representational capacity, but it does not measure WER and speedup at truncation depths. None of the prior papers use the same mechanism.\n\n#### Evaluation:\nThe evaluation design involves analyzing the fundamental depth-speedup tradeoff, specifically identifying depths yielding meaningful speedup (≥1.2x) and catastrophic WER (>100%). Papers [7], [9], and [18] discuss encoder depth and efficiency tradeoffs, but they do not use the same evaluation design. Papers like [8] and [26] analyze WER, but not in the context of truncation depth-speedup tradeoffs. No prior paper uses this specific evaluation design.\n\n#### Domain:\nThe domain is encoder truncation depth-speedup tradeoff analysis. Papers [7], [9], and [18] work in the general area of neural machine translation and transformer depth analysis, which includes encoder-decoder architectures. While these papers do not address the specific truncation depth-speedup tradeoff, they operate in the same general application area. Therefore, the domain is covered.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 7  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly characterizes the tradeoff between truncation depth and speedup, even under different terminology or framing.  \n\nFACET: mechanism | FINAL: COVERED-BY 8 | reason: Paper [8] discusses measuring WER and its decomposition, which aligns with the mechanism of evaluating WER at different truncation depths. Quote: \"Evaluation and error analysis of machine translation output are important but difficult tasks. In this work, we propose a novel method for obtaining more details about actual translation errors in the generated output by introducing the decomposition of Word Error Rate (WER)...\"\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper evaluates the fundamental depth-speedup tradeoff with the same claim or named design, even under alternative framing or vocabulary."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": 9
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Characterize the tradeoff between truncation depth and speedup.**\n\nThe purpose is to understand how encoder truncation depth affects both translation quality (WER) and inference speedup — specifically mapping out this tradeoff curve. Paper [9] studies \"speed-accuracy tradeoffs\" in the context of deep encoder and shallow decoder for multilingual NMT, explicitly examining how architectural depth choices affect latency vs. translation quality. Paper [16] investigates trading decoder layers for encoder layers in Transformer translation. Paper [7] investigates deep encoder behavior in NMT and how stacking layers helps. Paper [9] is the closest — it explicitly frames the investigation as a \"speed-accuracy tradeoff\" in the context of encoder/decoder depth choices for NMT. This covers the same objective: characterizing how depth reduction trades off against translation quality and speed.\n\n**MECHANISM: Measuring WER and speedup at different truncation depths with trained translators.**\n\nThe mechanism is: train models, then measure WER and speedup across a sweep of truncation depths. Paper [9] does exactly this — measures translation quality (BLEU, which is equivalent to WER as a translation metric) and latency/speedup at different encoder/decoder depth configurations. Paper [7] also measures translation quality at different encoder depths. The primitive (vary depth, measure quality metric + speed) is present in [9].\n\n**EVALUATION: Fundamental depth-speedup tradeoff showing catastrophic WER at meaningful speedup levels.**\n\nThe evaluation design uses WER and speedup measurements across depth configurations. Paper [9] uses BLEU and latency measurements across depth configurations in NMT — same evaluation design (translation quality metric + speed metric across depth variants). The specific finding (catastrophic degradation) is the contribution's finding, but the evaluation design (quality metric + speedup at varying depths) is covered by [9].\n\n**DOMAIN: Encoder truncation depth-speedup tradeoff analysis.**\n\nThe domain is NMT/transformer encoder depth analysis for efficiency. Papers [9], [7], and [16] all work in NMT encoder depth analysis. Paper [9] explicitly addresses encoder depth and speed-accuracy tradeoffs in multilingual NMT. This is clearly covered.\n\nVERDICT purpose = 9\nVERDICT mechanism = 9\nVERDICT evaluation = 9\nVERDICT domain = 9",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": 9
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose:** The purpose is to characterize the specific empirical finding that the tradeoff between encoder truncation depth and speedup is catastrophic (meaningful speedup causes catastrophic quality loss). While many papers investigate speed-accuracy tradeoffs by varying model depth ([9], [23], [27]), they generally report or aim for a manageable tradeoff. No prior paper reports or establishes the same empirical relationship of a catastrophic, unworkable tradeoff for this specific variable.\n**mechanism:** The mechanism is a parameter sweep: \"Measuring WER and speedup at different truncation depths\". This is a standard experimental design to characterize a tradeoff. For instance, [9] studies a \"speed-accuracy\" tradeoff in NMT by varying architectural depth and implicitly must have measured latency and quality for different configurations.\n**evaluation:** The evaluation design consists of plotting a tradeoff curve using standard metrics: Word Error Rate (WER) for quality and speedup for efficiency. The use of WER is standard in the field [8], and evaluating a speed-accuracy tradeoff by plotting one metric against the other is a common evaluation design, seen in papers like [9] which studies \"speed-accuracy\" in NMT.\n**domain:** The domain is the analysis of efficiency and architectural tradeoffs in Neural Machine Translation (NMT). This is a well-established application area, covered by numerous prior papers including [1] \"Scaling Neural Machine Translation\", [7] \"Shallow-to-Deep Training for Neural Machine Translation\", and [9] \"Multilingual Neural Machine Translation with Deep Encoder\".\n\nVERDICT purpose = NONE\nVERDICT mechanism = 9\nVERDICT evaluation = 9\nVERDICT domain = 9",
+      "stage2": "FACET: purpose: Characterize the tradeoff between truncation depth and speedup. | FINAL: COVERED-BY 9 | reason: Paper [9] explicitly states its purpose is to study the speed-accuracy tradeoffs that result from using a shallow decoder, which is a form of depth truncation. The paper states: \"...so we study similar speed-accuracy tradeoffs\"."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     2,
+     4,
+     10
+    ],
+    "evaluation": [
+     2,
+     4,
+     10
+    ],
+    "domain": [
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        2,
+        4
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        2,
+        4
+       ]
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to explain why the tuned-lens analogy fails for encoder-decoder ASR. None of the prior papers explicitly address this specific empirical relationship or provide an explanation for the failure of the tuned-lens analogy in this context. While [16] discusses the tuned lens in the context of transformers, it does not address encoder-decoder ASR or the failure of the analogy. Similarly, [22] extends the Logit Lens technique to modern large language models but does not explore its applicability to encoder-decoder ASR. No prior paper establishes or reports the same empirical relationship.\n\n### Mechanism\nThe mechanism involves analyzing the differences in cross-attention alignment requirements for encoder-decoder ASR compared to vocabulary prediction in decoder-only models. [2] discusses cross-attention with monotonic alignment for speech transformers, which is relevant to the alignment requirements in ASR. [4] explores cross-attention alignment in recommendation models, which is a different domain but uses the same primitive of analyzing cross-attention alignment. Both papers provide substantively equivalent mechanisms for analyzing cross-attention alignment, even though the specific context differs.\n\n### Evaluation\nThe evaluation concludes that cross-attention has stricter alignment requirements than vocabulary prediction, leading to the failure of the tuned-lens analogy in encoder-decoder ASR. [2] evaluates cross-attention alignment in ASR models, and [4] evaluates cross-attention alignment in recommendation models. Both use evaluation designs that analyze cross-attention alignment, which matches the design of the contribution's evaluation. Therefore, the evaluation design is covered.\n\n### Domain\nThe domain of the contribution is cross-attention representation alignment analysis. [2] explicitly addresses cross-attention alignment in the context of ASR, which is the same application area as the contribution. Therefore, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 2, 4  \nVERDICT evaluation = 2, 4  \nVERDICT domain = 2  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses the failure of the tuned-lens analogy for encoder-decoder ASR, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Explain why the tuned-lens analogy fails for encoder-decoder ASR.**\n\nThe purpose is to establish a specific empirical relationship: that the tuned-lens technique (which works for decoder-only/autoregressive LMs) fails to transfer to encoder-decoder ASR, and to explain why. Paper [16] introduces the tuned lens for autoregressive language models. Paper [22] extends logit lens to modern LLMs. Neither paper investigates failure modes in encoder-decoder ASR or explains why the analogy breaks down. No prior paper reports the same relationship (tuned-lens analogy fails for encoder-decoder ASR due to cross-attention alignment requirements). This is a genuinely new empirical relationship being established.\n\n**MECHANISM: Analysis contrasting cross-attention alignment requirements with vocabulary prediction in decoder-only models.**\n\nThe mechanism is a comparative analysis between cross-attention alignment constraints and vocabulary prediction in decoder-only models. Papers [1]-[10] analyze cross-attention/alignment in NMT contexts, but none contrast cross-attention alignment requirements specifically against vocabulary prediction in the context of explaining a lens-based interpretability failure. Paper [16] discusses iterative inference via vocabulary projection but doesn't analyze cross-attention alignment requirements. No prior paper uses this specific analytical contrast as a mechanism. This appears uncovered.\n\n**EVALUATION: Concludes cross-attention has stricter alignment requirements than vocabulary prediction.**\n\nThe evaluation design here is essentially a conceptual/analytical argument rather than a benchmark-based experiment — it's a theoretical/analytical conclusion drawn from the structural properties of the architectures. This is not a named benchmark family, metric, or standard protocol. The conclusion itself is the finding. No prior paper uses this specific evaluation design (comparing alignment strictness between cross-attention and vocabulary prediction to assess lens transferability). This is genuinely new.\n\n**DOMAIN: Cross-attention representation alignment analysis.**\n\nThe domain is cross-attention representation alignment analysis. Papers [1], [2], [3], [5], [7], [8], [9], [10], [12] all work in cross-attention/alignment analysis for sequence-to-sequence models (NMT, ASR). Paper [2] specifically addresses cross-attention with monotonic alignment for ASR. Paper [6] surveys cross-lingual alignment. This domain is clearly covered by multiple prior papers.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 2",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper addresses why the tuned-lens analogy fails for encoder-decoder ASR; the closest papers discuss attention alignment in NMT or tuned-lens for autoregressive LMs, but none frame the objective as explaining the failure of tuned-lens transfer to encoder-decoder ASR.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper contrasts cross-attention alignment requirements with vocabulary prediction in decoder-only models as a mechanistic analysis; alignment papers focus on NMT quality or attention interpretation, not this specific contrastive framing.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper concludes that cross-attention has stricter alignment requirements than vocabulary prediction such that the tuned-lens analogy does not transfer to encoder-decoder ASR; this specific evaluative conclusion is absent from all listed works."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe purpose is to explain why the tuned-lens analogy, a specific interpretability technique from prior work [16], fails for a specific model class (encoder-decoder ASR). This is a finding that establishes a new empirical relationship: the failure of a known analysis tool in a new context, explained by a specific underlying reason (strict alignment requirements). No prior paper investigates the failure modes or boundary conditions of the tuned lens, nor do they connect the known challenges of cross-attention alignment to the failure of this specific analysis technique.\n\n**MECHANISM**\nThe mechanism is a comparative analysis contrasting the properties of cross-attention alignment with the properties of layer-wise vocabulary prediction. This type of comparative analysis of internal model mechanisms is a standard research primitive. For example, [10] performs a similar style of analysis by contrasting what attention mechanisms learn with what traditional alignment models capture, asking \"how attention is similar or different from the traditional alignment.\"\n\n**EVALUATION**\nThe evaluation design consists of using an analysis of a model's internal representations to support a conclusion about its behavior and the limitations of an interpretability method. This is a standard evaluation protocol in the field of mechanistic interpretability. Paper [10] uses this exact design, analyzing attention matrices to draw conclusions about how they function relative to traditional alignment, just as the contribution analyzes cross-attention to draw conclusions about the tuned-lens analogy.\n\n**DOMAIN**\nThe domain is the analysis of representation alignment in cross-attention mechanisms. This is a well-established research area. For instance, [2] analyzes \"Cross Attention with Monotonic Alignment for Speech Transformer,\" and [10] provides a \"detailed analysis of attention\" in the context of alignment.\n\nVERDICT purpose = NONE\nVERDICT mechanism = [10]\nVERDICT evaluation = [10]\nVERDICT domain = [2]",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the objective of explaining why the tuned-lens analogy (decoding intermediate representations layer-by-layer) fails or is ill-suited for the specific architecture of encoder-decoder ASR models. While some papers discuss ASR model properties [2] or adapt lens-like methods to other domains [17], none focus on explaining the breakdown of this specific interpretability method in this specific context."
+     }
+    }
+   }
+  }
+ ]
+}

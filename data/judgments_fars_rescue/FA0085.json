@@ -1,0 +1,291 @@
+{
+ "paper_id": "FA0085",
+ "title": "Tool-Gated Residual Distillation for DataChef Verifier Scoring",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": [
+     5,
+     26
+    ],
+    "domain": [
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 26
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "**Purpose:**  \nNo prior paper explicitly establishes the empirical relationship that LLM rubric verifier scores fail to predict downstream fine-tuned model quality in data curation. While papers like [1], [5], [6], [7], and [12] discuss LLM-as-a-judge reliability, they focus on biases, inter-rater reliability, or alignment with human preferences, not the specific downstream performance correlation in data curation. Papers like [2], [10], and [13] address data selection and fine-tuning but do not examine the predictive failure of rubric scores. Thus, the purpose is **NONE**.  \n\n**Mechanism:**  \nThe mechanism involves correlating LLM rubric scores of candidate datasets against downstream benchmark performance of models fine-tuned on those datasets. Papers like [10] and [13] study data selection impacts on fine-tuning performance but do not use rubric scores as predictors or analyze their correlation with downstream benchmarks. Similarly, [6], [7], and [12] evaluate LLM judges but do not apply this correlation-based mechanism to data curation. Thus, the mechanism is **NONE**.  \n\n**Evaluation:**  \nThe evaluation design uses Spearman correlation to measure the relationship between LLM rubric scores and downstream performance. Paper [26] discusses Spearman correlation transformations but does not apply them to LLM rubric scores or downstream benchmarks. Papers like [6], [7], and [12] use correlation metrics to evaluate LLM judges but focus on inter-rater reliability or bias correction, not the rubric-to-downstream correlation. No prior paper uses this specific evaluation design, so evaluation is **NONE**.  \n\n**Domain:**  \nThe domain is LLM training data curation. Paper [2] explicitly addresses automated data curation for LLM fine-tuning, and [8] discusses dataset development practices in machine learning. Papers like [10], [13], and [15] also focus on data selection and fine-tuning for LLMs. While none of these papers target the specific sub-problem of rubric score reliability, they operate within the same general application area of LLM training data curation. Thus, the domain is **COVERED**.  \n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 2  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper demonstrates the empirical relationship between LLM rubric verifier scores and downstream fine-tuned model quality in data curation.  \nFACET: mechanism | FINAL: NONE | reason: No prior paper correlates teacher LLM rubric scores of candidate datasets with downstream benchmark performance across held-out tasks using the specified methodology.  \nFACET: evaluation | FINAL: COVERED-BY 26 | reason: \"Metric distances derived from cosine similarity and Pearson and Spearman correlations\" discusses Spearman correlation and transformations, which could encompass the anti-correlation finding."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Show that LLM rubric verifier scores fail to predict downstream fine-tuned model quality in data curation.**\n\nThe purpose is specifically about demonstrating that LLM-based scoring/evaluation metrics are poor predictors of downstream fine-tuned model performance — a \"metric validity\" claim in the data curation context. Paper [5] examines LLM judges on mathematical reasoning tasks and studies correlation with verifiable correctness, but focuses on judge accuracy vs. ground truth, not on predicting downstream fine-tuning quality. Paper [18] studies reward model overoptimization (proxy reward vs. true reward divergence), which is conceptually related — a proxy metric failing to predict true quality — but in the RLHF context, not data curation fine-tuning. Paper [2] studies automated data curation for LLM fine-tuning but focuses on improving curation, not demonstrating that LLM scores anti-correlate with downstream performance. Paper [23] discusses Goodhart's Law (metrics diverging from goals) but is a general conceptual paper, not an empirical demonstration in LLM data curation. No prior paper specifically establishes the empirical relationship that LLM rubric scores for dataset curation anti-correlate with downstream fine-tuned model quality.\n\n**MECHANISM: Correlate teacher LLM rubric scores of candidate datasets against downstream benchmark performance of models fine-tuned on those datasets.**\n\nThis involves: (1) scoring datasets with an LLM rubric, (2) fine-tuning models on those datasets, (3) evaluating on benchmarks, (4) computing correlation (Spearman rho) between scores and benchmark results. Paper [2] does automated data curation and evaluates downstream fine-tuning performance, but doesn't correlate LLM rubric scores against downstream performance as a validation mechanism. Paper [10] compares data selectors by fine-tuning and measuring downstream performance — this is structurally similar: score datasets with different selectors, fine-tune, measure benchmark performance, compare. However, it doesn't specifically compute correlation between selector scores and downstream performance. Paper [18] correlates proxy reward scores with gold reward model scores, which is a correlation-of-proxy-vs-true-quality design, but in RLHF not data curation fine-tuning. No paper uses the exact primitive of correlating LLM rubric dataset scores against downstream fine-tuned benchmark performance.\n\n**EVALUATION: LLM-only verifier scores anti-correlate with downstream performance (Spearman rho = -0.405).**\n\nThe evaluation design uses Spearman rank correlation between a scoring system's outputs and downstream task performance. Paper [5] uses correlation with human judgments as evaluation design for LLM judges. Paper [10] compares selectors by downstream fine-tuning performance — similar evaluation design (select data → fine-tune → benchmark). Paper [26] discusses Spearman correlations as metrics. The evaluation design here — compute Spearman correlation between proxy scores and downstream benchmark results — is a standard correlation analysis. Paper [5] explicitly uses \"measuring the correlation\" between LLM judge scores and ground truth as its evaluation design. This is the same design (correlation of scores vs. ground truth performance), just applied to a different object (data curation vs. judge evaluation). This counts as COVERED under the special rule.\n\n**DOMAIN: LLM training data curation.**\n\nPapers [2], [13], [15] all work in LLM fine-tuning data curation/selection. Paper [2] is explicitly \"Automated Data Curation for Robust Language Model Fine-Tuning.\" This clearly covers the domain.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 5\nVERDICT domain = 2",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper examines whether LLM rubric verifier scores fail to predict downstream fine-tuned model quality in data curation; [2] studies data curation for fine-tuning but does not test LLM rubric scores as predictors of downstream quality, and no other paper contains this specific empirical relationship even under different terminology.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper correlates LLM rubric scores of candidate datasets against downstream benchmark performance of models fine-tuned on those datasets; [2] and [10] study data selection for fine-tuning but neither correlates rubric-based scores against held-out benchmark performance across multiple tasks in the manner described, and no equivalent methodology appears under different framing in any listed paper."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     19,
+     27
+    ],
+    "mechanism": [
+     1,
+     6,
+     12,
+     25
+    ],
+    "evaluation": [
+     19,
+     21,
+     27
+    ],
+    "domain": [
+     1,
+     19
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 19
+      },
+      "mechanism": {
+       "covered_by": [
+        1,
+        6,
+        12
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        19,
+        21
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        19
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to provide a lightweight verifier that better predicts which datasets yield stronger fine-tuned models. Paper [19] introduces OpenDataVal, a unified benchmark for data valuation, which assesses the quality and impact of individual data points to improve model performance. While OpenDataVal focuses on data valuation, its purpose aligns with improving dataset selection for model performance, making it substantively equivalent at the problem-class level.\n\n### Mechanism\nThe contribution's mechanism involves Tool-Gated Residual Distillation, combining deterministic tool gating for structural failures and a distilled LoRA student model for semantic classification. Paper [1] discusses deepQuest-py, which includes light-weight models implemented via knowledge distillation for quality estimation. Paper [6] introduces a dual-stage distillation process for few-shot knowledge distillation. Paper [12] empirically demonstrates simple knowledge distillation techniques for lightweight models. These papers collectively cover the mechanism of using knowledge distillation for lightweight model creation, including semantic classification tasks.\n\n### Evaluation\nThe contribution evaluates its verifier using Spearman rank correlation with downstream benchmark scores. Paper [21] explicitly describes Spearman rank-order correlation as a statistical method for comparing ranked data, which matches the evaluation design. Additionally, Paper [19] introduces OpenDataVal, a benchmark framework for data valuation, which aligns with the evaluation design of assessing dataset quality and impact. Both papers cover the evaluation design.\n\n### Domain\nThe contribution operates in the domain of verifier distillation and data selection. Paper [19] addresses data valuation and selection, which is substantively equivalent to the application area of dataset selection for model performance. Paper [1] also operates in the domain of quality estimation, which overlaps with the broader area of data selection and verification.\n\n---\n\nVERDICT purpose = 19  \nVERDICT mechanism = 1, 6, 12  \nVERDICT evaluation = 19, 21  \nVERDICT domain = 1, 19  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 19
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 21
+      },
+      "domain": {
+       "covered_by": 19
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Provide a lightweight verifier that better predicts which datasets yield stronger fine-tuned models.**\n\nThe purpose is to select/rank datasets for fine-tuning by predicting downstream model quality. Paper [19] (OpenDataVal) is about \"assessing the quality and impact of individual data points\" and benchmarking data valuation algorithms to improve model performance — this is data valuation/selection for training. Paper [27] is about data valuation for dataset retrieval. However, neither specifically targets \"predicting which datasets yield stronger fine-tuned models\" as a lightweight verifier. Paper [19] is the closest — it frames data valuation as predicting data quality to improve model performance, which is substantively equivalent to predicting which datasets yield stronger fine-tuned models. The objective at the problem-class level (score/rank datasets by their value for model training) is the same.\n\n**MECHANISM: Tool-Gated Residual Distillation — deterministic tool gating for structural failures + small distilled LoRA student for 3-way semantic classification from teacher labels.**\n\nThis combines: (1) rule/tool-based gating for structural checks, (2) knowledge distillation from a teacher to a small student model for classification. Paper [4] introduces \"task-specific knowledge distillation for dichotomous classification\" using teacher soft labels to train a student — similar distillation for classification but binary, not 3-way, and no gating. Paper [25] combines a rule-based classifier with supervised learning (SVM) for sentiment analysis — this is structurally similar to combining deterministic rules with a learned classifier. Paper [1] and [17] do knowledge distillation for quality estimation tasks. However, the specific combination of deterministic structural gating + residual distillation for a 3-way verifier is not clearly present. The closest is [25] (rule-based + supervised learning hybrid) and [4] (task-specific KD for classification), but neither covers the full primitive of \"gate on structural failures, then distill residual semantic classification.\" No single paper covers this combined mechanism.\n\n**EVALUATION: Spearman rho correlation with downstream benchmark scores + top-1 regret metric.**\n\nPaper [21] explicitly covers Spearman rank-order correlation as an evaluation metric. The use of Spearman rho to measure correlation between predicted rankings and actual downstream performance is a standard evaluation design covered by [21]. The \"top-1 regret\" (whether the selected dataset is the ground-truth best) is a standard selection evaluation design seen in data valuation benchmarks like [19]. So the evaluation design (rank correlation + selection regret) is covered by [21] and [19].\n\n**DOMAIN: Verifier distillation / data selection for fine-tuning.**\n\nPaper [19] (OpenDataVal) works in data valuation for machine learning — the same general application area of selecting/scoring data for model training. Paper [27] also works in dataset valuation/retrieval. The domain of \"data selection for fine-tuning\" is covered by [19].\n\nVERDICT purpose = 19\nVERDICT mechanism = NONE\nVERDICT evaluation = 21\nVERDICT domain = 19",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes the specific combination of deterministic tool-gating for structural failure detection paired with a distilled small LoRA student learning 3-way semantic classification from teacher labels. Paper [4] covers binary (yes/no) distillation but not this factorized gating+semantic classification architecture. No paper uses equivalent terminology or framing for this mechanism."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 27
+      },
+      "mechanism": {
+       "covered_by": 25
+      },
+      "evaluation": {
+       "covered_by": 27
+      },
+      "domain": {
+       "covered_by": 19
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: The contribution's purpose is to create a lightweight verifier to predict the value of a dataset for fine-tuning. This is covered by [27], which has the purpose to \"propose a novel data valuation method\" to \"estimate the personal value of each dataset\". Both aim to predict the utility of a dataset for a downstream task.\n\nmechanism: The contribution uses a hybrid of a deterministic filter (\"tool gating\") followed by a learned model (\"distilled student\"). This is covered by [25], which describes a system \"by combining a rule-based classifier with supervised learning\". This is the same architectural primitive of a simple filter followed by a more complex learned component.\n\nevaluation: The evaluation design involves calculating a score for each dataset, establishing a ground truth by measuring downstream performance, and then measuring the rank correlation (Spearman's rho) between the scores and the ground truth. This design is covered by [27], which \"validated the data value-based ranking against the stakeholders' ranking of the datasets\", and is the central topic of [19], a \"Unified Benchmark for Data Valuation\".\n\ndomain: The contribution's domain is data selection and verifier distillation. This is covered by [19] and [27], which are explicitly in the domain of \"Data Valuation\". It is also covered by [1] and [17], which are in the domain of using \"Knowledge Distillation for Quality Estimation\", a type of lightweight verifier.\n\nVERDICT purpose = 27\nVERDICT mechanism = 25\nVERDICT evaluation = 27\nVERDICT domain = 19",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     5,
+     18
+    ],
+    "mechanism": [
+     6,
+     7,
+     22
+    ],
+    "evaluation": [
+     18,
+     23
+    ],
+    "domain": [
+     6,
+     14,
+     18
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 22
+      },
+      "evaluation": {
+       "covered_by": 18
+      },
+      "domain": {
+       "covered_by": 18
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to eliminate the inference-time cost of teacher LLM verification. This specific objective is not directly addressed in any of the prior papers. While several papers discuss cost reduction in LLMs (e.g., [1], [8], [18]), they focus on general cost reduction strategies or specific applications like classification or reward modeling, rather than eliminating the inference-time cost of teacher LLM verification. For example, [1] discusses cost-efficient agents without fine-tuning or manual prompt engineering, and [8] focuses on reducing the cost of knowledge distillation for classification tasks. Neither explicitly targets the elimination of inference-time teacher LLM verification costs.\n\n### Mechanism\nThe mechanism involves replacing per-instance teacher API scoring with a combination of a distilled student model and deterministic tool gates, eliminating the need for teacher calls at inference. This mechanism is not covered by any prior paper. While [5], [8], [16], and [19] discuss knowledge distillation, they focus on traditional teacher-student frameworks where the teacher is used during training but not at inference. None of these papers describe the specific combination of a distilled student model with deterministic tool gates to replace teacher API scoring entirely at inference.\n\n### Evaluation\nThe evaluation demonstrates a reduction in inference cost from 2.56M teacher tokens to zero API calls while improving ranking fidelity. This evaluation design is covered by [18], which also evaluates the cost reduction and ranking fidelity of replacing LLM judges with more efficient alternatives. Although the specific benchmarks and metrics may differ, the evaluation design — measuring cost reduction and fidelity in an LLM evaluation pipeline — is substantively equivalent.\n\n### Domain\nThe domain is efficient LLM evaluation pipelines. This domain is covered by [18], which also addresses efficiency in LLM evaluation pipelines, specifically in the context of replacing costly LLM judges with more efficient alternatives. While the specific problem instances differ, both contributions operate within the same general application area.\n\n---\n\n**VERDICT purpose = NONE**  \n**VERDICT mechanism = NONE**  \n**VERDICT evaluation = 18**  \n**VERDICT domain = 18**  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly aims to eliminate inference-time teacher LLM verification costs.  \nFACET: mechanism | FINAL: COVERED-BY 22 | reason: Agreement-Based Cascading (ABC) uses deterministic gates to avoid invoking larger models, aligning with replacing teacher API scoring with student and tool gates. Quote: \"ABC builds a cascade of models... and uses agreement... as a basis for data-dependent routing.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 18
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 18
+      },
+      "domain": {
+       "covered_by": 14
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Eliminate the inference-time cost of teacher LLM verification.**\n\nThe closest papers are [8] (active KD to reduce teacher labeling cost for large datasets) and [18] (asks strong LLM judge only when reward model is uncertain, reducing LLM judge inference cost). Paper [18] explicitly addresses \"incur significantly higher inference costs, limiting their applicability\" for LLM judges and seeks to reduce those costs. Paper [8] addresses \"the distillation process itself often remains costly for large datasets, since it requires the teacher to label a vast number of samples.\" However, the specific purpose here is eliminating teacher calls *at inference time* (not training time). Paper [18] is about reducing LLM judge costs during inference by routing uncertain cases — this is the closest match to \"eliminate inference-time cost of teacher LLM verification.\" Paper [1] also addresses inference-time cost reduction for LLM agents. The purpose of eliminating teacher API calls at inference time is most directly covered by [18] (reduce LLM judge inference cost) and [8] (reduce teacher labeling cost).\n\n**MECHANISM: Replace per-instance teacher API scoring with distilled student plus deterministic tool gates so no teacher calls are needed at inference.**\n\nPaper [8] uses KD where a student replaces the teacher for classification, reducing teacher calls. Paper [6] distills evaluative skills from a teacher LLM into a fine-tuned judge model (Themis), replacing teacher calls with a student model. Paper [15] proposes a small reward model to replace LLM-as-a-Judge. The combination of \"distilled student + deterministic tool gates\" as a complete replacement (zero teacher calls) is partially covered: [6] distills teacher evaluation capability into a student judge, [15] creates small reward models to replace large LLM judges. The \"deterministic tool gates\" aspect is somewhat novel, but the core primitive — distill teacher scoring into student to eliminate teacher calls — is covered by [6] and [15].\n\n**EVALUATION: Reduces inference cost from 2.56M teacher tokens to zero API calls while improving ranking fidelity.**\n\nThe evaluation design measures token/API cost reduction and ranking quality metrics. Paper [18] evaluates cost reduction (inference costs) alongside quality metrics for LLM judges. Paper [8] evaluates cost savings from reduced teacher labeling. Paper [14] and [25] survey LLM-as-judge evaluation designs. The design of measuring API/token cost alongside quality (ranking fidelity) is used in [18] and [8]. This is a standard cost-vs-quality evaluation design present in multiple prior works.\n\n**DOMAIN: Efficient LLM evaluation pipelines.**\n\nPapers [14], [25], [23], [6], [3] all work in the domain of LLM-as-judge / LLM evaluation pipelines. Paper [18] specifically addresses efficient LLM judge inference. This domain is clearly covered.\n\nVERDICT purpose = 18\nVERDICT mechanism = 6\nVERDICT evaluation = 18\nVERDICT domain = 14",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 23
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: COVERED. The objective to eliminate the inference-time cost of a large teacher model is the foundational goal of knowledge distillation, which aims to \"compress a powerful yet cumbersome teacher model into a lightweight student model\" [5] that replaces the teacher at deployment. This general objective is shared by numerous knowledge distillation papers [5, 10, 16, 19, 31].\n\n**mechanism**: COVERED. The mechanism combines a distilled model with deterministic rules (\"tool gates\"); this architectural primitive of a neural model coordinating with a deterministic tool is covered by [7], which describes how \"LLMs can... coordinate with an information retrieval system\" to perform a task.\n\n**evaluation**: COVERED. The evaluation design, which measures inference cost reduction alongside performance on a ranking task (\"ranking fidelity\"), is a standard design for this domain, as seen in papers like [23] which introduces \"JudgeBench: A Benchmark for Evaluating LLM-based Judges\" based on their \"alignment with human preferences\".\n\n**domain**: COVERED. The application area of creating efficient pipelines for LLM-based evaluation is explicitly addressed by multiple prior works, such as [6] which details the \"Pipeline\" for an \"LLM-as-a-Judge Model\", and [18] which focuses on reducing the cost of using an \"LLM Judge\".\n\nVERDICT purpose = 5\nVERDICT mechanism = 7\nVERDICT evaluation = 23\nVERDICT domain = 6",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

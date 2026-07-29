@@ -1,0 +1,190 @@
+{
+ "paper_id": "iKgQOAtvsD",
+ "title": "Deciphering the Chaos: Enhancing Jailbreak Attacks via Adversarial Prompt Translation",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     4,
+     7,
+     17
+    ],
+    "mechanism": null,
+    "evaluation": [
+     1,
+     9
+    ],
+    "domain": [
+     1,
+     4
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": [
+        1,
+        9
+       ]
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to address the limitations of gradient-based jailbreaking attacks (e.g., GCG) that generate adversarial prompts with issues such as garbled text, semantic incoherence, poor transferability across victim models, and susceptibility to perplexity-based defenses. None of the prior papers explicitly aim to solve this specific set of problems. While [17] and [20] discuss improving GCG-based adversarial suffixes, their focus is on enhancing efficiency, transferability, and scalability, not on addressing garbled text, semantic clarity, or perplexity defenses. Similarly, [4] and [18] focus on optimization-based jailbreaking but do not address the specific issues of garbled or semantically incoherent prompts. Therefore, no prior paper shares the same purpose.\n\n### Mechanism\nThe contribution introduces a novel mechanism: leveraging an off-the-shelf LLM as a translator to interpret and translate garbled adversarial suffixes into coherent, readable, and semantically clear natural language adversarial prompts. This two-step process of \"interpretation + translation\" is distinct from prior work. While [2] uses backtranslation for defense purposes, it does not involve translating garbled adversarial suffixes into coherent adversarial prompts. Similarly, [4], [17], and [20] focus on generating adversarial suffixes but do not propose a mechanism for interpreting or translating garbled suffixes. No prior paper employs a substantively equivalent mechanism.\n\n### Evaluation\nThe evaluation involves measuring perplexity (translated prompts ~14 vs. garbled ~2000), absolute attack success rate (ASR) improvement of 45.5% using Llama-3.1-8B-Instruct as the translator, and significant ASR improvement on HarmBench. The use of perplexity as a metric and HarmBench as a benchmark is covered by prior work. For example, [1] uses perplexity measures for adversarial prompt detection, and [9] evaluates jailbreak attacks on HarmBench. While the specific results differ, the evaluation design (perplexity and HarmBench) is not novel.\n\n### Domain\nThe domain is LLM safety, specifically jailbreaking attacks and adversarial prompt generation. This domain is extensively covered by prior work, including [4], [17], [18], and [20], which all address adversarial suffixes and jailbreaking attacks on LLMs. Although the specific focus on garbled adversarial suffixes is new, the general application area of LLM safety and jailbreaking is not.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 1, 9  \nVERDICT domain = 4  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses the specific objective of resolving issues with gradient-based jailbreaking attacks (e.g., GCG) such as adversarial prompt garbling, semantic chaos, poor transferability across architectures, and vulnerability to perplexity-based defenses.  \nFACET: mechanism | FINAL: NONE | reason: No prior paper explicitly proposes a two-step \"interpretation + translation\" approach using an off-the-shelf LLM as a translator to convert garbled adversarial suffixes into coherent, readable, and semantically clear natural language adversarial prompts without modifying suffix generation, manual design, hyperparameter tuning, additional training, or victim model feedback."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: 解决GCG等梯度越狱攻击生成的乱码提示难以迁移、易被困惑度防御检测的问题**\n\nThe purpose is specifically to improve transferability and evade perplexity-based defenses of gradient-based jailbreak adversarial suffixes (like GCG). Paper [17] \"Advancing Adversarial Suffix Transfer Learning\" explicitly addresses \"GCG struggles with computational inefficiency, limiting further investigations regarding suffix transferability and scalability across models.\" Paper [18] \"Improved Techniques for Optimization-Based Jailbreaking\" also targets improving GCG-based attacks. Paper [20] \"AmpleGCG\" discusses \"drawbacks of solely picking the suffix with the lowest loss during GCG optimization.\" However, none of these specifically frame the purpose as \"extract semantic meaning from gibberish suffixes to make them readable and transferable while evading perplexity defenses.\" Paper [4] \"ASETF\" addresses \"gradient based discrete tokens\" and the challenge of transferability of adversarial suffixes, framing the problem as converting suffix embeddings to coherent text. ASETF's purpose is substantively equivalent: solving the gibberish/incoherence problem of gradient-based adversarial suffixes to improve transferability and bypass defenses. This is the same problem class.\n\n---\n\n**MECHANISM: 用现成LLM做两步(解释+翻译)把乱码对抗后缀翻译成连贯自然语言提示**\n\nThe core primitive is: use an off-the-shelf LLM as a translator to convert gibberish adversarial suffixes into coherent natural language, via a two-step interpret+translate process, without modifying suffix generation or training. Paper [4] \"ASETF\" proposes translating suffix embeddings into coherent text using a generative model — \"translate suffix embeddings\" — but it operates in embedding space and uses a trained model, not an off-the-shelf LLM doing interpretation+translation in two steps. Paper [2] \"Backtranslation\" uses an LLM to infer/rewrite prompts, but for defense (backtranslation to reveal intent), not for converting gibberish attack suffixes. Paper [25] uses paraphrase networks with backtranslation for adversarial examples, but in NLP robustness, not LLM jailbreak. The specific primitive — using an off-the-shelf LLM to interpret semantic content latent in gibberish GCG suffixes and then translate them into fluent natural language, without any training or victim model feedback — does not appear to be covered. ASETF is the closest but uses a different mechanism (embedding-space translation with a trained model). No prior paper uses the \"interpret then translate gibberish adversarial suffix → fluent prompt\" primitive with an off-the-shelf LLM.\n\n---\n\n**EVALUATION: 困惑度对比(~14 vs ~2000)、ASR绝对提升45.5%、HarmBench上评估**\n\nHarmBench is used as the evaluation benchmark in papers [9] \"LLM Defenses Are Not Robust\" which explicitly mentions \"HarmBench\" and ASR metrics. Paper [17] and [18] also evaluate on HarmBench with ASR metrics. Perplexity as a metric for adversarial prompts is used in paper [1] \"Token-Level Adversarial Prompt Detection Based on Perplexity Measures.\" The evaluation design (HarmBench benchmark + ASR metric + perplexity comparison) is covered by these prior papers — same benchmark family and metric semantics.\n\n---\n\n**DOMAIN: LLM安全/越狱攻击**\n\nVirtually all papers [1]-[9], [11]-[12], [14]-[18], [20]-[21] operate in the LLM safety/jailbreak attack domain. This is clearly covered.\n\n---\n\nVERDICT purpose = 4\nVERDICT mechanism = NONE\nVERDICT evaluation = 9\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper proposes using an off-the-shelf LLM in a two-step interpretation+translation pipeline to convert gibberish adversarial suffixes into coherent natural-language adversarial prompts without modifying suffix generation or requiring training/feedback. Paper [4] (ASETF) translates suffix *embeddings* into readable tokens via a different gradient-based method, not a two-step LLM-as-translator approach. Paper [2] (Backtranslation) infers prompts from *responses* for defense, not for transferring attack semantics. No other paper matches even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        7,
+        17
+       ]
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": [
+        1,
+        9
+       ]
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "Here is the step-by-step reasoning for each facet:\n\n**purpose**: The contribution aims to solve several problems with gradient-based jailbreak attacks like GCG: their outputs are gibberish, semantically chaotic, not easily transferable, and detectable by perplexity filters. This purpose is a collection of known issues, and prior work has targeted these same issues. For instance, paper [7] addresses the problem of \"excessive semantic differences\" in jailbreak prompts, which is equivalent to the \"semantic chaos\" problem. Paper [17] explicitly aims to improve \"suffix transferability,\" which is equivalent to the \"hard to transfer\" problem. Therefore, the overall objective is covered by prior work that seeks to improve the same class of attacks along the same dimensions.\n\n**mechanism**: The proposed mechanism is to use an off-the-shelf LLM as a translator in a two-step 'interpretation + translation' process to convert a gibberish adversarial suffix into a coherent, natural language prompt. This treats the optimized gibberish as a language to be deciphered. While prior work has used translation for attacks (e.g., [8] translates prompts into low-resource languages) or defense (e.g., [2] uses back-translation), no prior paper appears to use an LLM to specifically interpret and render optimized adversarial noise into a semantically coherent prompt in the same language. This specific primitive of \"deciphering\" an adversarial optimization artifact appears to be absent from the provided papers.\n\n**evaluation**: The evaluation design consists of measuring the perplexity of the generated prompts, calculating the Attack Success Rate (ASR), and testing on the HarmBench benchmark. These are all standard evaluation components in this field. Paper [1] establishes perplexity as a key metric for analyzing adversarial prompts (\"Based on Perplexity Measures\"). Paper [9] demonstrates the use of ASR on the HarmBench benchmark (\"exceeding 70% attack success rate (ASR) on HarmBench\"). The contribution's evaluation simply combines these existing, standard designs to validate its method.\n\n**domain**: The contribution's domain is LLM Security, specifically focusing on jailbreaking via adversarial prompt generation. This is a well-established research area. Numerous prior papers operate in this exact domain, including [1] (\"adversarial prompt attacks\"), [2] (\"defending LLMs against jailbreaking attacks\"), and [4] (\"Jailbreak Attack on LLMs\"), among many others. The domain is clearly covered.\n\nVERDICT purpose = 7, 17\nVERDICT mechanism = NONE\nVERDICT evaluation = 1, 9\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper proposes using an off-the-shelf LLM to translate existing, optimized, gibberish-like adversarial suffixes into coherent, human-readable natural language prompts for the purpose of semantic analysis. While papers like [2] and [8] use \"translation\" or \"backtranslation\", they do so for different purposes: [2] infers a prompt from a *response* for defense, and [8] translates prompts into low-resource languages to *create* an attack. Neither performs the specific `gibberish prompt -> readable prompt` analysis described."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     12
+    ],
+    "mechanism": [
+     2,
+     12
+    ],
+    "evaluation": [
+     3
+    ],
+    "domain": [
+     1,
+     3
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 12
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to evaluate the jailbreak effectiveness of a specific translation-based attack method under a practical black-box threat model (limited queries, no access to output probabilities) against safety-aligned LLMs, and compare its performance to state-of-the-art (SOTA) methods. None of the prior papers explicitly focus on this specific purpose. While several papers (e.g., [1], [2], [3], [4], [5], [13], [20]) evaluate jailbreak attacks on LLMs, they do not address the specific scenario of translation-based attacks under a black-box threat model. For example, [13] introduces QROA, a black-box jailbreak method, but it does not involve translation-based attacks. Similarly, [3] conducts a large-scale evaluation of jailbreak attacks but does not focus on translation-based methods or the specific black-box constraints described here. Therefore, no prior paper establishes the same purpose.\n\n### Mechanism\nThe mechanism involves using GCG-Advanced to generate adversarial suffixes, producing 10 translations per input, and attacking multiple LLMs (e.g., GPT, Claude-3, Llama-2-Chat) while performing ablations on translator selection and suffix pre-modification. This mechanism is partially covered by [2] and [4]. Paper [2] discusses GCG-based adversarial suffix generation and its application to jailbreak attacks, while [4] extends GCG to improve transferability and efficiency. However, neither paper incorporates the specific combination of translation-based attacks, multi-translation generation, and ablation studies on translator selection and suffix pre-modification. Thus, the mechanism is not fully covered.\n\n### Evaluation\nThe evaluation design involves measuring attack success rates (ASR) under a black-box threat model with up to 10 queries, comparing against multiple SOTA methods (e.g., GCG-Advanced, TAP, AutoDAN, AdvPrompter), and testing on both commercial closed-source LLMs and open-source models (e.g., Llama-2-Chat). This evaluation design is covered by [3], [5], and [13]. Paper [3] conducts a large-scale evaluation of jailbreak attacks, comparing multiple methods across various LLMs. Paper [5] benchmarks jailbreak attacks, including comparisons of ASR across different methods. Paper [13] evaluates a black-box jailbreak method (QROA) on both open- and closed-source LLMs. While the specific benchmarks and models differ, the evaluation design (comparing ASR across methods and models under black-box constraints) is substantively equivalent.\n\n### Domain\nThe domain is LLM safety and jailbreak attack evaluation. This domain is extensively covered by prior work, including [1], [2], [3], [4], [5], [6], [7], [9], [13], and others. These papers all address LLM safety and jailbreak attacks, even if the specific attack methods or evaluation setups differ. For example, [1] and [2] focus on adversarial suffixes, [3] and [5] conduct large-scale evaluations of jailbreak attacks, and [13] introduces a black-box jailbreak method. The specific focus on translation-based attacks does not constitute a new domain, as it falls within the broader area of LLM safety and jailbreak evaluation.\n\n---\n\n**VERDICT purpose = NONE**  \n**VERDICT mechanism = NONE**  \n**VERDICT evaluation = 3**  \n**VERDICT domain = 1**  ",
+      "stage2": "- **FACET: purpose** | **FINAL: COVERED-BY 12** | reason: Paper [12] explicitly demonstrates the use of translation to exploit cross-lingual vulnerabilities in GPT-4's safety mechanisms, aligning with the same objective of evaluating jailbreak effectiveness in a practical black-box threat model. Quote: \"successfully circumventing GPT-4's safeguard through translating unsafe English inputs into low-resource languages.\"\n\n- **FACET: mechanism** | **FINAL: COVERED-BY 2** | reason: Paper [2] discusses the use of GCG and its advanced variants for generating adversarial suffixes, including comparisons with other methods, which aligns with the described mechanism. Quote: \"Recent red-teaming efforts have identified adversarial suffixes capable of jailbreaking LLMs using the gradient-based search algorithm Greedy Coordinate Gradient (GCG).\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 12
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: 验证翻译方法在黑盒威胁模型下对安全对齐LLM的越狱效果并与SOTA对比**\n\nThe purpose is to validate that a translation-based jailbreak method works effectively under a practical black-box, limited-query threat model against safety-aligned LLMs, and to compare it against SOTA baselines. Paper [12] (\"Low-Resource Languages Jailbreak GPT-4\") directly pursues the same objective: demonstrating that translation (to low-resource languages) bypasses LLM safety mechanisms, tested on AdvBenchmark against GPT-4. This is substantively the same purpose — validating translation-based jailbreak effectiveness against aligned LLMs. Papers [3]/[8] also pursue comprehensive evaluation of jailbreak attacks against LLMs, which partially overlaps, but [12] is the closest match.\n\n**MECHANISM: HarmBench/AdvBench上生成通用后缀、翻译变体、攻击多个LLM、与多个SOTA对比、做消融**\n\nThe mechanism involves: (1) GCG-based universal suffix generation, (2) translation into multiple variants, (3) attacking GPT/Claude/Llama, (4) comparing against GCG-Advanced, PAP, PAIR, TAP, AA, AutoDAN, AdvPrompter, (5) ablations on translator choice and suffix concatenation/pre-rewriting. Paper [12] uses translation as the core jailbreak primitive on AdvBench. Papers [3]/[8] do large-scale comparative evaluation of jailbreak methods with ablations. Paper [5] (\"Bag of Tricks\") benchmarks jailbreak attacks with diverse key factors and ablations. Paper [2] uses GCG-based suffix transfer. However, the specific combination of GCG suffix generation + translation wrapping + multi-model comparison + ablations is not fully covered by any single paper. The closest is [12] for translation + [3]/[8] for comparative benchmarking. The translation-as-jailbreak mechanism is covered by [12]; the comparative benchmarking mechanism is covered by [3]/[8].\n\n**EVALUATION: 最多10次查询下攻击7个商用闭源LLM，平均ASR 81.8%等具体数字**\n\nThe evaluation design uses: ASR metric on HarmBench/AdvBench, attacking closed-source LLMs (GPT, Claude) under limited query budget, comparing against named SOTA baselines. Paper [3]/[8] use the same evaluation design — large-scale ASR measurement across multiple LLMs and jailbreak methods on standard benchmarks. Paper [20] (TAP) evaluates black-box jailbreak ASR on GPT/Claude. Paper [5] benchmarks jailbreak attacks with ASR metrics across models. The evaluation design (ASR on standard benchmarks, multi-model comparison including closed-source LLMs) is well-covered by [3]/[8] and [5]. The specific numbers are results, not design — the design itself (ASR metric, HarmBench/AdvBench, multi-LLM comparison) is covered.\n\n**DOMAIN: LLM安全/越狱攻击评估**\n\nMultiple prior papers operate in exactly this domain: [1], [3], [5], [7], [8], [9], [12], [20], etc. This is clearly covered.\n\nVERDICT purpose = 12\nVERDICT mechanism = 12\nVERDICT evaluation = 3\nVERDICT domain = 3",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

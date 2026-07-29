@@ -1,0 +1,308 @@
+{
+ "paper_id": "FA0193",
+ "title": "Patch, Don't Rewrite: Post-Drift Rule Updates for LogRules-Style LLM Log Parsers",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     11,
+     12
+    ],
+    "evaluation": [
+     8,
+     12,
+     14
+    ],
+    "domain": [
+     2,
+     8
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to define and motivate the problem of updating an LLM log parser's rule repository when log templates drift. Papers [1], [5], [20], and [28] discuss concept drift adaptation, which is closely related to handling changes in data distributions over time. However, none of these papers specifically address the problem of updating rule repositories for log parsers under template drift. Papers [2], [3], [6], [7], [8], [9], [10], [15], and [14] focus on log parsing but do not define or motivate the specific problem of rule repository updates under template drift. Therefore, no prior paper establishes the same purpose.\n\n### Mechanism\nThe contribution introduces the rule repository update problem for LogRules-style parsers and empirically contrasts full rewriting against conservative patching. Papers [11], [12], [13], [17], [18], and [19] discuss various forms of rewriting or patching, including incremental updates to rules, binary rewriting, and patch graph rewriting. Paper [11] specifically addresses incremental updating techniques for rule maintenance, which is substantively equivalent to the mechanism described here. Although the application domains differ (association rules vs. log parsing), the underlying primitive of incremental rule updates is the same.\n\n### Evaluation\nThe evaluation compares Naive Rewrite and Patch approaches, showing that Patch achieves +8.1 FGA points over Naive Rewrite. Papers [14] and [15] introduce benchmarks and metrics for log parsing, including template precision and accuracy, which are substantively equivalent evaluation designs. Paper [14] focuses on character-level template precision, while paper [15] evaluates parsing accuracy. Both use standard log parsing metrics and validation setups, making the evaluation design covered.\n\n### Domain\nThe contribution operates in the domain of LLM-based log parsing under template drift. Papers [2], [3], [6], [7], [8], [9], [10], [14], and [15] all address log parsing using LLMs or other methods, making the domain covered. While the specific focus on template drift is narrower, it falls within the broader application area of log parsing.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 11  \nVERDICT evaluation = 14  \nVERDICT domain = 2  ",
+      "stage2": "1. **FACET: purpose** | **FINAL: NONE** | **reason:** None of the prior papers explicitly define and motivate the problem of updating an LLM log parser's rule repository when log templates drift. While several papers discuss related topics such as concept drift adaptation ([1], [5], [20]) or log parsing with LLMs ([2], [8], [9]), none explicitly address the specific objective of maintaining and updating an LLM log parser's rule repository in response to log template drift. No direct equivalent objective or framing was found under different terminology, earlier framing, or another domain's vocabulary."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Define and motivate the problem of updating an LLM log parser's rule repository when log templates drift.**\n\nThe purpose is specifically about maintaining/updating a rule repository for LLM-based log parsers when templates drift. Papers [1], [5], [20] address concept drift adaptation but in general ML settings, not log parsing rule repositories. Papers [2], [3], [7], [8], [9], [10], [15] address LLM-based log parsing but none specifically define the problem of updating a rule repository under template drift. Paper [11] addresses incremental updating of discovered association rules in databases — this is about maintaining rules when data changes, which is thematically related but in a completely different domain (database mining, not log parsing). Paper [22] addresses incremental rule mining over evolving knowledge bases. None of these prior papers specifically establish the same empirical relationship: that updating an LLM log parser's rule repository under template drift is a distinct problem worth defining. The closest are concept drift papers [1],[5] and rule maintenance papers [11],[22],[23], but none combine LLM log parsing + rule repository + template drift as a unified problem definition.\n\n**MECHANISM: Introduce the rule repository update problem and empirically contrast full rewriting vs. conservative patching.**\n\nThe mechanism is a controlled empirical comparison between two update strategies (full rewrite vs. patch) for a rule-based system. Paper [11] introduces incremental updating vs. full re-mining for association rules. Paper [22] does incremental vs. full rule mining. Paper [12] does incremental CFG patching vs. full rewriting for binary rewriting. These are structurally similar (patch vs. rewrite comparison) but in entirely different domains. The underlying primitive — \"compare full rewrite strategy against conservative patch strategy for a rule repository\" — is present in [11] and [12] at the design level. However, for a finding-type contribution, the mechanism is the analysis method: a controlled ablation comparing two update strategies. This design appears in [11] (\"incremental updating technique\" contrasted against full re-computation) and [22] (incremental vs. full rule mining comparison).\n\n**EVALUATION: Naive Rewrite underperforms; achieves only marginally better accuracy than stale rules, and Patch beats it by +8.1 FGA points.**\n\nThe evaluation design uses FGA (a log parsing metric) on a log parsing benchmark, comparing strategies. FGA as a metric appears in log parsing benchmarks. Papers [14] introduces a log parsing benchmark with character-level metrics. Papers [2],[3],[7],[8],[9],[10],[15] use standard log parsing metrics (grouping accuracy, template accuracy). The specific finding that \"naive rewrite ≈ stale baseline\" and \"patch >> rewrite\" is a quantitative result, but the evaluation design (comparing update strategies on a log parsing benchmark using accuracy metrics) uses the same benchmark family and metric semantics as prior log parsing papers. The evaluation design (benchmark + accuracy metric comparison) is covered by prior log parsing papers like [8],[7],[2].\n\n**DOMAIN: LLM-based log parsing under template drift.**\n\nLLM-based log parsing is clearly covered by multiple prior papers: [2], [3], [7], [8], [9], [10], [15]. The \"template drift\" aspect is a specific instance within the log parsing domain. This is covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 8\nVERDICT domain = 8",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper defines or motivates the specific problem of updating an LLM log parser's rule repository when log templates drift. Papers on concept drift (1, 5, 20) address general model adaptation, not rule-repository maintenance for LLM-based log parsers. LLM log parsing papers (2, 3, 7, 8, 9, 15) address parsing accuracy or efficiency but none frame the problem of repository update under template drift as their stated objective.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper introduces a rule repository update problem for LogRules-style parsers or empirically contrasts full rewriting against conservative patching of such repositories. Incremental rule mining papers (11, 22) address knowledge base rules in different domains without any log-parsing context or full-rewrite vs. patch comparison. No quoted phrase from any prior paper captures this specific mechanism."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 11
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe purpose is to define and motivate the problem of updating a rule repository for a parser when the underlying data distribution (log templates) drifts. This is a specific instance of the general problem of maintaining a knowledge or rule base in the face of evolving data. This general problem is covered by prior work, such as [11], which develops \"an incremental updating technique for maintenance of the association rules\" when a database is updated, and [22], which addresses \"rule mining over evolving web-scale knowledge bases.\"\n\n**MECHANISM**\nThe mechanism is an empirical comparison between two update strategies: \"full rewriting\" and \"conservative patching.\" This methodological approach of comparing a full, from-scratch regeneration against a more targeted, incremental patching method is a known design. For example, [12] compares two approaches for binary rewriting: one that \"lifts the binary to IR and then regenerates a new one\" (a full rewrite) and another that \"patches individual instructions\" (patching).\n\n**EVALUATION**\nThe evaluation design is a standard comparative experiment: a baseline (stale rules) is compared against two alternative methods (rewrite, patch) by measuring a standard performance metric (FGA points). This design is not novel; it is the standard way to validate claims about the superiority of one method over another. For instance, [12], in comparing its two binary rewriting methods, would necessarily employ the same evaluation design of measuring relevant metrics for each approach and a baseline to determine which is better.\n\n**DOMAIN**\nThe domain is LLM-based log parsing, specifically addressing the challenge of template drift. This application area is covered by prior work. Multiple papers, including [2], [3], [8], and [15], operate in the domain of LLM-based log parsing. Furthermore, [2] explicitly acknowledges the problem of changing data, noting that existing parser \"performance on evolving log data remains unsatisfactory,\" which is synonymous with the concept of template drift.\n\nVERDICT purpose = 11\nVERDICT mechanism = 12\nVERDICT evaluation = 12\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     8,
+     28
+    ],
+    "mechanism": [
+     4,
+     14
+    ],
+    "evaluation": [
+     12,
+     13
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to update a stale rule repository without losing effective pre-drift rules. Papers [5], [9], [10], [12], [15], [20], and [24] discuss concept drift adaptation, which involves maintaining or updating systems to handle evolving data patterns. However, none explicitly address the specific objective of preserving effective pre-drift rules while updating a repository. Papers on Ripple-Down Rules (e.g., [4], [14], [17], [19], [22], [26]) focus on incremental rule maintenance but do not explicitly address the challenge of balancing updates with preserving pre-drift rules. Thus, no prior paper fully matches this purpose.\n\n### Mechanism\nThe mechanism involves a conservative update policy that generates a small set of delta rules targeting drifted patterns and prepends them to the unchanged original repository. Papers [4], [14], [17], [19], [22], and [26] on Ripple-Down Rules describe mechanisms for incremental rule updates, including patching rules as exceptions without modifying the original repository. This aligns substantively with the described mechanism of prepending delta rules to the original repository. Paper [8] discusses incremental updating techniques for association rules, which also involve adding new rules without overwriting existing ones, further supporting mechanism coverage.\n\n### Evaluation\nThe evaluation reports improvements in FGA and performance metrics on drifted and stable templates. Papers [13] and [23] introduce log parser benchmarks and metrics, including template precision and accuracy, which align with the evaluation design of measuring parsing performance improvements. Papers [5], [9], [10], [12], and [24] discuss concept drift adaptation techniques validated through performance metrics on drifted and stable data, which matches the evaluation design of comparing performance across drifted and stable templates. Thus, the evaluation design is covered.\n\n### Domain\nThe domain is LLM log parser rule maintenance. Papers [1], [2], [3], [6], [7], [13], and [23] all address log parsing tasks, including rule-based approaches and LLM-based methods. While the specific sub-problem of rule maintenance is narrower, the general application area of log parsing is well-covered by these prior works.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 4  \nVERDICT evaluation = 13  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 8 | reason: Paper [8] explicitly discusses \"incremental updating technique\" for maintaining discovered rules without losing effective ones, aligning with the objective of updating a stale rule repository while preserving effective pre-drift rules. Quoted phrase: \"An incremental updating technique is developed for maintenance of the association rules discovered by database mining.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Update a stale rule repository without losing effective pre-drift rules.**\n\nThe core objective is maintaining/updating an existing rule set when data drifts, while preserving rules that still work. Paper [8] addresses \"maintenance of discovered association rules\" when databases update, invalidating some rules while others remain valid. Paper [17] discusses \"maintaining medium to large rule-based knowledge systems\" via RDR. Paper [12] addresses \"model adaptation to concept drift\" while being sustainable (not retraining everything). Paper [25] addresses \"incremental knowledge acquisition\" balancing what to keep vs. forget. However, the specific purpose here is maintaining a *log parser rule repository* under log drift — the closest match at the problem-class level is [8] (maintain discovered rules under updates, preserving valid ones) and [17] (maintaining rule-based knowledge systems). Paper [8] explicitly addresses \"invalidate some existing strong association rules\" while keeping others — this is substantively equivalent to \"update stale rules without losing effective pre-drift rules.\"\n\n---\n\n**MECHANISM: Conservative update policy generating a small set of delta rules targeting drifted patterns, prepended to the unchanged original repository.**\n\nThis is a \"patch by prepending exception/delta rules\" approach. Paper [14] describes RDR where \"rules are never modified or deleted, but locally patched\" — new rules are exceptions prepended/added to handle cases the old rules got wrong. Paper [17] similarly describes RDR maintenance via local patching without modifying existing rules. Paper [4] and [19] also cover RDR extensions. The primitive — generate a small corrective rule set for failing cases and prepend it while leaving the original intact — is exactly the RDR \"local patch\" mechanism described in [14] and [17]. The \"prepend\" ordering detail and \"conservative\" (only targeting drifted patterns) also matches RDR's philosophy of adding exception rules only where needed.\n\n---\n\n**EVALUATION: 0.2742 overall FGA, +8.1pp over Rewrite; +14.1 points on drifted templates and +5.5 points on stable templates.**\n\nThe evaluation uses FGA (Fixing Group Accuracy) as a metric on log parsing benchmarks, comparing against a \"Rewrite\" baseline, with breakdown on drifted vs. stable templates. Papers [1], [2], [3], [6], [7], [13], [23] all evaluate log parsers using grouping accuracy / template accuracy metrics on standard log parsing benchmarks (LogHub, etc.), comparing against baselines. Paper [13] specifically introduces a character-level benchmark but uses the same metric-family design. The evaluation design (accuracy metric on log parsing benchmark, comparison to baselines, breakdown by category) matches the design used in [1], [2], [3], [6], [7]. The specific metric \"FGA\" and the drifted/stable split may be novel constructs — FGA appears to be a newly defined metric for this specific maintenance scenario, and the drifted vs. stable template breakdown is a new evaluation protocol not present in prior log parsing papers.\n\nActually, re-examining: FGA (Fixing Group Accuracy) and the drifted/stable split seem to be newly defined for this contribution's specific maintenance scenario. No prior paper uses this exact evaluation design. I'll mark this NONE.\n\n---\n\n**DOMAIN: LLM log parser rule maintenance.**\n\nPapers [1], [2], [3], [6], [7], [23] all work in LLM-based log parsing. This is clearly the same application area.\n\n---\n\nVERDICT purpose = 8\nVERDICT mechanism = 14\nVERDICT evaluation = NONE\nVERDICT domain = 1",
+      "stage2": "FACET: evaluation | FINAL: NONE | reason: No prior paper reports the specific numeric results of 0.2742 overall FGA, +8.1pp over Rewrite, +14.1 points on drifted templates, or +5.5 points on stable templates — these are empirical findings unique to the submission under review, and no prior paper presents the same or equivalent quantitative claims under any terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 28
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The objective to update a rule repository to handle data drift without degrading performance on stable, pre-drift data is a central goal in the fields of incremental learning and concept drift adaptation. This is explicitly stated in [28] as \"Acquiring new knowledge without interfering with old knowledge\" and is also known as the stability-plasticity dilemma, mentioned in [25].\n\n**mechanism**: The mechanism of applying a conservative update by adding new, higher-priority \"patch\" rules to handle exceptions or new patterns, while leaving the original rule base unchanged, is the core technical primitive of Ripple-Down Rules (RDR). Paper [14] describes this mechanism clearly: \"rules are never modified or deleted, but locally patched.\"\n\n**evaluation**: The evaluation design, which involves comparing against a full \"Rewrite\" baseline and separately measuring performance on \"drifted\" and \"stable\" data subsets, is a standard protocol for assessing concept drift adaptation methods. Paper [12] identifies the full retrain (equivalent to \"Rewrite\") as the \"most common technique\" that new methods are implicitly compared against.\n\n**domain**: The application area of log parsing, specifically using Large Language Models (LLMs), is well-established in prior work. Multiple papers, including [1], operate in this domain, with its abstract stating its focus on \"Log Parsing using LLMs\".\n\nVERDICT purpose = 28\nVERDICT mechanism = 14\nVERDICT evaluation = 12\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     17,
+     22
+    ],
+    "mechanism": [
+     7,
+     13
+    ],
+    "evaluation": [
+     3,
+     14,
+     18
+    ],
+    "domain": [
+     4,
+     7,
+     17
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 17
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to explain why prepending delta rules outperforms rewriting. This requires a prior paper to establish or report the same empirical relationship between prepending delta rules and rewriting, specifically in terms of performance.  \n- Paper [17] (\"Learning Decision Lists by Prepending Inferred Rules\") discusses prepending inferred rules but does not compare it to rewriting or explain why prepending outperforms rewriting.  \n- Paper [22] (\"Recent Progress in Learning Decision Lists by Prepending Inferred Rules\") similarly focuses on prepending rules but does not establish the same empirical relationship or comparison to rewriting.  \n- Paper [16] (\"A Class of Rewriting Rules and Reverse Transformation for Rule-based Equivalent Transformation\") discusses rewriting rules but does not address prepending delta rules or compare their performance.  \n- No prior paper explicitly reports or establishes the same empirical relationship between prepending delta rules and rewriting.  \n\n**Purpose is NONE.**\n\n---\n\n#### Mechanism:\nThe contribution attributes success to decoupling drift adaptation from stable-template handling, framed as addressing the stability-plasticity dilemma. This mechanism involves separating the processes for adapting to drift and maintaining stable templates.  \n- Paper [7] (\"Streaming Data Classification using Hybrid Classifiers to tackle Stability-Plasticity Dilemma and Concept Drift\") explicitly addresses the stability-plasticity dilemma and concept drift, discussing mechanisms for adaptive model complexity and efficient memory models. This aligns with the contribution's mechanism of decoupling drift adaptation from stable-template handling.  \n- Paper [13] (\"Learning to synchronize: How biological agents can couple neural task modules for dealing with the stability-plasticity dilemma\") provides a computational framework for addressing the stability-plasticity dilemma but focuses on synchronizing and desynchronizing task modules, which is not substantively equivalent to the contribution's mechanism.  \n- Paper [14] (\"Balancing the Stability-Plasticity Dilemma with Online Stability Tuning for Continual Learning\") dynamically tunes the stability-plasticity trade-off but does not decouple drift adaptation from stable-template handling.  \n- Paper [19] (\"New Insights for the Stability-Plasticity Dilemma in Online Continual Learning\") discusses the stability-plasticity dilemma but does not propose the same mechanism of decoupling drift adaptation from stable-template handling.  \n\n**Mechanism is COVERED by paper [7].**\n\n---\n\n#### Evaluation:\nThe contribution evaluates whether the patch preserves pre-drift knowledge while adding targeted capacity for new patterns, avoiding regressions on stable templates. This involves validating continual learning performance in terms of stability and plasticity.  \n- Paper [3] (\"Continual Learning in Machine Intelligence: A Comparative Analysis of Model Performance\") evaluates continual learning algorithms across datasets, focusing on retaining old knowledge while adapting to new data. This matches the evaluation design of assessing stability and plasticity.  \n- Paper [4] (\"Improving Data-aware and Parameter-aware Robustness for Continual Learning\") evaluates continual learning methods in terms of robustness and stability-plasticity trade-offs, which aligns with the contribution's evaluation design.  \n- Paper [10] (\"Progressive Neural Networks\") evaluates continual learning performance in reinforcement learning tasks, focusing on transfer and avoiding catastrophic forgetting, which matches the evaluation design.  \n- Paper [18] (\"Progressive Convolutional Neural Network for Incremental Learning\") evaluates incremental learning performance, focusing on catastrophic forgetting and stability-plasticity trade-offs, which aligns with the evaluation design.  \n\n**Evaluation is COVERED by papers [3], [4], [10], and [18].**\n\n---\n\n#### Domain:\nThe contribution operates in the domain of continual-learning analysis of rule updates. This requires prior papers to address continual learning in the context of rule updates or similar applications.  \n- Paper [3] (\"Continual Learning in Machine Intelligence: A Comparative Analysis of Model Performance\") addresses continual learning but focuses on stock symbol datasets, not rule updates.  \n- Paper [4] (\"Improving Data-aware and Parameter-aware Robustness for Continual Learning\") addresses continual learning but does not focus on rule updates.  \n- Paper [7] (\"Streaming Data Classification using Hybrid Classifiers to tackle Stability-Plasticity Dilemma and Concept Drift\") addresses continual learning in streaming data classification, which is a substantively equivalent domain to rule updates in continual learning.  \n- Paper [19] (\"New Insights for the Stability-Plasticity Dilemma in Online Continual Learning\") addresses continual learning but does not focus on rule updates.  \n\n**Domain is COVERED by paper [7].**\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = 7  \nVERDICT evaluation = 3  \nVERDICT domain = 7  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 17 | reason: Paper [17] explicitly discusses prepending inferred rules and their performance benefits, aligning with the objective of explaining why prepending delta rules outperforms rewriting. Quoted phrase: \"Learning Decision Lists by Prepending Inferred Rules.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Explain why prepending delta rules outperforms rewriting.**\n\nThe purpose is to establish a specific empirical relationship: prepending (adding new rules without modifying existing ones) outperforms rewriting (modifying existing rules), and to explain *why*. This is about rule update strategies in a continual-learning context. Paper [17] \"Learning Decision Lists by Prepending Inferred Rules\" and [22] \"Recent Progress in Learning Decision Lists by Prepending Inferred Rules\" both involve prepending rules to decision lists, but their purpose is learning efficiency/accuracy in a static or batch setting, not explaining why prepending outperforms rewriting in a drift/continual-learning scenario. No prior paper establishes the same empirical relationship (prepend-vs-rewrite performance gap and its causal explanation in terms of stability-plasticity). The closest thematic papers ([17], [22]) don't address the drift/continual-learning comparison. This purpose appears uncovered.\n\n**MECHANISM: Analysis attributing success to decoupling drift adaptation from stable-template handling (stability-plasticity).**\n\nThe mechanism is an analytical framing using the stability-plasticity dilemma to explain why structural separation (prepend vs. rewrite) works. Papers [4], [7], [13], [14], [19], [24] all explicitly invoke the stability-plasticity dilemma as an analytical lens. Paper [4] \"Improving Data-aware and Parameter-aware Robustness for Continual Learning\" explicitly analyzes \"balance between the plasticity and stability of new and old knowledge.\" Paper [14] \"Balancing the Stability-Plasticity Dilemma with Online Stability Tuning\" directly uses stability-plasticity as the analytical framework. Paper [7] \"Streaming Data Classification using Hybrid Classifiers to tackle Stability-Plasticity Dilemma and Concept Drift\" combines concept drift with stability-plasticity analysis — very close to this mechanism. The analytical primitive of attributing a design choice's success to decoupling stability from plasticity is covered by these papers.\n\n**EVALUATION: Patch preserves pre-drift knowledge while adding targeted capacity for new patterns, avoiding regressions on stable templates.**\n\nThe evaluation design here involves measuring: (1) retention of pre-drift performance (stability metric) and (2) acquisition of post-drift patterns (plasticity metric), checking for regressions. This is a standard continual-learning evaluation design — measuring forgetting/retention alongside new-task performance. Papers [3], [4], [9], [10], [14], [19] all use this evaluation design (measuring both old-task retention and new-task performance in continual learning settings). Paper [14] explicitly measures stability and plasticity trade-offs. Paper [19] evaluates online continual learning with both stability and plasticity metrics. This evaluation design is well-covered.\n\n**DOMAIN: Continual-learning analysis of rule updates.**\n\nThe domain is continual learning applied to rule-based systems (rule updates). Papers [3], [4], [9], [10], [11], [14], [19], [20], [21] all work in continual learning. The rule-update aspect connects to [17], [22], [25]. The combination of continual learning + rule systems is somewhat specific, but continual learning as the general application area is clearly covered by many papers ([3], [4], [9], etc.), and rule update systems are covered by [17], [22], [25]. The domain of continual learning analysis is covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 7\nVERDICT evaluation = 14\nVERDICT domain = 4",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explains why prepending delta rules outperforms rewriting — papers [17] and [22] address prepending inferred rules for decision lists and [16]/[25] address rewriting rules, but none compares these two strategies and provides an explanation for the performance difference between them."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 22
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 18
+      },
+      "domain": {
+       "covered_by": 17
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "purpose: No prior paper seeks to explain the specific performance difference between prepending delta rules and rewriting them. Papers like [17] and [22] propose prepending as a learning method, and [23] discusses learning rule application order, but none have the explicit purpose of explaining *why* this strategy is superior to rewriting from a continual learning perspective.\n\nmechanism: The analysis mechanism is attributing success to decoupling plasticity from stability. This analytical primitive is well-established in continual learning, for instance in [13] which proposes a framework for how agents \"can learn to flexibly couple and decouple neural task modules for cognitive processing... [to] address the stability-plasticity dilemma.\"\n\nevaluation: The evaluation design consists of demonstrating that new knowledge is acquired while old knowledge is preserved, avoiding regressions. This is the canonical evaluation protocol for continual learning, as described explicitly in [18], which aims to \"incrementally learn new classes while keeping the performance of the network unchanged on old classes.\"\n\ndomain: The domain is the analysis of rule updates within a continual learning context. This general area is covered by prior work, such as [17] which presents an algorithm for \"Learning Decision Lists by Prepending Inferred Rules,\" a form of incremental learning for a rule-based system.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 13\nVERDICT evaluation = 18\nVERDICT domain = 17",
+      "stage2": "FACET: purpose: Explain why prepending delta rules outperforms rewriting. | FINAL: COVERED-BY [22] | reason: This paper's objective is to compare prepending rules to the standard \"covering method\" (appending rules) and to explain why prepending is superior, which is the same objective. The abstract states: \"We show empirically that Prepend often learns more accurate decision lists than covering algorithms, and we give a theoretical justification for this behavior.\""
+     }
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,428 @@
+{
+ "paper_id": "FA0025",
+ "title": "Risk-Controlled Early Exit for Diffusion Language Models",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     18
+    ],
+    "mechanism": [
+     1,
+     16,
+     18,
+     19,
+     27
+    ],
+    "evaluation": [
+     1,
+     3,
+     16,
+     19
+    ],
+    "domain": [
+     11,
+     18,
+     20
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        1,
+        16,
+        19,
+        27
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        1,
+        16,
+        19
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        11,
+        18,
+        20
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to provide **formal, distribution-free quality guarantees for early exit in diffusion language models**, replacing heuristically tuned fixed thresholds. None of the prior papers explicitly address this purpose. Papers like [18] and [20] discuss early exit strategies for deep neural networks, but they focus on improving efficiency or robustness without formal guarantees. Papers like [19] and [16] discuss conformal risk control (CRC) and its applications, but they do not address early exit in diffusion language models or provide guarantees for this specific use case. Thus, no prior paper shares the same purpose.\n\n### Mechanism\nThe mechanism, RC-Jot, is a **calibration framework that wraps around existing early exit methods and applies conformal risk control (CRC) with UCB-HB bounds** to select the least conservative threshold satisfying a user-specified risk constraint. Papers like [19], [1], and [16] describe conformal risk control and its extensions, which are substantively equivalent to the CRC component of RC-Jot. Additionally, [27] introduces UCB-based methods for bounded stochastic bandits, which are substantively equivalent to the UCB-HB bounds used in RC-Jot. Together, these papers cover the mechanism.\n\n### Evaluation\nThe evaluation is presented as the **first application of conformal risk control to DLLM early exit, with high-probability control at level 1-delta**. Papers like [19], [1], and [16] use conformal risk control to provide high-probability guarantees, which matches the evaluation design. Although the specific application to DLLM early exit is new, the evaluation design itself (conformal risk control with high-probability guarantees) is covered by these prior works.\n\n### Domain\nThe domain is **diffusion language model inference acceleration**. Papers like [11], [20], and [18] address inference acceleration for language models, including early exit strategies, which covers the general domain of inference acceleration. While none of these papers specifically target diffusion language models, the domain is still covered because the application area (language model inference acceleration) is the same.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 1, 16, 19, 27  \nVERDICT evaluation = 1, 16, 19  \nVERDICT domain = 11, 18, 20  ",
+      "stage2": "1. FACET: purpose | FINAL: NONE | reason: No prior paper provides formal, distribution-free quality guarantees for early exit in diffusion language models, replacing heuristically tuned fixed thresholds. No equivalent objective found under different terminology, framing, or domain vocabulary."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 18
+      },
+      "mechanism": {
+       "covered_by": 18
+      },
+      "evaluation": {
+       "covered_by": 19
+      },
+      "domain": {
+       "covered_by": 20
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose: Provide formal, distribution-free quality guarantees for early exit in diffusion language models, replacing heuristically tuned fixed thresholds.\n\nPaper [18] is the closest match: \"Beyond Greedy Exits: Improved Early Exit Decisions for Risk Control and Reliability\" explicitly addresses providing risk control guarantees for early exit neural networks, replacing static/greedy threshold selection. The purpose is substantively equivalent — both aim to replace heuristic fixed thresholds with formal guarantees for early exit. The host architecture (diffusion LM vs. standard DNN) differs but that's a domain difference. Paper [23] also covers \"generate set-valued predictions from a black-box predictor that controls the expected loss on future test points at a user-specified level\" but doesn't target early exit specifically. Paper [18] covers the purpose most directly.\n\n## Mechanism: RC-Jot applies conformal risk control with UCB-HB bounds to select the least conservative threshold satisfying a user-specified risk constraint, wrapping around an existing early exit method.\n\nPaper [19] introduces conformal risk control (CRC) as the core primitive. Paper [3] \"Anytime-Valid Conformal Risk Control\" extends CRC to remain valid with high probability over cumulatively growing calibration sets — this is closely related to the UCB-HB high-probability bound aspect. Paper [25] \"Optimized Certainty Equivalent RCPS\" provides high-probability guarantees (beyond expected loss control), and paper [23] introduces risk-controlling prediction sets. Paper [18] applies conformal risk control to early exit with threshold selection. The combination of CRC + UCB-HB bounds for threshold selection in early exit is partially covered: [18] applies CRC to early exit, [3] provides the anytime-valid/high-probability extension. The specific UCB-HB bound is mentioned in [3] (\"UCB-HB\" style bounds for high-probability control). Together, [18] and [3] cover the mechanism's primitives. Paper [18] wraps CRC around early exit; [3] provides the high-probability (UCB-HB) extension of CRC.\n\n## Evaluation: First application of conformal risk control to DLLM early exit, with high-probability control at level 1-delta.\n\nThe evaluation design uses standard CRC/conformal benchmarking with high-probability guarantees — this design appears in [3], [19], [23], [25]. The claim of \"first application\" is a domain claim, not an evaluation design claim. The evaluation design (measuring risk control at level 1-delta, checking empirical risk against user-specified bound) is used in [19], [3], [23], and [18]. Per the special rule, reusing an existing evaluation design counts as COVERED even when applied to a different object.\n\n## Domain: Diffusion language model inference acceleration.\n\nPapers [20] (DeeBERT), [11] (FastBERT), [21] (LECO), [29] (Early-exit CNNs), [31] (Early-Exit DNN survey), [24] (DistrEE) all work in the domain of language model / neural network inference acceleration with early exit. The specific sub-domain of *diffusion* language models is a narrower instance within the broader \"language model inference acceleration\" area. Per the special rule, this is COVERED as a new instance within an existing area.\n\nVERDICT purpose = 18\nVERDICT mechanism = 18\nVERDICT evaluation = 19\nVERDICT domain = 20",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 18
+      },
+      "mechanism": {
+       "covered_by": 19
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 11
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe purpose of providing formal, distribution-free quality guarantees for early exit to replace heuristic thresholds is covered by prior work. Paper [18] explicitly targets \"Improved Early Exit Decisions for Risk Control and Reliability,\" criticizing greedy exits based on a \"predefined threshold\" and aiming to provide more reliable early exit decisions, which is the same underlying objective.\n\n**MECHANISM**\nThe mechanism combines two existing technical primitives: conformal risk control (CRC) and UCB-style bounds for adaptive selection. The core primitive, \"conformal risk control,\" is introduced and extensively studied in prior work, such as [19] (\"Conformal Risk Control\"). The use of UCB-style bounds for adaptive online selection is also a well-established primitive from the multi-armed bandit literature, with foundational work like [27] (\"The KL-UCB Algorithm for Bounded Stochastic Bandits and Beyond\").\n\n**EVALUATION**\nThe evaluation design, which consists of demonstrating \"high-probability control at level 1-delta,\" is the standard validation framework for this family of statistical methods. Prior work on advanced conformal methods, such as [3] (\"Anytime-Valid Conformal Risk Control\") and [25] (\"Optimized Certainty Equivalent Risk-Controlling Prediction Sets\"), uses this same evaluation design of demonstrating high-probability guarantees, making the design itself covered.\n\n**DOMAIN**\nThe domain of inference acceleration for large language models via early exit is covered by prior work. Papers like [11] (\"FastBERT\"), [20] (\"DeeBERT\"), and [18] all operate in the same general application area of using early exits to accelerate deep neural networks, including language models. Applying this to diffusion language models is a new instance within this existing domain, not a genuinely new application area.\n\nVERDICT purpose = 18\nVERDICT mechanism = 19\nVERDICT evaluation = 3\nVERDICT domain = 11",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     11
+    ],
+    "mechanism": [
+     11,
+     13,
+     19
+    ],
+    "evaluation": [
+     11,
+     13,
+     19
+    ],
+    "domain": [
+     2,
+     5
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        13,
+        19
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        13,
+        19
+       ]
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to demonstrate that risk-controlled threshold selection preserves speedup while keeping accuracy degradation within a specified budget. Paper [19] introduces \"optimized certainty equivalent RCPS,\" which provides high-probability guarantees for risk-controlling prediction sets in safety-critical applications. While [19] focuses on worst-case scenarios and tail behavior, it does not explicitly establish the empirical relationship between risk-controlled threshold selection and the preservation of speedup with bounded accuracy degradation. No prior paper explicitly demonstrates this relationship. Therefore, the purpose is **NONE**.\n\n### Mechanism\nThe contribution uses empirical evaluation of RC-Jot's selected thresholds against risk budgets on math and code benchmarks. Paper [13] (\"Conformal Risk Control\") extends conformal prediction to control expected values of monotone loss functions, which is substantively equivalent to the mechanism of risk-controlled threshold selection. Additionally, paper [19] introduces optimized certainty equivalent RCPS, which also involves risk-controlling prediction sets with probabilistic guarantees. Both papers describe mechanisms that align with the underlying primitive of risk-controlled threshold selection. Thus, the mechanism is **COVERED** by [13] and [19].\n\n### Evaluation\nThe evaluation design involves measuring violation rates and speedup under risk budgets on benchmarks like GSM8K and HumanEval. Paper [13] (\"Conformal Risk Control\") uses similar evaluation designs, including risk control procedures validated on benchmarks from computer vision and natural language processing. Paper [19] also evaluates risk-controlling prediction sets with probabilistic guarantees, which aligns with the evaluation design of measuring violation rates under risk budgets. Both papers use substantively equivalent evaluation designs, even though the specific benchmarks differ. Therefore, the evaluation is **COVERED** by [13] and [19].\n\n### Domain\nThe contribution operates in the domain of diffusion language model inference acceleration. Paper [5] (\"Selective Layer Acceleration with Data-parallel Architecture for DNN Inference Throughput Maximization\") addresses inference acceleration for deep neural networks, which is substantively equivalent to the general application area of inference acceleration. Although the specific focus on diffusion language models is new, the broader domain of inference acceleration is covered. Thus, the domain is **COVERED** by [5].\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 13, 19  \nVERDICT evaluation = 13, 19  \nVERDICT domain = 5  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly demonstrates that risk-controlled threshold selection preserves speedup while keeping accuracy degradation within budget, even under different terminology, framing, or domain vocabulary."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 11
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": null
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "domain"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Demonstrate that risk-controlled threshold selection preserves speedup while keeping accuracy degradation within budget.**\n\nThe purpose is specifically about showing that a conformal/risk-control-based threshold selection method achieves both statistical guarantees (bounded accuracy degradation) AND computational speedup simultaneously. Paper [11] (MITHRA) is closest — it explicitly addresses \"navigating tradeoffs to deliver high performance and efficiency\" with \"statistical guarantees in controlling quality tradeoffs for approximate acceleration.\" This is substantively equivalent: the objective is to show that a statistically-controlled selection mechanism preserves speedup while bounding quality degradation. Paper [13] (Conformal Risk Control) and [17] (Learn then Test) address risk control but not in the context of preserving computational speedup. Paper [11] directly targets the same objective: statistical guarantees on quality while achieving acceleration.\n\n**MECHANISM: Empirical evaluation of RC-Jot's selected thresholds against risk budgets on math and code benchmarks.**\n\nThe mechanism is empirical evaluation of a risk-controlled threshold selection procedure — measuring violation rates and speedup. This is a standard empirical validation design. Paper [13] uses conformal risk control with empirical evaluation of risk bounds. Paper [17] empirically validates calibrated predictive algorithms against risk budgets. Paper [11] empirically evaluates quality-accuracy tradeoffs under statistical guarantees. The analysis method (measure empirical violation rate vs. budget, compare to naive baseline) is a standard controlled comparison protocol appearing in [13] and [17].\n\n**EVALUATION: 0% violation rate on GSM8K with 1.36x speedup at epsilon=0.10, and <=1% violation on HumanEval with 1.32x speedup at epsilon=0.15, versus 52% violation for naive threshold selection.**\n\nThe evaluation design involves: (1) measuring empirical risk violation rate against a budget epsilon, (2) measuring speedup, (3) comparing risk-controlled vs. naive threshold selection. The violation-rate-vs-budget evaluation design is used in [13] (Conformal Risk Control) and [17] (Learn then Test) — both measure empirical risk against user-specified levels and compare to baselines. The specific benchmarks (GSM8K, HumanEval) are new instances, but the evaluation design (empirical violation rate vs. epsilon budget, comparison to naive baseline) is covered by [13] and [17].\n\n**DOMAIN: Diffusion language model inference acceleration.**\n\nDiffusion language models are a specific architecture. Prior papers cover inference acceleration ([2], [5]) in general DNN/edge computing contexts, and conformal risk control in vision/NLP ([13], [17], [20]). Paper [11] covers approximate acceleration with statistical guarantees. None of the prior papers specifically address diffusion language model inference acceleration — this is a genuinely new application area not covered by any prior paper. The closest is [11] (approximate acceleration) but that targets hardware accelerators for general code regions, not diffusion LMs. No prior paper works in diffusion language model inference.\n\nVERDICT purpose = 11\nVERDICT mechanism = 13\nVERDICT evaluation = 13\nVERDICT domain = NONE",
+      "stage2": "FACET: domain | FINAL: NONE | reason: No prior paper addresses diffusion language model inference acceleration; papers [2] and [5] cover DNN/CNN inference acceleration in edge/heterogeneous computing, and [11] covers approximate accelerator quality tradeoffs, but none involve diffusion language models specifically — these are categorically different model architectures and domains, and no paper uses equivalent terminology or framing for this domain."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 11
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The purpose is to demonstrate that a risk-controlled selection method can successfully manage the trade-off between acceleration (speedup) and accuracy degradation (keeping it within a budget). This is covered by [11], which introduces a system for \"Controlling Quality Tradeoffs for Approximate Acceleration\" with \"Statistical Guarantees\" to \"deliver high performance... while guaranteeing that the final quality degradation is less than a user-specified bound,\" which is the same underlying objective.\n\n**mechanism**: The mechanism is an empirical study on standard benchmarks to validate that a method for trading quality for speedup adheres to a specified risk budget. This validation design is covered by [11], which, in order to support its claims about \"Controlling Quality Tradeoffs for Approximate Acceleration,\" must have employed the same mechanism of empirically evaluating performance gains against the satisfaction of a quality degradation budget.\n\n**evaluation**: The evaluation design consists of measuring the violation rate of a risk budget and the corresponding speedup on a set of benchmarks. This design is covered by [11], which addresses the same problem of \"Approximate Acceleration\" with \"Statistical Guarantees\" and would therefore need to use the same evaluation design of jointly measuring performance (speedup) and adherence to a quality budget (violation rate).\n\n**domain**: The application domain is inference acceleration for a specific model type (diffusion language models). The general area of \"inference acceleration\" is covered by [2], which is explicitly about \"Distributed CNN Inference Acceleration,\" and [5], which targets \"DNN Inference Throughput Maximization.\"\n\nVERDICT purpose = 11\nVERDICT mechanism = 11\nVERDICT evaluation = 11\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     4,
+     11
+    ],
+    "evaluation": [
+     3,
+     4
+    ],
+    "domain": [
+     3
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to identify which calibration method best trades off guarantee strength against speedup. This specific empirical relationship — the tradeoff between calibration guarantee strength and computational speedup — does not appear to be established in any prior paper. While several papers (e.g., [3], [4], [8], [13], [23]) discuss calibration methods or risk control, none explicitly report or establish this tradeoff relationship. For example, [3] focuses on confident acceleration but does not analyze calibration tradeoffs, and [4] introduces CRC but does not address speedup. Thus, the purpose is **not covered**.\n\n#### Mechanism:\nThe contribution compares three calibration methods (Naive, CRC, UCB-HB) within the RC-Jot framework. Papers [4], [23], and [13] discuss CRC and conformal risk control methods, which overlap with the mechanism here. Specifically, [4] introduces CRC as a calibration method, and [23] generalizes conformal prediction to risk control, which aligns with the technical primitives used in this contribution. While the RC-Jot framework is specific to this work, the underlying comparison of calibration methods is substantively equivalent to prior work. Thus, the mechanism is **covered**.\n\n#### Evaluation:\nThe evaluation design involves determining which calibration method (UCB-HB) provides the best balance between guarantee strength and speedup, particularly with small calibration sets. Papers [4], [23], and [13] use similar evaluation designs to validate calibration methods, including metrics for guarantee strength and computational efficiency. For example, [4] evaluates CRC's calibration guarantees, and [23] assesses conformal risk control methods under computational constraints. Although the specific calibration methods and datasets differ, the evaluation design (comparing calibration methods on guarantee strength and efficiency) is substantively equivalent. Thus, the evaluation is **covered**.\n\n#### Domain:\nThe contribution operates in the domain of diffusion language model inference acceleration. Paper [3] explicitly addresses inference acceleration in large NLP models, which is substantively equivalent to the application area here. While [3] does not focus on diffusion models specifically, the broader domain of inference acceleration in language models is shared. Thus, the domain is **covered**.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = 4  \nVERDICT evaluation = 4  \nVERDICT domain = 3  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly identifies the objective of trading off guarantee strength against speedup in calibration methods, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Identify which calibration method best trades off guarantee strength against speedup.**\n\nThe purpose is to empirically determine which calibration method (among Naive, CRC, UCB-HB) best balances statistical guarantee strength against computational speedup in an inference acceleration context. Looking through the papers: [13] (Learn then Test/CRC) introduces calibration for risk control but doesn't compare methods for guarantee-vs-speedup tradeoff. [23] (Conformal Risk Control) introduces CRC but doesn't compare calibration methods against each other for speedup tradeoffs. [14] (Anytime-Valid CRC) extends CRC but doesn't compare methods for speedup. [9] addresses small-sample calibration variance but doesn't compare methods for speedup tradeoffs. [21] introduces OCE-RCPS but focuses on tail behavior, not speedup. None of the prior papers establish the same empirical relationship: comparing calibration methods specifically on the guarantee-strength vs. speedup tradeoff axis. This is a specific finding about which method wins on this tradeoff.\n\n**MECHANISM: Comparison of three calibration methods (Naive, CRC, UCB-HB) within the RC-Jot framework.**\n\nThe mechanism is a controlled comparison/ablation of calibration methods. Papers [13], [23], [24] introduce individual calibration methods but don't compare them against each other in a unified framework. [14] introduces anytime-valid CRC (related to UCB-HB style high-probability bounds). [9] introduces SSBC for small-sample settings. The comparison design itself (controlled ablation across calibration methods) is a generic experimental move. However, the specific methods being compared (Naive, CRC, UCB-HB) are drawn from [23]/[13] and [14]-style work. The comparison protocol as a design is a standard ablation/substitution experiment.\n\n**EVALUATION: UCB-HB provides the best balance between guarantee strength and speedup, particularly with small calibration sets.**\n\nThe evaluation design involves measuring guarantee strength and speedup metrics across calibration methods, particularly examining small-sample behavior. [9] explicitly addresses small-sample calibration set behavior and coverage guarantees. [14] addresses high-probability guarantees. The evaluation design of measuring guarantee strength vs. efficiency tradeoff is not a named benchmark or protocol family from prior work — it's specific to this inference acceleration setting.\n\n**DOMAIN: Diffusion language model inference acceleration.**\n\nThe domain is diffusion language model inference acceleration. [3] (CATs) addresses inference acceleration for transformers in NLP. This is the same general application area (NLP/language model inference acceleration), even though diffusion LMs are a specific sub-type. The area of accelerating language model inference is covered by [3].\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 3",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the objective of identifying which calibration method best trades off guarantee strength against speedup in an adaptive inference context; the closest papers (CRC [23], LTT [13], CV-CRC [4]) focus on constructing or improving calibration guarantees but never frame their purpose as a comparative tradeoff analysis between guarantee strength and computational speedup.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper compares Naive, CRC, and UCB-HB calibration methods within a unified RC-Jot (or equivalent) framework; each prior paper proposes or analyzes a single calibration approach rather than conducting a head-to-head comparison of three named methods in one system.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper contains a finding that UCB-HB (or an equivalent method) provides the best balance between guarantee strength and speedup particularly with small calibration sets; [9] addresses small-sample conformal prediction variance but does not evaluate speedup tradeoffs, and no other paper makes this specific comparative empirical claim."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "PURPOSE: Paper [3] is covered because it addresses the same objective of managing the trade-off between inference speed and correctness guarantees, aiming to \"simultaneously increase computational efficiency, while guaranteeing a specifiable degree of consistency\". The contribution's purpose of identifying the best method for this trade-off falls under the same problem class.\n\nMECHANISM: Paper [11] is covered as it employs the same mechanism design: a comparative study to evaluate different methods based on their performance. Paper [11] requires an \"assessment of their accuracy\" for different instruments, which is the same analysis design as the contribution's comparison of calibration methods on their trade-offs.\n\nEVALUATION: Paper [3] is covered because its evaluation design necessarily involves measuring the same semantic quantities of computational efficiency (speedup) and performance guarantees (consistency) to validate its central claim of \"Confident Accelerated Transformers\".\n\nDOMAIN: Paper [3] is covered as it operates in the same general application area of accelerating large language models, specifically \"accelerated inference in the large and expensive multilayer Transformers that are now ubiquitous in natural language processing\".\n\nVERDICT purpose = 3\nVERDICT mechanism = 11\nVERDICT evaluation = 3\nVERDICT domain = 3",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     4,
+     11
+    ],
+    "mechanism": [
+     14
+    ],
+    "evaluation": [
+     4,
+     14,
+     27
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to provide practitioners guidance on designing the threshold grid for calibration. Paper [4] discusses threshold calibration in open-world recognition, specifically finding distance thresholds for embedding models to achieve target performance metrics. While the application differs, the purpose of guiding threshold design for calibration is substantively equivalent. Paper [24] also addresses calibration in early-exit neural networks, focusing on improving classifier calibration for adaptive computation, which aligns with the broader goal of threshold calibration guidance. Both papers share the same problem-class level objective.\n\n### Mechanism\nThe contribution's mechanism involves ablation over threshold grid granularity in the RC-Jot calibration procedure. Paper [4] uses a learning-based approach to calibrate thresholds for metric learning, but it does not explicitly perform ablation over grid granularity. Paper [13] discusses dynamic thresholding for diffusion language models, but it focuses on confidence fluctuations rather than ablation over grid granularity. No prior paper explicitly matches the mechanism of ablation over threshold grid granularity.\n\n### Evaluation\nThe evaluation demonstrates that medium-granularity grids (15-20 values) are sufficient for effective calibration, while coarse grids can cause complete speedup loss. Paper [4] evaluates threshold calibration in terms of performance metrics (TPR/TNR), which is a substantively equivalent evaluation design. Paper [24] evaluates calibration methods for early-exit neural networks, focusing on adaptive computation performance, which also aligns with the evaluation design of assessing calibration effectiveness. Both papers use similar evaluation frameworks for calibration-related claims.\n\n### Domain\nThe contribution operates in the domain of diffusion language model inference acceleration. Papers [1], [2], [5], [6], and [13] all address diffusion language models and their inference acceleration, making the domain clearly covered. While the specific sub-problem of threshold grid calibration is new, the general application area of diffusion language model inference acceleration is well-established in prior work.\n\n---\n\nVERDICT purpose = 4  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 4  \nVERDICT domain = 1  ",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper explicitly addresses ablation over threshold grid granularity in the RC-Jot calibration procedure, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Give practitioners guidance on how to design the threshold grid for calibration.**\n\nThe purpose is specifically about advising on threshold grid granularity for a calibration procedure in diffusion LM inference. Paper [14] discusses robustness to coarse grid search for learning rate tuning, noting that coarse grids cause performance loss — this is about hyperparameter grid design guidance, but for learning rates in SGD, not threshold calibration. Paper [8] mentions \"tune hard-threshold\" which is too vague. Paper [4] addresses threshold calibration for open-world recognition but focuses on finding thresholds, not on grid granularity guidance. No prior paper establishes the same empirical relationship: \"medium-granularity grids suffice; coarse grids cause complete speedup loss\" in a calibration context. The closest is [14] which gives guidance on grid coarseness for hyperparameter tuning, but the target quantity (threshold grid for inference calibration vs. learning rate grid) differs enough that the purpose-level relationship is not the same.\n\n**MECHANISM: Ablation over threshold grid granularity in the RC-Jot calibration procedure.**\n\nThis is an ablation study varying the number of grid points in a threshold search. Paper [14] performs analysis of coarse vs. fine grid search for learning rate tuning. Paper [18] uses grid search for hyperparameter tuning. However, the specific mechanism of ablating grid granularity in a calibration procedure is a generic experimental design (vary a parameter, measure outcome). No prior paper performs this specific ablation in a calibration context for diffusion LM inference, but as a design-level primitive, varying grid resolution/granularity is present in [14] and [18].\n\n**EVALUATION: Medium-granularity grids (15-20 values) sufficient; coarse grids cause complete speedup loss.**\n\nThis is the finding/result itself, not an evaluation design. As an evaluation design, it's a sensitivity/ablation analysis over a hyperparameter (grid size). Paper [14] performs exactly this kind of analysis — varying grid coarseness and measuring performance impact. This is a standard ablation/sensitivity analysis design that appears in multiple papers. However, per the special rule for findings, the evaluation facet here is the analysis method used to obtain the finding. Ablation over a discrete hyperparameter (grid granularity) and measuring downstream performance is a standard controlled ablation design present in [14] and [18].\n\n**DOMAIN: Diffusion language model inference acceleration.**\n\nPapers [1], [2], [5], [6], [13] all work in diffusion language model inference/acceleration. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 14\nVERDICT evaluation = 14\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper provides guidance to practitioners on how to design a threshold grid for calibration in this context. Paper [13] describes a static global confidence threshold and dynamic thresholding but does not give design guidance for a threshold grid. Paper [8] mentions tuning a hard threshold but contains no practitioner guidance on grid design. No other paper matches the same objective even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 11
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 27
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to establish the empirical relationship between calibration threshold grid granularity and inference acceleration effectiveness, in order to provide design guidance. According to the special rule for \"finding\" contributions, this is covered only if a prior paper establishes the same relationship (same variables, same direction of effect). No prior paper investigates the specific relationship between the granularity of a *calibration threshold grid* and the resulting model's performance (e.g., speedup). While papers like [14] and [27] study the effect of parameter choices (like grid coarseness or threshold values) on outcomes, they do not establish this specific empirical relationship.\n\n**mechanism**: The mechanism is an \"ablation over threshold grid granularity,\" which is a specific type of sensitivity analysis used as an analysis method. Paper [14] investigates the effect of using a \"coarse grid search\" for tuning learning rates, which necessarily involves comparing outcomes from different grid granularities as an analysis method. This is the same analysis protocol (varying grid granularity to measure impact on a performance metric), just applied to a different hyperparameter.\n\n**evaluation**: The evaluation design consists of performing a sensitivity analysis to measure how a system's performance metric (speedup from calibration) changes as a function of a design parameter (grid granularity). Paper [27] explicitly details an evaluation design for this exact purpose, titled \"Sensitivity Analysis for Threshold Decision Making,\" where it proposes a \"computational procedure for establishing\" the effect of parameter choices on a decision outcome. This is the same evaluation design, even though the specific parameter and outcome metric differ.\n\n**domain**: The application area is \"diffusion language model inference acceleration.\" Paper [1] works in this exact domain, as its title is \"Speculative Diffusion Decoding: Accelerating Language Generation through Diffusion.\" It proposes a method to \"accelerate large language model inference\" by adapting speculative decoding for \"discrete diffusion\" models.\n\nVERDICT purpose = NONE\nVERDICT mechanism = [14]\nVERDICT evaluation = [27]\nVERDICT domain = [1]",
+      "stage2": "FACET: purpose: Give practitioners guidance on how to design the threshold grid for calibration. | FINAL: COVERED-BY [11] | reason: Paper [11] proposes a new calibration method centered on a specific grid design. The title, \"Deep calibration with random grids,\" and the abstract, which proposes a \"neural network-based approach to calibrating... which combines the pioneering grid approach,\" directly offer a specific grid design (random grids) as guidance for practitioners."
+     }
+    }
+   }
+  }
+ ]
+}

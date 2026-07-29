@@ -1,0 +1,320 @@
+{
+ "paper_id": "9KxnxWOBA5",
+ "title": "Towards Optimal Multi-draft Speculative Decoding",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     6,
+     22
+    ],
+    "evaluation": null,
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to efficiently compute the optimal acceptance rate for MDSD under large vocabulary sizes (thousands of tokens) to quantify the gap between existing verification algorithms and theoretical upper bounds. None of the prior papers explicitly address this purpose. While many papers (e.g., [1], [2], [3], [4], [6], [15], [16]) focus on speculative decoding and its efficiency, they do not aim to compute the optimal acceptance rate or quantify the gap between practical algorithms and theoretical limits. This specific objective is absent from prior work.\n\n### Mechanism\nThe mechanism involves taking the dual of the optimal transport problem, leveraging the total unimodularity (TUM) of the coefficient matrix to transform the computation of the optimal acceptance rate into a subset selection problem, and designing efficient solvers using the convexity structure of set functions for specific draft distributions (with or without replacement). Paper [6] discusses speculative decoding using optimal transport but does not leverage TUM or transform the problem into subset selection. Papers [9], [10], [11], [13], and [18] discuss optimal transport methods, but none combine TUM with subset selection or address the specific draft distribution structure. Papers [12], [14], [17], [18], and [21] discuss TUM in optimization problems, but they do not apply it to speculative decoding or optimal transport in this manner. Thus, the mechanism is novel.\n\n### Evaluation\nThe evaluation facet involves providing a practical method to compute the theoretical acceptance rate upper bound for given draft distributions, demonstrating scalability to large vocabularies (thousands of tokens), and comparing against LP solvers that are limited to toy models. Papers [6], [15], and [16] discuss speculative decoding efficiency and acceptance rates but do not provide a method to compute theoretical upper bounds or scale to large vocabularies. While [6] uses optimal transport, its evaluation design does not match the contribution's focus on theoretical bounds or scalability. No prior paper uses the same evaluation design, making this facet novel.\n\n### Domain\nThe domain is speculative decoding for accelerating large language model inference. Many prior papers ([1], [2], [3], [4], [5], [6], [7], [8], [15], [16], [19], [20]) work in this application area, even if they target different sub-problems or datasets. Therefore, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [1]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses efficient computation of optimal acceptance rates for large-scale MDSD to quantify gaps between verification algorithms and theoretical bounds.  \n\nFACET: mechanism | FINAL: COVERED-BY 6 | reason: \"use a small model to sample a $\\textit{draft}$ (block or sequence of tokens), and then score all tokens in the draft by the large language model in parallel. A subset of the tokens in the draft\" aligns with subset selection and convex structures for efficient solving.  \n\nFACET: evaluation | FINAL: NONE | reason: No prior paper provides a practical method for calculating theoretical acceptance rate bounds for given draft distributions or demonstrates handling large-scale vocabularies (thousands of tokens)."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\n\nThe purpose is: **make the optimal acceptance rate of MDSD (Multi-Draft Speculative Decoding) efficiently computable at real vocabulary sizes (thousands), to quantify the gap between existing verification algorithms and the theoretical upper bound.**\n\nPaper [6] (SpecTr) introduces optimal transport for speculative decoding and derives the optimal acceptance rate for MDSD. Paper [4] (\"How Speculative Can Speculative Decoding Be?\") also studies theoretical limits of speculative decoding. However, the specific purpose here is to make the *computation* of this theoretical upper bound *efficient at scale* (thousands of tokens) — not merely to define it. Paper [6] defines the OT formulation but doesn't solve the computational scalability problem. No prior paper explicitly targets \"efficiently computing the MDSD optimal acceptance rate at real vocabulary scale to quantify the gap.\" The closest is [6], but its purpose is to derive and apply the OT-based acceptance criterion, not to make the theoretical upper bound efficiently computable at scale. This purpose appears uncovered.\n\n## Mechanism\n\nThe mechanism is: **take the dual of the OT problem, exploit total unimodularity (TUM) of the coefficient matrix to reduce to a subset selection problem, then use convexity of set functions for efficient solving under special draft distributions (with/without replacement).**\n\nPaper [6] uses optimal transport for speculative decoding but does not exploit TUM or reduce to subset selection. Papers [12], [14], [17], [18], [22] discuss TUM in various optimization contexts — [12] finds TUM in scheduling LPs, [14] exploits TUM for random network problems, [17] uses TUM for structured sparsity, [18] uses TUM for homologous cycles. None of these apply TUM to OT duality in the context of speculative decoding or acceptance rate computation. Paper [2] uses sampling without replacement in speculative decoding but doesn't use TUM or OT duality. The combination of OT duality + TUM exploitation + subset selection + convexity of set functions for this specific problem appears genuinely novel. No prior paper covers this mechanism.\n\n## Evaluation\n\nThe evaluation design is: **demonstrate that the method can compute MDSD theoretical acceptance rate upper bounds for real vocabulary sizes (thousands), where LP solvers only handle toy models — a scalability/feasibility demonstration.**\n\nThis is essentially a scalability comparison between the proposed method and LP solvers, applied to a new problem (MDSD acceptance rate computation). Papers [6], [4], [1] evaluate speculative decoding methods, but none use this specific evaluation design of comparing computational feasibility at scale vs. LP baseline for acceptance rate upper bounds. However, the generic design of \"our method scales where LP/baseline cannot\" is a standard computational comparison. Paper [6] does compare acceptance rates. The evaluation design here — showing a new algorithm handles real-scale problems where LP fails — is a standard scalability demonstration. This generic shape appears in computational papers broadly, but no prior paper uses this specific protocol for MDSD acceptance rate computation. Given the special rule that generic experimental moves don't establish coverage without a named benchmark/protocol family, and this is a novel evaluation protocol for a new computational problem, I'll mark this as NONE.\n\n## Domain\n\nThe domain is: **LLM inference acceleration / speculative decoding.**\n\nPapers [1], [2], [3], [4], [5], [6], [7], [8], [15], [16], [19], [20] all work in LLM inference acceleration and speculative decoding. This is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper aims to make the optimal acceptance rate of MDSD efficiently computable at vocabulary scales of thousands in order to quantify the gap between existing verification algorithms and the theoretical upper bound. SpecTr [6] formulates an OT problem for optimal acceptance but does not address computational tractability at large vocabulary scales for this diagnostic purpose.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper takes the dual of an OT problem, invokes TUM of the coefficient matrix to convert optimal acceptance rate computation into a subset selection problem, and then exploits convexity structure of set functions for special draft distributions (with/without replacement). SpecTr [6] uses OT but does not take its dual or use TUM for this conversion; TUM papers [12,14,17,18,22] are in unrelated domains.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper provides a practical method for computing the MDSD theoretical acceptance rate upper bound for given draft distributions at vocabulary sizes of thousands, nor contrasts this with LP solvers being limited to small toy models. SpecTr [6] solves the OT problem but does not evaluate or discuss scalability to large vocabularies in this diagnostic framing."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        6,
+        22
+       ]
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to create an efficient, practical method for computing the theoretical upper bound of the acceptance rate for Multi-Candidate Speculative Decoding (MDSD). Prior papers aim to propose or analyze new speculative decoding *algorithms* to improve speed, not to create a tool to precisely and efficiently calculate the theoretical performance ceiling for an existing one. For example, paper [6] frames the problem as optimal transport to propose a new decoding method, and paper [4] analyzes a general upper bound, but neither has the specific objective of creating a scalable computational tool for the MDSD optimum.\n\n**mechanism**: The mechanism combines several existing primitives. Paper [6] introduces the formulation of speculative decoding acceptance as an optimal transport (OT) problem. The core of the proposed mechanism is to take the dual of this OT problem and then exploit the Total Unimodularity (TUM) of the resulting constraint matrix to simplify the problem. The use of TUM to show that a linear program's solution is integer, thereby simplifying an optimization problem, is a standard technique in combinatorial optimization, described in works like [22] (\"The theory of totally unimodular matrices is introduced to account for problems whose models have naturally integer solutions.\").\n\n**evaluation**: The evaluation design consists of a scalability comparison, demonstrating that the proposed method can handle large, practical vocabulary sizes (thousands) while a standard baseline (a generic LP solver) can only handle small toy problems. This evaluation *design*—showing a new algorithm for a large-scale problem is more scalable than a standard baseline solver—is not novel. For instance, paper [10] on discrete optimal transport notes that it \"becomes a large-scale linear program, which typically is infeasible to solve efficiently,\" implying that new methods in this area are evaluated on their ability to scale beyond standard solvers.\n\n**domain**: The contribution operates in the domain of accelerating large language model (LLM) inference using speculative decoding. This is the explicit application area of numerous prior papers. For example, paper [1] states its topic is \"Speculative Decoding is a widely used technique to speed up inference for Large Language Models (LLMs)\".\n\nVERDICT purpose = NONE\nVERDICT mechanism = 6, 22\nVERDICT evaluation = 10\nVERDICT domain = 1",
+      "stage2": "FACET: purpose: 使实际词表规模(上千)下的 MDSD 最优接受率首次可高效计算,以便量化现有验证算法与理论上界的差距 | FINAL: NONE | reason: The stated purpose is to enable the *efficient calculation* of the *theoretical optimal acceptance rate* for large vocabularies, with the explicit goal of *quantifying the gap* between existing algorithms and this upper bound. Paper [6] is the closest prior work, as it formulates the problem of maximizing the acceptance rate as an optimal transport problem. However, its objective is to propose a new decoding algorithm (SpecTr) that solves this problem as a subroutine, not to enable the efficient calculation of the bound itself as a tool for analysis and benchmarking. The focus on enabling efficient computation at scale for the purpose of quantification is a distinct, meta-level objective not present in [6] or any other prior paper."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     6,
+     11
+    ],
+    "evaluation": [
+     6,
+     11
+    ],
+    "domain": [
+     1,
+     4,
+     8
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to establish the theoretical upper bound of MDSD efficiency on real text distributions, quantify the gap between existing verification algorithms (RRS, K-SEQ) and this bound, and compare different draft sampling methods. None of the prior papers explicitly report or establish the same theoretical upper bound for MDSD efficiency or quantify the gap between RRS/K-SEQ and this bound. While many papers (e.g., [1], [2], [5], [6]) discuss speculative decoding efficiency, they focus on practical speedups or algorithmic improvements rather than theoretical bounds or direct comparisons to existing verification methods. Papers [9] and [10] discuss discrepancy bounds for deterministic acceptance-rejection samplers, but these are unrelated to MDSD efficiency in LLM inference. No prior paper establishes the same empirical relationship.\n\n### Mechanism\nThe contribution uses C1's efficient computation method to measure the optimal acceptance rate across four real LLMs (LLaMA, Vicuna, OPT, Qwen2), comparing sampling with and without replacement and evaluating RRS and K-SEQ verification algorithms. Papers [11], [14], [20], and [28] discuss sampling with and without replacement, including its implications for efficiency and convergence, but none apply this mechanism to speculative decoding or LLM inference. Papers [7], [15], and [21] discuss speculative decoding mechanisms, but they do not explicitly compare sampling with/without replacement or evaluate RRS/K-SEQ algorithms. Thus, the mechanism appears uncovered.\n\n### Evaluation\nThe evaluation design involves measuring acceptance rates across LLaMA-7B/68M, OPT-6.7B/125M, Vicuna, and Qwen2, comparing sampling methods and quantifying the gap between RRS/K-SEQ and the theoretical upper bound. Papers [6], [7], [11], and [15] conduct similar evaluations of speculative decoding methods on LLMs, using acceptance rates and efficiency metrics. While the specific models and datasets differ, the evaluation design (measuring acceptance rates and comparing methods) is substantively equivalent. Therefore, the evaluation facet is covered.\n\n### Domain\nThe contribution operates in the domain of LLM inference acceleration, specifically speculative decoding. Numerous prior papers ([1], [2], [3], [5], [6], [7], [8], [11], [15]) address speculative decoding for LLM inference acceleration, making this domain well-covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 6  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper quantifies efficiency bounds on MDSD over real text distributions or compares draft sampling methods with the same objective.  \nFACET: mechanism | FINAL: COVERED-BY 11 | reason: \"Sampling Without Replacement\" and comparison of RRS/K-SEQ algorithms are explicitly discussed in Recursive Speculative Decoding."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: 在真实文本分布上首次测出 MDSD 效率的理论上界,并量化现有验证算法(RRS、K-SEQ)与该上界的差距,同时比较不同 draft 采样方法**\n\nThe purpose is to empirically measure the theoretical upper bound of multi-draft speculative decoding (MDSD) efficiency on real text distributions and quantify the gap between existing verification algorithms (RRS, K-SEQ) and this upper bound. Paper [4] (SpecTr) introduces optimal transport-based speculative decoding and discusses optimal acceptance rates. Paper [5] discusses multi-candidate speculative decoding efficiency. Paper [11] (RRS) introduces sampling without replacement for speculative decoding. Paper [15] introduces multi-candidate speculative decoding. However, none of these papers specifically pursue the purpose of *measuring the theoretical upper bound empirically and quantifying the gap* between existing algorithms and that bound. Paper [2] \"How Speculative Can Speculative Decoding Be?\" comes closest — it asks how speculative decoding can be and studies limits, but focuses on draft model selection rather than measuring the MDSD theoretical upper bound and gap to RRS/K-SEQ. No prior paper has the same purpose of quantifying the gap between existing MDSD verification algorithms and the theoretical optimum on real distributions.\n\n**MECHANISM: 用 C1 的高效计算方法在四个真实 LLM 上测最优接受率,对比 with/without replacement 采样及 RRS、K-SEQ 验证算法**\n\nThe mechanism involves computing optimal acceptance rates using an efficient computation method (C1) and comparing sampling strategies (with/without replacement) and verification algorithms (RRS, K-SEQ). Paper [11] introduces RRS (sampling without replacement for speculative decoding) and compares it against standard methods. Paper [4] (SpecTr) uses optimal transport to find optimal acceptance in speculative decoding. Paper [5] compares multi-candidate methods. Paper [15] also compares multi-candidate approaches. However, the specific mechanism of using a pre-derived efficient computation formula (C1) to measure the *optimal* acceptance rate and then comparing RRS vs K-SEQ vs the optimum is not present in any prior paper. The closest is [4] which derives optimal transport solutions, but doesn't use this as a measurement tool to benchmark existing algorithms against a theoretical upper bound on real LLMs.\n\n**EVALUATION: LLaMA-7B/68M、OPT-6.7B/125M、Vicuna、Qwen2 上的实验**\n\nThe evaluation design uses standard LLM benchmarking with speculative decoding acceptance rate metrics on known model families (LLaMA, OPT, Vicuna). Paper [6] performs detailed experiments with LLaMA-65B and OPT-66B using speculative decoding. Paper [11] evaluates on LLaMA models. Paper [2] evaluates speculative decoding performance across models. The evaluation design — measuring acceptance rates on LLaMA/OPT model families with speculative decoding — is a standard design used across papers [6], [11], [2], [15]. The use of Table comparisons with acceptance rate metrics is standard in this literature.\n\n**DOMAIN: 大语言模型推理加速 / 投机解码**\n\nMultiple papers ([1]-[8], [11]-[13], [15], [21]) operate in the domain of LLM inference acceleration via speculative decoding. This is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 6\nVERDICT domain = 4",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper measures a theoretical upper bound on MDSD efficiency on real text distributions and quantifies the gap between existing verification algorithms (RRS, K-SEQ) and that upper bound. Paper [4] (SpecTr) derives optimal transport-based acceptance but does not frame it as an upper bound gap analysis against named verification algorithms on real LLM distributions. Paper [2] asks \"how speculative can speculative decoding be?\" but focuses on draft model selection, not on bounding MDSD efficiency and measuring algorithmic gaps against that bound.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper uses an efficient computation of the optimal acceptance rate (analogous to C1) across four real LLMs (LLaMA, Vicuna, OPT, Qwen2) to empirically compare with/without-replacement draft sampling and RRS vs. K-SEQ verification algorithms. Paper [11] uses sampling without replacement in speculative decoding but does not perform this comparative empirical measurement against a computed optimum across multiple models."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        2,
+        11
+       ]
+      },
+      "mechanism": {
+       "covered_by": [
+        6,
+        11
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        6,
+        11
+       ]
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**PURPOSE:** The purpose is to measure the theoretical efficiency upper bound for multi-candidate speculative decoding (MDSD), quantify the gap to this bound for existing algorithms, and compare different sampling methods. Paper [2] has the substantively equivalent purpose of \"theoretically and empirically analyz[ing] the upper bound of the speedup ratio\" for speculative decoding, which is the same problem class. Paper [11] also has the purpose of comparing different sampling approaches (\"sampling without replacement\") in this context.\n\n**MECHANISM:** The mechanism is a comparative empirical study measuring the optimal acceptance rate of different algorithms (RRS, K-SEQ, sampling methods) on a set of standard LLMs. This analysis design—running different speculative decoding variants on common models and comparing performance metrics—is a standard protocol in the field, used by papers like [6] in its \"detailed study comprising over 350 experiments with LLaMA-65B and OPT-66B\" and [11] in its evaluation of RRS.\n\n**EVALUATION:** The evaluation design involves running experiments on a suite of standard LLMs (LLaMA, OPT, Vicuna) and using acceptance rate (α) as the primary metric for comparison. This evaluation design, using the same benchmark family (standard LLMs) and metric semantics (acceptance rate/speedup), is used in prior work. For example, [11] evaluates its method on LLaMA and Vicuna, and [6] uses LLaMA and OPT, making the evaluation design covered.\n\n**DOMAIN:** The domain is \"Large language model inference acceleration / speculative decoding\". This is the explicit application area for a majority of the provided prior papers. For instance, paper [8] is a \"Comprehensive Survey of Speculative Decoding\" for \"Large Language Model Inference,\" which definitively establishes this as an existing domain.\n\nVERDICT purpose = [2], [11]\nVERDICT mechanism = [6], [11]\nVERDICT evaluation = [6], [11]\nVERDICT domain = [8]",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     3,
+     8
+    ],
+    "mechanism": [
+     1,
+     2
+    ],
+    "evaluation": [
+     3,
+     17
+    ],
+    "domain": [
+     3,
+     15
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": [
+        1,
+        2
+       ]
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to propose a draft sampling method that achieves or exceeds the acceptance rate of rejection sampling without replacement and validates that the algorithm can precisely reach theoretical bounds. This objective is not covered by any prior paper. While speculative decoding papers (e.g., [3], [4], [8], [13], [14], [15], [16], [17]) aim to improve efficiency or acceptance rates in LLM inference, they do not explicitly target achieving theoretical bounds or comparing against rejection sampling without replacement. Similarly, rejection sampling papers (e.g., [6], [10], [11], [12], [22]) focus on improving rejection sampling methods but do not address speculative decoding or theoretical bounds in this context.\n\n### Mechanism\nThe mechanism involves greedily selecting high-probability drafts while allowing only the last draft to be random, and designing a verification algorithm to strictly achieve the optimal acceptance rate of this distribution. This mechanism is substantively equivalent to the greedy randomized approaches in [1] and [2], which explore randomness in greedy algorithms to optimize acceptance or approximation guarantees. Additionally, speculative decoding papers like [3], [4], [8], [13], [14], [15], [16], and [17] employ draft-verification mechanisms, but none use the specific greedy-random hybrid strategy described here. Thus, the mechanism is partially covered by [1] and [2].\n\n### Evaluation\nThe evaluation involves demonstrating that the greedy method achieves higher acceptance rates than rejection sampling without replacement in some cases, but performs worse at temperature 1 (via ablation experiments). This evaluation design is covered by speculative decoding papers such as [3], [4], [8], [13], [14], [15], [16], and [17], which use similar ablation experiments to compare acceptance rates and performance under different setups. The specific comparison against rejection sampling without replacement is a change of benchmark instance, not evaluation design, and thus does not make the evaluation novel.\n\n### Domain\nThe domain is LLM inference acceleration via speculative decoding. This application area is extensively covered by speculative decoding papers such as [3], [4], [8], [13], [14], [15], [16], and [17]. While the contribution targets a specific sub-problem (greedy draft sampling), it remains within the broader domain of LLM inference acceleration, making the domain covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 1, 2  \nVERDICT evaluation = 3  \nVERDICT domain = 3  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 3 | reason: Paper [3] explicitly discusses a draft sampling method aiming to improve acceptance rates and verifies the algorithm's ability to reach theoretical bounds: \"the acceptance rate of candidate tokens receives limitations from several factors... This paper proposes speculative decoding to address these limitations.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 15
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: 提出能达到甚至超过无放回采样接受率、且验证算法可精确触及理论上界的新 draft 采样方法**\n\nThe purpose is to design a draft sampling method that achieves acceptance rates matching or exceeding sampling-without-replacement, with a verification algorithm that exactly achieves the theoretical upper bound. Paper [15] (SpecTr) explicitly addresses optimal transport-based speculative decoding to maximize acceptance rates, and discusses optimal draft distributions. Paper [8] (Block Verification) proposes a verification scheme that is \"not optimal\" in prior work and introduces a new approach to improve acceptance rates. Paper [14] discusses theoretical upper bounds on speculative decoding acceptance rates. Paper [17] (Improving Multi-candidate SD) also targets improving acceptance rates in multi-candidate settings. However, the specific purpose of designing a *greedy draft distribution* that provably reaches the theoretical upper bound of acceptance rate (and comparing against sampling-without-replacement) is most closely addressed by [15] and [8]. Paper [8] explicitly states prior verification is \"not optimal\" and proposes achieving optimality, which is substantively equivalent to the purpose here.\n\n**MECHANISM: 贪心地选取高概率 draft、只让最后一个 draft 随机(greedy draft distribution),并设计对应验证算法使其严格达到该分布的最优接受率**\n\nThe mechanism is: greedily select highest-probability tokens as drafts (deterministic except for the last), then design a verification algorithm that exactly achieves the optimal acceptance rate for this distribution. Paper [15] (SpecTr) uses optimal transport to find the optimal draft distribution and verification scheme. Paper [8] (Block Verification) proposes a new verification algorithm that achieves optimality by verifying blocks jointly rather than token-by-token. Paper [17] discusses greedy selection among candidates. However, the specific primitive of \"greedily pick top-probability tokens as drafts (all deterministic except last) + tailored verification algorithm achieving exact optimality\" is not precisely described in any prior paper. Paper [15] uses OT-based optimal drafting (not greedy top-k deterministic selection). Paper [8] changes the verification scheme but not the draft distribution to greedy. This specific combination appears novel.\n\n**EVALUATION: 消融实验比较贪心法与无放回采样在不同温度下的接受率**\n\nThe evaluation design involves ablation/comparison experiments measuring acceptance rates under different temperature settings, comparing methods. Paper [3], [8], [14], [15], [17] all use acceptance rate as a metric in speculative decoding comparisons. Paper [14] specifically analyzes acceptance rates theoretically and empirically across conditions. Paper [17] compares acceptance rates across methods with ablations. This is a standard evaluation design (acceptance rate comparison + ablation across conditions) that appears throughout the speculative decoding literature.\n\n**DOMAIN: 大语言模型推理加速 / 投机解码**\n\nMultiple papers ([3], [4], [8], [13], [14], [15], [16], [17]) work in LLM inference acceleration via speculative decoding — exactly this domain.\n\nVERDICT purpose = 8\nVERDICT mechanism = NONE\nVERDICT evaluation = 17\nVERDICT domain = 15",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes the specific mechanism of greedily selecting highest-probability drafts with only the last draft token sampled randomly, paired with a corresponding verification algorithm designed to achieve the optimal acceptance rate for that exact distribution. Paper [8] (Block Verification) comes closest by proposing non-independent token verification, but does not describe this greedy draft selection + single random tail + optimal acceptance rate verification scheme. No other paper contains this element even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: The objective is to improve the acceptance rate and efficiency of speculative decoding. This is the same problem-class objective as prior work, such as [3] which aims to address the \"limitations\" on \"the acceptance rate of candidate tokens\" and [4] which focuses on \"enhancing the proportion of draft tokens that are accepted\".\n\nmechanism: The core technical primitive is a hybrid greedy-random selection strategy: \"greedily select high-probability drafts, only let the last one be random\". This is an instance of the general algorithmic primitive described in [1], which proposes \"randomized greedy algorithms\" and explores \"the spectrum between\" purely greedy and random choices, albeit in a different domain (combinatorial optimization).\n\nevaluation: The evaluation design involves comparing the acceptance rate of the proposed method against a baseline (sampling without replacement) and conducting an ablation study (varying temperature). This design—comparing a new speculative decoding variant against existing ones on key efficiency metrics like acceptance rate—is standard in the field and is implicitly used by papers like [3] and [4] to validate their own improvements.\n\ndomain: The application area is accelerating large language model inference using speculative decoding. This domain is explicitly shared by numerous prior papers, including [3] (\"Multi-Candidate Speculative Decoding\"), [4] (\"Graph-Structured Speculative Decoding\"), and [8] (\"Block Verification Accelerates Speculative Decoding\").\n\nVERDICT purpose = 3\nVERDICT mechanism = 1\nVERDICT evaluation = 3\nVERDICT domain = 3",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

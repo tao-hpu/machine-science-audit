@@ -1,0 +1,203 @@
+{
+ "paper_id": "c61unr33XA",
+ "title": "Dataset Distillation via Knowledge Distillation: Towards Efficient Self-Supervised Pre-training of Deep Networks",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     1
+    ],
+    "mechanism": null,
+    "evaluation": [
+     1,
+     11
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nPaper [1] explicitly introduces the same problem: enabling dataset distillation for self-supervised pre-training. It states, \"we propose a novel problem of distilling an unlabeled dataset into a set of small synthetic samples for efficient self-supervised learning (SSL).\" This matches the contribution's purpose at the problem-class level — enabling SSL pre-training with distilled datasets.\n\nVERDICT purpose = 1\n\n---\n\n### Mechanism\nThe contribution's mechanism, MKDT, involves (1) training a teacher encoder with SSL, (2) using knowledge distillation (KD) to train student encoders to match the teacher's representations via an MSE objective, and (3) generating synthetic data by trajectory-matching the student trajectories. This mechanism is distinct from prior papers:\n\n- Paper [3] uses trajectory matching but does not involve KD or SSL; it focuses on convexifying trajectories for stability in standard dataset distillation.\n- Paper [4] combines SSL and KD but does not use trajectory matching for synthetic data generation; it distills visual priors into students for image classification.\n- Paper [5] aligns synthetic data with smooth expert trajectories but does not use KD or SSL.\n- Paper [11] matches training trajectories but does not involve KD or SSL.\n- Paper [17] uses difficulty-aligned trajectory matching but does not involve KD or SSL.\n- Paper [18] matches representative trajectories but does not involve KD or SSL.\n\nNo prior paper combines SSL, KD, and trajectory matching in the way MKDT does. The mechanism is uncovered.\n\nVERDICT mechanism = NONE\n\n---\n\n### Evaluation\nThe contribution evaluates MKDT by distilling CIFAR10, CIFAR100, and TinyImageNet to 2% and 5% of their original size, testing downstream tasks with limited labels, and comparing accuracy against baselines like KRR-ST, SAS, and random real data. This evaluation design — distilling datasets and testing downstream task performance — is widely used in prior papers:\n\n- Paper [1] evaluates SSL dataset distillation on CIFAR10 and CIFAR100, comparing downstream task performance.\n- Paper [5] distills CIFAR10 and CIFAR100, testing downstream accuracy.\n- Paper [11] evaluates dataset distillation by matching training trajectories and testing downstream accuracy.\n- Paper [17] evaluates difficulty-aligned trajectory matching by distilling CIFAR10 and CIFAR100 and testing downstream accuracy.\n- Paper [18] evaluates representative trajectory matching by distilling CIFAR10 and CIFAR100 and testing downstream accuracy.\n\nThe evaluation design is covered.\n\nVERDICT evaluation = 1\n\n---\n\n### Domain\nThe contribution operates in the domain of dataset distillation for self-supervised representation learning. This domain is covered by multiple prior papers:\n\n- Paper [1] explicitly addresses SSL dataset distillation.\n- Paper [5] focuses on dataset distillation for efficient learning.\n- Paper [11] addresses dataset distillation for training efficiency.\n- Paper [17] focuses on dataset distillation for synthetic data generation.\n- Paper [18] addresses dataset distillation for compact datasets.\n\nThe domain is covered.\n\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: COVERED-BY 4 | reason: Paper [4] describes a two-phase pipeline leveraging self-supervised learning to train a teacher model and distill its representations into a student model via knowledge distillation, aligning with the MKDT mechanism's use of SSL-trained teacher and KD objective for representation matching. Quoted phrase: \"The first phase is to learn a teacher model which possesses rich and generalizable visual representations via self-supervised learning, and the second phase is to distill the representations into a student.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\n\nThe purpose is: \"Enable dataset distillation for self-supervised (SSL) pre-training so a tiny synthetic set can pre-train high-quality encoders when labeled data is scarce.\"\n\nPaper [1] explicitly states: \"we propose a novel problem of distilling an unlabeled dataset into a set of small synthetic samples for efficient self-supervised learning (SSL).\" This is substantively equivalent — same objective of enabling DD for SSL pre-training.\n\nPaper [7] also addresses \"Self-supervised Dataset Distillation\" with the same goal.\n\n## Mechanism\n\nThe mechanism is: (1) train a large teacher encoder with SSL, (2) train small student encoders to match teacher representations via KD MSE objective to get lower-variance expert trajectories, (3) generate synthetic data by trajectory-matching those student trajectories. The key innovation is using KD (instead of SSL loss) to produce lower-variance trajectories for MTT.\n\nPaper [11] introduces trajectory matching (MTT) for dataset distillation — the trajectory-matching component is covered.\n\nPaper [1] proposes SSL-based dataset distillation and mentions gradient/trajectory approaches, but the specific mechanism of using KD to reduce variance in expert trajectories for SSL-based DD appears distinct. Paper [1] proves \"a gradient of synthetic samples with respect to...\" suggesting a different technical approach.\n\nPaper [5] addresses \"Alignment with Smooth and High-Quality Expert Trajectories\" — smoothing expert trajectories for better MTT. This is related but focuses on convexification/smoothing of supervised trajectories, not KD-based SSL trajectories.\n\nPaper [3] \"Matching Convexified Trajectory\" also addresses trajectory stability issues in MTT but through convexification, not KD.\n\nNone of the prior papers combine: SSL teacher → KD to student → trajectory match for synthetic data generation. The specific primitive of using KD's lower-variance objective to make SSL trajectory matching feasible is not covered.\n\n## Evaluation\n\nThe evaluation design: distill CIFAR10/100/TinyImageNet to 2%/5%; evaluate on downstream tasks with limited labels; cross-architecture transfer (ConvNet→ResNet-18); multiple SSL methods (BarlowTwins, SimCLR).\n\nPaper [1] evaluates dataset distillation for SSL on CIFAR10/100/TinyImageNet with similar downstream evaluation setups — same benchmark family and metric semantics (accuracy on downstream tasks after SSL pre-training on distilled data).\n\nPaper [11] uses CIFAR10/100 for dataset distillation evaluation with accuracy metrics — same benchmark family.\n\nThe evaluation design (distill standard vision benchmarks, measure downstream accuracy, cross-architecture transfer) is covered by [1] and [11].\n\n## Domain\n\nThe domain is: dataset distillation / self-supervised representation learning.\n\nPaper [1] operates explicitly in \"dataset distillation for self-supervised learning\" — exact same domain.\n\nPaper [11] operates in dataset distillation for supervised learning — same general DD area.\n\nPaper [2] operates in self-supervised pre-training for low-compute networks — same SSL area.\n\nThe domain is clearly covered by [1] (exact match) and [11].\n\nVERDICT purpose = 1\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes the specific pipeline of (1) training a large SSL teacher (e.g. BarlowTwins), (2) distilling it into small student encoders via MSE/KD to obtain low-variance expert trajectories, and (3) using those student trajectories for dataset distillation via trajectory matching. Paper [1] does SSL dataset distillation but not via KD-based trajectory generation. Paper [11] does trajectory matching but with supervised experts. Papers [21]/[22] do SSL→KD compression but not for dataset distillation. No paper combines all three steps or explicitly identifies KD's lower variance as the enabler for feasible trajectory matching."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "**purpose**: COVERED. Paper [1] explicitly states the same objective, proposing \"a novel problem of distilling an unlabeled dataset into a set of small synthetic samples for efficient self-supervised learning (SSL).\" Paper [7] also addresses the same problem.\n\n**mechanism**: NONE. The mechanism combines three primitives: (1) dataset distillation via trajectory matching, (2) creating target trajectories via knowledge distillation (KD) from a self-supervised teacher, and (3) motivating this by the variance-reducing property of KD. While trajectory matching for DD is in [11] and using KD from an SSL teacher is in [4] and [21], no prior paper combines them by using the KD-trained student's trajectory as the target for dataset distillation.\n\n**evaluation**: COVERED. The evaluation design—distilling standard benchmarks (CIFAR, etc.), training a model on the synthetic set, measuring downstream accuracy, and comparing against baselines—is the standard protocol for the dataset distillation field, as seen in papers like [11] and [13].\n\n**domain**: COVERED. The contribution operates at the intersection of dataset distillation and self-supervised learning. Numerous papers work in each area, and papers [1] and [7] explicitly address the same combined domain of \"Self-Supervised Dataset Distillation.\"\n\nVERDICT purpose = 1\nVERDICT mechanism = NONE\nVERDICT evaluation = 11\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes the complete mechanism of (1) training an SSL teacher, (2) using knowledge distillation to train multiple student \"experts\" from this teacher to create low-variance training trajectories, and then (3) using these specific student trajectories as the target for a trajectory-matching dataset distillation algorithm. While individual components exist (SSL+KD for model compression [4, 21], trajectory matching for DD [11], using PTMs to guide DD [6]), their specific composition into this three-stage pipeline to solve the trajectory variance problem is not present."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     3,
+     10
+    ],
+    "evaluation": [
+     3
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to explain why prior supervised dataset distillation (DD) methods fail when transferred to self-supervised learning (SSL). No prior paper explicitly establishes this failure mechanism or provides an explanation for it. Papers like [1], [3], [6], [7], [10], [14], and [28] discuss dataset distillation methods, but they focus on improving DD performance or addressing specific challenges (e.g., trajectory matching, storage efficiency, or difficulty alignment) rather than analyzing the failure of supervised DD methods in SSL. Papers like [18], [21], and [26] analyze collapse or instability in SSL, but they do not address the specific failure of supervised DD methods when applied to SSL. Thus, no prior paper reports or establishes the same empirical relationship.\n\n### Mechanism\nThe contribution's mechanism involves theoretical and empirical analysis of trajectory variance, including measuring variance of SSL vs. SL trajectories, distillation loss curves for MTT-SSL vs. MTT-SL, pixel-change of synthetic images, and testing 4x batch size to reduce variance. Papers like [3], [7], [10], [14], and [28] use trajectory matching or analyze training trajectories in dataset distillation, but they do not measure trajectory variance specifically for SSL vs. SL or analyze the effects of batch size on variance. Papers like [18], [21], and [26] analyze collapse or instability in SSL, but they do not use trajectory variance as a mechanism. Thus, no prior paper contains a substantively equivalent mechanism.\n\n### Evaluation\nThe evaluation design involves comparing SSL and SL trajectories, analyzing distillation loss curves, synthetic image pixel changes, and testing batch size effects on variance. Papers like [3], [7], [10], [14], and [28] use trajectory-based evaluations in dataset distillation, which matches the evaluation design at the benchmark family level (trajectory analysis). While the specific objects (SSL vs. SL trajectories, distillation loss curves, etc.) differ, the evaluation design itself is covered by prior work on trajectory-based evaluations.\n\n### Domain\nThe domain is dataset distillation in self-supervised learning (SSL). Papers like [1], [3], [6], [7], [10], [14], and [28] work in the general area of dataset distillation, and papers like [4], [5], [18], [21], and [26] address self-supervised learning. Paper [1] explicitly targets SSL dataset distillation, making the domain covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 3  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly explains why supervised DD methods fail when transferred to SSL, even under different terminology or framing.  \nFACET: mechanism | FINAL: COVERED-BY 3 | reason: \"Our investigation found that this method suffers from three significant issues, including high trajectory variance, which we analyze theoretically and empirically.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Explain why prior supervised DD methods (gradient/distribution/trajectory matching) fail when transferred to SSL.**\n\nThis is a diagnostic/explanatory purpose: identifying the failure modes of supervised dataset distillation methods when applied to SSL. Paper [1] proposes a solution to SSL dataset distillation and mentions proving a gradient bound, but its purpose is to *solve* the problem, not to *explain why existing methods fail*. Paper [3] investigates MTT's problems (accumulated trajectory error, storage issues) but in the supervised setting. No prior paper's stated purpose is to diagnose *why* supervised DD methods fail specifically in the SSL transfer scenario — the relationship being established (supervised DD methods fail in SSL due to trajectory variance) is not reported in any prior paper. Paper [1] is closest but its purpose is constructive (propose a new method), not diagnostic/explanatory about failure modes.\n\n**MECHANISM: Theoretical and empirical analysis of trajectory variance — measuring variance of SSL vs SL trajectories, distillation loss curves for MTT-SSL vs MTT-SL, pixel-change of synthetic images, 4x batch size test.**\n\nPaper [3] analyzes MTT's trajectory issues and proposes convexified trajectories, discussing accumulated errors. Paper [10] also analyzes trajectory error accumulation in MTT. Paper [6] discusses expert trajectory quality. However, none of these specifically measure *variance* of SSL vs SL trajectories as the diagnostic primitive, nor do they compare SSL vs SL trajectory variance as the analytical mechanism. The specific combination of variance measurement across trajectory lengths, distillation loss curves comparing SSL vs SL, and pixel-change analysis is not present. Paper [22], [24], [25] discuss variance reduction in SGD but in a completely different context. No prior paper uses this specific analytical design to diagnose SSL trajectory variance as the failure cause.\n\n**EVALUATION: SSL trajectories have larger/faster-growing variance than SL; MTT-SSL distillation loss decreases slowly; synthetic images barely move; 4x batch size insufficient; gradient/distribution matching need labels.**\n\nThe evaluation design involves controlled comparison of SSL vs SL trajectories with variance metrics, distillation loss curves, and pixel-change measurements. Paper [3] uses distillation loss curves and trajectory analysis for MTT in supervised settings. Paper [7] uses MTT-style evaluation. However, the specific evaluation design of comparing SSL vs SL trajectory variance with these specific metrics is not present in prior work. The closest is [3] which analyzes MTT loss curves, but not in the SSL vs SL comparative framework. This evaluation design appears genuinely new as a protocol for diagnosing SSL-specific failure.\n\n**DOMAIN: Dataset distillation / self-supervised learning.**\n\nPapers [1] explicitly covers dataset distillation for SSL. Papers [7], [10], [11], [14], [3], [6], [12], [14], [15], [16], [28] cover dataset distillation. SSL is covered by many papers. The intersection (dataset distillation + SSL) is covered by [1].\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explains why gradient/distribution/trajectory matching methods fail specifically when transferred to SSL settings — paper [1] proposes a solution but does not analyze the failure modes of these three paradigms under SSL; no other paper addresses this diagnostic purpose.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper measures trajectory variance of SSL vs SL trajectories over lengths, analyzes MTT-SSL distillation loss curves, tracks pixel-change of synthetic images during SSL distillation, or tests batch size scaling as a variance-reduction probe in this context. Papers [22][24][25] address variance reduction in SGD but not in the context of expert trajectories for dataset distillation. Paper [3] analyzes MTT trajectory issues but only in supervised settings.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports the specific empirical findings that SSL trajectories have larger and faster-growing variance than SL trajectories, that MTT-SSL distillation loss decreases slowly with barely-moving synthetic images, that 4x batch size is insufficient to remedy variance, or that gradient/distribution matching collapse without labels in SSL settings. These specific quantitative and qualitative results appear nowhere in the prior papers."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe contribution's purpose is to explain the failure of supervised dataset distillation (DD) methods when applied to self-supervised learning (SSL). No prior paper shares this specific explanatory goal. Paper [1] introduces the problem of DD for SSL but does not analyze the failure of prior methods. Papers like [3] and [10] analyze instabilities in trajectory matching but not in the specific context of SSL. Papers like [18] and [21] analyze failure modes (collapse) in SSL but not in the context of applying DD methods.\n\n**MECHANISM**\nThe mechanism is an empirical and theoretical analysis centered on trajectory variance. This is substantively equivalent to the mechanism in paper [10], which analyzes and proposes minimizing the \"Accumulated Trajectory Error\" in dataset distillation. Analyzing the deviation or error of a training trajectory to diagnose instability is the core primitive in both.\n\n**EVALUATION**\nThe evaluation design consists of a set of standard diagnostic experiments: comparing a quantity (variance) between two settings (SSL vs. SL), plotting loss curves, visualizing learned artifacts, and ablating a hyperparameter (batch size) to test a hypothesis. This design, aimed at diagnosing the instability of a training method, is not novel. For example, paper [3] investigates the instability of Matching Training Trajectories (MTT) and would necessarily employ a similar evaluation design involving analysis of the trajectory's behavior over time.\n\n**DOMAIN**\nThe domain is the intersection of dataset distillation and self-supervised learning. Paper [1] explicitly introduces and operates in this domain, stating \"we propose a novel problem of distilling an unlabeled dataset into a set of small synthetic samples for efficient self-supervised learning (SSL).\"\n\nVERDICT purpose = NONE\nVERDICT mechanism = 10\nVERDICT evaluation = 3\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper's primary objective is to explain the failure mechanism of supervised DD methods in an SSL context. Paper [1] identifies this gap (\"they are not designed to produce a distilled dataset that can be effectively used for facilitating self-supervised pre-training\") but its stated purpose is to propose a new method to solve this problem, not to provide a deep analysis of *why* the old methods fail."
+     }
+    }
+   }
+  }
+ ]
+}

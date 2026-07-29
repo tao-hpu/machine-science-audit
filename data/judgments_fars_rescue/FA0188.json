@@ -1,0 +1,274 @@
+{
+ "paper_id": "FA0188",
+ "title": "Differentially Private Spectral Monitor Logs for Hallucination Detection: A Comparative Study of Wishart and Gaussian Mechanisms",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     14
+    ],
+    "mechanism": [
+     14
+    ],
+    "evaluation": [
+     5,
+     14
+    ],
+    "domain": [
+     12,
+     14
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 14
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 14
+      },
+      "single_paper_covers_all": 14
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to determine the correct differential privacy (DP) mechanism for privatizing EigenScore-style hidden-state covariance matrices. This involves identifying which mechanism (Wishart or Gaussian) is better suited for this specific task. None of the prior papers explicitly address this purpose. While several papers (e.g., [14], [15]) discuss the Wishart mechanism in the context of covariance matrices, and others (e.g., [2], [3], [11]) analyze the Gaussian mechanism, none of them focus on the comparative suitability of these mechanisms for EigenScore-style covariance matrices. Additionally, no prior work explicitly addresses the specific problem of privatizing hidden-state covariance matrices in this context.\n\n**VERDICT purpose = NONE**\n\n---\n\n### Mechanism\nThe mechanism involves a comparative study of the Wishart mechanism (which preserves positive semi-definiteness, PSD) versus the Gaussian mechanism (which requires destructive PSD projection). Paper [14] introduces the Wishart mechanism for privatizing covariance matrices and highlights its ability to preserve PSD, which directly matches the mechanism used in this contribution. Paper [2] and [11] discuss the Gaussian mechanism, including its limitations (e.g., unbounded support and the need for projection). Thus, the underlying primitives of both mechanisms (Wishart and Gaussian) are covered by prior work.\n\n**VERDICT mechanism = 14**\n\n---\n\n### Evaluation\nThe evaluation demonstrates that the Wishart mechanism strictly dominates the Gaussian mechanism in terms of AUROC on a specific task (SQuAD v2.0 with OPT-6.7B) at a fixed privacy budget (epsilon=1). However, the evaluation design — comparing mechanisms on a benchmark task using a performance metric (AUROC) — is a standard comparative evaluation setup. Papers like [14] and [15] evaluate the Wishart mechanism on covariance-related tasks, and papers like [2], [3], and [11] evaluate the Gaussian mechanism in similar comparative setups. While the specific benchmark (SQuAD v2.0 with OPT-6.7B) is new, the evaluation design (comparing mechanisms on a task using a performance metric) is not novel.\n\n**VERDICT evaluation = 14**\n\n---\n\n### Domain\nThe domain is differential privacy for spectral hallucination monitoring, which involves privatizing covariance matrices derived from hidden-state representations. While no prior paper explicitly addresses spectral hallucination monitoring, several papers (e.g., [14], [15], [4], [6]) address differential privacy for covariance matrices, which is the broader application area. Applying these mechanisms to spectral hallucination monitoring is a new instance within this area, but it does not constitute a new domain.\n\n**VERDICT domain = 14**",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 14 | reason: Paper [14] introduces the Wishart Mechanism for privatizing covariance matrices, specifically for principal component analysis (PCA). The mechanism ensures positive semi-definiteness and aligns with the objective of determining a DP mechanism for EigenScore-style hidden-state covariance matrices."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 14
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": null
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "evaluation",
+      "domain"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Determine the correct DP mechanism for privatizing EigenScore-style hidden-state covariance matrices.**\n\nThe purpose is to identify which DP mechanism is appropriate for PSD covariance matrices in the context of hallucination detection. Paper [14] proposes the Wishart mechanism specifically for publishing covariance matrices under DP while preserving PSD structure. Paper [15] also uses the Wishart mechanism for covariance perturbation under DP. However, neither paper's purpose is to *compare* Wishart vs. Gaussian for a specific downstream task (hallucination detection). The purpose here is a comparative selection study for a specific application context.\n\nLooking more carefully: the purpose is \"determine the correct DP mechanism for privatizing covariance matrices\" — this is essentially the same objective as [14] which proposes Wishart as the right mechanism for PSD covariance matrices. The problem-class is \"which DP mechanism preserves PSD structure for covariance matrices,\" and [14] directly addresses this. I'll mark this as COVERED by [14].\n\n**MECHANISM: Comparative study of Wishart mechanism vs. Gaussian mechanism (with PSD projection) on OPT-6.7B with SQuAD v2.0.**\n\nThe mechanism is a head-to-head comparison of Wishart vs. Gaussian+PSD-projection for privatizing covariance matrices. Paper [14] introduces the Wishart mechanism and explicitly contrasts it with Gaussian-based approaches, noting PSD preservation as the key advantage. Paper [15] also uses Wishart for covariance perturbation and discusses alternatives. The core primitive — comparing Wishart (PSD-preserving) against Gaussian (requiring PSD projection) — is present in [14], which motivates Wishart precisely because Gaussian destroys PSD structure. The specific experimental comparison on LLM hidden states is new, but the mechanism primitive (Wishart vs. Gaussian+projection comparison) is covered by [14].\n\n**EVALUATION: Wishart strictly dominates Gaussian, achieving 55.1% vs 50.7% AUROC at epsilon=1.**\n\nThe evaluation design uses AUROC as a metric for a binary classification task (hallucination detection), comparing two DP mechanisms. AUROC-based evaluation of DP mechanisms on downstream tasks is a standard design. However, the specific evaluation design here — measuring AUROC for hallucination detection using privatized covariance matrices — is applied to a genuinely new object. The evaluation *design* (AUROC comparison of mechanisms on a downstream task) is generic and appears in various forms. But no prior paper uses this specific benchmark family or protocol for this purpose. The AUROC metric itself is standard, but the evaluation protocol (LLM hallucination detection via privatized spectral scores) is not matched by any prior paper's named benchmark or protocol family. This is a newly constructed evaluation setup. I'll mark NONE.\n\n**DOMAIN: Differential privacy for spectral hallucination monitoring.**\n\nThe domain combines differential privacy with LLM hallucination detection. No prior paper addresses DP for hallucination monitoring in LLMs. Papers [4], [6], [10], [14], [15] address DP for covariance estimation in statistical/ML contexts, but not LLM hallucination detection. Paper [12] applies DP to LLMs but for training privacy, not hallucination monitoring. This appears to be a genuinely new application area — DP applied specifically to spectral hallucination monitoring. NONE.\n\nVERDICT purpose = 14\nVERDICT mechanism = 14\nVERDICT evaluation = NONE\nVERDICT domain = NONE",
+      "stage2": "FACET: evaluation | FINAL: NONE | reason: No prior paper reports a head-to-head AUROC comparison between Wishart and Gaussian mechanisms, nor identifies PSD projection clamping eigenvalues to zero as the mechanism explaining a performance gap; [14] proposes the Wishart mechanism for PCA but contains no such empirical evaluation or AUROC metric.\n\nFACET: domain | FINAL: NONE | reason: No prior paper applies differential privacy to spectral hallucination monitoring in any form or under any alternative terminology; the closest works ([14],[15]) use Wishart/DP for covariance estimation or PCA, not for monitoring hallucinations via spectral methods."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 12
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: No prior paper appears to empirically compare the Wishart and projected Gaussian mechanisms for privatizing covariance matrices to determine which is superior, making this specific finding novel. While [14] introduces the Wishart mechanism and its PSD-preserving property, it does not establish the comparative empirical relationship that is the core of this contribution's purpose.\n\n**mechanism**: The mechanism is a comparative study of two known DP primitives. The Wishart mechanism is introduced in [14] (\"Our mechanism uses a Wishart distribution\"), the Gaussian mechanism is a standard baseline [2], and the comparative study itself is a standard analysis protocol used in papers like [4] to show a proposed method is \"significantly better than the existing ones\".\n\n**evaluation**: The evaluation design, which measures the utility of a privacy mechanism by its impact on a downstream task's performance, is present in prior work. For example, [5] evaluates its private tensor decomposition algorithm on a downstream \"topic modeling on the NIPS dataset\" task.\n\n**domain**: The general application area of applying differential privacy to statistical objects from machine learning models is well-established. Specifically, [14] covers DP for covariance matrices, and [12] covers \"Privacy in Large Language Models,\" placing the contribution's domain within existing areas.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 14\nVERDICT evaluation = 5\nVERDICT domain = 12",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: The objective is to find a DP mechanism specifically for privatizing covariance matrices of a model's *hidden states* for a downstream analysis (EigenScore). Prior papers ([4], [6], [10], [14], [15]) focus on privatizing the empirical covariance matrix of the input data itself, which is a different object with different properties and context. No prior paper shares the specific objective of privatizing a covariance matrix derived from a model's internal representations."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     4,
+     13
+    ],
+    "evaluation": [
+     13,
+     20
+    ],
+    "domain": [
+     3,
+     4,
+     6
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose:\nThe purpose of the contribution is to assess the actual privacy threat to EigenScore monitor logs. None of the prior papers explicitly assess privacy threats specific to EigenScore monitor logs. While several papers address privacy threats in general (e.g., [6], [10], [19]), none of them focus on EigenScore logs or a substantively equivalent system. Papers like [10] study privacy leakage in Android app logs, but this is a different domain and does not cover the specific purpose of assessing privacy threats to EigenScore logs.\n\n### Mechanism:\nThe mechanism involves running a canary-ID attack on EigenScore covariance logs without any differential privacy (DP) protection. Papers such as [13], [21], and [23] discuss canary-based attacks or unintended memorization in machine learning models, which are substantively equivalent mechanisms. For example, [13] provides intuition on interpreting canary exposure, and [23] describes testing methodologies for assessing memorization risks in sequence models. These papers cover the mechanism of using canary-based attacks to evaluate privacy risks, even though they do not target EigenScore logs specifically.\n\n### Evaluation:\nThe evaluation reports near-chance leakage (0.74% canary-ID accuracy vs. 0.50% chance), suggesting a weaker threat model than anticipated. Papers like [13], [21], and [23] use similar evaluation designs involving canary exposure or privacy leakage metrics. For instance, [13] relates canary exposure to membership inference attacks, and [23] evaluates unintended memorization risks quantitatively. These prior works use substantively equivalent evaluation designs, even though the specific benchmarks or datasets differ.\n\n### Domain:\nThe domain is privacy threat characterization. Many prior papers, such as [6], [10], [19], and [23], operate in the general area of privacy threat characterization. For example, [6] categorizes privacy attacks and countermeasures, [10] studies privacy leakage in software logs, and [19] surveys privacy leakage at inference time. These papers cover the domain of privacy threat characterization, even though they do not specifically address EigenScore logs.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 13  \nVERDICT evaluation = 13  \nVERDICT domain = 6  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly assesses the privacy threat to EigenScore monitor logs, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 10
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Assess the actual privacy threat to EigenScore monitor logs.**\n\nThe purpose is to characterize the empirical privacy threat level of a specific monitoring artifact (EigenScore covariance logs). This is about measuring/auditing privacy leakage in a specific system component. Paper [4] \"Privacy Auditing of Large Language Models\" explicitly aims to audit privacy leakage empirically. Paper [13] \"A Note On Interpreting Canary Exposure\" addresses interpreting canary-based privacy auditing results. Paper [23] \"The Secret Sharer\" aims to quantitatively assess privacy risk in ML systems. However, the specific purpose here is assessing the threat to *monitor logs* (a system monitoring artifact), not the model itself. Papers [4], [13], [23] all target model training privacy, not monitoring/logging artifacts. Paper [10] \"Studying Privacy Leaks in Android App Logs\" addresses privacy leakage in software logs specifically — this is the closest match to assessing privacy threats in logs. The purpose of characterizing privacy threat in logs is covered by [10].\n\n**MECHANISM: Run a canary-ID attack on EigenScore covariance logs without any DP protection.**\n\nThe mechanism is a canary insertion/identification attack applied to covariance matrix logs. Paper [23] introduces canary-based testing for memorization. Paper [13] discusses canary exposure as a privacy audit mechanism. Paper [21] uses canary-based auditing for DP ML. Paper [4] develops canary attacks for LLM privacy auditing. The canary-ID attack primitive is clearly present in [23] and [13] and [21]. The application to covariance logs is a domain difference, not a mechanism difference.\n\n**EVALUATION: Near-chance leakage: 0.74% canary-ID accuracy vs 0.50% chance.**\n\nThe evaluation design uses canary identification accuracy compared against chance-level baseline — this is the standard canary exposure evaluation design from [23] and [13]. Paper [13] explicitly discusses interpreting canary exposure relative to chance. Paper [21] uses similar accuracy-vs-chance comparisons. This evaluation design (canary accuracy vs. chance baseline) is well-established in prior work.\n\n**DOMAIN: Privacy threat characterization.**\n\nPrivacy threat characterization is the general domain. Papers [4], [6], [13], [14], [19], [21], [23] all operate in the domain of privacy threat characterization for ML systems. This is clearly covered.\n\nVERDICT purpose = 10\nVERDICT mechanism = 13\nVERDICT evaluation = 13\nVERDICT domain = 4",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 20
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution is a finding that assesses the privacy threat to a specific artifact, EigenScore monitor logs. Per the special rule for findings, this is covered only if a prior paper establishes the same empirical relationship. No prior paper investigates EigenScore logs, so none could have established the specific finding about their privacy threat level.\n\n**mechanism**: The mechanism is a \"canary-ID attack,\" a specific form of membership inference attack where a known unique record is inserted to test for leakage. This is a well-established technique for privacy auditing, explicitly used in prior work such as [4], which aims to \"develop canaries that are far more effective,\" and [21], which uses \"multiple carefully designed examples called canaries.\"\n\n**evaluation**: The evaluation design consists of measuring the accuracy of the canary-ID attack and comparing it to a random chance baseline to quantify the leakage. This is a standard protocol for evaluating membership inference attacks, which are designed to \"deduce whether the data record was part of the model’s training dataset or not\" [20], with success measured by inference accuracy.\n\n**domain**: The domain is \"privacy threat characterization\" or privacy risk assessment. Numerous prior papers operate in this general application area, including [3] on \"privacy risk estimation,\" [4] on \"privacy auditing,\" and [14] on \"privacy risk assessment.\"\n\nVERDICT purpose = NONE\nVERDICT mechanism = 4\nVERDICT evaluation = 20\nVERDICT domain = 3",
+      "stage2": "FACET: purpose: Assess the actual privacy threat to EigenScore monitor logs. | FINAL: NONE | reason: No prior paper shares the objective of assessing the privacy threat of this specific type of data (EigenScore monitor logs). The closest paper, [10], assesses privacy in a different domain (\"Android app logs\"), which constitutes a different specific objective."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "covered",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     5
+    ],
+    "mechanism": [
+     5
+    ],
+    "evaluation": [
+     5
+    ],
+    "domain": [
+     5
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": 5
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": 5
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to explain why DP-protected spectral monitoring cannot reach acceptable utility. Paper [5] discusses how high noise levels in DP mechanisms overwhelm meaningful signals, leading to weak privacy guarantees unless the noise is excessively high. This aligns with the purpose of explaining utility limitations in DP-protected setups. Paper [6] also investigates the privacy-utility trade-off in DP, specifically in online learning algorithms, and provides evidence of fundamental limits. Both papers address the same problem-class level objective: understanding utility limitations under DP noise.\n\n### Mechanism\nThe contribution analyzes the signal-to-noise ratio (SNR) of K=10 covariance signal eigenvalues against injected DP noise. Paper [5] studies the high-dimensional asymptotics of DP-protected PCA, where random noise is introduced to privatize summary statistics, and discusses how noise overwhelms meaningful signals. Paper [19] also examines DP-PCA, focusing on the statistical task of computing principal components under DP and the impact of noise on eigenvalues. Both papers use eigenvalue-based analysis of DP noise effects, matching the mechanism.\n\n### Evaluation\nThe evaluation design involves analyzing SNR limitations, specifically how K=10 signal eigenvalues (~0.6) are overwhelmed by DP noise at reasonable privacy budgets (epsilon ≤ 10). Paper [5] evaluates the impact of DP noise on signal eigenvalues in high-dimensional PCA, which matches the evaluation design of analyzing eigenvalue behavior under DP noise. Paper [19] also evaluates DP-PCA using statistical metrics to assess utility under varying privacy budgets, aligning with the evaluation design. Both papers use eigenvalue-based metrics to validate DP noise effects, covering the evaluation design.\n\n### Domain\nThe domain is DP signal-to-noise limitations. Paper [5] explicitly addresses DP noise overwhelming meaningful signals in high-dimensional setups, which falls within the same application area. Paper [19] also operates in the domain of DP noise effects on eigenvalues, specifically in PCA tasks. Both papers address DP signal-to-noise limitations, covering the domain.\n\n---\n\nVERDICT purpose = 5  \nVERDICT mechanism = 5  \nVERDICT evaluation = 5  \nVERDICT domain = 5  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": 5
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": 5
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Explain why DP-protected spectral monitoring cannot reach acceptable utility.**\n\nThe purpose is to demonstrate/explain a fundamental utility barrier for DP in spectral/covariance monitoring contexts. Paper [5] (\"High-Dimensional Asymptotics of Differentially Private PCA\") directly addresses why DP noise overwhelms meaningful signal: \"the noise level determines the privacy loss...these bounds offer weak privacy guarantees unless the noise level is so high that it overwhelms the meaningful signal.\" Paper [19] (DP-PCA) also addresses utility limitations of DP for spectral tasks. Paper [4] (Spectral DP for smart meters) addresses DP utility in spectral monitoring. However, none of these specifically establish the relationship \"K=10 covariance eigenvalues are overwhelmed by DP noise → utility unacceptable at ε≤10.\" Paper [5] is closest, explicitly discussing signal being overwhelmed by DP noise in PCA/spectral contexts, which is substantively equivalent at the problem-class level.\n\n**MECHANISM: Analyze SNR of K=10 covariance signal eigenvalues against injected DP noise.**\n\nThe mechanism is SNR analysis of eigenvalues of a covariance matrix under DP noise injection. Paper [5] analyzes high-dimensional asymptotics of DP PCA, studying how DP noise affects eigenvalues of covariance matrices. Paper [19] also analyzes eigenvalue behavior under DP noise for PCA. Paper [22] investigates theory of DP PCA including empirical performance. Paper [13] studies DP covariance matrix estimation with noise bounds. The specific primitive — computing SNR of signal eigenvalues vs. DP noise — is most directly present in [5], which studies when DP noise overwhelms signal eigenvalues. Papers [20], [21], [23] cover matrix perturbation/eigenvalue analysis under noise generically.\n\n**EVALUATION: SNR limitation showing K=10 signal eigenvalues (~0.6) overwhelmed by DP noise at ε≤10.**\n\nThe evaluation design here is: compute eigenvalue magnitudes, compute DP noise magnitude, compare as SNR, conclude utility is unacceptable at a given ε. Paper [5] uses asymptotic analysis of eigenvalue signal-to-noise under DP noise to characterize when signal is overwhelmed. Paper [19] uses empirical and theoretical evaluation of DP-PCA utility at various privacy budgets. This is a standard analytical/empirical evaluation design for DP utility — comparing signal eigenvalues to noise levels at specific ε values — which appears in [5] and [19].\n\n**DOMAIN: DP signal-to-noise limitations.**\n\nThis domain is differential privacy applied to spectral/covariance analysis with SNR as the key quantity. Papers [5], [19], [22], [13] all work in DP applied to covariance/spectral analysis. Paper [4] works in spectral DP for time-series. This domain is clearly covered.\n\nVERDICT purpose = 5\nVERDICT mechanism = 5\nVERDICT evaluation = 5\nVERDICT domain = 5",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

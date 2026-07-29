@@ -1,0 +1,304 @@
+{
+ "paper_id": "FA0172",
+ "title": "Auditing Norm-Clipped L2-Laplacian Token-Embedding Obfuscation Against Sequence-Aware Reconstruction",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     4
+    ],
+    "mechanism": [
+     7,
+     10
+    ],
+    "evaluation": [
+     3,
+     10,
+     23
+    ],
+    "domain": [
+     1,
+     3,
+     4,
+     5,
+     23
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        7,
+        10
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        3,
+        23
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        3,
+        4,
+        5,
+        23
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to demonstrate that the norm-clipped L2-Laplacian embedding defense provides no meaningful privacy at its proposed operating point. No prior paper explicitly establishes this empirical relationship or critiques this specific defense mechanism at the stated operating point. While several papers (e.g., [3], [4], [5], [23]) discuss privacy risks and vulnerabilities of text embeddings, none directly address the norm-clipped L2-Laplacian defense or its failure at the specified parameters. Therefore, the purpose is **not covered**.\n\n### Mechanism\nThe contribution audits the defense using a per-token nearest-neighbor (NN) attack and the sequence-aware BeamClean attacker, demonstrating a ceiling effect. Paper [10] introduces BeamAttack, which uses beam search for adversarial attacks, and paper [7] discusses certified robustness of nearest neighbors against attacks. Both papers describe substantively equivalent mechanisms: [10] aligns with BeamClean's sequence-aware attack strategy, and [7] aligns with the nearest-neighbor attack. Thus, the mechanism is **covered**.\n\n### Evaluation\nThe evaluation design involves measuring attackers' reconstruction success rates using metrics like Token-ASR (>99.98%) and Canary-EM (100%). Paper [3] evaluates embedding inversion attacks using reconstruction metrics, and paper [23] measures inversion success rates in few-shot settings. Both use substantively equivalent evaluation designs (reconstruction metrics for privacy attacks). Therefore, the evaluation is **covered**.\n\n### Domain\nThe contribution operates in the domain of privacy defenses for text embeddings in split/remote NLP inference. Papers [3], [4], [5], and [23] all address privacy risks and defenses for text embeddings in similar contexts, including split inference and embedding inversion attacks. Thus, the domain is **covered**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 7, 10  \nVERDICT evaluation = 3, 23  \nVERDICT domain = 3, 4, 5, 23  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly demonstrates that the norm-clipped L2-Laplacian embedding defense provides no meaningful privacy at its proposed operating point, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Show that the norm-clipped L2-Laplacian embedding defense provides no meaningful privacy at its proposed operating point.**\n\nThis is about demonstrating that a specific privacy defense for text embeddings fails (is broken/ineffective). Paper [4] \"An Inversion Attack Against Obfuscated Embedding Matrix in Language Model Inference\" explicitly shows that \"embedded vector obfuscation failed to protect users' privacy\" — same purpose of demonstrating a defense is ineffective. Paper [3] \"Rethinking the Privacy of Text Embeddings\" is a reproducibility study that challenges privacy assumptions. Paper [1] notes \"existing differential privacy defenses assume uniform sensitivity across embedding dimensions, leading to excessive noise and degraded utility\" — implicitly critiquing existing defenses. Paper [4] is the closest match: it directly demonstrates a specific privacy defense fails.\n\n**MECHANISM: Audits the defense (eta=142, 30-50% clip rate) against both a per-token nearest-neighbor (NN) attack and the sequence-aware BeamClean attacker, demonstrating a ceiling effect.**\n\nThe mechanism involves: (1) a nearest-neighbor attack on embeddings, and (2) a beam-search-based sequence-aware attacker. Paper [4] uses inversion attacks against obfuscated embeddings. Paper [3] uses Vec2Text-style controlled decoding attacks. Paper [6] uses transfer-based inversion attacks. None of these specifically combine a per-token NN attack with a beam-search sequence-aware attacker (BeamClean) to audit a norm-clipped Laplacian defense. The NN attack primitive appears in various papers but the specific combination as an auditing mechanism against this defense type is not clearly covered. However, the NN attack primitive itself is a standard technique. Paper [4] uses inversion attacks against obfuscated embeddings — closest to the mechanism. The beam-search component echoes [10] (BeamAttack) but that's adversarial text generation, not embedding inversion. No prior paper combines these two specific attack types to audit this specific defense.\n\n**EVALUATION: Both attackers achieve near-perfect reconstruction: >99.98% Token-ASR and 100% Canary-EM.**\n\nToken-ASR (Attack Success Rate) and Canary-EM (exact match on canary sequences) are evaluation metrics for embedding inversion/privacy auditing. Paper [4] evaluates inversion attack success rates against obfuscated embeddings. Paper [3] uses reconstruction metrics (BLEU, exact match) for embedding inversion. Paper [6] uses similar metrics. Token-ASR as a metric for embedding inversion attacks appears in the privacy-of-embeddings literature. Canary-EM is a specific metric but \"exact match\" reconstruction evaluation appears in [3] and [6]. The evaluation design (measuring reconstruction success rate against a defense) is covered by [4] and [3].\n\n**DOMAIN: Privacy defenses for text embeddings in split/remote NLP inference.**\n\nPapers [1], [2], [3], [4], [5], [6], [23] all work in the domain of privacy for text embeddings in NLP. This is clearly covered.\n\nVERDICT purpose = 4\nVERDICT mechanism = NONE\nVERDICT evaluation = 3\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes auditing a clipping-based embedding defense at specific hyperparameters (eta=142, 30-50% clip rate) against both a per-token nearest-neighbor attack and a sequence-aware BeamClean attacker to demonstrate a ceiling effect. The closest candidates (SPARSE [1], Eguard [5]) propose defenses but do not evaluate them against these specific attacker types in this framework, and no paper uses equivalent terminology or framing for this combined evaluation methodology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose:** The purpose of demonstrating that a proposed privacy defense is ineffective is covered by prior work. Paper [4] has the explicit purpose to \"show that... embedded vector obfuscation failed to protect users’ privacy,\" and paper [9] similarly audits the robustness of the DkNN defense.\n\n**mechanism:** The mechanism combines known attack primitives; a per-token nearest-neighbor attack is a standard baseline for embedding inversion, and a sequence-aware attack using beam search is substantively equivalent to the \"BeamAttack\" described in paper [10].\n\n**evaluation:** The evaluation design, which involves applying known attack types to a defense and measuring reconstruction accuracy, is the standard protocol for such an audit. The \"Attack Success Rate\" metric is mentioned in paper [10], and canary testing is a standard method for demonstrating information leakage, so the design is not new.\n\n**domain:** The domain of privacy for text embeddings in NLP inference is explicitly covered by multiple prior papers. Papers [1], [3], [4], [5], and [6] all operate in the same general application area of \"privacy risks in text embeddings.\"\n\nVERDICT purpose = 4\nVERDICT mechanism = 10\nVERDICT evaluation = 10\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     7,
+     8,
+     18
+    ],
+    "evaluation": [
+     7,
+     8,
+     18,
+     23
+    ],
+    "domain": [
+     3,
+     7
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        7,
+        18
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        7,
+        18
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        3,
+        7
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to compare sophisticated vs. simple attackers under a specific defense. None of the prior papers explicitly report or establish this comparison. While some papers (e.g., [7], [8], [20], [23]) evaluate attacks and defenses, they do not focus on comparing attacker sophistication levels under a defense. For example, [7] introduces BeamClean as an attack but does not compare attacker sophistication. Similarly, [8] evaluates gradient inversion attacks and defenses but does not address attacker sophistication. Therefore, no prior paper covers this purpose.\n\n#### Mechanism:\nThe contribution benchmarks BeamClean (a language-model-prior sequence-aware decoding method) against nearest-neighbor decoding under norm-clipped perturbation. Paper [7] introduces BeamClean and describes its mechanism as a language-aware embedding reconstruction attack using a language-model prior. Paper [18] discusses nearest-neighbor methods for adversarial defense and classification, including deep k-nearest neighbor approaches. Both mechanisms (BeamClean and nearest-neighbor decoding) are covered by these prior papers.\n\n#### Evaluation:\nThe evaluation compares BeamClean and nearest-neighbor decoding, finding that NN achieves marginally higher accuracy due to a ceiling effect. Paper [7] evaluates BeamClean against Laplacian and Gaussian obfuscation mechanisms, which aligns with the evaluation design of comparing methods under specific perturbation setups. Paper [18] evaluates nearest-neighbor methods for robustness, which matches the evaluation design of benchmarking NN-based approaches. The evaluation design (comparison of methods under perturbation setups) is therefore covered.\n\n#### Domain:\nThe contribution operates in the domain of privacy defenses for text embeddings in split/remote NLP inference. Paper [3] addresses privacy concerns in split/remote NLP inference, introducing Split-N-Denoise as a private inference framework. Paper [7] focuses on embedding reconstruction attacks and defenses in the context of obfuscated text embeddings sent to a server. Both papers operate in the same general domain of privacy defenses for text embeddings in split/remote NLP inference.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = 7, 18  \nVERDICT evaluation = 7, 18  \nVERDICT domain = 3, 7  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly compares sophisticated vs simple attackers under a defense, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Compare sophisticated vs simple attackers under this defense.**\n\nThe purpose is to empirically compare a sophisticated attacker (BeamClean, LM-prior sequence-aware) against a simple attacker (nearest-neighbor decoding) under a norm-clipped perturbation defense, to understand whether attacker sophistication matters. Paper [7] introduces BeamClean and compares it against baselines including nearest-neighbor decoding under obfuscation mechanisms. The abstract states \"Against Laplacian and Gaussian obfuscation mechanisms, BeamClean...\" — this is the same paper being evaluated, so it may contain the comparison. However, the contribution here is specifically the *finding* that BeamClean does NOT outperform NN under norm-clipped perturbation (a ceiling effect), which is a specific empirical relationship. Paper [7] introduces BeamClean and likely shows it outperforms simpler methods in general, but the specific finding about norm-clipping causing a ceiling effect where NN matches or beats BeamClean is a distinct result. No prior paper establishes this specific relationship (sophisticated attacker ≤ simple attacker under norm-clipped defense). NONE.\n\n**MECHANISM: Directly benchmarks BeamClean against nearest-neighbor decoding under norm-clipped perturbation.**\n\nThe mechanism is a direct head-to-head comparison of two specific attack methods (BeamClean vs. NN decoding) under a specific defense (norm-clipping). Paper [7] introduces BeamClean and compares it against baselines, but the specific comparison under norm-clipped perturbation as a defense mechanism is what's being analyzed here. Paper [8] evaluates attacks and defenses in federated learning using controlled comparison methodology. Paper [20] systematically evaluates reconstruction attacks and defenses. However, the specific primitive of \"benchmark sophisticated LM-prior beam search attacker vs. simple NN attacker under norm-clipped embedding perturbation\" is not present in any prior paper. The closest is [7] itself, but the contribution is a finding about a specific defense regime not covered there. NONE.\n\n**EVALUATION: BeamClean does not outperform NN; NN achieves marginally higher accuracy due to ceiling effect.**\n\nThe evaluation design here is a head-to-head accuracy comparison between two attack methods on a text reconstruction task. This is a standard comparative evaluation design (compare method A vs. method B on accuracy metric). Papers [7], [8], [20], and [23] all use comparative accuracy evaluations between attack/defense methods. Paper [8] \"evaluates existing attacks and defenses\" using accuracy-style metrics. Paper [20] \"systematically evaluate the data reconstruction\" comparing methods. Paper [23] uses a \"comprehensive framework for benchmarking\" attack and defense comparisons. The evaluation design (compare two methods on accuracy under a defense) is standard and covered by [8] and [20].\n\n**DOMAIN: Privacy defenses for text embeddings in split/remote NLP inference.**\n\nPapers [1], [3], [5], [6], [7] all operate in the domain of privacy defenses for text embeddings in NLP inference settings. Paper [3] explicitly addresses \"Split-N-Denoise\" for private inference with LLMs in an EaaS (Embedding-as-a-Service) context. Paper [7] addresses inversion attacks on obfuscated input embeddings sent to a language model on a server. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 8\nVERDICT domain = 7",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper compares sophisticated vs. simple attackers specifically under this defense; the closest candidates (e.g., [8], [20]) evaluate attacks/defenses in federated/gradient settings with different objectives, and none quote an equivalent framing of contrasting attacker sophistication levels under norm-clipped embedding perturbation.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper directly benchmarks BeamClean (LM-prior sequence-aware decoding) against nearest-neighbor decoding under norm-clipped perturbation; [7] introduces BeamClean but the head-to-head comparison against nearest-neighbor decoding under this specific defense is the contribution under review, and no other paper contains a quoted equivalent of this direct benchmark."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 12
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 23
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "purpose: The contribution is a finding, so its purpose is the empirical relationship it establishes: a simple nearest-neighbor attack is as effective as a sophisticated, language-model-aware attack (BeamClean) for embedding inversion. No prior paper reports this specific relationship. While some papers evaluate attacks ([8], [20]), they do not establish this \"simple beats complex\" dynamic in this domain, and paper [27]'s similar finding is in an unrelated setting.\n\nmechanism: The mechanism is a direct benchmark comparing two different attack algorithms (BeamClean vs. nearest-neighbor). This comparative evaluation is a standard analysis protocol. Paper [8] uses this same mechanism when it \"evaluates existing attacks and defenses\" against each other.\n\nevaluation: The evaluation design involves comparing the success of different text reconstruction attacks using standard metrics. This design is standard in the field. Paper [23] explicitly proposes \"MIBench: A Comprehensive Framework for Benchmarking Model Inversion Attack and Defense,\" which is built around this exact evaluation design of comparing attacks and defenses with standardized metrics.\n\ndomain: The application area is privacy for text embeddings, specifically in a split or remote inference setting (Embedding-as-a-Service). This domain is covered by multiple prior papers. For instance, [3] introduces a private inference framework for the \"Embedding-as-a-Service (EaaS) business model\" which involves splitting the model.\n\nVERDICT purpose = NONE\nVERDICT mechanism = [8]\nVERDICT evaluation = [23]\nVERDICT domain = [3]",
+      "stage2": "FACET: purpose: Compare sophisticated vs simple attackers under this defense. | FINAL: COVERED-BY [12] | reason: The paper's stated purpose is to create a method for reliable evaluation of defenses, which it motivates by contrasting ineffective \"simple\" attackers with necessary \"sophisticated\" ones. The abstract states that evaluation is \"currently limited to an expert who manually crafts attacks that exploit the defense's inner workings or approaches based on an ensemble of fixed attacks, none of which may be effective\". This explicitly compares simple (fixed ensemble) vs. sophisticated (adaptive/tailored) attackers in the context of defense evaluation."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     6
+    ],
+    "mechanism": [
+     24
+    ],
+    "evaluation": [
+     6
+    ],
+    "domain": [
+     1,
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 24
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to explain why a defense fails, specifically by analyzing how norm clipping preserves embedding direction and how this impacts the efficacy of nearest-neighbor (NN) attacks. None of the prior papers explicitly focus on explaining the failure of defenses in this way. While some papers (e.g., [6], [9], [11], [20]) discuss the failure of privacy defenses or attacks on embeddings, they do not establish or analyze the specific relationship between norm clipping, embedding direction preservation, and NN attack success. Therefore, no prior paper covers this purpose.\n\n### Mechanism\nThe mechanism involves a directional preservation analysis, showing that norm clipping preserves embedding direction exactly, and that NN lookup depends only on direction. Paper [24] discusses cosine similarity and its implications for embeddings, which is directly related to the directional properties of embeddings. While [24] does not explicitly analyze norm clipping, it does address the role of directionality in embeddings and its impact on similarity measures, which is substantively equivalent to the mechanism here. Thus, the mechanism is covered by [24].\n\n### Evaluation\nThe evaluation explains that simple NN attacks suffice when noise is mild and implies that defenses must perturb directional information, not just magnitude. Paper [6] demonstrates the failure of embedding obfuscation defenses under inversion attacks, which is a similar evaluation design focused on the efficacy of attacks under certain conditions. Additionally, [11] evaluates few-shot inversion attacks on embeddings, which also involves analyzing the success of attacks under specific conditions. Both papers use evaluation designs that are substantively equivalent to the one in this contribution. Therefore, the evaluation is covered by [6] and [11].\n\n### Domain\nThe domain is privacy defenses for text embeddings in split/remote NLP inference. Papers [1], [2], [5], [6], [9], [11], and [20] all address privacy risks, defenses, or attacks on text embeddings in split or remote inference settings. This establishes that the domain is well-covered by prior work.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 24  \nVERDICT evaluation = 6  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 6 | reason: Paper [6] explicitly states \"embedded vector obfuscation failed to protect users’ privacy,\" which aligns with the objective of explaining why the defense fails."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 24
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Explain why a defense fails (specifically, why norm clipping fails to protect against NN-based inversion attacks)**\n\nLooking for prior papers that explain *why* a specific privacy defense fails by analyzing its geometric/structural properties. Paper [6] \"An Inversion Attack Against Obfuscated Embedding Matrix\" explicitly demonstrates that embedding obfuscation \"failed to protect users' privacy\" and analyzes why. Paper [20] \"InfoDecom\" identifies \"a key cause\" of why defenses fail in split inference. Paper [9] \"Practical Defences Against Model Inversion Attacks\" analyzes defense efficacy. However, none of these specifically explain failure via directional preservation analysis of norm clipping. The purpose here is explaining *why* a defense fails — paper [6] shares this purpose most closely, as it demonstrates and explains why obfuscation defenses fail. Paper [20] also identifies causes of defense failure.\n\n**MECHANISM: Directional preservation analysis — norm clipping preserves embedding direction exactly, and NN lookup depends only on direction**\n\nThis is a geometric analysis showing that clipping (a norm operation) leaves the unit-direction vector unchanged, and since cosine/NN similarity is direction-dependent, the defense is ineffective. Paper [24] \"Is Cosine-Similarity of Embeddings Really About Similarity?\" directly studies how cosine similarity depends on direction (angle) rather than magnitude, analyzing the relationship between normalization and similarity. This is substantively equivalent to the claim that NN lookup depends only on direction. Paper [6] analyzes why obfuscation fails geometrically. The combination of \"clipping preserves direction\" + \"NN depends only on direction\" as a mechanism is partially covered by [24]'s analysis of cosine similarity being purely directional.\n\n**EVALUATION: Explains that simple NN attacks suffice when noise is mild; implies defenses must perturb directional information**\n\nThis is an analytical/theoretical argument rather than a new benchmark or metric. The evaluation design here is essentially a logical implication drawn from the directional preservation analysis — it's an explanatory/theoretical evaluation. Paper [6] uses a similar design: demonstrating attack success against a defense and drawing implications. Paper [9] also evaluates defense efficacy and draws conclusions about what defenses must do. This evaluation design (demonstrate attack success against defense, derive implications) appears in [6] and [9].\n\n**DOMAIN: Privacy defenses for text embeddings in split/remote NLP inference**\n\nPapers [1], [2], [3], [4], [5], [6], [11], [20] all work in privacy defenses for text/NLP embeddings in split or remote inference settings. This domain is clearly covered by multiple papers.\n\nVERDICT purpose = 6\nVERDICT mechanism = 24\nVERDICT evaluation = 6\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

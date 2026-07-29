@@ -1,0 +1,299 @@
+{
+ "paper_id": "kBybSUskz7",
+ "title": "Reinforcement Learning and Heuristics for Hardware-Efficient Constrained Code Design",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     1
+    ],
+    "evaluation": [
+     1,
+     13,
+     22
+    ],
+    "domain": [
+     3
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to automate the design of hardware-efficient translation logic for constrained codes, minimizing encoder/decoder circuit complexity — a step that logic-synthesis tools cannot optimize and is otherwise left to slow manual design. No prior paper explicitly addresses this specific objective. Papers such as [3], [6], [10], [13], and [14] focus on automating logic synthesis or optimization flows, but they do not target the specific problem of hardware-efficient translation logic for constrained codes. Similarly, papers like [33] and [34] study minimal codewords and pseudo-codewords but do not address automating hardware-efficient translation logic design. Thus, the purpose is **uncovered**.\n\n### Mechanism\nThe contribution uses an RL framework that models codeword assignment as a bipartite graph matching/combinatorial optimization MDP, with state = current assignments + synthesis metrics, actions = codeword selections, and reward = hardware complexity (gate count) from an external logic-synthesis tool. Papers [1], [4], [5], [11], [15], and [18] all describe RL-based frameworks for combinatorial optimization problems, including bipartite graph matching and assignment problems. For example, [1] defines constrained combinatorial problems as CMDPs, and [32] applies deep learning to bipartite assignment problems. Papers [3], [6], [10], [13], and [14] apply RL to logic synthesis tasks, which involve combinatorial optimization over graph-based representations. While the specific application to constrained codeword assignment is new, the underlying RL mechanism (modeling combinatorial optimization as an MDP with graph-based state representations and reward signals) is **covered**.\n\n### Evaluation\nThe evaluation applies the RL framework to three constrained codes (MTA 7b8b, 8b9b, and 5s8b) and benchmarks against random mappings, human-derived solutions, and simulated annealing. The evaluation design — comparing RL-based methods against heuristic baselines and human solutions — is standard in RL-based combinatorial optimization literature. Papers [1], [4], [5], [13], [14], and [18] use similar evaluation setups, where RL methods are benchmarked against heuristic or human-derived baselines across various combinatorial optimization tasks. Although the specific codes and hardware metrics are new, the evaluation design itself is **covered**.\n\n### Domain\nThe contribution operates in the domain of hardware/constrained code design for communication and memory systems. Papers [3], [6], [10], [13], and [14] all address logic synthesis and optimization in hardware design, which overlaps with the general domain of hardware systems. While the specific focus on constrained code design is narrower, it falls within the broader domain of hardware optimization. Thus, the domain is **covered**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 1  \nVERDICT evaluation = 1  \nVERDICT domain = 3  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses automating the design of hardware-efficient translation logic for constrained codes with the objective of minimizing encoder/decoder circuit complexity, distinct from logic synthesis tools or manual design."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\n\nThe purpose is to **automate design of hardware-efficient translation logic for constrained codes** (minimizing encoder/decoder circuit complexity), specifically targeting a step that logic-synthesis tools cannot optimize and that is otherwise left to manual design.\n\nPapers [3], [6], [10], [12], [13], [14] all address automating logic synthesis optimization. However, their purpose is optimizing the *synthesis flow/operator sequence* for general combinational circuits — not the *codeword assignment problem* for constrained codes. The gap being closed here is specifically: given a constrained code's structure, which codeword-to-symbol mapping minimizes the resulting encoder/decoder gate count? This is a combinatorial assignment problem upstream of synthesis, not the synthesis flow itself. No prior paper targets this specific objective. Papers [1], [4], [5], [7], [11], [15], [18] address general combinatorial optimization but not this specific hardware-code-design gap. None of the prior papers identify \"automate codeword assignment to minimize encoder/decoder circuit complexity\" as their objective.\n\n## Mechanism\n\nThe mechanism is an **RL framework modeling codeword assignment as a bipartite graph matching MDP**, with state = current assignments + synthesis metrics, actions = codeword selections, reward = gate count from external logic-synthesis tool, using DQN/Double-DQN/C51/PPO agents with a GNN encoder.\n\nPaper [22] (Chip Placement) uses RL for chip design with a graph-based state representation and reward from an external tool. Paper [3] uses RL + GCN for logic synthesis optimization. Paper [13] uses deep RL for logic synthesis with external tool feedback. Paper [32] uses deep learning for bipartite assignment problems. However, the specific primitive here — modeling **codeword-to-symbol assignment as a bipartite matching MDP** where actions are codeword selections and reward comes from invoking a logic-synthesis tool on the resulting encoder/decoder — is not present in any prior paper. Paper [32] handles bipartite assignment with deep learning but not as an RL MDP with synthesis-tool reward. Papers [3]/[13] use RL+GNN for synthesis but optimize operator sequences, not codeword assignments. The combination of bipartite-matching MDP + synthesis-tool-as-reward-oracle + GNN encoder for this specific problem structure is not covered.\n\n## Evaluation\n\nThe evaluation applies the RL framework to specific constrained codes (MTA 7b8b, 8b9b, 5s8b), comparing against random search, hand-crafted solutions, and simulated annealing, measuring gate count.\n\nPaper [13] (DRiLLS) compares RL-based logic synthesis against human-expert baselines and random/heuristic search using area/delay metrics from synthesis tools — same evaluation design: RL vs. human baseline vs. random search vs. heuristic, measuring hardware complexity metrics from an EDA tool. Paper [3] similarly compares RL+GCN against heuristic baselines using synthesis quality metrics. The evaluation design (RL agent vs. random search vs. human/hand-crafted baseline vs. heuristic, measuring hardware complexity from synthesis tool) is substantively equivalent to [13] and [3], even though the specific codes differ.\n\n## Domain\n\nThe domain is **hardware / constrained code design for communication & memory systems**. Papers [3], [6], [10], [12], [13], [14] work in hardware/EDA/logic synthesis. Paper [22] works in chip design. The general application area of hardware design and EDA is well-covered. While constrained codes for communication systems is a specific sub-area, it falls within the broader hardware/digital design domain addressed by multiple prior papers.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 13\nVERDICT domain = 3",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper targets automating hardware-efficient translation/encoding logic design for constrained codes to minimize encoder/decoder circuit complexity. Papers [3][6][10][12][13][14] use RL for logic synthesis but optimize general Boolean circuits via operator sequences, not codeword assignment for constrained codes. No paper frames the purpose as replacing manual constrained-code hardware design.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper models codeword assignment as a bipartite graph matching MDP with state = current assignments + synthesis metrics, actions = codeword selections, reward = gate count from an external logic-synthesis tool, and a GNN encoder. [3][13] use RL+GNN for logic synthesis but optimize operator sequences on AIGs, not combinatorial codeword-assignment matching. [32] uses deep learning for bipartite assignment but not RL with synthesis-tool reward. No paper combines all these elements."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 22
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to automate the design of hardware-efficient *translation logic for constrained codes* by optimizing the codeword assignment. Prior papers on logic synthesis ([3], [6], [10], [12], [13], [14]) focus on optimizing an existing logic network by finding a better sequence of transformation operations, which the contribution explicitly distinguishes as a downstream problem that cannot optimize the codeword assignment itself. No prior paper shares the objective of automating the codeword assignment to minimize the complexity of the resulting encoder/decoder logic.\n\n**mechanism**: The mechanism is an RL framework for combinatorial optimization, where a solution is built incrementally. This general approach is covered by [1], which proposes a framework to \"tackle constrained combinatorial optimization problems using deep Reinforcement Learning\" where \"the solution is iteratively constructed\". The use of a GNN state encoder for a graph-based hardware problem is covered by [3], and modeling the problem as an assignment MDP is covered by [27]. The overall mechanism is a recombination of known primitives.\n\n**evaluation**: The evaluation design consists of applying the proposed RL method to a hardware design problem and comparing its performance (gate count) against a random baseline, a human-derived solution, and a standard heuristic (simulated annealing). This design is substantively equivalent to that of [22], which evaluates its RL method for chip placement by comparing it against \"a strong baseline based on simulated annealing\" and a \"human expert\".\n\n**domain**: The contribution operates in the domain of hardware design and Electronic Design Automation (EDA), specifically for communication and memory systems. This general application area is covered by numerous prior papers, including [3] which addresses \"Logic synthesis for combinational circuits\" and [22] which addresses \"chip placement\", both of which are core problems in the same EDA domain.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 1\nVERDICT evaluation = 22\nVERDICT domain = 3",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: The objective is to automate the design of translation logic for constrained codes, a specific task explicitly identified as a gap in standard logic synthesis (LS) tool flows. Prior papers on LS ([3], [6], [10], [12], [13], [14]) focus on optimizing existing logic representations by finding better sequences of transformation operations, which is the step *after* the logic has been designed. No prior paper aims to automate the initial design of this specific type of logic (encoder/decoder for constrained codes) to be hardware-efficient."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     5
+    ],
+    "mechanism": [
+     2,
+     32
+    ],
+    "evaluation": [
+     5
+    ],
+    "domain": [
+     10,
+     12
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 10
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to improve the efficiency of RL search by injecting domain knowledge to prioritize promising codeword mappings early. Paper [5] (\"Heuristic-Guided Reinforcement Learning\") provides a framework for accelerating RL algorithms using heuristics constructed from domain knowledge, which aligns with the same objective of improving RL efficiency through domain-informed prioritization. Paper [13] (\"Automating reinforcement learning architecture design for code optimization\") also discusses RL efficiency improvements in code optimization tasks, but it focuses on automating RL architecture design rather than prioritizing mappings. Paper [10] (\"Reinforcement Learning for Placement Optimization\") addresses RL efficiency in hardware design but does not specifically target codeword mapping prioritization. Thus, [5] is the closest match for the purpose.\n\n### Mechanism\nThe contribution's mechanism is a custom L1 similarity-based heuristic that prioritizes mappings whose codewords are L1-close to previously assigned codes, encouraging pass-through/term sharing and reducing gate count. Paper [2] (\"Euclidean Heuristic Optimization\") discusses constructing heuristics based on minimizing loss between true distances and heuristic estimates, which is conceptually equivalent to using a distance-based heuristic (Euclidean ≈ L1 in principle). Paper [3] (\"The Hamming metric in genetic algorithms\") introduces distance-based measures (Hamming metric) for optimization, but it does not use L1 similarity or target codeword mappings. Paper [7] (\"Deep Reinforcement Learning for Exact Combinatorial Optimization\") employs RL for combinatorial optimization but does not use a custom L1 similarity heuristic. Paper [31] (\"A Graph Neural Network-Based QUBO-Formulated Hamiltonian-Inspired Loss Function\") uses graph-based optimization heuristics but does not employ L1 similarity. Thus, [2] covers the mechanism.\n\n### Evaluation\nThe evaluation includes ablation studies showing the impact of the L1 heuristic and GNN on gate count, convergence speed, and memory usage. Paper [5] (\"Heuristic-Guided Reinforcement Learning\") uses ablation studies to validate the impact of heuristics on RL efficiency, which matches the evaluation design. Paper [7] (\"Deep Reinforcement Learning for Exact Combinatorial Optimization\") also uses ablation studies to evaluate RL-based optimization methods, but it does not focus on the same claims (e.g., gate count reduction). Paper [25] (\"Late Breaking Results: Reinforcement Learning for Scalable Logic Optimization with Graph Neural Networks\") uses ablation studies to evaluate RL and GNN-based methods for logic optimization, which aligns with the evaluation design. Thus, [5] and [25] both cover the evaluation.\n\n### Domain\nThe contribution operates in the domain of hardware/constrained code design. Paper [10] (\"Reinforcement Learning for Placement Optimization\") explicitly addresses RL applications in hardware design, including combinatorial optimization tasks relevant to chip and system design. Paper [12] (\"A Heuristic Approach of Code Assignment to Obtain an Optimal FSM Design\") focuses on code assignment for FSM design, which is directly relevant to constrained code design. Paper [24] (\"Hardware Reduction for Lut–Based Mealy FSMs\") targets hardware optimization for FSMs, which overlaps with the domain. Thus, [10], [12], and [24] all cover the domain.\n\n---\n\nVERDICT purpose = 5  \nVERDICT mechanism = 2  \nVERDICT evaluation = 5  \nVERDICT domain = 10  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 12
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Improve RL search efficiency by injecting domain knowledge to prioritize promising codeword mappings early.**\n\nPaper [5] \"Heuristic-Guided Reinforcement Learning\" explicitly provides \"a framework for accelerating reinforcement learning (RL) algorithms by heuristics constructed from domain knowledge.\" This is substantively equivalent — same objective of using domain knowledge to accelerate/guide RL search. Paper [12] \"A Heuristic Approach of Code Assignment to Obtain an Optimal FSM Design\" addresses heuristic-guided code assignment, but without RL. Paper [5] covers the purpose at the problem-class level: inject domain knowledge heuristics to improve RL efficiency.\n\n**MECHANISM: L1 similarity-based heuristic prioritizing mappings whose codewords are L1-close to previously assigned codes (encouraging pass-through/term sharing, fewer gates).**\n\nNo prior paper uses an L1 similarity heuristic specifically to prioritize codeword assignments by proximity to previously assigned codes in an RL search for FSM/code design. Paper [2] \"Euclidean Heuristic Optimization\" optimizes heuristics using distance metrics but focuses on Euclidean distance for search heuristics in pathfinding, not L1 closeness for codeword assignment. Paper [12] uses heuristics for code assignment but doesn't describe an L1-proximity primitive. Paper [32] uses Hamming distance for state assignment similarity, which is a different metric and different primitive. Paper [35] discusses Hamming distances of orthogonal arrays — different primitive. No paper uses L1-closeness between codewords as a prioritization heuristic in RL for code assignment. This mechanism appears uncovered.\n\n**EVALUATION: Ablation comparing (a) with/without L1 heuristic on gate count, and (b) GNN vs. non-GNN on episodes-to-convergence and memory usage.**\n\nAblation studies comparing components (with/without a heuristic, with/without a neural network component) measuring convergence speed and resource usage appear in multiple papers. Paper [25] uses RL+GNN for logic optimization and compares performance. Paper [5] evaluates heuristic-guided RL vs. tabula rasa RL. Paper [7] compares RL-based vs. handcrafted heuristics. However, the specific ablation design here — measuring gate count plateau with/without heuristic, and episodes-to-convergence + memory with/without GNN — is a standard ablation/component-swap design. Paper [5] performs ablation-style comparisons of heuristic vs. no-heuristic RL, which matches the design of the first ablation. The evaluation design (component ablation measuring convergence and resource metrics) is a generic experimental shape used broadly. Paper [5] specifically ablates heuristic contribution to RL convergence, covering the design semantics here.\n\n**DOMAIN: Hardware / constrained code design (FSM state encoding, gate minimization).**\n\nPapers [1], [12], [20], [22], [24], [26], [27], [32], [33] all work in hardware/FSM state encoding/sequential circuit design — the same application area. Paper [25] applies RL+GNN to logic optimization. This domain is clearly covered.\n\nVERDICT purpose = 5\nVERDICT mechanism = NONE\nVERDICT evaluation = 5\nVERDICT domain = 12",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes an L1 similarity-based heuristic that prioritizes state-code mappings whose codewords are L1-close to previously assigned codes to encourage pass-through/term sharing and reduce gate count. Paper [12] addresses heuristic code assignment for FSM optimization but does not describe this specific L1-proximity prioritization mechanism; paper [20] and others address power-driven encoding but use switching-activity or Hamming-distance models, not an L1-closeness-to-prior-assignments heuristic for gate minimization."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": 32
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 12
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: The contribution's purpose is to \"improve the efficiency of RL search by injecting domain knowledge\". This is substantively equivalent to the purpose of [5], which provides a \"framework for accelerating reinforcement learning (RL) algorithms by heuristics constructed from domain knowledge\".\n\nmechanism: The core mechanism is a heuristic based on L1/Hamming distance to guide a search for optimal code assignments to reduce hardware complexity. Paper [32] uses the same primitive, employing \"Boolean distance\" (Hamming distance) in a search algorithm to find \"low power state assignment\", which is a directly related hardware optimization goal.\n\nevaluation: The evaluation design is an ablation study that removes the proposed heuristic to show that performance degrades, demonstrating the component's value. This is a standard validation protocol for new components in a system, and is the logical way paper [5] would have validated its own framework of \"heuristic-guided RL\" by comparing it to a non-guided baseline.\n\ndomain: The application area is hardware-constrained code design, which falls under the general area of logic synthesis and FSM design. This area is explicitly addressed by numerous prior papers, including [12] (\"Code Assignment to Obtain an Optimal FSM Design\") and [10] (\"Reinforcement Learning for Placement Optimization\").\n\nVERDICT purpose = 5\nVERDICT mechanism = 32\nVERDICT evaluation = 5\nVERDICT domain = 12",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     13,
+     26
+    ],
+    "evaluation": [
+     26
+    ],
+    "domain": [
+     1,
+     16
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to extract interpretable insights into what makes high-performing codeword-assignment policies efficient. None of the prior papers explicitly report or establish the same empirical relationship or insights into the efficiency of codeword-assignment policies. While some papers (e.g., [1], [3], [4], [6], [16]) discuss coding strategies for efficiency or low power, they do not focus on interpretability or the specific mechanisms that make policies efficient. Papers like [8], [9], [10], [13], and [14] address interpretability in reinforcement learning (RL) or policy learning but do not target codeword-assignment policies or their efficiency. Thus, no prior paper covers this purpose.\n\n### Mechanism\nThe mechanism involves post-hoc analysis of learned policies by plotting per-step encoder/decoder gate-count trajectories and visualizing location/codeword assignment block structures across training quality levels. Papers like [8], [9], [10], [13], and [14] discuss interpretability in RL and visualization of learned policies, but they do not involve the specific mechanism of analyzing gate-count trajectories or visualizing codeword assignment structures. Similarly, hardware-related papers (e.g., [1], [3], [4], [6], [16]) do not employ this mechanism. No prior paper matches this mechanism.\n\n### Evaluation\nThe evaluation design involves analyzing the best policies for flat gate-count segments, term sharing, complexity spikes, and generalization of assignment rules. This is a specific analysis of learned policies in the context of codeword assignment. Papers like [8], [9], [10], [13], and [14] evaluate interpretability in RL but do not use the same evaluation design. Hardware-related papers (e.g., [1], [3], [4], [6], [16]) focus on performance metrics like power, cost, or throughput but do not evaluate policies in terms of gate-count trajectories or generalization of assignment rules. Thus, no prior paper matches this evaluation design.\n\n### Domain\nThe domain is hardware/constrained code design. Several prior papers ([1], [3], [4], [6], [16]) work in this domain, addressing coding strategies for hardware efficiency, low power, or constrained systems. While the specific instance of codeword-assignment policies may differ, the general application area of hardware/constrained code design is well-covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly investigates interpretable insights into high-performing codeword-assignment policies' efficiency.  \n\nFACET: mechanism | FINAL: COVERED-BY 13 | reason: \"We present a framework for learning comprehensible models of sequential decision tasks in which agent strategies are visualized.\"  \n\nFACET: evaluation | FINAL: NONE | reason: No prior paper evaluates policies using gate-count trajectories, MSB-driven term sharing, or replication of assignment rules."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 26
+      },
+      "domain": {
+       "covered_by": 16
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Extract interpretable insights into what makes high-performing codeword-assignment policies efficient.**\n\nThe purpose is to understand *why* a learned policy works well — specifically in the context of codeword assignment for hardware/bus coding. Papers [8], [9], [11], [14], [25] deal with interpretable RL, but their purpose is to *build* interpretable policies, not to post-hoc analyze what makes a learned policy efficient in a hardware coding domain. Paper [26] (\"Visualizing and Understanding Atari Agents\") comes closest — it explicitly aims to explain what strategies deep RL agents use and what they attend to. Paper [12] and [13] also address understanding agent strategies. However, the specific relationship being established here is: \"what structural properties of codeword-assignment policies correlate with high performance\" — this is a domain-specific empirical relationship (gate-count trajectories, MSB sharing patterns). No prior paper establishes this same relationship (same variables: codeword assignment efficiency ↔ term-sharing/MSB structure). The interpretable RL papers pursue interpretability as a design goal, not as a finding about codeword-assignment efficiency. This specific empirical relationship appears uncovered.\n\n**MECHANISM: Post-hoc analysis via plotting per-step gate-count trajectories and visualizing assignment block structures across training quality levels.**\n\nPaper [26] uses saliency maps to visualize what agents attend to and how policies develop — a post-hoc visualization of learned agent behavior. Paper [27] (\"Interactive Visualization for Debugging RL\") designs visualization tools for interpreting RL policies. Paper [13] (\"A Framework for Understanding and Visualizing Strategies of RL Agents\") explicitly presents a framework for visualizing and understanding RL agent strategies. Paper [20] investigates interpretability of codebooks in model-based RL by analyzing learned representations. The mechanism here — plotting trajectories of a cost metric over steps and visualizing structural block patterns across quality levels — is a post-hoc analysis/visualization of learned policies, which is substantively equivalent to the visualization/analysis frameworks in [13], [26], [27].\n\n**EVALUATION: Best policies show nearly flat gate-count segments driven by term sharing; complexity spikes at MSB '11'; agent replicates assignment rules indicating generalization.**\n\nThis is a specific empirical finding, not an evaluation design. As a finding-type contribution, the evaluation facet concerns the analysis method used. The method here is: compare trajectories across quality levels (high vs. low performing policies), identify structural patterns. This is a controlled comparison/ablation design across performance levels, which appears in [26] (comparing strong vs. weak agents) and [13] (comparing strategies across conditions). This design — comparing behavioral/structural metrics across quality tiers of learned policies — is covered by [26] and [13].\n\n**DOMAIN: Hardware / constrained code design.**\n\nPapers [1], [2], [3], [4], [6], [12], [15], [16], [17], [22], [24] all work in hardware bus coding / low-power address bus encoding — the same application area. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 13\nVERDICT evaluation = 26\nVERDICT domain = 16",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the objective of extracting interpretable insights into what makes high-performing codeword-assignment policies efficient. The interpretable RL papers (e.g., [8],[9],[11],[14]) aim to produce interpretable policies for deployment, not to analyze why certain codeword assignments are efficient; the bus-coding papers analyze switching activity or power but do not frame their goal as extracting interpretable insights into policy efficiency. No paper matches the same objective even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": 26
+      },
+      "evaluation": {
+       "covered_by": 26
+      },
+      "domain": {
+       "covered_by": 16
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**PURPOSE:** The contribution's purpose is to extract interpretable insights into what makes a learned, high-performing policy efficient in a specific domain. This objective is substantively equivalent to the purpose of prior work in interpretable reinforcement learning. For example, [13] proposes \"A Framework for Understanding and Visualizing Strategies of RL Agents,\" and [26] aims to \"explain... deep RL agents\" and \"understand how an agent learns and executes a policy.\"\n\n**MECHANISM:** The mechanism is a post-hoc analysis involving plotting trajectories of a domain-specific metric (gate-count) and visualizing the structure of the policy's output (assignment blocks). This is a specific application of the general mechanism of post-hoc visualization and analysis used to understand RL agents, which is a standard approach in the field. Prior papers like [26] use \"saliency maps to understand how an agent learns and executes a policy,\" which is the same class of mechanism (post-hoc visualization for interpretation).\n\n**EVALUATION:** The evaluation design consists of observing patterns in visualized data (e.g., flat segments and spikes in gate-count trajectories, replicated structures in assignments) and drawing qualitative conclusions about the agent's strategy. This design—using visualizations to qualitatively analyze and explain an agent's behavior—is not new. For instance, [26] uses its visualization method to \"show 1) what strong agents attend to,\" which is the same evaluation design of observing a visualized property to infer strategic logic.\n\n**DOMAIN:** The contribution operates in the domain of hardware-aware or constrained code design. This application area is extensively covered by numerous prior papers. For example, [16] presents a \"source-coding framework for the design of coding schemes to reduce transition activity\" for \"low-power address and data busses,\" and [2] introduces \"Bus-invert coding low-power I/O,\" both of which fall squarely within the same domain.\n\nVERDICT purpose = 13\nVERDICT mechanism = 26\nVERDICT evaluation = 26\nVERDICT domain = 16",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,359 @@
+{
+ "paper_id": "EzrZX9bd4G",
+ "title": "BEEM: Boosting Performance of Early Exit DNNs using Multi-Exit Classifiers as Experts",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     4,
+     12
+    ],
+    "mechanism": [
+     4,
+     5,
+     9,
+     18,
+     23
+    ],
+    "evaluation": [
+     1,
+     2,
+     3,
+     4,
+     6,
+     7,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     20,
+     28
+    ],
+    "domain": [
+     1,
+     2,
+     3,
+     4,
+     6,
+     7,
+     8,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     20,
+     28
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 12
+      },
+      "mechanism": {
+       "covered_by": [
+        5,
+        9,
+        18,
+        23
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        1,
+        2,
+        3,
+        4,
+        6,
+        7,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        20,
+        28
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        2,
+        3,
+        4,
+        6,
+        7,
+        8,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        20,
+        28
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to improve early-exit (EE) inference by better utilizing information across exits, addressing the limitation that prior EE criteria treat every exit classifier equally and discard confidence from previous layers. Paper [4] discusses early exiting with ensemble internal classifiers but does not explicitly address the issue of leveraging confidence across exits. Paper [12] mentions that existing early exit methods ignore information extracted from previous exit layers, which aligns with the purpose of this contribution. Therefore, the purpose is **covered** by [12].\n\n### Mechanism\nThe mechanism, BEEM, treats intermediate exit classifiers as experts in an ensemble, aggregating weighted confidence scores of consecutive previous exits whose predictions agree with the current exit. Papers [5], [9], [18], and [23] discuss weighted ensemble methods based on classifier confidence, which is substantively equivalent to the aggregation mechanism described here. Paper [4] also mentions ensemble internal classifiers but does not explicitly use weighted confidence aggregation across consecutive exits. Paper [12] proposes a Bag-of-Features-based method but does not use the same weighted aggregation mechanism. Paper [19] introduces an agreement rate initialized maximum likelihood estimator for ensemble aggregation, which is conceptually similar to weighting based on agreement. Thus, the mechanism is **covered** by [5], [9], [18], and [23].\n\n### Evaluation\nThe evaluation uses GLUE (language tasks) and COCO (image captioning) benchmarks to measure speed-up and accuracy improvements. Papers [1], [2], [3], [4], [6], [7], [10], [11], [12], [13], [14], [15], [16], [17], [20], and [28] all evaluate early-exit methods using standard benchmarks and metrics for efficiency and accuracy, which matches the evaluation design. Although the specific benchmarks (GLUE and COCO) may differ, the evaluation design (speed-up and accuracy comparison against SOTA methods) is substantively equivalent. Therefore, the evaluation is **covered** by these prior papers.\n\n### Domain\nThe domain is efficient inference/adaptive early-exit for transformer DNNs. Papers [1], [2], [3], [4], [6], [7], [8], [10], [11], [12], [13], [14], [15], [16], [17], [20], and [28] all work in the general area of efficient inference and adaptive early-exit for deep neural networks, including transformers. While some papers focus on specific sub-problems or architectures (e.g., vision transformers, edge computing), the general application area is the same. Therefore, the domain is **covered** by these prior papers.\n\n---\n\nVERDICT purpose = 12  \nVERDICT mechanism = 5, 9, 18, 23  \nVERDICT evaluation = 1, 2, 3, 4, 6, 7, 10, 11, 12, 13, 14, 15, 16, 17, 20, 28  \nVERDICT domain = 1, 2, 3, 4, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 20, 28  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 20
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Improve early-exit inference by better using information across exits, since prior EE criteria treat every exit classifier equally and discard confidence from previous layers.**\n\nPaper [4] (Early Exiting with Ensemble Internal Classifiers) explicitly states: \"Most existing work usually trains the internal classifiers independently and employs an exiting strategy to decide whether or not to exit based on the confidence of the current internal classifier. However, none of these works takes full advantage of the fact...\" — this directly addresses the same gap: prior EE methods ignore information from previous exits.\n\nPaper [12] also notes: \"they ignore the information extracted from previous exit layers\" as a limitation being addressed.\n\nBoth [4] and [12] share the same purpose: improve EE by leveraging information across multiple exits rather than treating each exit independently.\n\n---\n\n**MECHANISM: BEEM — treat each exit as an expert, aggregate weighted confidence scores of consecutive agreeing previous exits (deeper weighted higher), reset on disagreement, exit when aggregated confidence exceeds threshold.**\n\nPaper [4] proposes using ensemble of internal classifiers for early exiting — treating internal classifiers as ensemble members. However, the specific mechanism of: (a) weighting by accuracy/cost, (b) consecutive agreement-based accumulation, and (c) reset on disagreement is more specific.\n\nPaper [12] uses Bag-of-Features aggregating information from previous exits, but the mechanism is feature-level aggregation, not confidence-score weighted ensemble with agreement/reset logic.\n\nPaper [6] (Early Exit Ensembles) uses ensemble of early exits for uncertainty estimation, treating exits as ensemble members — similar primitive of \"exits as ensemble experts.\"\n\nPaper [5] (Confidence in Prediction: Dynamic Weighted Ensemble) proposes dynamic weighted ensemble where classifiers are weighted by their confidence level — the same primitive of weighting ensemble members by confidence/accuracy.\n\nPaper [18] proposes exponentially weighting probability estimates of base classifiers by cross-validated accuracy estimates — same primitive of accuracy-weighted ensemble aggregation.\n\nPaper [26] (weight-adjusted voting algorithm for ensembles) — weighted voting based on classifier accuracy.\n\nThe agreement-based reset mechanism specifically echoes Paper [29]/[32] \"The Value of Agreement, a New Boosting Algorithm\" — using agreement among classifiers as a signal for weighting/boosting.\n\nPaper [4] is the closest: it explicitly proposes using ensemble of internal classifiers for early exiting, treating exits as ensemble members and aggregating their predictions. The abstract says \"none of these works takes full advantage of the fact\" (that internal classifiers form a natural ensemble). The weighted aggregation with agreement/reset is a specific instantiation of this ensemble primitive, which is covered by [4] combined with weighted ensemble methods [5], [18], [26].\n\nPaper [4] covers the core mechanism (ensemble of internal exit classifiers). The weighting-by-accuracy primitive is in [18] and [26]. The agreement-based weighting is in [29]/[32].\n\n---\n\n**EVALUATION: GLUE benchmark (NLP) and COCO (image captioning); speed-up metrics vs. final layer; comparison to SOTA EE methods.**\n\nPaper [20] (DeeCap) evaluates early exiting on image captioning (COCO dataset) with efficiency metrics — same benchmark family (COCO) and same evaluation design (speed vs. accuracy tradeoff for EE).\n\nPaper [2] (LECO) evaluates on GLUE with speed-up metrics comparing to SOTA EE methods — same benchmark family and metric semantics.\n\nPapers [1], [3], [4], [8] all evaluate on GLUE with speed-accuracy tradeoff metrics for EE methods.\n\nThe evaluation design (GLUE + speed-up ratio + comparison to SOTA EE baselines) is covered by [2], [4], [8]; COCO captioning EE evaluation is covered by [20].\n\n---\n\n**DOMAIN: Efficient inference / adaptive early-exit for transformer DNNs.**\n\nThis is clearly covered by numerous papers: [1], [2], [3], [4], [6], [7], [8], [11], [12], [15], [16], [17], [20] all operate in the same domain of efficient inference via early exiting in deep neural networks/transformers.\n\n---\n\nVERDICT purpose = 4\nVERDICT mechanism = 4\nVERDICT evaluation = 20\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     10
+    ],
+    "evaluation": [
+     1,
+     3,
+     8,
+     9
+    ],
+    "domain": [
+     1,
+     3
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to set exit thresholds in a principled way with a guarantee of surpassing vanilla final-layer inference, addressing prior methods' lack of theoretical grounding and strong assumptions (e.g., equal error rate across layers). None of the prior papers explicitly address the theoretical grounding of threshold-setting for early exits with guarantees of surpassing vanilla inference. Papers [1], [2], [5], [6], [7], [9], [12], and [14] discuss early-exit mechanisms and efficiency improvements but do not focus on principled threshold-setting with theoretical guarantees. Paper [17] discusses reject option classifiers with bounded guarantees but does not address early-exit thresholds or the specific problem of surpassing vanilla inference.\n\n### Mechanism\nThe contribution formulates threshold selection as a simple linear program using the error rates of the exit classifiers and derives a theoretical condition under which BEEM provably beats vanilla DNN inference. Paper [10] introduces linear programming for model selection, which is substantively equivalent to the mechanism of using linear programming for threshold optimization. Paper [11] discusses threshold optimization for imbalanced data but does not use linear programming or derive theoretical guarantees. Paper [13] introduces automatic threshold tuning but does not use linear programming or address theoretical conditions for surpassing vanilla inference.\n\n### Evaluation\nThe evaluation demonstrates that threshold-setting improves both speed-up and accuracy versus last-layer inference and derives a condition under which this improvement is guaranteed. Papers [1], [2], [5], [6], [7], [9], [12], and [14] evaluate early-exit mechanisms using similar designs, such as comparing speed-up and accuracy improvements against baseline inference methods. These papers use standard evaluation setups for early-exit models, including benchmarks and metrics for efficiency and accuracy, which match the evaluation design of this contribution. No new evaluation design is introduced here.\n\n### Domain\nThe domain is efficient inference and early-exit threshold optimization. Papers [1], [2], [5], [6], [7], [9], [12], and [14] all operate in the same general application area of efficient inference and early-exit optimization. While this contribution may target a specific sub-problem, the domain itself is well-covered by prior work.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 10  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses setting exit thresholds with a guarantee of surpassing vanilla final-layer inference while addressing theoretical grounding and assumptions like equal error rate across layers."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## PURPOSE\n\nThe purpose is: \"Set exit thresholds in a principled way with a guarantee of surpassing vanilla final-layer inference, addressing prior methods' lack of theoretical grounding and strong assumptions (e.g. equal error rate across layers).\"\n\nPaper [9] (\"Unsupervised Early Exit in DNNs with Multiple Exits\") discusses exit point optimization and notes that \"the last exit point may offer a better prediction error but also involves more computational resources.\" It addresses threshold setting but doesn't specifically focus on guaranteeing improvement over vanilla final-layer inference with theoretical grounding.\n\nPaper [21] (\"Optimization design of cascaded classifiers\") presents optimization algorithms for cascade classifiers that \"jointly optimize the setting of the thresholding parameters of all the node classifiers within the cascade\" — this is principled threshold setting for cascaded inference, which is structurally similar. However, the specific purpose of guaranteeing improvement over vanilla (final-layer) inference is not the same objective.\n\nPaper [17] (\"Optimal strategies for reject option classifiers\") derives optimal strategies with guarantees for selective classifiers, which is related but in a different problem class (reject option, not early exit).\n\nPapers [20] and [24] address cascade classifier threshold optimization with principled methods, but their purpose is minimizing computation cost subject to detection/false-positive constraints, not guaranteeing improvement over a baseline final-layer classifier.\n\nNo prior paper specifically targets the purpose of providing a theoretical guarantee that early-exit threshold selection provably beats vanilla final-layer inference while addressing the equal-error-rate assumption. This appears uncovered.\n\n## MECHANISM\n\nThe mechanism is: \"Formulate threshold selection as a simple linear program using the error rates of the exit classifiers; derive a theoretical condition on intermediary-layer error rate under which early exit provably beats vanilla DNN inference.\"\n\nPaper [21] (\"Optimization design of cascaded classifiers\") presents optimization algorithms for cascade threshold parameters — one of which is described as jointly optimizing thresholding parameters. However, it uses dynamic programming / greedy approaches, not a linear program formulation.\n\nPaper [20] (\"Optimally Training a Cascade Classifier\") formulates cascade training as an optimization problem with constraints on detection/false-positive rates. This is close but uses a different optimization formulation (not LP over error rates).\n\nPaper [24] (\"Cascade Learning by Optimally Partitioning\") formulates cascade learning as an optimization problem minimizing computation cost. Again, related but not LP over error rates.\n\nPaper [10] (\"Model Selection by Linear Programming\") uses LP for model selection, but not for early-exit threshold setting.\n\nThe specific combination of (1) LP formulation over exit classifier error rates + (2) theoretical condition guaranteeing improvement over vanilla inference appears not directly covered by any prior paper.\n\n## EVALUATION\n\nThe evaluation is: \"Threshold-setting improves both speed-up and accuracy vs last-layer inference; a condition is derived under which this performance improvement is guaranteed (theoretical).\"\n\nThe evaluation design involves comparing early-exit methods against vanilla final-layer inference on speed-accuracy tradeoffs, which is a standard evaluation design in early-exit literature. Papers [3], [5], [9], [14] all evaluate early-exit methods comparing speed-up vs. accuracy against baseline (final-layer) inference. This is a standard benchmark design in the domain.\n\nPaper [9] specifically evaluates \"An exit point that is 'optimal' in terms of both prediction error and computational resources\" — comparing against last-layer inference.\n\nThe evaluation design (speed-accuracy tradeoff vs. final-layer baseline) is covered by multiple prior papers.\n\n## DOMAIN\n\nThe domain is: \"Efficient inference / early-exit threshold optimization.\"\n\nThis is clearly covered by numerous prior papers: [1], [2], [3], [4], [5], [6], [7], [9], [12], [14] all operate in the early-exit / efficient DNN inference domain.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 9\nVERDICT domain = 3",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper sets exit thresholds with a provable guarantee of surpassing vanilla final-layer inference while explicitly addressing the lack of theoretical grounding and equal-error-rate assumptions in prior early-exit methods. Papers [9] and [21] address threshold optimization in cascades/early-exit but neither provides a guarantee of beating the final-layer baseline nor critiques equal-error-rate assumptions in this framing.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper formulates early-exit threshold selection as a linear program over exit-classifier error rates and derives a theoretical condition on intermediary-layer error rate guaranteeing improvement over vanilla DNN inference. Papers [21] and [24] optimize cascade thresholds jointly but use different formulations (not LP over error rates) with no such theoretical sufficiency condition; paper [10] concerns model selection by LP in a different domain entirely."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 21
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": [
+        3,
+        8
+       ]
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The objective is to set early-exit thresholds with a theoretical guarantee of outperforming the final-layer inference, moving beyond heuristic methods. While many papers optimize early-exit systems, none appear to formulate the objective as achieving a provable guarantee of surpassing the vanilla, full-depth model's performance. For instance, papers on cascade classifiers like [21] \"jointly optimize the setting of the thresholding parameters,\" but the goal is to optimize the cascade's speed/accuracy trade-off, not to formally prove superiority over the final stage.\n\n**mechanism**: The mechanism involves formulating threshold selection as a linear program and deriving a theoretical condition. The primitive of using linear programming for model parameter selection is covered by [10], which is explicitly titled \"Model Selection by Linear Programming.\"\n\n**evaluation**: The evaluation design combines empirical measurement of speed-up and accuracy with a theoretical proof of a performance guarantee. The empirical design is standard in the domain, used by papers like [3] which aim at \"reducing the energy and computational power requirements.\" The theoretical proof as a form of validation is a standard design in theoretical papers, such as [8] which investigates and shows \"The tradeoff between speedup and efficiency.\"\n\n**domain**: The application area is efficient inference and early-exit optimization. This is the explicit domain of numerous prior papers, including [1] (\"An Efficient Inference Framework for Early-exit Large Language Models\") and [2] (\"A Robust Retrieval-Augmented Early Exit Framework for Efficient Inference\").\n\nVERDICT purpose = NONE\nVERDICT mechanism = [10]\nVERDICT evaluation = [3, 8]\nVERDICT domain = [1]",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY [21] | reason: This paper's purpose is to \"jointly optimize the setting of the thresholding parameters of all the node classifiers within the cascade,\" which is a principled way to set exit thresholds. The context is a cascade classifier, a structure whose explicit goal is to achieve high performance with lower average computation than the full model, thus \"surpassing vanilla final-layer inference\" in efficiency."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     3,
+     6,
+     13,
+     15
+    ],
+    "mechanism": [
+     3,
+     6,
+     15,
+     21
+    ],
+    "evaluation": [
+     3,
+     6,
+     15,
+     21
+    ],
+    "domain": [
+     2,
+     3,
+     8,
+     10,
+     11,
+     21
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        3,
+        6,
+        15
+       ]
+      },
+      "mechanism": {
+       "covered_by": [
+        3,
+        6,
+        15,
+        21
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        3,
+        6,
+        15,
+        21
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        3,
+        2,
+        8,
+        10,
+        11,
+        21
+       ]
+      },
+      "single_paper_covers_all": 3
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to empirically validate BEEM's speed and accuracy benefits across modalities. Paper [3] discusses an efficient inference framework for early-exit large language models, focusing on improving inference efficiency and accuracy. Paper [6] introduces a novel architecture for early exiting in vision transformers, which increases accuracy while reducing computational overhead. Paper [15] also focuses on speeding up inference for pre-trained language models (PLMs) while improving accuracy. These papers share the same high-level purpose of validating speed and accuracy improvements for early-exit methods, which aligns with the purpose of the contribution.\n\n### Mechanism\nThe mechanism involves extensive evaluation of BEEM on GLUE (for PLMs) and COCO (for encoder-decoder captioning), comparing against previous early-exit (EE) methods. Paper [3] introduces an efficient inference framework for early-exit models, which is a substantively equivalent mechanism for improving efficiency and accuracy in LLMs. Paper [6] proposes a novel architecture for early exiting in vision transformers, which is also substantively equivalent as it involves early-exit mechanisms for efficient inference. Paper [15] introduces a framework for improving early exiting in PLMs, which is directly relevant to the mechanism of the contribution. Paper [21] discusses dynamic early exiting for efficient image captioning, which is also substantively equivalent to the mechanism of the contribution.\n\n### Evaluation\nThe evaluation facet involves measuring speed-up improvement on both GLUE and COCO, with additional accuracy improvements on GLUE due to reduced overthinking. Paper [3] evaluates speed-up and accuracy improvements for early-exit models, which matches the evaluation design. Paper [6] evaluates accuracy improvements alongside efficiency gains for early-exit vision transformers, which is substantively equivalent. Paper [15] evaluates speed-up and accuracy improvements for PLMs using early-exit mechanisms, which also matches the evaluation design. Paper [21] evaluates both accuracy and efficiency improvements for early-exit image captioning, which is substantively equivalent. The evaluation design is therefore covered.\n\n### Domain\nThe domain of the contribution is efficient inference for language and vision-language tasks. Paper [3] focuses on efficient inference for large language models, which covers the language aspect of the domain. Papers [2], [8], [10], and [11] focus on image captioning, which covers the vision-language aspect of the domain. Paper [21] specifically addresses efficient inference for image captioning, which directly overlaps with the domain of the contribution. The domain is therefore covered.\n\n---\n\nVERDICT purpose = 3, 6, 15  \nVERDICT mechanism = 3, 6, 15, 21  \nVERDICT evaluation = 3, 6, 15, 21  \nVERDICT domain = 3, 2, 8, 10, 11, 21  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": 21
+      },
+      "evaluation": {
+       "covered_by": 21
+      },
+      "domain": {
+       "covered_by": 21
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Empirically validate BEEM's speed and accuracy benefits across modalities.**\n\nThe purpose is to demonstrate that an early-exit method achieves both speed-up and accuracy improvements (the latter due to reduced \"overthinking\") across multiple modalities. Paper [21] (DeeCap) explicitly validates early exiting for image captioning efficiency. Paper [13] (LECO) validates speed and accuracy of early exiting for PLMs on GLUE-like benchmarks. Paper [15] (BADGE) validates speed-up and accuracy for PLMs via early exiting. Paper [3] validates efficient inference for early-exit LLMs. The relationship \"early exit improves both speed AND accuracy (via reduced overthinking)\" is touched on in [13] and [15], which discuss improved accuracy alongside speed. However, the specific claim about \"reduced overthinking\" as a mechanism for accuracy improvement is somewhat distinct. Still, at the problem-class level, validating speed+accuracy of an early-exit method is covered by [13], [15], [21].\n\n**MECHANISM: Extensive evaluation on GLUE (PLMs) and COCO (encoder-decoder captioning), comparing against previous EE methods.**\n\nThis is the analysis method: benchmarking on GLUE for PLMs and COCO for captioning, comparing against prior EE methods. Paper [21] (DeeCap) uses COCO for image captioning evaluation comparing EE methods. Papers [13] and [15] use GLUE benchmarks for PLM early-exit comparison. The combination of both is what BEEM does, but each individually is covered. GLUE for EE comparison: [13], [15]. COCO for EE captioning: [21].\n\n**EVALUATION: Speed-up improvement on both GLUE and COCO; accuracy improves alongside speed-up due to reduced overthinking.**\n\nThe evaluation design uses standard benchmarks (GLUE, COCO) with speed-accuracy metrics comparing EE methods. Paper [13] evaluates speed-accuracy tradeoffs on GLUE for EE methods. Paper [15] similarly uses GLUE with speed-up metrics. Paper [21] uses COCO with speed-accuracy metrics for EE captioning. The design (named benchmark families + speed-accuracy metrics for EE comparison) is covered by these papers.\n\n**DOMAIN: Efficient inference for language and vision-language tasks.**\n\nPaper [21] covers vision-language (image captioning) efficient inference. Papers [13], [15], [3] cover efficient inference for language tasks (PLMs/LLMs). The domain of efficient inference for language and vision-language tasks is clearly covered.\n\nVERDICT purpose = 13\nVERDICT mechanism = 21\nVERDICT evaluation = 21\nVERDICT domain = 21",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

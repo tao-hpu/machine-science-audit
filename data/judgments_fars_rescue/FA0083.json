@@ -1,0 +1,363 @@
+{
+ "paper_id": "FA0083",
+ "title": "Query-OOD Escalation: Detecting Memory Poisoning Attacks via Embedding-Space Anomaly Detection",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     4,
+     7
+    ],
+    "evaluation": [
+     3,
+     13
+    ],
+    "domain": [
+     1,
+     2,
+     3,
+     5,
+     6,
+     30,
+     31
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        2,
+        3,
+        5,
+        6,
+        30,
+        31
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to show that AgentPoison's trigger optimization leaves a detectable geometric signature in query embedding space. None of the prior papers explicitly establish or report this specific empirical relationship. While several papers discuss backdoor attacks (e.g., [1], [2], [8], [9], [12], [13], [29]), none demonstrate or analyze the geometric signature left by AgentPoison's optimization in embedding space. Papers like [13] and [29] focus on activation clustering or purification mechanisms but do not address the specific geometric signature caused by AgentPoison's optimization.\n\n### Mechanism\nThe contribution exploits the uniqueness objective of AgentPoison, which pushes triggered query embeddings out-of-distribution relative to benign clusters, and detects them using an LDA-based OOD gate. Paper [7] discusses Linear Discriminant Analysis (LDA) in the context of intrusion detection, and [20] explores OOD detection methods using learned representations. However, neither paper applies LDA specifically to detect embedding-level geometric signatures caused by backdoor attacks or poisoning triggers. Papers like [13], [14], and [29] discuss clustering or activation-based detection methods but do not use LDA for OOD detection in this specific context. Thus, the mechanism appears uncovered.\n\n### Evaluation\nThe evaluation design involves measuring the detection gate's performance (AUROC=1.0, zero false positives at 99% true positive rate) on ReAct-StrategyQA queries. Papers like [3] and [19] use benchmarks for evaluating agent security or harmfulness, and [31] discusses inference-stage detection frameworks. However, none of these papers use the same evaluation design (e.g., LDA-based OOD detection on ReAct-StrategyQA queries). While [20] and [32] discuss OOD detection benchmarks, they do not use the same metric semantics or validation framework as this contribution. Therefore, the evaluation design appears uncovered.\n\n### Domain\nThe contribution operates in the domain of LLM agent security and memory poisoning. Papers [1], [2], [3], [5], [6], [30], and [31] all address LLM agent security or memory poisoning, making this domain covered. For example, [1] introduces AgentPoison attacks, [2] discusses memory poisoning risks, and [30] addresses corpus poisoning in RAG systems. Although the specific sub-problem (detecting geometric signatures in embedding space) is new, the general application area of LLM agent security is well-covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [1], [2], [3], [5], [6], [30], [31]  ",
+      "stage2": "- **FACET: purpose** | **FINAL: NONE** | reason: No prior paper explicitly shows that AgentPoison's trigger optimization leaves a detectable geometric signature in query embedding space, even under different terminology or framing.  \n- **FACET: mechanism** | **FINAL: NONE** | reason: No prior paper exploits the uniqueness objective of an attack to detect out-of-distribution embeddings using an LDA-based OOD gate or an equivalent mechanism.  \n- **FACET: evaluation** | **FINAL: NONE** | reason: No prior paper reports perfect separation (AUROC=1.0) or zero false positives at 99% true positive rate for detecting AgentPoison-triggered queries on ReAct-StrategyQA or any equivalent dataset.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Show that AgentPoison's trigger optimization leaves a detectable geometric signature in query embedding space.**\n\nThe purpose is specifically to demonstrate that AgentPoison's *uniqueness objective* creates an OOD geometric signature that can be detected. Paper [1] introduces AgentPoison but does not study its detectability — it is the attack paper, not a defense/detection paper. Paper [2] (A-MemGuard) proposes a proactive defense for LLM agent memory poisoning, but its purpose is defense/mitigation, not demonstrating a geometric signature from a specific attack's optimization objective. No prior paper establishes the same empirical relationship: that AgentPoison's uniqueness constraint pushes embeddings OOD in a detectable way. This is a specific finding about a specific attack's geometric properties.\n\n**MECHANISM: Exploit the attack's uniqueness objective (OOD push) and detect with an LDA-based OOD gate.**\n\nThe mechanism combines two elements: (a) recognizing that the uniqueness objective pushes triggered embeddings OOD, and (b) using LDA to separate them. Paper [7] uses LDA for intrusion detection (Genetic LDA + SVM), which is a different application. Paper [4] uses density-based clustering to detect backdoor poisoned samples in training data — similar spirit but different primitive (clustering vs. LDA-based OOD gate). Paper [13] uses activation clustering to detect backdoor attacks. Paper [9] (D-Feat) operates in feature space for backdoor defense. Paper [20] studies OOD detection using learned representations. Paper [32] uses dual representation learning for OOD detection. None of these specifically use LDA as an OOD gate exploiting the geometric consequence of a uniqueness/exclusivity optimization objective in embedding space. The closest is [4] (density-based clustering on embeddings) and [13] (activation clustering), but neither uses LDA as the discriminant nor targets the specific geometric consequence of a uniqueness objective. However, at the primitive level, \"use a linear discriminant on feature/embedding space to separate OOD triggered inputs from benign ones\" is a combination of LDA (paper [7]) and OOD detection in representation space (papers [20], [32]). The specific insight — that the *uniqueness objective* of the attack itself creates the detectable signature — is not covered. But the mechanism (LDA-based OOD detection in embedding space) is a recombination of known primitives. Paper [4] uses clustering+centroids on embeddings to detect backdoor samples, which is substantively equivalent at the \"geometric separation in embedding space → detect poisoned samples\" level. I'll mark this as covered by [4] since both use geometric analysis of embedding/feature space to detect backdoor-poisoned inputs.\n\n**EVALUATION: AUROC=1.0 detection gate on ReAct-StrategyQA.**\n\nThe evaluation design uses AUROC as a metric for a detection/defense method, with TPR/FPR operating points — a standard binary classification evaluation design for anomaly/OOD detection. This design (AUROC, TPR at fixed FPR) appears broadly in papers [4], [9], [13], [20], [31], [32], etc. The specific benchmark (ReAct-StrategyQA) is a new instance, but the evaluation design (AUROC-based detection evaluation) is standard and covered.\n\n**DOMAIN: LLM agent security / memory poisoning.**\n\nPaper [1] is exactly in this domain (AgentPoison, LLM agent memory poisoning). Papers [2], [3] also cover LLM agent security. This is clearly covered.\n\n---\n\nVERDICT purpose = NONE\nVERDICT mechanism = 4\nVERDICT evaluation = 13\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper contains the specific objective of showing that AgentPoison's trigger optimization leaves a detectable geometric signature in query embedding space. Paper [30] (TrustRAG) uses clustering in embedding space to filter poisoned content, and papers [13]/[4] use activation/density clustering for backdoor detection, but none frame their purpose as characterizing the geometric signature left by AgentPoison's trigger optimization process itself. No quoted phrase from any prior paper matches this specific empirical objective even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 10
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The purpose is to show that a specific attack (AgentPoison) creates a detectable geometric signature in embedding space. This is an instance of the general finding that backdoor/poisoning attacks often create detectable distributional shifts in a model's latent space, which prior work has already established as a principle. For example, [10] finds that backdoor triggers \"significantly alter the distribution of the poisoned graph, making them vulnerable to statistical-based defenses,\" and [13] builds a defense on the premise that poisoned samples form \"sub-clusters\" in the activation space.\n\n**mechanism**: The mechanism is to detect poisoned samples as out-of-distribution (OOD) in embedding space using an LDA-based classifier. This approach of identifying anomalous samples by their representation in a latent space is well-established. [13] uses \"activation clustering\" to find anomalous sub-clusters, and [4] uses \"density-based clustering\" to find poisoned clusters, both of which are substantively equivalent primitives. Furthermore, [7] specifically proposes using \"Linear Discriminant Analysis (GLDA)\" for intrusion detection, covering the exact statistical tool.\n\n**evaluation**: The evaluation design consists of testing a detection method against a known attack on a benchmark and measuring performance with standard classification metrics (AUROC, TPR/FPR). This is a standard validation protocol for security defenses. [3] introduces \"Agent Security Bench (ASB), a comprehensive framework designed to formalize, benchmark, and evaluate the attacks and defenses of LLM-based agents,\" which explicitly defines this evaluation design. Similarly, [19] evaluates a defense on its \"AgentHarm\" benchmark, reporting \"defense success rate.\"\n\n**domain**: The domain is LLM agent security, specifically concerning memory poisoning. This application area is explicitly addressed by prior work. [1] introduces the \"AgentPoison\" attack on LLM agent memory, and [2] proposes \"A Proactive Defense Framework for LLM-Based Agent Memory\" to counter such attacks, clearly establishing the domain.\n\nVERDICT purpose = 10\nVERDICT mechanism = 7\nVERDICT evaluation = 3\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     5
+    ],
+    "mechanism": [
+     9,
+     28
+    ],
+    "evaluation": [
+     6,
+     9,
+     13
+    ],
+    "domain": [
+     20
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": null
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "domain"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to provide a selective defense-routing framework that screens adversarial queries before they reach the agent. This purpose is **covered** by [1] and [6]. Paper [1] explicitly addresses stateful defenses against adversarial query attacks, aiming to detect and prevent adversarial queries from compromising ML-based malware detection systems. Similarly, [6] discusses stateful detection of black-box adversarial attacks, focusing on identifying and mitigating adversarial queries in remote ML systems. Both papers share the same high-level objective of detecting and mitigating adversarial queries before they affect the target system.\n\n### Mechanism\nThe mechanism of the contribution is Query-OOD Escalation (QOE), which uses an LDA detection gate to route queries, escalating detected queries to stronger consensus validation or stripping detected triggers before processing. This mechanism is **covered** by [9] and [14]. Paper [9] uses outlier detection methods to identify out-of-distribution (OOD) inputs, which is substantively equivalent to the LDA detection gate in QOE. Paper [14] combines robust classification with OOD detection to identify and handle adversarial inputs, which aligns with the escalation and trigger-stripping aspects of QOE. Both papers employ mechanisms that are conceptually equivalent to the core primitives of QOE.\n\n### Evaluation\nThe evaluation of the contribution reports that QOE achieves 100% adversarial detection while flagging only 7.42% of benign queries. This evaluation design is **covered** by [9] and [13]. Paper [9] evaluates OOD detection methods using standard metrics like detection accuracy and false positive rates, which are conceptually equivalent to the metrics used in the contribution. Paper [13] discusses evaluation protocols for OOD detection, including performance estimation on unseen data, which aligns with the evaluation design of QOE. The specific benchmarks or datasets may differ, but the evaluation design is not novel.\n\n### Domain\nThe domain of the contribution is RAG/agent memory defense. This domain is **uncovered** by the prior papers. While several papers ([1], [6], [9], [14]) address adversarial query detection and OOD detection in general, none of them explicitly focus on the RAG (retrieval-augmented generation) or agent memory defense domain. This application area appears to be genuinely new.\n\n---\n\nVERDICT purpose = 1  \nVERDICT mechanism = 9  \nVERDICT evaluation = 9  \nVERDICT domain = NONE  ",
+      "stage2": "FACET: domain | FINAL: NONE | reason: No prior paper explicitly addresses RAG/agent memory defense under any terminology, framing, or domain vocabulary."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 20
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose: Provide a selective defense-routing framework that screens adversarial queries before they reach the agent.\n\nThe purpose is to intercept/screen adversarial queries before they reach a downstream system (agent/RAG). Papers [1] and [6] address stateful detection of adversarial query attacks to protect ML classifiers. Paper [5] proposes \"a robust framework for adaptive selection of filter ensembles to detect adversarial inputs.\" Paper [7] proposes \"a classification framework with a rejection option to mitigate the performance deterioration caused by adversarial examples.\" These all share the objective of screening/filtering adversarial inputs before or during processing. Paper [1] specifically targets \"stateful defense against adversarial query attacks\" — the same problem class of intercepting adversarial queries before they harm the system. The host system differs (ML malware detector vs. RAG agent), but the purpose is equivalent at the problem-class level.\n\n## Mechanism: QOE routes queries through LDA detection gate, escalating detected queries to stronger consensus validation or stripping detected triggers before processing.\n\nThe mechanism has two parts: (1) OOD/anomaly detection as a gate (LDA-based), and (2) escalation routing — detected queries go to stronger validation or trigger-stripping. Paper [5] uses \"adaptive selection of filter ensembles\" with routing logic. Paper [9] uses outlier detection methods for OOD detection as a gate. Paper [6] uses stateful detection with query similarity tracking. None of these combine LDA-based OOD detection with a two-branch escalation (consensus validation OR trigger stripping). The LDA detection gate is a standard OOD primitive (covered by [9], [25]), but the specific escalation routing — where detected queries are either escalated to consensus or have triggers stripped — is a compound mechanism. The \"trigger stripping\" branch resembles backdoor defenses ([10], [19]), and the \"consensus validation\" branch resembles ensemble approaches ([5]). However, the specific combination of LDA-gated OOD detection feeding into a two-branch escalation (consensus vs. strip) for agent query defense doesn't appear as a unified primitive in any prior paper. The closest is [5]'s adaptive filter ensemble selection, but that doesn't include trigger stripping or escalation logic. This appears genuinely absent.\n\n## Evaluation: QOE achieves 100% adversarial detection while flagging only 7.42% of benign queries.\n\nThe evaluation design reports detection rate (adversarial recall) and false positive rate on benign queries — a standard detection evaluation framework. Papers [1], [3], [6] all evaluate adversarial query detectors using detection rate and false positive rate metrics. Paper [13] addresses evaluation protocols for OOD detection. This evaluation design (detection rate + false positive rate on a held-out benign set) is standard and appears in [1], [3], [6]. The specific numbers differ, but the design is the same.\n\n## Domain: RAG / agent memory defense\n\nRAG and agent memory defense is a specific application area. Paper [20] addresses defending LLMs against alignment-breaking attacks. Papers [1], [6] address ML-based malware detection systems. None of the prior papers explicitly address RAG systems or agent memory as the application domain. However, [20] works in the LLM/AI system defense space broadly. The RAG/agent memory domain is a sub-area of LLM security, which [20] touches. Given the special rule that the same general application area counts as covered, LLM/AI system defense in [20] covers this domain.\n\nVERDICT purpose = 1\nVERDICT mechanism = NONE\nVERDICT evaluation = 6\nVERDICT domain = 20",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes a pipeline that routes queries through an LDA detection gate and then either escalates detected queries to stronger consensus validation or strips detected triggers before processing. The closest papers (e.g., [6] stateful detection, [3] AdvQDet, [1] MalProtect) detect adversarial/query attacks but do not implement a two-branch escalation-or-sanitization routing mechanism triggered by an LDA gate. No equivalent phrasing or functional analog found across all 32 papers."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": 28
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 20
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The objective is to create a selective framework that screens or routes adversarial queries as a defense. This purpose is covered by prior work on defensive filtering. For example, [5] proposes a \"framework for adaptive selection of filter ensembles to detect adversarial inputs,\" which is a substantively equivalent objective.\n\n**mechanism**: The mechanism combines an OOD detection gate with a routing/escalation policy (e.g., send to stronger validation or sanitize). The primitive of a selective network that can abstain and route to a different process is covered by [28], which describes models that can \"abstain from predicting when uncertain\" and fall back on \"safe defaults or a human in the loop,\" which is a form of escalation.\n\n**evaluation**: The evaluation design measures the adversarial detection rate (True Positive Rate) against the benign query flag rate (False Positive Rate). This is the standard evaluation protocol for any detection system, as formalized in prior work like [13], which is a paper specifically about \"Evaluation Protocols for Out-of-Distribution Detection\" and discusses these exact metrics.\n\n**domain**: The application area is defending RAG agents, which are systems built on Large Language Models (LLMs). This falls into the general domain of adversarial defense for LLMs, which is covered by prior work. For example, [20] works on \"Defending Against Alignment-Breaking Attacks via Robustly Aligned LLM,\" addressing the same general application area.\n\nVERDICT purpose = 5\nVERDICT mechanism = 28\nVERDICT evaluation = 13\nVERDICT domain = 20",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     2,
+     9
+    ],
+    "evaluation": [
+     6,
+     14
+    ],
+    "domain": [
+     14
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 14
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to demonstrate end-to-end attack mitigation at lower cost than consensus-based defenses. This specific objective — reducing the cost of attack mitigation while maintaining effectiveness — is not directly addressed in any prior paper. While some papers discuss defenses (e.g., [6], [14], [16]) or cost-related tradeoffs (e.g., [3], [13]), none explicitly focus on the purpose of achieving lower-cost attack mitigation compared to consensus-based defenses. These prior works either focus on different aspects of defense (e.g., robustness, tradeoffs, or evaluation frameworks) or do not explicitly address cost reduction in the context of consensus-based defenses.\n\n### Mechanism\nThe mechanism, QOE-Reject, drops queries flagged by a detection gate instead of running expensive consensus validation on every query. This mechanism aligns with the general concept of a reject option in machine learning, where low-confidence or flagged inputs are rejected rather than processed further. Several prior papers discuss reject options in classification tasks, including [2], [9], [10], [11], [17], [18], [20], and [24]. For example, [20] introduces SelectiveNet, which integrates a reject option into deep neural networks, and [24] discusses classification with a reject option for uncertain cases. While these papers do not specifically address LLM agent defenses or consensus-based validation, the underlying mechanism of rejecting flagged inputs is substantively equivalent.\n\n### Evaluation\nThe evaluation demonstrates that QOE-Reject reduces attack success rates while maintaining benign accuracy, outperforming consensus escalation on benchmarks with low retrieval rates. This evaluation design — comparing attack success rates and benign accuracy on benchmarks — is a standard approach in adversarial defense research. Papers such as [6], [14], and [16] use similar evaluation designs to validate the effectiveness of their defenses. For example, [6] evaluates a defense system's performance in an evasion competition, and [14] measures attack rejection rates and benign performance for LLM defenses. While the specific benchmarks and metrics differ, the evaluation design is substantively equivalent.\n\n### Domain\nThe domain is LLM agent defense evaluation. This application area is explicitly addressed in [14], which focuses on defenses against prompt attacks in large language models. While other papers (e.g., [6], [16]) discuss adversarial defenses in machine learning more broadly, [14] specifically targets LLMs, making it the most relevant prior work in this domain.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 2  \nVERDICT evaluation = 6  \nVERDICT domain = 14  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper demonstrates end-to-end attack mitigation at lower cost than consensus-based defenses, even under different terminology, framing, or domain vocabulary."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 14
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Demonstrate end-to-end attack mitigation at lower cost than consensus-based defenses.**\n\nThe purpose is specifically about showing that a cheaper defense mechanism (query rejection) achieves comparable or better attack mitigation than expensive consensus-based validation in LLM agent contexts. Paper [14] addresses defenses against prompt attacks on LLMs and evaluates defense effectiveness, but its purpose is about showing that defenses learn surface heuristics, not about cost-efficiency tradeoffs between rejection and consensus. Paper [3] studies preventive-reactive defense tradeoffs in resource allocation, which touches on cost-efficiency of defenses but in a completely different domain (cyber-attack game theory). No prior paper establishes the same empirical relationship: that a rejection-based gate outperforms consensus escalation on attack success rate at lower cost in LLM agent settings. The closest is [14] (LLM prompt attack defenses) but it doesn't compare rejection vs. consensus cost tradeoffs.\n\n**MECHANISM: QOE-Reject drops queries flagged by a detection gate instead of running expensive consensus validation on every query.**\n\nThis is a \"reject option\" applied to a security gate — flagged queries are dropped rather than escalated. Papers [2], [7], [9], [10], [11], [17], [18], [19], [20], [24] all cover classification with reject options as a general ML primitive. The core primitive — \"abstain/reject rather than process uncertain/flagged inputs\" — is extensively covered. Paper [27] covers cascade/boosting with early rejection. The mechanism of dropping flagged inputs instead of running expensive downstream processing is the same primitive as reject-option classification, just applied to a security gate context.\n\n**EVALUATION: QOE-Reject reduces attack success rate by 4.25 pp while maintaining benign accuracy, outperforming consensus escalation on benchmarks with low retrieval rates.**\n\nThe evaluation design uses attack success rate and benign accuracy metrics on benchmarks — this is a standard adversarial ML evaluation design. Paper [14] uses attack rejection rates and benign accuracy on LLM defense benchmarks. Paper [16] (DEEPSEC) uses a uniform platform comparing attacks and defenses with attack success rate and accuracy metrics. These are the same metric semantics (attack success rate + benign accuracy) applied to defense evaluation, which is a covered evaluation design.\n\n**DOMAIN: LLM agent defense evaluation.**\n\nPaper [14] explicitly works in LLM security/defense against prompt attacks, which is the same general application area of LLM agent defense. The domain is covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 9\nVERDICT evaluation = 14\nVERDICT domain = 14",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper demonstrates end-to-end attack mitigation at lower cost than consensus-based defenses; [3] and [13] discuss cost-security tradeoffs but neither makes the specific claim of achieving mitigation at lower cost than consensus-based defenses specifically."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     2,
+     10
+    ],
+    "mechanism": [
+     10
+    ],
+    "evaluation": [
+     14,
+     19
+    ],
+    "domain": [
+     2,
+     9
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to establish the robustness of a detection approach against adaptive attackers. Paper [2] explicitly addresses the challenge of adaptive adversarial attacks and fortifies adversarial detectors against such attacks, which aligns with the purpose of this contribution. Paper [9] also focuses on adaptive adversarial attacks, specifically in the context of backdoor detection, and discusses the challenges posed by unforeseen adaptive strategies. Both papers share the same high-level objective of ensuring robustness against adaptive attackers. Therefore, the purpose is **covered**.\n\n### Mechanism\nThe mechanism involves evaluating adaptive attackers who reduce trigger uniqueness to evade out-of-distribution (OOD) detection and characterizing the resulting evasion-vs-retrieval trade-off. Paper [10] discusses backdoor attacks that reduce trigger uniqueness to evade detection, which is substantively equivalent to the mechanism described here. Additionally, Paper [19] examines adaptive attacks on backdoor defenses, focusing on how attackers adjust their strategies to evade detection, which also aligns with the described mechanism. Both papers address the same underlying primitive of reducing trigger uniqueness to evade detection, making the mechanism **covered**.\n\n### Evaluation\nThe evaluation demonstrates that detection remains robust, but reducing trigger uniqueness to evade detection degrades the attack's retrieval effectiveness, revealing a fundamental trade-off. Paper [16] explicitly studies trade-offs between robustness and another property (small-world effect) in complex networks, which is conceptually similar to the trade-off analysis in this contribution. Paper [14] also explores trade-offs in adversarial training, specifically between efficiency, robustness, and other factors, which aligns with the evaluation design of analyzing trade-offs. Therefore, the evaluation design is **covered**.\n\n### Domain\nThe domain is adaptive adversarial evaluation. Papers [2], [9], and [19] all operate in the general area of adaptive adversarial evaluation, addressing adaptive attacks and defenses in various contexts. While the specific instances or datasets may differ, the general application area is the same. Therefore, the domain is **covered**.\n\n---\n\nVERDICT purpose = 2  \nVERDICT mechanism = 10  \nVERDICT evaluation = 14  \nVERDICT domain = 2  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 10
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 19
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Establish robustness of the detection approach against adaptive attackers.**\n\nThe contribution's purpose is specifically to show that a detection system (OOD-based backdoor/trigger detection) remains robust when attackers adapt by reducing trigger uniqueness, and to characterize the resulting evasion-vs-retrieval trade-off. Paper [10] (BELT) is directly relevant: it examines how backdoor attacks can evade defenses by modifying trigger properties (\"backdoor exclusivity lifting\"), and explicitly discusses the trade-off between trigger robustness and detectability. Paper [19] examines adaptive attacks against backdoor defenses in outsourced models. Paper [10] specifically characterizes how reducing trigger exclusivity (uniqueness) affects both evasion of detection and attack effectiveness — this is substantively the same relationship being established here.\n\n**MECHANISM: Evaluate adaptive attackers who reduce trigger uniqueness to evade OOD detection and characterize the evasion-vs-retrieval trade-off.**\n\nPaper [10] (BELT) explicitly uses the mechanism of reducing \"backdoor exclusivity\" (trigger uniqueness) to evade detection, and discusses how this creates a trade-off with attack effectiveness. The paper states that \"strong trigger features... increases the likelihood of unintentional trigger activations\" and that reducing exclusivity affects both detection evasion and attack performance. This is the same primitive: modify trigger uniqueness → trade-off between evasion and attack success. Paper [19] also evaluates adaptive attackers against backdoor defenses but doesn't focus on the uniqueness/retrieval trade-off specifically.\n\n**EVALUATION: Detection remains robust; reducing trigger uniqueness to evade detection degrades the attack's retrieval effectiveness.**\n\nThe evaluation design here is: run adaptive attacker variants, measure detection rate and attack success rate, show a trade-off curve. Paper [10] uses the same evaluation design — it measures both attack success rate and detection evasion under trigger modification, demonstrating the trade-off. Paper [19] similarly evaluates adaptive attacks against backdoor defenses measuring detection performance. These use the same evaluation design (adaptive attack + detection metric + attack effectiveness metric).\n\n**DOMAIN: Adaptive adversarial evaluation (in the context of backdoor/trigger-based attacks and OOD detection).**\n\nMultiple papers operate in this domain: [9], [10], [15], [19] all work in backdoor attack/defense with adaptive adversarial evaluation. Paper [2] works in adaptive adversarial attacks against detectors. This domain is clearly covered.\n\nVERDICT purpose = 10\nVERDICT mechanism = 10\nVERDICT evaluation = 19\nVERDICT domain = 9",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

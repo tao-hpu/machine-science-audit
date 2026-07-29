@@ -1,0 +1,295 @@
+{
+ "paper_id": "Qr9TjKYzjl",
+ "title": "Small features matter: Robust representation for world models",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     21,
+     23
+    ],
+    "mechanism": [
+     2
+    ],
+    "evaluation": [
+     14,
+     27
+    ],
+    "domain": [
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 23
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to address the bias in model-based reinforcement learning (MBRL) world models that prioritize major exogenous features while neglecting small but critical endogenous information (e.g., the ball in Breakout). Paper [23] formalizes exogenous state variables and rewards, decomposing MDPs into endogenous and exogenous components, which aligns with the general problem of distinguishing endogenous from exogenous information. Paper [24] also addresses exogenous state variables and rewards, deriving conditions for decomposing MDPs into endogenous and exogenous components. Both papers share the same problem-class level objective of improving reinforcement learning by addressing exogenous/endogenous distinctions, making the purpose covered.\n\n### Mechanism\nThe contribution introduces a joint embedding forward prediction loss (Augmented Temporal Contrast, ATC) as an auxiliary loss in the DreamerV3 architecture, combined with random shift augmentations and forward K-step prediction to learn joint embeddings. Paper [2] proposes Augmented Temporal Contrast (ATC) for decoupling representation learning from policy learning in RL, using a convolutional encoder trained with a contrastive loss under image augmentations and short time differences. This matches the mechanism at the primitive level, as both use ATC with augmentations and temporal prediction for representation learning. Paper [14] also discusses contrastive structured world models leveraging time step correlations, which aligns with the forward prediction aspect. Thus, the mechanism is covered.\n\n### Evaluation\nThe contribution evaluates qualitatively by visualizing reconstructed endogenous features (e.g., the ball in Breakout) to demonstrate their utility for world model and policy training. Paper [14] evaluates contrastive structured world models on Atari datasets, leveraging time step correlations to improve performance, which involves similar qualitative validation of learned representations. Paper [25] evaluates spatio-temporal and action-based contrastive representations for reinforcement learning in Atari, focusing on sample-efficient DRL and representation learning. Both papers use similar evaluation designs (Atari-based qualitative validation of learned representations), making the evaluation covered.\n\n### Domain\nThe contribution operates in the domain of reinforcement learning, specifically model-based reinforcement learning (MBRL) and world model representation learning. Papers [2], [14], [25], and others address reinforcement learning and world model representation learning, including applications to Atari environments. Since the domain is reinforcement learning and world model representation learning, it is covered.\n\n---\n\nVERDICT purpose = 23  \nVERDICT mechanism = 2  \nVERDICT evaluation = 14  \nVERDICT domain = 2  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 21
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 27
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\n\nThe purpose is to solve the problem that pixel-level reconstruction world models in MBRL are biased toward dominant exogenous features and ignore small but critical endogenous information (e.g., the ball in Breakout occupying only 1/4096 pixels).\n\n- Papers [21], [23], [24] directly address exogenous vs. endogenous state variables in RL. [21] introduces \"Sample-Efficient Reinforcement Learning in the Presence of Exogenous Information\" — explicitly about learning from high-dimensional observations with irrelevant exogenous information. [23] and [24] formalize exogenous/endogenous decomposition in RL. However, these papers focus on the theoretical decomposition of MDPs or filtering exogenous noise from rewards/states, not specifically on the problem that *pixel reconstruction world models* are biased toward exogenous features at the expense of endogenous ones.\n- The specific framing — that reconstruction-based world models (like DreamerV3) fail because they over-represent visually dominant exogenous features — is a more specific instantiation. But [21] covers \"learning from high-dimensional observations with both relevant and irrelevant information\" in RL, which is substantively equivalent at the problem-class level. The purpose of fixing the exogenous-dominance bias in representation learning is covered by [21].\n\n**Verdict: [21]** — \"high-dimensional with both relevant and irrelevant information about the task at hand\" and the goal of learning efficiently despite exogenous noise.\n\n## Mechanism\n\nThe mechanism is: (1) use ATC (Augmented Temporal Contrast) as an auxiliary loss on top of DreamerV3; (2) apply random shift augmentation; (3) predict forward K steps in joint embedding space.\n\n- Paper [2] explicitly introduces ATC (Augmented Temporal Contrast): \"we introduce a new unsupervised learning (UL) task, called Augmented Temporal Contrast (ATC), which trains a convolutional encoder to associate pairs of observations separated by a short time difference, under image augmentations and using a contrastive loss.\" This is exactly the ATC mechanism described.\n- Paper [27] (SPR) trains agents to predict future latent representations (self-predictive, forward K steps in embedding space).\n- Paper [26] (PBL) builds \"multistep predictive representations of future observations.\"\n- Paper [19] (CPC) learns representations by \"predicting the future in latent space.\"\n- The core mechanism — ATC as auxiliary loss with random shift augmentation and forward temporal prediction in joint embedding space — is directly from [2]. Adding it as an auxiliary loss to an existing architecture is a straightforward combination. The joint embedding forward prediction is also covered by [27].\n\n**Verdict: [2]** — ATC is explicitly introduced there, including image augmentations and temporal contrastive loss.\n\n## Evaluation\n\nThe evaluation is qualitative: visualizing what the world model learns (Breakout ball reconstruction, Figure 2) to show the method captures endogenous representations.\n\n- Paper [14] studies contrastive structured world models and evaluates on Atari datasets including qualitative analysis of what is learned.\n- Paper [27] (SPR) uses Atari 100k benchmark with qualitative and quantitative evaluation of learned representations.\n- Paper [4] and [10] use contrastive world models with qualitative visualization of learned features.\n- The specific evaluation design here is qualitative visualization/reconstruction to demonstrate that a specific small object (ball) is captured — this is a visualization/interpretability evaluation. Papers like [27], [14], [4] use similar qualitative visualization of learned representations in Atari environments. This is a standard \"visualize what the model learned\" design used across multiple prior papers.\n\n**Verdict: [27]** — uses qualitative visualization of learned representations in Atari as part of evaluation design; [14] also uses qualitative analysis of world model representations in Atari.\n\n## Domain\n\nThe domain is reinforcement learning / model-based RL / world model representation learning.\n\n- Papers [1], [2], [3], [4], [7], [14], [17], [18], [21], [22], [23], [24], [25], [26], [27], [28] all operate in reinforcement learning with world models or representation learning for RL. This domain is thoroughly covered.\n\n**Verdict: [2]** (among many others covering RL/MBRL representation learning).\n\nVERDICT purpose = 21\nVERDICT mechanism = 2\nVERDICT evaluation = 27\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     23
+    ],
+    "mechanism": [
+     3,
+     11
+    ],
+    "evaluation": [
+     3
+    ],
+    "domain": [
+     1,
+     3
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 23
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to validate methods for learning representations useful for model-based reinforcement learning (MBRL) on standard sample efficiency benchmarks. Paper [23] explicitly investigates whether good representations are sufficient for sample-efficient reinforcement learning, focusing on the statistical viewpoint. This aligns with the contribution's purpose of validating representation utility for MBRL. Paper [12] also addresses sample efficiency and model bias in MBRL, aiming to improve performance and efficiency, which overlaps with the contribution's purpose at the problem-class level.\n\n### Mechanism\nThe contribution compares methods on the Atari100k benchmark using metrics such as human mean/median/IQM, optimality gap, and probability of improvement. Paper [3] introduces a sample-efficient MBRL algorithm evaluated on Atari100k, using similar metrics (human-level performance, sample efficiency). Paper [7] benchmarks MBRL algorithms, including comparisons across Atari games, focusing on sample efficiency and performance metrics. Paper [6] applies DreamerV3 tricks to PPO, achieving state-of-the-art results on benchmarks, including Atari100k, with similar metrics. These papers collectively cover the mechanism of evaluating MBRL methods on Atari100k using comparable metrics.\n\n### Evaluation\nThe contribution evaluates performance on Atari100k, reporting metrics such as optimality gap, human normalized mean/median/IQM, and probability of improvement relative to baselines like DreamerV3. Paper [3] evaluates sample-efficient MBRL methods on Atari100k using human-level performance metrics, which matches the evaluation design. Paper [6] uses DreamerV3's evaluation framework, including optimality gap and human-normalized metrics, applied to Atari100k. Paper [7] benchmarks MBRL algorithms on Atari games, using aggregate performance metrics. These papers reuse the same evaluation design (Atari100k benchmarks and metrics), making the evaluation facet covered.\n\n### Domain\nThe contribution operates in the reinforcement learning domain, specifically focusing on the Atari100k benchmark. Papers [1], [3], [6], [7], and [12] all work within the reinforcement learning domain and use Atari benchmarks, including Atari100k, as a standard evaluation platform. This establishes that the domain facet is covered.\n\n---\n\nVERDICT purpose = 23  \nVERDICT mechanism = 3  \nVERDICT evaluation = 3  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 23
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: 验证方法在标准样本效率基准上学到对 MBRL 有用的表征**\n\nThe purpose is to validate that a learned representation is useful for MBRL on a sample-efficiency benchmark. Paper [23] \"Is a Good Representation Sufficient for Sample Efficient Reinforcement Learning?\" directly asks whether good representations are sufficient for sample-efficient RL — same objective of validating representation quality for sample-efficient RL. Paper [3] also validates MBRL sample efficiency on Atari100k. The purpose of validating learned representations for MBRL sample efficiency is covered by [23] (representation sufficiency for sample-efficient RL) and [3] (sample-efficient MBRL validation).\n\n**MECHANISM: Atari100k上以 human mean/median/IQM/optimality gap/probability of improvement 等指标对比 SimPLe/TWM/IRIS/DreamerV3**\n\nThe mechanism is the specific evaluation protocol: Atari100k benchmark with IQM/optimality gap/probability of improvement metrics comparing against MBRL baselines. Paper [11] \"Deep Reinforcement Learning at the Edge of the Statistical Precipice\" introduces exactly IQM, optimality gap, and probability of improvement as evaluation metrics for deep RL benchmarks including Atari. Paper [3] uses Atari100k with human-normalized scores comparing MBRL methods. The combination of these specific metrics (IQM, optimality gap, probability of improvement) comes from [11], and Atari100k MBRL comparison is in [3].\n\n**EVALUATION: 在11个游戏取得最佳，在18个游戏上优于或持平DreamerV3等具体结果**\n\nThe evaluation design uses Atari100k with the statistical metrics from [11] and compares against MBRL baselines as in [3]. The evaluation *design* (Atari100k + IQM/optimality gap/probability of improvement + MBRL baseline comparison) is covered by [11] (metrics design) and [3] (Atari100k MBRL benchmark design). The specific results are new, but the design is covered.\n\n**DOMAIN: 强化学习 / Atari100k 基准**\n\nMultiple papers work in RL with Atari benchmarks: [1], [2], [3], [11], [16], [26], etc. This is clearly covered. Paper [3] specifically uses Atari100k for sample-efficient MBRL, which is the exact same domain.\n\nVERDICT purpose = 23\nVERDICT mechanism = 11\nVERDICT evaluation = 3\nVERDICT domain = 3",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     2,
+     7
+    ],
+    "mechanism": [
+     4,
+     10
+    ],
+    "evaluation": [
+     4,
+     7
+    ],
+    "domain": [
+     1,
+     3
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Facet Analysis:\n\n#### Purpose:\nThe contribution's purpose is to validate the robustness of a method against exogenous distractor information. This involves assessing how well the method performs in the presence of external noise or dynamic backgrounds. Paper [2] (\"Wasserstein Robust Reinforcement Learning\") shares a substantively equivalent purpose, as it explicitly addresses robust reinforcement learning in the presence of environmental variations and distractions. Similarly, paper [3] (\"VIBR: Learning View-Invariant Value Functions for Robust Visual Control\") tackles robust visual control in environments with distractions and spurious noise, which aligns with the contribution's purpose. Paper [6] (\"Robust Deep Reinforcement Learning via Multi-View Information Bottleneck\") also focuses on learning robust representations to handle visual changes and distractions. Paper [7] (\"RePo: Resilient Model-Based Reinforcement Learning by Regularizing Posterior Predictability\") addresses resilience to spurious variations, including background distractors, which matches the purpose. Paper [13] (\"Provable RL with Exogenous Distractors via Multistep Inverse Dynamics\") explicitly deals with exogenous distractors and their impact on reinforcement learning, making it relevant to the purpose. Paper [16] (\"Robust Deep Reinforcement Learning against Adversarial Perturbations on State Observations\") also addresses robustness against adversarial perturbations and noise in observations, which is substantively equivalent.\n\n#### Mechanism:\nThe contribution's mechanism involves injecting pixel noise into Atari frames and using the Distracting Control Suite (DMC with dynamic backgrounds) to compare robustness across difficulty levels. Paper [4] (\"The Distracting Control Suite\") introduces the Distracting Control Suite itself, which is directly relevant to the mechanism. Paper [3] (\"VIBR\") uses domain randomization and data augmentation to handle visual distractions, which is substantively equivalent to the mechanism of introducing noise and dynamic backgrounds. Paper [7] (\"RePo\") employs a training objective to learn latent representations resilient to spurious variations, including dynamic backgrounds, which aligns with the mechanism. Paper [13] (\"Provable RL with Exogenous Distractors\") uses representation learning to extract endogenous state information in the presence of distractors, which is substantively equivalent to the mechanism of handling dynamic backgrounds and noise.\n\n#### Evaluation:\nThe evaluation design involves comparing performance on easy, medium, and hard tasks in the Distracting Control Suite, focusing on robustness to dynamic backgrounds. Paper [4] (\"The Distracting Control Suite\") uses the same benchmark family (Distracting Control Suite) and evaluates robustness across varying levels of distraction, making the evaluation design covered. Paper [3] (\"VIBR\") evaluates robustness in visually diverse environments with distractions, which is substantively equivalent to the evaluation design. Paper [7] (\"RePo\") evaluates resilience to spurious variations using similar metrics and benchmarks, aligning with the evaluation design. Paper [13] (\"Provable RL with Exogenous Distractors\") evaluates robustness in environments with exogenous distractors, which matches the evaluation design.\n\n#### Domain:\nThe domain is reinforcement learning with a focus on robust representations. Papers [1], [2], [3], [4], [6], [7], [13], and [16] all operate within the reinforcement learning domain and address robustness in various forms, including handling distractors, noise, and dynamic environments. This makes the domain covered.\n\n---\n\n### Verdicts:\nVERDICT purpose = 2  \nVERDICT mechanism = 4  \nVERDICT evaluation = 4  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: 验证方法对外生干扰信息的鲁棒性 (Validate robustness of method to exogenous distractor information)**\n\nPapers [3], [6], [7], [9], [10], [18] all pursue robustness to visual distractions/spurious variations in RL. Paper [7] (RePo) explicitly aims to learn representations \"resilient to spurious variations -- changes in task-irrelevant components such as background distractors.\" Paper [3] (VIBR) tackles \"robust visual control\" in \"visually diverse environments full of distractions.\" The purpose of validating/demonstrating robustness to exogenous distractors is clearly covered by multiple papers.\n\n**MECHANISM: Inject pixel noise into Atari frames + compare on Distracting Control Suite (DMC with dynamic backgrounds, easy/medium/hard) vs DreamerV3**\n\nPaper [4] introduces the Distracting Control Suite itself. Papers [3], [6], [7], [9], [10] all use the Distracting Control Suite as an evaluation benchmark and compare against baselines including DreamerV3 or similar world models. Paper [7] (RePo) explicitly compares against DreamerV3 on Distracting Control Suite. Paper [9] (AD3) also uses Distracting Control Suite and compares with DreamerV3. The mechanism of injecting pixel noise into Atari and using DCS with difficulty levels is covered by these papers. Paper [10] (Denoised MDPs) also uses Atari with noise injection and DMC distracting suite.\n\n**EVALUATION: Easy tasks comparable; harder distractors show proposed method more robust than DreamerV3 with smaller score drop**\n\nThis evaluation design — comparing performance across easy/medium/hard difficulty levels of the Distracting Control Suite and showing differential robustness — is used in papers [3], [7], [9], [10]. Paper [7] explicitly evaluates on DCS difficulty levels and compares against DreamerV3. The design of \"compare across difficulty levels of DCS, show robustness advantage\" is covered. The LLM-as-judge or conformal risk control doesn't apply here, but the named benchmark family (Distracting Control Suite with difficulty tiers) and metric semantics (episode reward comparison) are present in [4], [7], [9].\n\n**DOMAIN: Reinforcement Learning / Robust Representation**\n\nMultiple papers operate in exactly this domain: RL with robust visual representations. Papers [3], [6], [7], [9], [10], [18] all work in visual RL with robust representation learning. This is clearly covered.\n\nVERDICT purpose = 7\nVERDICT mechanism = 10\nVERDICT evaluation = 7\nVERDICT domain = 3",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     7,
+     13
+    ],
+    "mechanism": [
+     13
+    ],
+    "evaluation": [
+     13,
+     33
+    ],
+    "domain": [
+     7,
+     13
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to study the effect of forward prediction steps \\( K \\) on sample efficiency in reinforcement learning (RL). This specific empirical relationship — the impact of \\( K \\) on sample efficiency — is not directly reported or established in any prior paper. While some papers (e.g., [7], [13], [24]) discuss multi-step methods or \\( n \\)-step returns in RL, they focus on improving sample efficiency through specific algorithmic innovations or variance reduction, rather than isolating and analyzing the relationship between \\( K \\) and sample efficiency. None of the prior work explicitly investigates this relationship as the primary purpose.\n\n### Mechanism\nThe mechanism involves an ablation study comparing \\( K \\in \\{4, 8, 12\\} \\) on three games (Breakout, Krull, Ms. Pac-Man). Ablation studies are a common analysis method in RL research, and prior papers like [13] and [24] conduct similar multi-step comparisons to evaluate the effect of \\( n \\)-step returns or multi-step updates. For example, [13] discusses the variance of multi-step returns and evaluates different step sizes, while [24] explores the automation of \\( n \\)-step values in RL. These studies use substantively equivalent mechanisms (multi-step comparisons) to analyze related phenomena, even if the specific games or step values differ.\n\n### Evaluation\nThe evaluation design involves analyzing the preference for larger \\( K \\) in dynamically complex games (Krull, Ms. Pac-Man) and smaller \\( K \\) in simpler games (Breakout), with results consistent with Mattes et al. (2024). This evaluation design — comparing performance across different games with varying complexity to validate claims about hyperparameter effects — is not novel. Papers like [7], [13], and [24] evaluate multi-step methods across different RL tasks or games to assess their impact on performance. The specific games and step values differ, but the evaluation design (cross-task/game comparison of multi-step effects) is substantively equivalent.\n\n### Domain\nThe domain is reinforcement learning (RL) with a focus on hyperparameter analysis. Many prior papers, such as [7], [13], [24], and others, operate in the same general domain of RL and analyze hyperparameters or multi-step methods. While this contribution targets a specific sub-problem (the effect of \\( K \\) on sample efficiency), it does not introduce a new application area within RL. The domain is therefore covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 13  \nVERDICT evaluation = 13  \nVERDICT domain = 7  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 7 | reason: Paper [7] explicitly addresses the impact of varying the prediction horizon (\"N-step method\") on sample efficiency in reinforcement learning, quoting: \"This method extends the horizon of the agent, enabling it to acquire more long-term effective information, thus resolving the issue of data inefficiency in RL.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 33
+      },
+      "domain": {
+       "covered_by": 13
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**PURPOSE: 研究前向预测步数 K 对样本效率的影响 (studying the effect of forward prediction steps K on sample efficiency)**\n\nPaper [7] proposes an N-step method to improve sample efficiency in RL and discusses how extending the horizon affects data efficiency. Paper [13] explicitly studies how the number of multistep returns affects sample efficiency in RL, demonstrating variance tradeoffs. Paper [24] studies elastic/variable n-step updates for sample efficiency in RL. Paper [30] studies reinforcement learning of the prediction horizon in MPC. None of these precisely match \"studying how the number of forward prediction steps K affects sample efficiency\" as an empirical relationship — [13] is closest, studying how n-step return length affects sample efficiency/variance. This is substantively equivalent: same variables (number of forward steps, sample efficiency), same direction of effect investigation.\n\n**MECHANISM: 消融实验在 Breakout/Krull/Ms.Pac-Man 上比较 K∈{4,8,12}**\n\nThis is a controlled ablation comparing discrete values of a hyperparameter (K) across multiple Atari games. Paper [28] is titled \"Further Ablations\" suggesting ablation studies. Paper [13] performs ablations over n-step return values. Paper [24] compares different n values in RL experiments. The mechanism is a standard controlled ablation over hyperparameter values — this generic design appears in many papers including [13] and [24]. Per the rules, generic ablation shapes don't count unless validating the same claim. However, [13] and [24] both perform ablations over n-step values specifically to study their effect on performance, which is the same claim structure.\n\n**EVALUATION: Atari games (Breakout, Krull, Ms.Pac-Man) as evaluation environment, finding that game complexity moderates optimal K**\n\nThe evaluation design uses Atari games as benchmarks with sample efficiency metrics. Papers [33] uses Atari for sample-efficient RL evaluation. Papers [6], [21], [29] use Atari-style benchmarks. The finding that \"dynamically complex games prefer larger K, simple games prefer smaller K\" — this specific moderating relationship is noted as consistent with Mattes et al. (2024), which is not in the prior paper list. The evaluation design (Atari benchmark + sample efficiency metric) is covered by [33] and others.\n\n**DOMAIN: 强化学习 / 超参分析 (RL / hyperparameter analysis)**\n\nMultiple papers work in RL with hyperparameter analysis: [1], [2], [27] cover hyperparameter optimization in learning systems broadly. [13], [24], [7] work in RL with n-step hyperparameter analysis specifically. This domain is clearly covered.\n\nVERDICT purpose = 13\nVERDICT mechanism = 13\nVERDICT evaluation = 33\nVERDICT domain = 13",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

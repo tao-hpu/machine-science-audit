@@ -1,0 +1,365 @@
+{
+ "paper_id": "iamWnRpMuQ",
+ "title": "Uncertainty and Influence aware Reward Model Refinement for Reinforcement Learning from Human Feedback",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1
+    ],
+    "mechanism": [
+     9
+    ],
+    "evaluation": [
+     1,
+     3
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to address the issue of reward model degradation in RLHF caused by off-distribution optimization and overoptimization, while avoiding the high cost of human preference data collection. Papers [1], [2], [3], [4], [5], [17], [20], and [24] all discuss reward model overoptimization in RLHF, identifying it as a key challenge. For example, [1] explicitly states, \"Aligning generative models with human preference via RLHF typically suffers from overoptimization, where an imperfectly learned reward model can misguide the generative model to output undesired responses.\" Similarly, [3] introduces \"Adversarial Policy Optimization\" to mitigate reward overoptimization, and [20] discusses \"distribution shifts during the RL process\" as a cause of reward hacking. These papers share the same problem-class level objective of mitigating reward model degradation due to off-distribution optimization and overoptimization.\n\n### Mechanism\nThe mechanism proposed in the contribution is UGDA (Uncertainty-Gradient based Data Augmentation), which refines the reward model by reusing policy interaction samples, having them relabeled by experts, and applying supervised learning to maintain on-distribution alignment without requiring expensive human preference data. Papers [9], [13], and [26] discuss gradient-based or uncertainty-aware data augmentation techniques, but none of them apply these methods to RLHF or reward model refinement. Paper [13] mentions \"Uncertainty-Aware Data Augmentation for Offline Reinforcement Learning,\" but its focus is on improving coverage of the state-action space in offline RL, not on refining reward models via expert relabeling. Similarly, [9] introduces \"Gradient-based Data Augmentation\" for semi-supervised learning, but it does not address RLHF or reward model alignment. No prior paper combines uncertainty-aware data augmentation with expert relabeling for reward model refinement in RLHF.\n\n### Evaluation\nThe evaluation uses the Anthropic HH dataset, Gemma-2B/7B reward models, and Gemma-7B policy, with Llama2-13B and GPT-4 as judges, and benchmarks performance on AvgReward, AlpacaEval, Arena-Hard, and MT-Bench. Papers [1], [3], [5], [17], and [20] all use similar evaluation designs for RLHF methods, including reward model performance metrics and LLM-based evaluation setups. For example, [1] evaluates RLHF methods using \"human preference alignment metrics,\" and [3] uses \"lightweight uncertainty estimation\" to validate reward model improvements. While the specific datasets and benchmarks differ, the evaluation design (using reward metrics and LLM-based judges) is substantively equivalent.\n\n### Domain\nThe domain of the contribution is RLHF and LLM alignment. Papers [1], [2], [3], [4], [5], [17], [20], [24], and [25] all operate in the same general application area of RLHF and LLM alignment. For example, [1] focuses on \"Aligning generative models with human preference via RLHF,\" and [24] discusses \"Reward-Robust RLHF in LLMs.\" While the specific sub-problems and datasets differ, the domain is clearly covered.\n\n---\n\nVERDICT purpose = 1  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": "FACET: mechanism | FINAL: COVERED-BY 9 | reason: Paper [9] introduces Gradient-based Data Augmentation (GDA), which deterministically calculates augmentations from gradients of posterior probabilities, aligning with the described mechanism of UGDA for maintaining on-distribution data."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Solve off-distribution / overoptimization of fixed reward models in RLHF, where policy optimization shifts data distribution causing reward model degradation, and re-collecting human preference data is expensive.**\n\nPapers [1], [2], [3], [4], [5], [8], [12], [17], [20], [23], [24] all address reward model overoptimization/reward hacking in RLHF. Specifically, [1] explicitly identifies \"distributional shift and uncertainty in learning human preferences\" as the source of misalignment. [20] states \"two primary challenges when designing RMs to mitigate reward hacking: distribution shifts during the RL process and inconsistencies in human preferences.\" [3] addresses \"reward over-optimization in RLHF for LLMs\" where \"RL-driven policy optimization erroneously exploits reward inaccuracies.\" The purpose of addressing off-distribution degradation of fixed reward models in RLHF is clearly covered by multiple papers, especially [1] and [20].\n\n---\n\n**MECHANISM: UGDA — reuse policy interaction samples, have them expert-relabeled, then use supervised learning to refine the reward model, keeping it on-distribution without expensive human preference data collection.**\n\nThe core primitive here is: (1) collect on-policy samples from the current policy, (2) relabel them with an expert/oracle, (3) use supervised learning to update the reward model iteratively. This is essentially an active/online reward model refinement loop using policy-generated data with expert annotation.\n\n- [23] \"Sequence to Sequence Reward Modeling\" improves RM via language feedback but doesn't use policy samples for RM refinement via supervised relabeling in this loop.\n- [20] WARM uses weight averaging of reward models, not policy-sample relabeling.\n- [3] AdvPO uses uncertainty estimation for policy optimization, not RM refinement via relabeled samples.\n- [13] \"Uncertainty-Aware Data Augmentation for Offline RL\" uses data augmentation with uncertainty for offline RL, but in a different context (offline RL, not RLHF reward model refinement).\n- [9] \"Gradient-based Data Augmentation for Semi-Supervised Learning\" uses gradient-based data augmentation for SSL — the gradient-based selection aspect is related, but the mechanism of relabeling policy samples for RM refinement is not present.\n- [19] analyzes reward model robustness under distribution shift but proposes no mechanism.\n- [29] \"Two-Phase Pseudo Label Densification for Self-training Based Domain Adaptation\" uses pseudo-labels and self-training to adapt a model — this is conceptually similar (generate samples, relabel, retrain) but in domain adaptation for vision, not RLHF reward model refinement.\n\nThe specific combination of: uncertainty+gradient-based selection of policy interaction samples → expert relabeling → supervised RM refinement to stay on-distribution in RLHF is not substantively covered by any single prior paper. The closest is [13] (uncertainty-aware data augmentation for offline RL) but it targets policy learning in offline RL, not reward model refinement in RLHF. No prior paper presents this specific primitive.\n\n---\n\n**EVALUATION: Uses Anthropic HH dataset, Gemma reward models + policy, LLM-as-judge (Llama2-13B, GPT-4), benchmarks AlpacaEval/Arena-Hard/MT-Bench, metrics AvgReward, compared against SFT/PPO/LCB/UWO/RLR baselines.**\n\nThe evaluation design uses: (a) LLM-as-judge (GPT-4, Llama2) — used in many RLHF papers; (b) AlpacaEval/MT-Bench/Arena-Hard — standard RLHF evaluation benchmarks used in [1], [3], [17], [20], [23], [24] and others; (c) Anthropic HH dataset — standard in RLHF work. Papers [3], [17], [20], [23], [24] all use LLM-as-judge and standard RLHF benchmarks. For example, [3] uses \"AlpacaEval\" and GPT-4 evaluation. [17] uses similar benchmark families. The evaluation design is clearly covered.\n\n---\n\n**DOMAIN: RLHF / LLM alignment.**\n\nVirtually all of papers [1]–[5], [8], [12], [17], [18], [19], [20], [21], [23], [24], [25] operate in RLHF/LLM alignment. This is thoroughly covered.\n\n---\n\nVERDICT purpose = 1\nVERDICT mechanism = NONE\nVERDICT evaluation = 3\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes the specific mechanism of reusing policy interaction samples, having them expert-relabeled, and using supervised learning to refine the reward model to stay on-distribution without new human preference data. Paper [13] involves uncertainty-aware data augmentation for offline RL but targets state-action coverage via model-based augmentation, not reward model refinement via expert relabeling. Paper [9] proposes gradient-based data augmentation but in semi-supervised image classification, with no connection to reward model training or RLHF. No other paper contains this combination even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The purpose is to address the off-distribution and over-optimization problems of a fixed reward model during RLHF policy training, caused by the policy's changing data distribution, without requiring new human preference data. This exact objective is shared by numerous prior works. For example, [1] aims to \"mitigate overoptimization in RLHF\" by identifying the source as \"a form of distributional shift,\" and [20] aims to mitigate \"reward hacking\" by addressing \"distribution shifts during the RL process.\"\n\n**mechanism**: The proposed mechanism is Uncertainty-Gradient based Data Augmentation (UGDA), which reuses policy interaction samples and refines the reward model on them after re-labeling by an expert model. The core technical primitives are covered by prior work. [9] introduces \"Gradient-based Data Augmentation (GDA)\" which uses the \"gradient of the posterior probability distribution\" to create new data. [13] proposes \"Uncertainty-Aware Data Augmentation for Offline Reinforcement Learning\" to solve limited data coverage. The contribution combines these known primitives (gradient-based augmentation, uncertainty-awareness) and applies them to the RLHF reward model.\n\n**evaluation**: The evaluation design uses strong LLMs (Llama2-13B, GPT-4) as judges on standard benchmarks (AlpacaEval, Arena-Hard, MT-Bench) to compare the aligned policy against baselines. This \"LLM-as-judge\" protocol on established benchmarks is a standard evaluation design in the LLM alignment field. Many recent papers on RLHF, such as [3] and [17], use this same evaluation design to validate their methods for mitigating overoptimization.\n\n**domain**: The application domain is RLHF (Reinforcement Learning from Human Feedback) for LLM alignment. This is a well-established domain shared by a majority of the provided prior papers. For instance, [1], [2], [3], [4], [5], [8], [17], [19], [20], and others all explicitly operate within the domain of RLHF and LLM alignment.\n\nVERDICT purpose = 1\nVERDICT mechanism = 9\nVERDICT evaluation = 3\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     4,
+     5
+    ],
+    "mechanism": [
+     8,
+     10
+    ],
+    "evaluation": [
+     8,
+     10
+    ],
+    "domain": [
+     4,
+     5
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to provide uncertainty estimation for reward models and support interactive data collection. Paper [5] discusses a reward ensemble method to improve prediction accuracy in RLHF, which aligns with the goal of improving reward model reliability. Paper [8] explicitly addresses uncertainty quantification in fine-tuned LLMs using LoRA ensembles, which matches the purpose of providing uncertainty estimation. Paper [10] introduces uncertainty-penalized RLHF with diverse reward LoRA ensembles, which also aligns with the purpose of improving uncertainty estimation in RLHF workflows. Paper [12] discusses reward model ensembles to mitigate overoptimization, which indirectly supports the purpose of improving reward model reliability. Paper [4] mentions uncertainty estimation for language reward models but does not substantively address interactive data collection.\n\n### Mechanism\nThe contribution's mechanism involves training LoRA ensembles for reward models, using ensemble output mean for strategy optimization and variance for uncertainty measurement, while collecting interaction samples during strategy training. Paper [8] describes LoRA ensembles for uncertainty quantification in fine-tuned LLMs, which matches the mechanism of using LoRA ensembles for uncertainty estimation. Paper [3] discusses LoRA ensembles for fine-tuning LLMs, which aligns with the technical primitive of using LoRA ensembles. Paper [10] introduces diverse reward LoRA ensembles for RLHF, which matches the mechanism of using LoRA ensembles for reward modeling. Paper [14] discusses mini-ensemble low-rank adapters for fine-tuning, which aligns with the mechanism of using LoRA ensembles for parameter-efficient adaptation.\n\n### Evaluation\nThe contribution evaluates the use of ensemble variance for uncertainty-based data selection and ensemble mean for PPO strategy optimization. Paper [8] uses LoRA ensembles for uncertainty quantification and analyzes datasets with posterior approximations, which matches the evaluation design of leveraging ensemble variance for uncertainty estimation. Paper [10] evaluates diverse reward LoRA ensembles in RLHF workflows, which aligns with the evaluation design of using ensemble outputs for strategy optimization. Paper [5] evaluates reward ensembles for RLHF, which matches the evaluation design of using ensemble outputs for improving reward model predictions. Paper [12] evaluates reward model ensembles to mitigate overoptimization, which indirectly aligns with the evaluation design of leveraging ensemble outputs for RLHF workflows.\n\n### Domain\nThe contribution operates in the domain of RLHF and uncertainty estimation. Paper [5] explicitly addresses RLHF with reward model ensembles, which matches the domain. Paper [8] discusses uncertainty quantification in fine-tuned LLMs, which aligns with the domain of uncertainty estimation. Paper [10] addresses RLHF with uncertainty-penalized reward LoRA ensembles, which matches the domain. Paper [12] discusses RLHF workflows with reward model ensembles, which aligns with the domain.\n\n---\n\nVERDICT purpose = 5  \nVERDICT mechanism = 8  \nVERDICT evaluation = 8  \nVERDICT domain = 5  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: 为奖励模型提供不确定性估计并支撑交互数据的收集 (provide uncertainty estimates for reward models and support collection of interaction data)**\n\nPaper [4] \"Uncertainty Estimation for Language Reward Models\" directly addresses uncertainty estimation for reward models in RLHF. Paper [10] \"Uncertainty-Penalized RLHF with Diverse Reward LoRA Ensembles\" also targets uncertainty estimation for reward models to support RLHF. Paper [5] \"Improving RLHF with Efficient Reward Model Ensemble\" targets reward model uncertainty/accuracy for RLHF. Paper [29] \"RLHF Workflow\" discusses online RLHF with data collection. The purpose of providing uncertainty estimates for reward models is clearly covered by [4] and [10].\n\n**MECHANISM: LoRA ensembles for reward models, using ensemble mean for policy optimization and variance as uncertainty measure, collecting interaction samples during policy training**\n\nPaper [10] explicitly uses \"Diverse Reward LoRA Ensembles\" for uncertainty-penalized RLHF — using LoRA ensembles on reward models with variance as uncertainty measure in PPO. Paper [1] and [8] use LoRA ensembles for uncertainty quantification. Paper [3] uses LoRA ensembles for LLM fine-tuning uncertainty. Paper [12] uses reward model ensembles to mitigate overoptimization. Paper [5] uses reward model ensembles with LoRA for RLHF. Paper [10] is the closest match: LoRA ensembles on reward models, variance as uncertainty, mean for policy optimization — this is substantively equivalent to the described mechanism.\n\n**EVALUATION: Qualitative/structural contribution; ensemble variance used for uncertainty-based data selection, mean used for PPO policy optimization (Eq. 8)**\n\nThe evaluation design here is essentially using the ensemble mean in PPO optimization and variance for downstream data selection — this is a structural/design contribution rather than a standalone benchmark evaluation. Paper [10] uses a similar evaluation design (PPO with uncertainty-penalized reward from LoRA ensembles, measuring downstream task performance). Paper [12] evaluates reward model ensembles in RLHF via standard benchmarks. Paper [5] evaluates reward ensemble methods in RLHF. The evaluation design (PPO optimization with ensemble reward signals measured on standard LLM benchmarks) is covered by [10] and [12].\n\n**DOMAIN: RLHF / uncertainty estimation**\n\nMultiple papers operate in RLHF with uncertainty estimation: [4], [5], [10], [12], [29]. This domain is clearly covered.\n\nVERDICT purpose = 4\nVERDICT mechanism = 10\nVERDICT evaluation = 10\nVERDICT domain = 4",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     15
+    ],
+    "mechanism": [
+     1,
+     2,
+     14
+    ],
+    "evaluation": [
+     1,
+     14
+    ],
+    "domain": [
+     15,
+     16
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 15
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 15
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to select high-quality data from a large pool of interaction samples that are most valuable for refining the reward model in RLHF.  \n- **Paper 15** discusses enhancing reward models for RLHF under limited human feedback, which aligns with the goal of improving reward model refinement.  \n- **Paper 16** addresses challenges in reward modeling for RLHF, focusing on improving reward model performance, which is substantively equivalent to the purpose of refining the reward model.  \n- **Paper 17** discusses dataset selection in offline RL, aiming to identify promising datasets for better policy performance, which is conceptually similar but does not directly address reward model refinement.  \n\n**Verdict:** Purpose is covered by **Paper 15** and **Paper 16**.\n\n---\n\n### Mechanism  \nThe contribution introduces a two-step data selection mechanism: first selecting samples based on reward uncertainty (variance), then refining the selection using an influence score derived from Adam gradients, with random projection for dimensionality reduction while preserving inner products (Johnson-Lindenstrauss property).  \n- **Paper 1** uses uncertainty sampling for active learning, selecting samples with high uncertainty, which matches the first step of the mechanism.  \n- **Paper 9** incorporates gradient uncertainty into posterior sampling, which aligns with the gradient-based influence score concept.  \n- **Paper 14** computes training data influence using gradient descent, which is substantively equivalent to the influence score mechanism.  \n- **Paper 21** describes random projection for dimensionality reduction while preserving pairwise distances, which matches the random projection step.  \n\n**Verdict:** Mechanism is covered by **Paper 1**, **Paper 9**, **Paper 14**, and **Paper 21**.\n\n---\n\n### Evaluation  \nThe contribution evaluates the mechanism through ablation experiments showing the contribution of uncertainty and gradient-based selection, and hyperparameter analysis of projection dimensions (Figure 4).  \n- **Paper 14** conducts ablation experiments to validate the influence of training data on model predictions, which matches the evaluation design of isolating contributions of components.  \n- **Paper 21** discusses hyperparameter analysis in random projection methods, which aligns with the projection dimension analysis.  \n\n**Verdict:** Evaluation is covered by **Paper 14** and **Paper 21**.\n\n---\n\n### Domain  \nThe contribution operates in the RLHF domain, specifically focusing on data selection for reward model refinement.  \n- **Paper 15** explicitly addresses RLHF and reward model enhancement, which matches the domain.  \n- **Paper 16** discusses RLHF challenges and reward modeling, which also aligns with the domain.  \n- **Paper 19** explores RLHF issues such as reward overfitting and optimization, which falls within the RLHF domain.  \n\n**Verdict:** Domain is covered by **Paper 15**, **Paper 16**, and **Paper 19**.\n\n---\n\n### Final Verdicts  \nVERDICT purpose = 15  \nVERDICT mechanism = 1  \nVERDICT evaluation = 14  \nVERDICT domain = 15  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 16
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose: 从大量交互样本中挑出对奖励模型精炼最有价值的高质量数据\n\nThe purpose is selecting high-quality/high-value data from large interaction samples to refine/improve a reward model. Paper [16] addresses reward modeling challenges in RLHF and mentions dealing with \"incorrect and ambiguous preference pairs.\" Paper [15] addresses data-efficient RLHF with limited human feedback. Paper [23] discusses reward modeling in online RLHF workflows. Paper [19] addresses reward model overfitting/overoptimization. However, none of these specifically target the objective of *selecting the most valuable training samples from a large pool to refine the reward model* — they address reward model quality through architectural or training changes, not data selection for reward model refinement. Paper [32] and [33] address coreset selection for neural network training generally, but not specifically for reward model refinement in RLHF. No prior paper covers the specific purpose of data selection to refine reward models in RLHF.\n\n## Mechanism: uncertainty-gradient joint data selection with Adam-gradient-based influence scores + random projection (J-L)\n\nThe mechanism combines: (1) reward variance/uncertainty-based filtering, (2) gradient-based influence scoring using Adam gradients, (3) random projection for dimensionality reduction preserving inner products (J-L lemma). Paper [14] (TracIn) computes training data influence by tracing gradient descent — \"computes the influence of a training example on a prediction made by the model\" via gradient approximation. This is substantively equivalent to the gradient-based influence score component. Paper [21] covers random projection preserving pairwise distances (J-L). Paper [26] surveys influence analysis including gradient-based methods. Paper [10] uses gradient matching for coreset selection. The combination of uncertainty + gradient influence is novel as a joint primitive, but the gradient-influence component is covered by [14] and the random projection by [21]. The *joint* uncertainty-gradient selection as a unified primitive doesn't appear in any single prior paper.\n\n## Evaluation: ablation showing both uncertainty and gradient components contribute; hyperparameter sensitivity analysis on projection dimension\n\nThe evaluation design uses: (1) ablation experiments comparing component contributions, (2) hyperparameter sensitivity analysis (projection dimension 1024–8192). These are generic experimental moves (ablation, sensitivity analysis). Per the special rule, generic experimental moves don't establish coverage unless they validate the same claim. No prior paper uses this specific ablation design for uncertainty-gradient joint selection in RLHF. However, ablation designs appear broadly. The projection dimension sensitivity analysis is a standard hyperparameter sweep. No prior paper uses this specific evaluation design for this contribution's claims.\n\n## Domain: RLHF / 数据选择\n\nPapers [15], [16], [19], [23], [24], [29], [30] all work in the RLHF domain. This is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 14\nVERDICT evaluation = NONE\nVERDICT domain = 16",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of selecting high-quality data from large interaction samples specifically to refine a reward model in RLHF. Papers [15], [16], [19], [23] touch on reward model improvement but none frame their purpose as active/selective data curation from interaction samples for reward model refinement. The closest candidates use different objectives (prototypical networks, data smoothing, online RLHF workflows) and no quoted phrase matches \"selecting the most valuable samples from large interaction data to refine a reward model.\"\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper contains an ablation showing that both an uncertainty branch and a gradient branch jointly contribute to selection quality, nor a hyperparameter analysis of projection dimensionality (1024–8192) where higher dimensions tend to perform better. Paper [2] combines uncertainty and gradients but in offline RL optimization, not in a data-selection ablation study of this form. No quoted phrase from any paper matches these specific experimental findings."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 15
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to select the most valuable data from a large pool of samples to refine a reward model. This is a standard objective in the fields of active learning and coreset selection. Paper [1] has a substantively equivalent purpose, aiming to \"reduce labeling costs\" by selecting the most informative samples for model training via a \"hybrid active learning query strategy\".\n\n**mechanism**: The mechanism combines uncertainty-based selection (reward variance) with gradient-based influence scoring. Both are established primitives. Uncertainty sampling is the core mechanism in papers like [1] and [8]. Gradient-based data selection is used in [10], which devises a \"coreset selection method based on the idea of gradient matching\". The conceptual combination is also not new; [2] explicitly studies \"how uncertainty estimation interplays with first-order methods [gradients]\" in the context of offline RL.\n\n**evaluation**: The evaluation design consists of an ablation study to show the contribution of each component (uncertainty and gradient) and a hyperparameter sensitivity analysis. These are standard validation protocols, not novel evaluation designs. Using an ablation to justify a hybrid method's components, as done here, is a common evaluation design, for instance in [1] which proposes a \"hybrid active learning query strategy\" and would need to validate the contribution of its parts.\n\n**domain**: The application area is data selection within the Reinforcement Learning from Human Feedback (RLHF) workflow. This is an active research area covered by several prior papers. Paper [15] operates in the exact same domain, proposing a framework to \"enhance reward models under limited human feedback\" for \"Reinforcement Learning from Human Feedback (RLHF)\".\n\nVERDICT purpose = 1\nVERDICT mechanism = 2\nVERDICT evaluation = 1\nVERDICT domain = 15",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     4
+    ],
+    "mechanism": [
+     1,
+     6,
+     9
+    ],
+    "evaluation": [
+     1,
+     6,
+     9
+    ],
+    "domain": [
+     4,
+     6,
+     9,
+     21
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": [
+        1,
+        6,
+        9
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        1,
+        6,
+        9
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        4,
+        6,
+        9,
+        21
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution aims to empirically validate the effectiveness and robustness of UGDA relative to existing SOTA baselines in RLHF reward modeling. Paper [4] explicitly discusses challenges in reward modeling for RLHF, including robustness and performance issues, and evaluates methods to address these challenges. Paper [6] introduces RIME, a robust PbRL algorithm designed to handle noisy preferences, which aligns with the robustness aspect of the contribution's purpose. Paper [17] discusses error-regret mismatches in learned reward models, emphasizing robustness and effectiveness in reward learning. These papers collectively cover the purpose at the problem-class level: improving robustness and effectiveness in reward modeling for RLHF.\n\n#### Mechanism:\nThe contribution evaluates UGDA across multiple layers (strategy and reward model) using metrics such as AvgReward/VarReward, GPT-4 win/tie/lose, instruction-following benchmarks, RewardBench, and robustness under 20% label noise. Paper [1] introduces RewardBench, which is directly referenced in the contribution's mechanism. Paper [6] addresses robustness in reward learning under noisy preferences, which aligns with the robustness evaluation under 20% noise. Paper [9] discusses diverse RLHF benchmarks and feedback types, which overlaps with the use of multiple evaluation layers and benchmarks in the contribution. These papers collectively cover the mechanism design.\n\n#### Evaluation:\nThe contribution evaluates UGDA reward model accuracy on helpful/harmless test sets, showing superior performance compared to baselines (except RLR) and minimal performance degradation under noise. Paper [1] uses RewardBench for evaluating reward models, which matches the evaluation design. Paper [6] evaluates robustness under noisy preferences, which aligns with the noise robustness evaluation in the contribution. Paper [9] introduces a unified benchmark suite for RLHF, which matches the evaluation design of using standardized benchmarks. These papers collectively cover the evaluation design.\n\n#### Domain:\nThe contribution operates in the RLHF domain, specifically focusing on reward modeling and robustness. Papers [4], [6], [9], and [21] all work within the RLHF domain, addressing reward modeling, robustness, and evaluation challenges. This domain is well-covered by prior work.\n\n---\n\n### Verdicts:\nVERDICT purpose = 4  \nVERDICT mechanism = 1, 6, 9  \nVERDICT evaluation = 1, 6, 9  \nVERDICT domain = 4, 6, 9, 21  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: 实证验证 UGDA 相对现有 SOTA 基线的有效性与鲁棒性 (empirically validating UGDA's effectiveness and robustness vs. SOTA baselines)**\n\nThe purpose is to demonstrate that a specific reward learning method (UGDA) outperforms baselines in RLHF settings, including under noisy label conditions. Paper [4] (\"Secrets of RLHF Part II: Reward Modeling\") addresses challenges in reward modeling for RLHF and empirically validates reward model approaches against baselines. Paper [6] (RIME) validates a robust preference-based RL method against baselines under noisy preferences. Paper [9] (Uni-RLHF) benchmarks RLHF methods. None of these specifically establish the same empirical relationship (UGDA's superiority), but the purpose class — \"validate a reward model's effectiveness and noise robustness vs. baselines in RLHF\" — is covered by [4] and [6], which pursue the same objective at the problem-class level.\n\n**MECHANISM: Evaluating at policy and reward model levels using AvgReward/VarReward, GPT-4 win/tie/lose, instruction-following benchmarks, RewardBench, and robustness under 20% flip noise**\n\nPaper [1] (RewardBench) introduces the RewardBench evaluation protocol for reward models. Paper [4] uses GPT-4-based win/tie/lose evaluation and reward model accuracy metrics. Paper [6] (RIME) evaluates robustness under noisy preferences. The combination of these evaluation primitives (RewardBench + GPT-4 judge + noise robustness testing) is drawn from existing work. Paper [1] covers RewardBench; paper [4] covers GPT-4 win/tie/lose and reward metrics; paper [6] covers noisy-label robustness evaluation. The mechanism as a multi-level evaluation protocol is substantially covered by these papers.\n\n**EVALUATION: Specific accuracy numbers on helpful/harmless test sets with Gemma models, baselines below random, noise robustness results**\n\nThe evaluation design uses RewardBench (covered by [1]), GPT-4 win/tie/lose (covered by [4]), instruction-following benchmarks, and noise robustness testing (covered by [6]). The specific numbers (69.3%/68.5% etc.) are results, not a new evaluation design. The design itself — accuracy on helpful/harmless sets, GPT-4 judging, RewardBench, noise flip testing — is all drawn from existing evaluation frameworks in [1], [4], and [6].\n\n**DOMAIN: RLHF / empirical reward modeling**\n\nPapers [1], [4], [6], [9], [14], [21], [23] all operate in the RLHF/reward modeling domain. This is clearly covered.\n\nVERDICT purpose = 4\nVERDICT mechanism = 1\nVERDICT evaluation = 1\nVERDICT domain = 4",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,271 @@
+{
+ "paper_id": "GYk0thSY1M",
+ "title": "Recurrent Context Compression: Efficiently Expanding the Context Window of LLM",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     3
+    ],
+    "mechanism": [
+     3,
+     26
+    ],
+    "evaluation": [
+     1,
+     3
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to extend the LLM context window under limited compute/memory by compressing context with less information loss than prior compressors, specifically improving over ICAE's degradation beyond 8x compression. Paper [1] introduces ICAE for context compression but does not explicitly aim to address the degradation issue at high compression ratios. Paper [2] proposes semantic compression to extend context windows but does not focus on minimizing information loss at extreme compression ratios. Paper [3] explicitly mentions improving comprehension capabilities under constrained storage space, which aligns with the purpose of reducing information loss during compression. Therefore, the purpose is **covered** by [3].\n\n### Mechanism\nThe mechanism, Recurrent Context Compression (RCC), uses an encoder-decoder architecture where per-layer encoder output vectors are passed through MLP layers into corresponding decoder layers, yielding richer compression vectors. Paper [1] uses ICAE, which leverages only the encoder's final-layer vectors, making it substantively different. Paper [2] employs semantic compression but does not describe a recurrent encoder-decoder mechanism or per-layer vector processing. Paper [3] introduces RCC, which matches the described mechanism exactly. Paper [23] discusses compressive transformers for long-range sequence modeling but uses a different mechanism (compressing past memories rather than per-layer encoder outputs). No other papers describe a mechanism substantively equivalent to RCC. Therefore, the mechanism is **covered** by [3].\n\n### Evaluation\nThe evaluation involves text reconstruction tasks using BLEU-4 scores on compressed contexts at varying compression ratios (32x, 64x, 128x) with Pythia-1.4b/Mamba-1.4b encoders and Pile data. Paper [1] evaluates ICAE on reconstruction tasks but does not use BLEU-4 or the same compression ratios. Paper [2] evaluates semantic compression but does not use BLEU-4 or the same experimental setup. Paper [3] evaluates RCC using BLEU-4 scores on similar reconstruction tasks, matching the evaluation design. Paper [23] evaluates compressive transformers but uses different benchmarks (WikiText-103, Enwik8) and metrics (perplexity, bits per character). No other papers use the same evaluation design. Therefore, the evaluation is **covered** by [3].\n\n### Domain\nThe domain is LLM long-context/context compression. Paper [1] explicitly addresses LLM context compression. Paper [2] focuses on semantic compression for LLMs in long-text scenarios. Paper [3] targets LLM context window extension via compression. Papers [4], [5], [6], [7], [8], [9], [10], [11], [13], [15], [21], and [25] all address LLM context compression or related long-context inference problems. This domain is well-established across prior work. Therefore, the domain is **covered** by [1], [2], [3], and others.\n\n---\n\nVERDICT purpose = 3  \nVERDICT mechanism = 3  \nVERDICT evaluation = 3  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Extend LLM context window under limited compute/memory by compressing context with less information loss than prior compressors (SOTA ICAE degrades beyond 8x).**\n\nPapers [1] (ICAE), [9] (AutoCompressors), [4] (Activation Beacon), [2] (Semantic Compression), [8] (Soft Prompt Compression), and [5] (In-Context Former) all share the same objective: compress LLM context to extend effective context window under compute/memory constraints. Paper [1] explicitly targets \"compress a long context into short compact memory slots\" and is the direct SOTA being compared against. Paper [9] describes \"compressing long contexts into compact summary vectors.\" The purpose is clearly covered.\n\n**MECHANISM: RCC uses per-layer encoder output vectors passed through MLP layers into corresponding decoder layers (cross-layer injection), unlike ICAE/AutoCompressors that only use final-layer vectors. Encoder can be Transformer- or Mamba-based.**\n\nPaper [1] (ICAE) uses only the encoder's final-layer memory slots fed as soft prompts — no per-layer injection. Paper [9] (AutoCompressors) similarly uses final summary vectors. Paper [4] (Activation Beacon) compresses KV activations at every layer but does so within a single model via beacon tokens, not via a separate encoder-decoder with cross-layer MLP injection. Paper [21] (Gist-COCO) uses an encoder-decoder with an additional encoder plugin, but the mechanism is about gist token conditioning, not per-layer cross-injection via MLPs. Paper [23] (Compressive Transformer) compresses past memories but uses attention-based compression within a single model. Paper [26] (Ladder VAE) uses hierarchical/ladder-style per-layer information passing in a VAE, which is structurally analogous to per-layer encoder-to-decoder injection — \"recursively corrects the generative distribution by a data dependent approximate likelihood\" with layer-wise connections. However, this is in a VAE context, not LLM context compression. No prior paper in this set describes the specific primitive of: separate encoder-decoder where each encoder layer's output is MLP-projected into the corresponding decoder layer for richer compression vectors in an LLM context compression setting. Paper [4]'s per-layer KV compression is the closest but operates differently (no separate encoder, no cross-layer MLP injection). This mechanism appears uncovered.\n\n**EVALUATION: Text reconstruction (random prompt reconstruction, BLEU-4 metric, Pile data, Pythia/Mamba encoders, comparison at multiple compression ratios).**\n\nPaper [1] (ICAE) uses text reconstruction as an evaluation task with similar metrics on similar data. Paper [9] (AutoCompressors) also evaluates reconstruction quality. The evaluation design — text reconstruction benchmark with BLEU/perplexity metrics at various compression ratios — is used in [1] and [9]. The specific BLEU-4 metric on reconstruction tasks appears in [1]'s evaluation framework. This design is covered.\n\n**DOMAIN: LLM long-context / context compression.**\n\nPapers [1], [2], [4], [5], [6], [7], [8], [9], [11], [13], [15], [21], [23] all operate in the LLM long-context/context compression domain. Clearly covered by multiple papers.\n\nVERDICT purpose = 1\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes an encoder-decoder architecture where per-layer encoder output vectors are passed through MLP layers into corresponding decoder layers to produce compression vectors, nor the option of a Mamba-based encoder for this purpose. ICAE and AutoCompressors use only final-layer encoder vectors; Activation Beacon compresses KV activations per layer but within a single model without a separate encoder-decoder cross-layer MLP injection scheme. No other paper matches even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 26
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "The purpose to \"Extend the LLM context window... by compressing context\" is explicitly shared by prior work on LLM context compression, such as [1] which proposes to \"compress a long context into short compact memory slots\" and [9] which aims to \"compress[] long contexts into compact summary vectors\".\nThe core mechanism, an encoder-decoder architecture where per-layer encoder outputs are passed to corresponding decoder layers, is substantively equivalent to the mechanism in [26] Ladder Variational Autoencoders, where the \"generative path is then refined at each layer by a contribution from the inference path.\"\nThe evaluation design, measuring text reconstruction quality for an autoencoder-based compressor, is standard for this type of model and is inherent to the training and evaluation of prior autoencoder methods like [1] In-context Autoencoder and [9] AutoCompressors, which are \"trained with an unsupervised objective\" of reconstruction.\nThe application area of \"LLM long-context / context compression\" is the same as that of numerous prior papers, including [1] (\"Context Compression in a Large Language Model\") and [9] (\"Adapt[ing] Language Models to Compress Contexts\").\n\nVERDICT purpose = 1\nVERDICT mechanism = 26\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     3,
+     19,
+     28
+    ],
+    "mechanism": [
+     3,
+     7,
+     9,
+     28
+    ],
+    "evaluation": [
+     13,
+     17,
+     19,
+     26
+    ],
+    "domain": [
+     3,
+     19,
+     28
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        3,
+        19,
+        28
+       ]
+      },
+      "mechanism": {
+       "covered_by": [
+        3,
+        28,
+        7,
+        9
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        19,
+        13,
+        26
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        3,
+        19,
+        28
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to enable compression of texts far beyond the encoder's window length and beyond what training compute allows directly.  \n- **Paper [3]** introduces \"Recurrent Context Compression (RCC)\" to efficiently expand the context window length of LLMs within constrained storage space, which aligns with the goal of enabling compression of texts beyond the encoder's window length.  \n- **Paper [19]** introduces \"Infini-attention\" to scale LLMs to infinitely long inputs with bounded memory and computation, which also aligns with the purpose of enabling compression beyond the encoder's window length.  \n- **Paper [28]** proposes \"Transformer-XL\" to enable learning dependency beyond a fixed-length context, which similarly addresses the problem of extending context length beyond the encoder's window.  \n\nThus, the purpose is **COVERED** by papers [3], [19], and [28].\n\n---\n\n### Mechanism\nThe contribution's mechanism involves a recurrent compression mechanism combined with a two-stage training strategy: full-parameter training on shorter sequences first, then freezing the encoder and continuing training on longer sequences. Long sequences are divided into fixed-length short segments, each iteratively compressed into state/compression vectors that are concatenated.  \n- **Paper [3]** introduces \"Recurrent Context Compression (RCC),\" which uses a recurrent mechanism to compress long contexts into compact representations, matching the recurrent compression primitive.  \n- **Paper [28]** introduces \"Transformer-XL,\" which uses a segment-level recurrence mechanism to process long sequences, aligning with the recurrent compression primitive.  \n- **Paper [7]** and **Paper [9]** both describe two-stage pre-training strategies for sequence-to-sequence models, where the encoder is pre-trained in stages (e.g., acoustic and linguistic pre-training). This matches the two-stage training strategy primitive.  \n\nThus, the mechanism is **COVERED** by papers [3], [28], [7], and [9].\n\n---\n\n### Evaluation\nThe contribution evaluates passkey retrieval up to 1M tokens, achieving ~90% accuracy with an 8k-window encoder and nearly 100% after second-stage fine-tuning on sequences up to 32k with the encoder frozen. It matches Infini-attention without requiring re-pretraining on hundreds of billions of tokens.  \n- **Paper [19]** evaluates Infini-attention on long-context tasks, including retrieval accuracy for sequences up to 2M tokens, which matches the evaluation design of long-context retrieval accuracy.  \n- **Paper [13]** introduces ∞Bench, a standardized benchmark for evaluating long-context capabilities beyond 100K tokens, which aligns with the evaluation design of long-context retrieval tasks.  \n- **Paper [26]** presents the Dolce framework to differentiate retrieval-focused and holistic understanding tasks in long-context evaluation, which matches the evaluation design of retrieval-focused tasks.  \n\nThus, the evaluation is **COVERED** by papers [19], [13], and [26].\n\n---\n\n### Domain\nThe contribution operates in the domain of LLM long-context/context compression.  \n- **Paper [3]** explicitly addresses LLM long-context compression with \"Recurrent Context Compression (RCC).\"  \n- **Paper [19]** focuses on scaling LLMs to infinitely long inputs with \"Infini-attention,\" which is part of the long-context domain.  \n- **Paper [28]** addresses extending LLM context windows with \"Transformer-XL,\" which is also part of the long-context domain.  \n\nThus, the domain is **COVERED** by papers [3], [19], and [28].\n\n---\n\n### Verdicts\nVERDICT purpose = 3, 19, 28  \nVERDICT mechanism = 3, 28, 7, 9  \nVERDICT evaluation = 19, 13, 26  \nVERDICT domain = 3, 19, 28  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Enable compression of texts far beyond the encoder's window length and beyond what training compute allows directly.**\n\nPaper [3] (RCC) explicitly states it is \"designed to efficiently expand the context window length of LLMs within constrained storage space\" — directly matching the purpose of compressing beyond window/compute limits. Paper [11]/[17] also target extending context to millions of tokens. Paper [21] (AutoCompressors) aims to compress long contexts into compact summary vectors. Paper [19] (Infini-attention) scales to \"infinitely long inputs with bounded memory and computation.\" All of these share the same objective: compress/extend beyond the encoder's native window under resource constraints.\n\n---\n\n**MECHANISM: Recurrent compression + two-stage training (full-param on short, then freeze encoder + train on longer); long sequences split into fixed-length segments, each iteratively compressed into state/compression vectors that are concatenated.**\n\nPaper [3] (RCC) introduces \"Recurrent Context Compression\" where sequences are divided into segments and iteratively compressed — this is the recurrent segment-compression primitive. Paper [21] (AutoCompressors) compresses long documents into summary vectors via segment-level processing with an unsupervised objective. Paper [11]/[17] (RMT) uses recurrent memory augmentation with segment-level processing. However, the **two-stage training strategy** (full-param on short sequences first, then freeze encoder and continue on longer sequences) is a specific curriculum/freezing strategy. Paper [7] and [9] describe two-stage pre-training in ASR (freeze encoder in stage 2), but for a different domain. The recurrent segment compression primitive is clearly in [3], and the two-stage freeze strategy is structurally present in [7]/[9]. Paper [15] (CEPE) also uses a small encoder to process long inputs chunk by chunk. The combination of recurrent compression + two-stage freeze training is most closely matched by [3] for the recurrent part and [7]/[9] for the two-stage freeze, but [3] is the closest overall match for the mechanism as a whole.\n\n---\n\n**EVALUATION: Passkey retrieval up to 1M tokens; accuracy metric; comparison to Infini-attention.**\n\nPaper [11]/[17] (RMT/Beyond Attention) explicitly uses passkey retrieval tasks and reports retrieval accuracy for sequences up to 2 million tokens — \"maintaining high retrieval accuracy\" with passkey-style experiments. This is the same evaluation design (passkey retrieval benchmark, accuracy metric, long-context stress test). Paper [19] (Infini-attention) is the comparison target, not the evaluation design source. The passkey retrieval evaluation design is covered by [11]/[17].\n\n---\n\n**DOMAIN: LLM long-context / context compression.**\n\nPapers [1], [2], [3], [6], [11], [14], [15], [16], [17], [19], [21] all operate in the LLM long-context / context compression domain. This is clearly covered.\n\n---\n\nVERDICT purpose = 3\nVERDICT mechanism = 3\nVERDICT evaluation = 17\nVERDICT domain = 3",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": [
+     13
+    ],
+    "domain": [
+     1,
+     3
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to fix degraded instruction-following when both instructions and context are compressed together, as the model treats them equally and fails to follow instructions. None of the prior papers explicitly address this specific problem. While several papers discuss context compression (e.g., [1], [3], [5], [18], [19]), they focus on computational efficiency, inference speed, or memory reduction rather than addressing degraded instruction-following due to compression. Papers like [24] and [11] discuss instruction-following robustness and encoder-decoder consistency but do not address the specific issue of degraded instruction-following caused by compression.\n\n### Mechanism\nThe contribution introduces a novel instruction reconstruction method: during training, the instruction is input as part of the encoder context (randomly placed at the beginning or end), and the decoder reconstructs the instruction from the compressed vectors before generating a response. Papers [7], [8], [9], [25], and [30] discuss reconstruction methods using autoencoders or auxiliary decoders, but none describe a mechanism equivalent to reconstructing instructions from compressed vectors in the context of LLMs. Papers like [3], [5], [18], and [19] discuss compression methods for LLMs but focus on compressing prompts or activations rather than reconstructing instructions. No prior paper matches the mechanism at the primitive level.\n\n### Evaluation\nThe evaluation uses LongBench ([13]) to validate the effectiveness of the method, comparing RCC-Ins-Reconstruction against RCC-Ins-Compress and other baselines. Papers [13], [6], [10], and [24] use LongBench or similar benchmarks for evaluating long-context LLM performance, making the evaluation design covered. The specific metrics (F1/Rouge) and comparison setup align with standard practices in LLM evaluation, as seen in [13] and [10]. While the contribution applies the evaluation to a specific method, the design itself is not novel.\n\n### Domain\nThe domain is LLM long-context/context compression. Papers [1], [3], [5], [18], [19], and [21] all work in the same general application area of LLM long-context handling and context compression. Although the contribution targets a specific sub-problem (instruction-following degradation), this falls within the broader domain of LLM long-context applications, making the domain covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 13  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses fixing degraded instruction-following due to compression of instructions and context together.  \nFACET: mechanism | FINAL: NONE | reason: No prior paper describes reconstructing instructions from compressed vectors during training using the specified encoder-decoder method."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Fix degraded instruction-following when both instructions and context are compressed together (model treats them equally and fails to follow instructions).**\n\nThe purpose is specifically about preserving instruction-following capability when instructions get compressed alongside context in LLM context compression. Paper [5] discusses soft prompt compression for LLMs but doesn't specifically address the problem of instructions being degraded when compressed with context. Paper [23] (gist tokens) compresses prompts including instructions but doesn't specifically address the failure mode of instruction-following degradation when instructions and context are compressed together. Paper [20] (Gist-COCO) uses encoder-decoder compression but doesn't specifically target the problem of instruction-following degradation. None of the prior papers specifically identify and target the problem of instruction-following degradation caused by equal treatment of instructions and context during compression. This appears to be a genuinely new purpose.\n\n**MECHANISM: During training, instruction is placed in encoder context (randomly at beginning or end), and decoder reconstructs the instruction from compressed vectors before generating a response.**\n\nPaper [23] (gist tokens) compresses prompts into gist tokens but doesn't use a reconstruction objective for instructions. Paper [20] (Gist-COCO) uses encoder-decoder compression with an additional encoder plugin, but doesn't reconstruct the instruction as an auxiliary training objective. Paper [5] uses soft prompt compression but no instruction reconstruction. Paper [12] (RECOMP) compresses retrieved documents but uses summarization, not instruction reconstruction. Paper [25] (Dueling Decoders) uses auxiliary decoders to regularize VAE latent spaces — this is structurally similar (auxiliary decoder reconstructing input to preserve information), but it's in the VAE/image domain and the purpose differs. The specific mechanism of placing the instruction in the encoder context and having the decoder reconstruct it as an auxiliary training objective to preserve instruction signal in compressed representations is not found in any prior paper. The closest is [25] with auxiliary decoders, but the primitive there is regularizing latent spaces in VAEs, not preserving instruction-following in LLM compression.\n\n**EVALUATION: LongBench benchmark, comparing compressed vs. non-compressed LLM baselines using F1/Rouge metrics.**\n\nPaper [13] introduces LongBench. Papers [3], [4], [10], [18], [19], [20], [23] all evaluate on long-context QA benchmarks using F1/Rouge metrics. Paper [10] specifically characterizes prompt compression methods across tasks using standardized analysis. Paper [3] (Activation Beacon) evaluates on long-document QA with similar metrics. The evaluation design (LongBench + F1/Rouge + comparison to non-compressed baseline) is clearly covered by prior work.\n\n**DOMAIN: LLM long-context / context compression.**\n\nPapers [1], [3], [4], [5], [6], [10], [12], [14], [18], [19], [20], [21], [23], [26] all work in LLM long-context / context compression. This domain is thoroughly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 13\nVERDICT domain = 3",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper addresses the specific problem of degraded instruction-following caused by compressing instructions and context together such that the model treats them equally — the closest works (e.g., [23] gist tokens, [5] soft prompt compression) compress prompts for efficiency but do not identify or fix the failure mode where instructions lose their directive role when mixed with context during compression.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper uses the specific training mechanism of placing the instruction inside the encoder context (randomly at beginning or end) and requiring the decoder to explicitly reconstruct the instruction from compressed vectors before generating a response. Works like [23] compress prompts to gist tokens and [5] use soft prompt compression, but none employ instruction reconstruction as a training objective to preserve instruction fidelity through compression."
+     }
+    }
+   }
+  }
+ ]
+}

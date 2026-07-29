@@ -1,0 +1,278 @@
+{
+ "paper_id": "FA0038",
+ "title": "Citation-Consistent Voting for Permutation-Robust Retrieval-Augmented Generation",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     6
+    ],
+    "mechanism": null,
+    "evaluation": [
+     6,
+     14
+    ],
+    "domain": [
+     2,
+     6
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to make Retrieval-Augmented Generation (RAG) systems robust to retrieved-document ordering (position bias) without requiring any training. Paper [6] explicitly addresses the same purpose, as it investigates and mitigates the sensitivity of RAG systems to the order of retrieved documents, identifying this as a key issue that affects model behavior. Paper [4] also discusses the problem of position bias in RAG systems, particularly in the context of multimodal retrieval, which is a narrower instance of the same purpose. Both papers share the same high-level objective of addressing position bias in RAG systems.\n\n### Mechanism\nThe proposed mechanism, Citation-Consistent Voting (CCV), involves prompting the generator to cite supporting documents, filtering responses for evidence validity, mapping citations to permutation-invariant document IDs, and selecting the answer with the highest citation-consistency score across multiple permutations. Paper [6] introduces a method to mitigate retrieval-permutation-induced hallucinations in RAG systems, but it does not employ a mechanism equivalent to CCV. Paper [1] and [3] discuss voting-based self-consistency methods, but these focus on reasoning paths or low-vote chains rather than citation consistency or permutation invariance. Paper [5] and [10] also discuss self-consistency and confidence-informed voting, but they do not involve mapping citations to document IDs or addressing permutation invariance. No prior paper describes a mechanism substantively equivalent to CCV.\n\n### Evaluation\nThe evaluation uses the NaturalQuestions dataset with Qwen3-8B and Contriever retrieval, measuring SubEM. Paper [6] evaluates retrieval-permutation sensitivity in RAG systems, but it does not use the same evaluation design (e.g., SubEM on NaturalQuestions). Paper [4] evaluates position bias in multimodal RAG systems, but again, the evaluation design differs. No prior paper uses the same evaluation design (NaturalQuestions, SubEM, and permutation-robustness testing). Therefore, the evaluation design appears to be novel.\n\n### Domain\nThe contribution operates in the domain of retrieval-augmented generation (RAG) for open-domain question answering (QA). Papers [6], [4], [2], [9], [11], [12], and [27] all work within the same general domain of RAG and open-domain QA, even if they target different specific problems or datasets. Thus, the domain is covered.\n\n---\n\nVERDICT purpose = 6  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 6  ",
+      "stage2": "- **FACET: mechanism** | **FINAL: COVERED-BY 6** | reason: Stable-RAG explicitly addresses retrieval-permutation sensitivity and proposes mitigation strategies. Quote: \"We empirically show that under a Top-5 retrieval setting... LLM answers vary substantially across permutations of the retrieved set... This reveals a previously underexplored sensitivity to retrieval order.\" This aligns with CCV's permutation-invariant document-ID aggregation mechanism.  \n- **FACET: evaluation** | **FINAL: NONE** | reason: No prior paper explicitly reports SubEM on NaturalQuestions with Qwen3-8B and Contriever retrieval, nor evaluates a training-free, citation-consistency-based RAG system."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Makes RAG systems robust to retrieved-document ordering (position bias) without any training.**\n\nPapers [4], [6], [7], [14], and [23] all address position/ordering bias in RAG or LLM systems. Paper [6] (\"Stable-RAG: Mitigating Retrieval-Permutation-Induced Hallucinations\") explicitly addresses how \"the order of retrieved documents affects model behavior\" and proposes a solution. Paper [4] addresses \"sensitivity to the order in which evidence is presented\" in multimodal RAG. Paper [14] explicitly targets \"Positional Bias\" in RAG. Paper [23] addresses \"order sensitivity of LLMs\" and proposes a permutation-invariant approach. The purpose of making RAG robust to ordering without training is most directly covered by [6] and [14].\n\n---\n\n**MECHANISM: Citation-Consistent Voting (CCV) — prompts for citations, filters for evidence validity, maps to permutation-invariant document IDs, selects by citation-consistency score across permutations.**\n\nThis mechanism combines: (1) multiple permutations of documents, (2) citation-based grounding/filtering, (3) aggregation by document-ID agreement rather than answer-string frequency. Paper [6] uses multiple permutations and voting to address ordering sensitivity in RAG. Paper [11] (Speculative RAG) uses multiple drafts with verification. Paper [21] (MedTrust-RAG) introduces \"citation-aware reasoning\" that grounds generation in retrieved documents and verifies evidence. Paper [23] (Set-LLM) uses permutation-invariant aggregation for LLMs. However, the specific combination of citation-based filtering + document-ID-level consistency scoring across permutations (rather than answer-string voting) is the distinctive primitive. Paper [6] uses permutation-based voting but aggregates on answer strings, not citation-to-document-ID consistency. No prior paper combines citation extraction → evidence validity filtering → document-ID-level consistency scoring as the aggregation primitive. Paper [21] uses citations for grounding but not for permutation-invariant voting. This specific mechanism appears uncovered.\n\n---\n\n**EVALUATION: NaturalQuestions with SubEM metric, Qwen3-8B, Contriever retrieval; training-free RAG evaluation.**\n\nNaturalQuestions is a well-established benchmark family used extensively in RAG research. SubEM (substring exact match) is a standard metric for open-domain QA. Papers [6], [14], [4], and [11] all evaluate RAG systems on standard open-domain QA benchmarks with standard metrics. The evaluation design (standard QA benchmark + EM-family metric + RAG pipeline) is clearly covered by multiple prior papers. Paper [6] in particular evaluates permutation robustness in RAG using standard benchmarks and metrics.\n\n---\n\n**DOMAIN: Retrieval-augmented generation / open-domain QA.**\n\nNumerous prior papers operate in this exact domain: [2], [4], [6], [7], [9], [11], [12], [14], [16], [21], [24], [25], [27] all work in RAG and/or open-domain QA. This is clearly covered.\n\n---\n\nVERDICT purpose = 6\nVERDICT mechanism = NONE\nVERDICT evaluation = 6\nVERDICT domain = 6",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper combines all of: prompting the generator to cite supporting documents, filtering for evidence validity, mapping citations to permutation-invariant document IDs, and selecting answers by citation-consistency score across permutations aggregated on document-ID agreement. Paper [6] (Stable-RAG) addresses permutation sensitivity in RAG and paper [21] (MedTrust-RAG) mentions \"citation-aware reasoning\" but neither quotes describe the specific pipeline of citation-based filtering + permutation-invariant ID mapping + citation-consistency scoring as the aggregation mechanism replacing answer-frequency voting."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to make Retrieval-Augmented Generation (RAG) systems robust to the ordering of retrieved documents, also known as position bias, without requiring any training. This exact objective is shared by prior work. For example, [6] aims to \"Mitigating Retrieval-Permutation-Induced Hallucinations in Retrieval-Augmented Generation,\" and [14] explicitly targets \"Mitigating Distractors and Positional Bias\" in RAG systems.\n\n**mechanism**: The contribution's mechanism is Citation-Consistent Voting (CCV), which generates answers over multiple document permutations and selects the one with the highest consistency score based on *document-ID agreement*, not answer-text frequency. While many prior papers use voting (e.g., self-consistency in [1], [3], [19]), they typically vote on the final answer string. Other papers addressing position bias in RAG use different mechanisms like re-ranking [7] or dynamic context selection [14]. No prior paper describes the specific primitive of aggregating votes based on the consistency of cited source document IDs to achieve permutation invariance.\n\n**evaluation**: The evaluation is conducted on the NaturalQuestions benchmark using the SubEM metric, a standard setup for open-domain question answering. This evaluation *design*—using a standard benchmark family and metric semantics for open-domain QA—is not new. For instance, [14] also works on \"open domain question answering\" and would use a similar evaluation design, even if the specific dataset or model differs.\n\n**domain**: The contribution operates in the domain of retrieval-augmented generation (RAG) and open-domain question answering (QA). Numerous prior papers work in this exact application area. For example, [2], [6], [11], and [14] all explicitly focus on \"Retrieval-Augmented Generation\".\n\nVERDICT purpose = 6\nVERDICT mechanism = NONE\nVERDICT evaluation = 14\nVERDICT domain = 2",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes the specific mechanism of running a generator over multiple permutations of source documents and then selecting the final answer by voting based on the consistency of *cited document IDs*, rather than the frequency of the answer text itself. While papers discuss self-consistency/voting ([19], [8]), permutation sensitivity in RAG ([6]), and citation verification ([21]), none combine these elements into the described voting scheme."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     3,
+     9
+    ],
+    "evaluation": [
+     1,
+     3,
+     9
+    ],
+    "domain": [
+     1,
+     2,
+     3
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution demonstrates that citation-based aggregation outperforms standard majority voting. Paper [9] discusses ranked voting-based self-consistency for LLMs, which involves improving reasoning accuracy by selecting answers based on ranked voting strategies. While the specific aggregation method differs, the purpose of improving decision-making accuracy through voting mechanisms is substantively equivalent. Paper [13] introduces a reward-based weighted majority voting ensemble technique for bug prediction, aiming to improve accuracy by assigning weights to classifiers. This aligns with the purpose of improving aggregation-based decision-making accuracy. Paper [25] also introduces a weighted-voting ensemble for fake news classification, aiming to enhance decision accuracy through aggregation. These papers share the same purpose at the problem-class level: improving decision accuracy through aggregation methods.\n\n### Mechanism\nThe contribution uses a head-to-head comparison of CCV against answer-frequency majority voting across varying numbers of document permutations \\( K \\). Paper [9] employs ranked voting-based self-consistency, which involves aggregating answers based on ranked voting strategies rather than simple majority voting. This mechanism is substantively equivalent to comparing different aggregation methods for decision-making accuracy. Paper [13] uses a weighted majority voting ensemble technique, which similarly compares aggregation methods to improve decision accuracy. Paper [25] employs an optimized weighted-voting ensemble approach, which also compares aggregation methods for decision-making accuracy. These mechanisms share the same underlying primitive: comparing aggregation methods to improve decision accuracy.\n\n### Evaluation\nThe contribution evaluates CCV's improvement over majority voting on NaturalQuestions at \\( K = 20 \\) permutations, with gains scaling monotonically with \\( K \\). Paper [9] evaluates ranked voting-based self-consistency on reasoning tasks, using metrics to assess accuracy improvements over majority voting. Paper [13] evaluates the weighted majority voting ensemble technique on bug prediction tasks, using metrics to assess accuracy improvements over standard majority voting. Paper [25] evaluates the optimized weighted-voting ensemble approach on fake news classification tasks, using metrics to assess accuracy improvements over standard majority voting. All three papers reuse the same evaluation design: comparing aggregation methods using accuracy metrics, even though the specific datasets and tasks differ.\n\n### Domain\nThe contribution operates in the domain of retrieval-augmented generation (RAG) for open-domain QA. Paper [2] discusses RAG systems for improving citation faithfulness in LLMs, which falls within the same general application area of retrieval-augmented generation. Paper [4] surveys RAG systems for customizing LLMs in professional domains, which also falls within the same general application area. Paper [5] introduces RAG-RL, a retrieval-augmented generation system for improving answer generation and citation accuracy, which again falls within the same general application area. These papers share the same domain: retrieval-augmented generation.\n\n---\n\nVERDICT purpose = 9  \nVERDICT mechanism = 9  \nVERDICT evaluation = 9  \nVERDICT domain = 2  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Demonstrates that citation-based aggregation outperforms standard majority voting.**\n\nThe purpose is to show that a citation-based consistency voting (CCV) method beats answer-frequency majority voting in RAG/open-domain QA. Paper [3] is about \"monotonic aggregation for open-domain QA\" and proposes a Judge-Specialist framework to fix non-monotonicity when adding sources — it compares aggregation strategies in open-domain QA. However, it doesn't specifically demonstrate citation-based aggregation vs. majority voting. Paper [28] introduces self-consistency via majority voting but doesn't compare citation-based aggregation against it. No prior paper specifically establishes the empirical relationship \"citation-based aggregation outperforms answer-frequency majority voting\" — this is a specific directional claim about a specific variable pair not covered by prior work.\n\n**MECHANISM: Head-to-head comparison of CCV against answer-frequency majority voting across varying numbers of document permutations K.**\n\nThis is a controlled ablation/comparison design: vary K permutations, compare two aggregation methods. Paper [3] performs comparisons of aggregation strategies across varying numbers of sources in open-domain QA — \"adding a source should not decrease the accuracy\" and compares methods. Paper [28] compares self-consistency (majority voting) against greedy decoding across varying sample counts. The generic design of \"compare two aggregation methods across varying K\" is a standard controlled comparison. Paper [3] specifically does head-to-head aggregation method comparisons in open-domain QA with varying document counts, which is substantively equivalent at the design level.\n\n**EVALUATION: CCV improves SubEM by +0.19 points over majority voting on NaturalQuestions at K=20 permutations.**\n\nThe evaluation uses SubEM metric on NaturalQuestions benchmark, comparing aggregation methods. NaturalQuestions is a standard open-domain QA benchmark. Paper [3] evaluates on open-domain QA benchmarks with accuracy metrics comparing aggregation strategies. The evaluation design (standard QA benchmark + accuracy/EM-family metric + comparison across varying document/sample counts) is used in papers [3] and [28]. NaturalQuestions as a benchmark family appears in the RAG/open-domain QA literature broadly. This is a standard benchmark + EM-family metric design, covered by [3].\n\n**DOMAIN: Retrieval-augmented generation / open-domain QA.**\n\nPapers [3], [5], [6], [4], [22] all work in RAG and/or open-domain QA. Paper [3] explicitly addresses open-domain QA aggregation. Paper [5] is RAG-RL in RAG systems. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 3\nVERDICT evaluation = 3\nVERDICT domain = 3",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper demonstrates that citation-based aggregation outperforms standard majority voting — the closest candidates (e.g., [28] on self-consistency, [9] on ranked voting, [3] on monotonic aggregation) address voting/aggregation improvements but none use citation-based aggregation as the mechanism nor make this specific comparative empirical claim."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to establish the specific empirical relationship that citation-based aggregation outperforms standard answer-frequency majority voting. While many prior papers show that some form of weighted or sophisticated voting outperforms simple majority voting (e.g., [7] with certainty-weighting, [9] with ranked voting, [13] with reward-weighting), none appear to establish this specific relationship using citations as the signal in a retrieval-augmented context.\n\n**mechanism**: The mechanism is a head-to-head comparison of a proposed aggregation method (CCV) against a baseline (majority voting), including a parameter sweep (varying K). This is a standard experimental design for validating a new method, equivalent to the design in prior work like [9], which compares its proposed \"Ranked Voting\" against the baseline of \"Majority voting\" to show its superiority.\n\n**evaluation**: The evaluation design uses the NaturalQuestions benchmark and a standard QA metric (SubEM) to compare two methods. This evaluation design is covered by prior work, as [1] explicitly uses the same benchmark family (\"evaluate our approach on two standard open-domain QA benchmarks: NaturalQuestions (NQ) and TriviaQA\").\n\n**domain**: The application area is retrieval-augmented generation (RAG) and open-domain question answering (QA). This domain is explicitly addressed by numerous prior papers, including [1] (\"Open-Domain Question Answering\") and [2] (\"Retrieval Augmented Generation Attributions\").\n\nVERDICT purpose = NONE\nVERDICT mechanism = 9\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: After re-review, no paper has the objective of demonstrating that a citation-based aggregation method outperforms standard majority voting. Many papers ([7], [13], [17], [31]) compare a form of *weighted* voting to standard majority voting, but the weights are based on concepts like model confidence, classifier performance, or rewards, not on the content or quality of a source citation. These are different mechanisms and do not meet the specific requirement of \"citation-based aggregation\"."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     16,
+     18
+    ],
+    "evaluation": [
+     18,
+     23
+    ],
+    "domain": [
+     5,
+     8
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 18
+      },
+      "evaluation": {
+       "covered_by": 18
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to establish that citation consistency is a meaningful signal of answer quality. None of the prior papers explicitly report or establish this specific empirical relationship. While some papers (e.g., [8], [24]) discuss citation behavior or verification in retrieval-augmented generation (RAG) systems, they do not establish the relationship between citation consistency and answer correctness. Similarly, papers on self-consistency (e.g., [6], [13], [16]) focus on internal consistency mechanisms rather than external citation consistency. Thus, no prior paper covers this purpose.\n\n### Mechanism\nThe mechanism involves a diagnostic statistical analysis correlating document-ID agreement (citation consistency) with answer correctness. Paper [18] discusses inter-rater reliability and agreement metrics, reframing them within a signal detection-theoretic model, which is conceptually similar to correlating agreement with correctness. Additionally, [19] focuses on statistical measures of agreement (Cohen’s kappa), which aligns with the diagnostic statistical analysis approach. These papers provide substantively equivalent mechanisms for analyzing agreement and correctness relationships.\n\n### Evaluation\nThe evaluation design involves testing the correlation between document-ID agreement and answer correctness, with statistical significance (p = 1.14e-5). Paper [18] uses statistical significance testing to assess inter-rater agreement, which matches the evaluation design of correlating agreement with correctness. Similarly, [19] employs statistical methods to evaluate agreement metrics. These prior works cover the evaluation design, even though they apply it to different objects (e.g., inter-rater reliability rather than citation consistency).\n\n### Domain\nThe domain is retrieval-augmented generation (RAG) and diagnostic analysis. Papers [1], [2], [3], [4], [5], [7], [8], and [9] all operate within the RAG domain, addressing various aspects such as evaluation, citation behavior, and system improvement. For example, [8] focuses on reliable citations in RAG, and [7] explores how LLMs handle retrieved information. These papers collectively cover the RAG domain.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 18  \nVERDICT evaluation = 18  \nVERDICT domain = 8  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly establishes citation consistency as a meaningful answer-quality signal under any terminology, framing, or domain vocabulary."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 16
+      },
+      "evaluation": {
+       "covered_by": 23
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Establishes that citation consistency is a meaningful answer-quality signal.**\n\nThe purpose is to show that agreement among cited documents (document-ID agreement) correlates with answer correctness — i.e., citation consistency predicts answer quality. Paper [10] (\"Beyond Relevance: Trustworthy Answer Selection via Consensus Verification\") uses consensus/agreement among answers as a quality signal in CQA. Paper [6] and [16] use self-consistency as a quality signal for answer correctness. However, none of these specifically establish that *citation* (document-ID) consistency is a quality signal — [16] uses answer consistency, not citation/source consistency. Paper [8] (VeriCite) addresses citation reliability in RAG but focuses on verification, not on using citation agreement as a quality predictor. No prior paper specifically establishes the relationship between document-ID agreement and answer correctness as the core finding.\n\n**MECHANISM: Diagnostic statistical analysis correlating document-ID agreement with answer correctness.**\n\nThe mechanism is a statistical correlation analysis (yielding a p-value) between document-ID agreement across multiple RAG runs and answer correctness. Paper [23] (\"Self-Consistency Boosts Calibration for Math Reasoning\") correlates self-consistency signals with accuracy. Paper [16] uses self-consistency (answer agreement) as a proxy for correctness. However, these correlate *answer* agreement with correctness, not *document-ID* agreement. The statistical correlation design (computing agreement → correlating with correctness) is a standard diagnostic analysis design that appears in [23] and [16] at the design level — both correlate a consistency signal with answer accuracy using statistical methods.\n\n**EVALUATION: Document-ID agreement correlates significantly with answer correctness (p = 1.14e-5).**\n\nThe evaluation design is a statistical significance test (p-value) correlating a consistency metric with answer correctness. This design — measuring correlation between a consistency signal and correctness with statistical significance testing — appears in [23] which evaluates calibration by correlating self-consistency scores with accuracy on benchmarks, and [16] which validates self-consistency against answer correctness. The design (correlation + significance test between consistency signal and correctness) is covered at the design level.\n\n**DOMAIN: Retrieval-augmented generation / diagnostic analysis.**\n\nRAG is the application area. Papers [1], [2], [3], [4], [5], [7], [8], [9], [20] all work in RAG. This is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 16\nVERDICT evaluation = 23\nVERDICT domain = 5",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper establishes citation consistency as a meaningful answer-quality signal. Paper [8] (VeriCite) addresses citation verification/attribution but frames it as reducing hallucinations, not as validating consistency across citations as a quality signal. Paper [10] uses consensus verification for answer selection in CQA but quotes \"consensus verification\" as a trustworthiness proxy for community answers, not citation consistency. No paper contains the same objective of establishing that agreement among independently generated citations serves as a proxy for answer quality."
+     }
+    }
+   }
+  }
+ ]
+}

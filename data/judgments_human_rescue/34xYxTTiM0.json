@@ -1,0 +1,274 @@
+{
+ "paper_id": "34xYxTTiM0",
+ "title": "Optimizing Calibration by Gaining Aware of Prediction Correctness",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     1
+    ],
+    "mechanism": [
+     1
+    ],
+    "evaluation": [
+     1,
+     11,
+     20,
+     24
+    ],
+    "domain": [
+     1,
+     3,
+     11,
+     14,
+     24
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": [
+        1,
+        11,
+        24
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        3,
+        11,
+        24
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution aims to address the intrinsic limitation of CE/MSE post-hoc calibration losses, which give high confidence to narrowly misclassified samples, by deriving a calibration objective directly from the aim of calibration.  \n- Paper [1] explicitly identifies the same limitation of CE loss in calibration, stating: \"we find the CE loss has intrinsic limitations. For example, for a narrow misclassification... a calibrator trained by the CE loss often produces high confidence on the wrongly predicted class.\" This matches the purpose of fixing CE/MSE calibration limitations.  \n- Paper [3] discusses improving calibration objectives but does not specifically address the narrow misclassification issue or derive objectives directly from the aim of calibration.  \n- No other paper explicitly addresses the same problem-class level objective of fixing CE/MSE calibration limitations for narrowly misclassified samples.  \n\n**Conclusion:** Purpose is covered by paper [1].\n\n---\n\n#### Mechanism:\nThe contribution derives the discretized calibration error and translates it into a Correctness-Aware (CA) loss, enforcing high confidence (~1) on correctly classified samples and low confidence (~1/C) on wrongly classified ones, reducing overlap of confidence between correct and incorrect predictions.  \n- Paper [1] proposes a mechanism to optimize calibration by gaining awareness of prediction correctness, but it does not explicitly derive a discretized calibration error or enforce the specific confidence levels (~1 for correct, ~1/C for incorrect).  \n- Paper [3] introduces differentiable losses for calibration but focuses on soft binning operations rather than the discretized calibration error or correctness-aware confidence enforcement.  \n- Paper [27] penalizes confident output distributions, which indirectly relates to reducing overconfidence, but it does not implement the same mechanism of discretized calibration error or correctness-aware loss.  \n\n**Conclusion:** Mechanism is novel and not covered by any prior paper.\n\n---\n\n#### Evaluation:\nThe contribution evaluates its method by training on the ImageNet-Val calibration set with 10 Timm classifiers and comparing competitive ECE/BS/KS/AUROC metrics against SOTA calibrators on IND (ImageNet-Val) and OOD (ImageNet-A/R/S, ObjectNet) test sets.  \n- Paper [1] evaluates calibration methods using ECE and other metrics on ImageNet and OOD datasets, stating: \"we evaluate our method on ImageNet and OOD datasets using ECE and other metrics.\"  \n- Paper [3] uses ECE and similar metrics for calibration evaluation but does not specify ImageNet or OOD datasets.  \n- Paper [11] evaluates post-hoc calibration methods on OOD datasets using ECE and other metrics, stating: \"we show that existing post-hoc calibration methods yield highly over-confident predictions under domain shift scenarios.\"  \n- Paper [24] evaluates pre-trained models for calibration on OOD datasets using similar metrics.  \n\n**Conclusion:** Evaluation design is covered by papers [1], [11], and [24].\n\n---\n\n#### Domain:\nThe contribution operates in the domain of model calibration and uncertainty in image classification.  \n- Paper [1] explicitly addresses model calibration in image classification, stating: \"model calibration aims to align confidence with prediction correctness.\"  \n- Paper [3] focuses on calibration objectives for neural networks, which includes image classification.  \n- Paper [11] addresses post-hoc calibration methods for neural networks, including image classification.  \n- Paper [24] evaluates calibration methods for pre-trained models in computer vision, which includes image classification.  \n\n**Conclusion:** Domain is covered by papers [1], [3], [11], and [24].\n\n---\n\n### Verdicts:\nVERDICT purpose = 1  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 1, 11, 24  \nVERDICT domain = 1, 3, 11, 24  ",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper explicitly derives the discretized calibration error and translates it into a Correctness-Aware (CA) loss enforcing high confidence on correct predictions and low confidence on incorrect ones."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": 1
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## PURPOSE\n\nThe purpose is to fix the intrinsic limitation of CE/MSE post-hoc calibration losses that give high confidence to narrowly misclassified samples, by deriving a calibration objective directly from the aim of calibration.\n\nPaper [1] is explicitly about \"Optimizing Calibration by Gaining Aware of Prediction Correctness\" and states: \"we find the CE loss has intrinsic limitations. For example, for a narrow misclassification (e.g., a test sample is wrongly classified and its softmax score on the ground truth class is 0.4), a calibrator trained by the CE loss often produces high confidence on the wrongly pre[dicted class].\" This is essentially identical to the stated purpose — fixing CE's limitation of assigning high confidence to narrowly misclassified samples.\n\nThis is a direct match at the problem-class level.\n\n## MECHANISM\n\nThe mechanism is: derive discretized calibration error → translate into a Correctness-Aware (CA) loss that enforces high confidence (~1) on correctly classified samples and low confidence (~1/C) on wrongly classified ones, reducing overlap between correct/incorrect confidence distributions.\n\nPaper [1] again: \"Optimizing Calibration by Gaining Aware of Prediction Correctness\" — the title and abstract describe a correctness-aware approach that distinguishes correct vs. incorrect predictions for calibration. The abstract describes the same primitive: treating correctly and incorrectly classified samples differently in the loss to avoid high confidence on misclassified samples.\n\nPaper [5] \"Two Sides of Miscalibration\" also addresses over/under-confidence by identifying correct vs. incorrect predictions, though less directly tied to the CA loss formulation.\n\nPaper [3] derives differentiable losses from soft binning operations underlying calibration error metrics, which is similar to \"deriving calibration objective from the aim of calibration.\"\n\nPaper [1] is the strongest match for the mechanism as well — correctness-aware loss that enforces different confidence targets for correct vs. incorrect predictions.\n\n## EVALUATION\n\nThe evaluation uses: 10 Timm classifiers, ImageNet-Val calibration set, tested on IND (ImageNet-Val) and OOD (ImageNet-A/R/S, ObjectNet), metrics ECE/BS/KS/AUROC vs SOTA calibrators.\n\nPaper [1] likely uses the same evaluation design (ImageNet-based post-hoc calibration benchmarking with ECE/AUROC metrics on IND/OOD splits), given it's a 2024 paper on the same topic.\n\nPaper [24] evaluates calibration on OOD datasets including ImageNet variants with ECE metrics across multiple pre-trained models.\n\nPaper [20] \"Calibrating Deep Neural Network Classifiers on Out-of-Distribution Datasets\" uses ECE metrics on OOD evaluation for post-hoc calibration.\n\nPaper [11] addresses post-hoc calibration under domain drift with OOD evaluation.\n\nThe evaluation design (post-hoc calibration benchmarking with ECE/BS on ImageNet + OOD variants using multiple classifiers) is covered by [1], [20], [24].\n\n## DOMAIN\n\nThe domain is model calibration / uncertainty in image classification. This is clearly covered by numerous papers: [1], [2], [3], [5], [6], [7], [9], [11], [12], [13], [14], [17], [20], [21], [24], etc.\n\nVERDICT purpose = 1\nVERDICT mechanism = 1\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 20
+      },
+      "domain": {
+       "covered_by": 14
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe purpose is to fix the limitation of standard calibration losses that assign high confidence to narrowly misclassified samples. This is covered by paper [1], which identifies the exact same problem: \"we find the CE loss has intrinsic limitations. For example, for a narrow misclassification... a calibrator trained by the CE loss often produces high confidence on the wrongly pre[dicted class]\".\n\n**MECHANISM**\nThe mechanism is a \"Correctness-Aware (CA) loss\" that explicitly separates targets for correct and incorrect predictions. This is covered by paper [1], whose title \"Optimizing Calibration by Gaining Aware of Prediction Correctness\" describes the same primitive of using correctness as a signal to guide the calibration objective.\n\n**EVALUATION**\nThe evaluation design involves training a post-hoc calibrator and testing it on in-distribution (IND) and out-of-distribution (OOD) datasets using standard metrics like ECE. This design is covered by prior work, such as paper [20], which is explicitly about \"Calibrating Deep Neural Network Classifiers on Out-of-Distribution Datasets\".\n\n**DOMAIN**\nThe domain is model calibration and uncertainty for image classification. This is a well-established area and is covered by numerous prior papers, including the foundational paper [14], \"On Calibration of Modern Neural Networks,\" which established the problem in this domain.\n\nVERDICT purpose = 1\nVERDICT mechanism = 1\nVERDICT evaluation = 20\nVERDICT domain = 14",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     2,
+     11,
+     14
+    ],
+    "mechanism": [
+     8,
+     14
+    ],
+    "evaluation": [
+     8,
+     14
+    ],
+    "domain": [
+     6,
+     8,
+     14
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        2,
+        11
+       ]
+      },
+      "mechanism": {
+       "covered_by": [
+        8,
+        14
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        8,
+        14
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        6,
+        8,
+        14
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to estimate prediction correctness for an isolated individual test sample, which a single sample cannot indicate on its own. Paper [11] discusses improving reliability estimation for individual numeric predictions, proposing estimated absolute prediction error as an indicator of individual prediction reliability. This aligns with the same objective of assessing correctness/reliability at the individual sample level. Paper [2] also addresses individual prediction uncertainty, focusing on sampling uncertainty for clinical prediction models, which similarly aims to quantify correctness/reliability for individual predictions. Both papers share the same problem-class level objective.\n\n### Mechanism\nThe contribution's mechanism uses softmax prediction scores of transformed versions of the original image (rotated, greyscaled, color-jittered) as calibrator inputs, with consistency among transformed predictions signaling correctness. Paper [14] develops a technique for detecting classification errors by training a binary classifier on responses generated from multiple copies of the same input, each subject to different natural image transformations. This is substantively equivalent, as both approaches rely on transformed versions of the input and consistency among predictions to infer correctness. Paper [8] also proposes test-time augmentation techniques (M-ATTA and V-ATTA) to improve uncertainty calibration, leveraging predictions across transformed versions of the input, which matches the mechanism at the primitive level.\n\n### Evaluation\nThe contribution evaluates its method by enabling a calibrator trained on an independent validation set to be applied directly to individual test samples, with qualitative demonstration of better separation of correct vs incorrect samples by calibrated confidence. Paper [8] uses test-time augmentation in the context of uncertainty calibration for deep neural networks, evaluating its effectiveness on image classification tasks. Paper [14] similarly evaluates its method by training a binary classifier to detect classification errors using transformed inputs, demonstrating its ability to separate correct and incorrect predictions. Both papers employ the same evaluation design: leveraging transformed inputs and measuring separation of correct vs incorrect predictions, even though the specific datasets and models differ.\n\n### Domain\nThe contribution operates in the domain of model calibration and uncertainty in image classification. Paper [6] addresses calibration of model uncertainty for dropout variational inference, focusing on recalibrating predictive uncertainty in image classification tasks. Paper [8] explicitly targets uncertainty calibration for deep neural networks in image classification, and Paper [14] develops a method for detecting classification errors in visual classifiers, which also falls under the broader domain of model calibration and uncertainty in image classification. All three papers work within the same general application area.\n\n---\n\nVERDICT purpose = 2, 11  \nVERDICT mechanism = 8, 14  \nVERDICT evaluation = 8, 14  \nVERDICT domain = 6, 8, 14  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 14
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Estimate prediction correctness for an isolated individual test sample**\n\nPaper [14] \"Confidence from Invariance to Image Transformations\" explicitly states: \"We develop a technique for automatically detecting the classification errors of a pre-trained visual classifier\" and trains \"a parametric binary classifier (error/correct)\" — this is exactly the purpose of estimating per-sample prediction correctness.\n\nPaper [11] also addresses \"reliability (or confidence and uncertainty) of individual predictions\" but in numerical prediction, not classification correctness per se.\n\nPaper [14] is the clearest match — same objective: detect/estimate whether an individual prediction is correct.\n\n**MECHANISM: Use softmax scores of transformed versions (rotated, greyscaled, color-jittered) as calibrator inputs; consistency among transformed predictions signals correctness**\n\nPaper [14] explicitly describes: \"a representation derived from a set of classifier responses generated from multiple copies of the same input, each subject to a different natural image transformation\" — this is the same primitive: apply image transformations, collect classifier responses, use consistency/pattern of those responses to signal correctness. The mechanism is substantively identical.\n\nPaper [8] \"Approaching Test Time Augmentation in the Context of Uncertainty Calibration\" uses TTA-based predictions for calibration, but focuses on aggregating predictions for calibration rather than using consistency as a correctness signal.\n\nPaper [14] is a direct match for the mechanism.\n\n**EVALUATION: Calibrator trained on IND validation set applied to individual test samples; qualitative demonstration of separation of correct vs incorrect samples**\n\nPaper [14] also evaluates a binary classifier (error/correct) trained on validation data and applied to test samples, and would naturally demonstrate separation. Paper [9] \"Towards Consistent Predictive Confidence through Fitted Ensembles\" introduces a \"separable concept learning framework to realistically measure the performance of classifiers\" — qualitative/quantitative separation of correct vs incorrect predictions is part of its evaluation design. Paper [15] evaluates post-hoc calibration methods applied to test samples using calibration metrics. The evaluation design (train on IND validation, apply to test, show separation of correct/incorrect) is covered by [14].\n\n**DOMAIN: Model calibration / uncertainty in image classification**\n\nPapers [8], [13], [14], [15], [19] all operate in uncertainty/calibration for image classification. This domain is clearly covered.\n\nVERDICT purpose = 14\nVERDICT mechanism = 14\nVERDICT evaluation = 14\nVERDICT domain = 8",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     3
+    ],
+    "mechanism": [
+     3
+    ],
+    "evaluation": [
+     3
+    ],
+    "domain": [
+     1,
+     4
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution aims to explain why standard calibration losses (CE and MSE) fail on certain samples, specifically 'narrowly wrong' predictions. Paper [3] identifies intrinsic limitations of CE loss, including its behavior on narrow misclassifications, which aligns substantively with the purpose of this contribution. Paper [7] also discusses why proper losses like CE fail to generalize well for calibration, but does not specifically address 'narrowly wrong' predictions. Thus, [3] is the closest match.\n\n#### Mechanism:\nThe mechanism involves diagnostic analysis of CE and MSE losses relative to a newly derived calibration goal. Paper [3] performs a similar diagnostic analysis of CE loss, identifying its limitations in calibration scenarios, including narrow misclassifications. Paper [7] also analyzes CE loss but focuses on its generalization gap rather than diagnostic analysis relative to a specific calibration goal. Paper [4] evaluates calibration factors but does not perform diagnostic analysis of CE/MSE losses. Thus, [3] matches the mechanism.\n\n#### Evaluation:\nThe evaluation design involves analyzing CE and MSE deviations from the calibration aim on 'narrowly wrong' predictions, quantified as 2%-8% of the ImageNet validation calibration set. Paper [3] evaluates CE loss on narrow misclassifications, which is substantively equivalent to the evaluation design here. Paper [7] evaluates CE loss but does not focus on narrow misclassifications. Paper [4] evaluates calibration methods but does not analyze CE/MSE deviations on narrowly wrong predictions. Thus, [3] matches the evaluation design.\n\n#### Domain:\nThe domain is model calibration. Papers [1], [2], [3], [4], [5], [7], [8], [9], and others all work in the general area of model calibration, making this facet covered.\n\n---\n\n### Verdicts:\nVERDICT purpose = 3  \nVERDICT mechanism = 3  \nVERDICT evaluation = 3  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Explain why standard calibration losses fail on certain samples.**\n\nPaper [3] is the closest match: \"we find the CE loss has intrinsic limitations. For example, for a narrow misclassification (e.g., a test sample is wrongly classified and its softmax score on the ground truth class is 0.4), a calibrator trained by the CE loss often produces high confidence on the wrongly predicted class.\" This directly addresses why CE loss fails on specific sample types (narrowly wrong predictions). Paper [7] also discusses why focal loss and CE behave differently for calibration. Paper [3] substantively covers the purpose of explaining why CE fails on certain samples, specifically naming \"narrow misclassification\" as the problematic case.\n\n**MECHANISM: Diagnostic analysis of CE and MSE losses relative to the newly derived calibration goal.**\n\nPaper [3] performs diagnostic analysis of CE loss relative to calibration goals, identifying failure modes on narrow misclassifications. Paper [7] analyzes focal loss and CE relative to properness/calibration goals. However, the contribution specifically involves deriving a calibration goal first and then diagnosing CE and MSE against it — paper [3] does analyze CE against calibration objectives. Paper [13] compares CE and MAE (similar to MSE) losses analytically. The diagnostic comparison of CE and MSE against a calibration-theoretic goal is most closely matched by [3], which performs exactly this kind of diagnostic analysis of CE against calibration correctness alignment.\n\n**EVALUATION: Finding that CE and MSE deviate on 'narrowly wrong' predictions, comprising 2%-8% of ImageNet validation calibration set.**\n\nThe specific quantitative finding (2%-8% of ImageNet validation set) and the identification of \"narrowly wrong\" as the problematic category is explicitly described in paper [3]: \"narrow misclassification\" with specific examples. Paper [3] identifies this exact phenomenon. The evaluation design uses ImageNet validation set analysis with percentage breakdowns of sample categories — paper [3] uses the same design (ImageNet, calibration set analysis, identifying narrow misclassification as a specific category). This is substantively the same evaluation design applied to the same benchmark family.\n\n**DOMAIN: Model calibration.**\n\nPapers [1], [2], [3], [4], [5], [7], [8], [9], [10], [11] all operate in model calibration. This is clearly covered.\n\nVERDICT purpose = 3\nVERDICT mechanism = 3\nVERDICT evaluation = 3\nVERDICT domain = 4",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

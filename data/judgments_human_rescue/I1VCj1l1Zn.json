@@ -1,0 +1,250 @@
+{
+ "paper_id": "I1VCj1l1Zn",
+ "title": "DLP-LoRA: Efficient Task-Specific LoRA Fusion with a Dynamic, Lightweight Plugin for Large Language Models",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     5
+    ],
+    "mechanism": [
+     10,
+     14
+    ],
+    "evaluation": [
+     1,
+     3
+    ],
+    "domain": [
+     1,
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to enable dynamic, context-driven fusion of multiple task-specific LoRAs without manual pre-selection or retraining when tasks change, while remaining lightweight and adaptable to new domains. Paper [1] (\"LoRA-Flow\") shares a similar objective of dynamically combining LoRAs for new tasks, emphasizing reusability and adaptability. Paper [4] (\"LoraHub\") also targets dynamic LoRA composition for cross-task generalization, aiming to fluidly combine LoRAs for unseen tasks. Paper [5] (\"LoraRetriever\") addresses input-aware LoRA retrieval and composition for diverse tasks, which aligns with the goal of dynamic fusion without manual pre-selection. These papers collectively cover the purpose at the problem-class level.\n\n### Mechanism\nThe mechanism involves DLP-LoRA, a dynamic lightweight plugin (4-layer mini-MLP module, ~5M parameters) trained once for sentence-level task classification, which selects and fuses multiple LoRAs using top-p sampling strategies. Paper [1] (\"LoRA-Flow\") employs dynamic LoRA fusion but relies on task-level weights rather than sentence-level classification or top-p sampling. Paper [4] (\"LoraHub\") introduces a framework for dynamic LoRA composition but does not use a mini-MLP or top-p sampling. Paper [5] (\"LoraRetriever\") uses input-aware retrieval and composition but does not employ the same mechanism (mini-MLP trained for sentence-level classification with top-p sampling). None of the prior papers describe a substantively equivalent mechanism.\n\n### Evaluation\nThe evaluation compares the plugin's parameter count (~5M) against a typical token-level gating method (~26M) on LLaMA-3 8B with 100 LoRAs, trained once at the sentence level. Paper [1] (\"LoRA-Flow\") evaluates dynamic LoRA fusion methods but does not use the same evaluation design (sentence-level training or parameter comparison). Paper [4] (\"LoraHub\") evaluates LoRA composition for unseen tasks but does not focus on parameter efficiency comparisons or sentence-level training. Paper [5] (\"LoraRetriever\") evaluates input-aware LoRA composition but does not use the same evaluation design. None of the prior papers employ the same evaluation design, making this facet uncovered.\n\n### Domain\nThe domain is parameter-efficient fine-tuning and multi-task LLM adaptation. Papers [1], [4], and [5] all operate in the same general application area of parameter-efficient fine-tuning and multi-task LLM adaptation, even though they target different specific sub-problems or approaches. This facet is covered.\n\n---\n\nVERDICT purpose = 1  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 1  ",
+      "stage2": "FACET: mechanism | FINAL: COVERED-BY 14 | reason: Token-level adaptation employs a gradient-free routing function to select and combine LoRAs, aligning with DLP-LoRA's dynamic selection and fusion mechanism. Quote: \"gradient-free routing function to choose a weighted combination of experts.\"\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper explicitly compares plugin size (~5M parameters) against token-level gating methods (~26M parameters) or evaluates sentence-level training efficiency."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Enable dynamic, context-driven fusion of multiple task-specific LoRAs without manual pre-selection or retraining when tasks change, while remaining lightweight and easily adaptable to new domains.**\n\nPaper [1] (LoRA-Flow) explicitly addresses \"dynamic LoRA fusion for large language models\" and combining existing LoRAs to address new tasks. Paper [5] (LoraRetriever) addresses \"input-aware LoRA retrieval and composition for mixed tasks in the wild\" without fixing selection during training. Paper [4] (LoraHub) addresses combining LoRA modules for new tasks without human expertise. Paper [12] (Mixture of LoRA Experts) addresses fusing multiple LoRAs for diverse downstream tasks. The purpose of dynamic, context-driven multi-LoRA fusion without manual pre-selection is clearly covered by [1] and [5].\n\n**MECHANISM: A 4-layer mini-MLP (~5M parameters) trained once for sentence-level task classification, selecting and fusing multiple LoRAs using top-p sampling strategies.**\n\nPaper [1] (LoRA-Flow) uses \"token-level\" gating with lightweight fusion modules. Paper [5] (LoraRetriever) uses input-aware retrieval and composition. Paper [14] uses token-level adaptation with a routing function. Paper [13] (Mixture-of-LoRAs) trains individual LoRAs then routes. The specific combination of: (a) a small standalone MLP plugin trained once at sentence level, (b) top-p sampling for selection, is partially present but the sentence-level MLP plugin trained independently (not jointly) with top-p sampling is a distinguishing combination. However, [1] uses token-level gating MLP modules, and [5] uses input-aware routing. The sentence-level (vs token-level) MLP classifier trained once as a standalone plugin with top-p sampling is not clearly covered. Paper [8] (ATTEMPT) uses an attention module to interpolate prompts, which is related but different. No prior paper combines the specific \"small standalone MLP trained once at sentence level + top-p sampling for LoRA selection\" as a unified primitive. This appears not fully covered.\n\n**EVALUATION: Plugin is ~5M parameters vs ~26M for a typical token-level gating method on LLaMA-3 8B with 100 LoRAs; trained once at sentence level.**\n\nPaper [1] compares parameter counts and efficiency of fusion methods. Paper [7] (MiLoRA) explicitly addresses latency and efficiency in multi-tenant settings and compares parameter overhead. Paper [18] (S-LoRA) evaluates serving efficiency with many LoRA adapters. The evaluation design of comparing parameter counts and efficiency of routing/gating modules against baselines on LLMs is covered by [1] and [7]. This is a standard efficiency comparison design used in prior work.\n\n**DOMAIN: Parameter-efficient fine-tuning / multi-task LLM adaptation.**\n\nPapers [1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12], [13], [14], [15], [17] all operate in parameter-efficient fine-tuning and multi-task LLM adaptation. This domain is thoroughly covered.\n\nVERDICT purpose = 1\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes a dedicated mini-MLP module (~5M parameters) trained once for sentence-level task classification that then selects and fuses multiple LoRAs via top-p sampling. LoRA-Flow [1] uses token-level fusion weights but not a separate classifier MLP trained once; LoraRetriever [5] retrieves LoRAs per input but uses retrieval not a trained classifier with top-p sampling; no other paper combines the specific elements of a lightweight standalone classifier MLP, single training pass, sentence-level granularity, and top-p sampling-based LoRA selection/fusion."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The purpose of dynamic, context-driven fusion of multiple LoRAs to handle new or mixed tasks without retraining is covered by multiple prior works. For example, [5] pursues \"Input-Aware LoRA Retrieval and Composition for Mixed Tasks in the Wild,\" and [4] introduces a framework for \"purposive assembly of LoRA modules trained on diverse given tasks, with the objective of achieving adaptable performance on unseen tasks.\"\n\n**mechanism**: The mechanism of using a small, trained module to select or combine other modules (in this case, LoRAs) is a well-established primitive, often called a router or gating function in Mixture-of-Experts (MoE) architectures. This is covered by [10] and [11], which explicitly propose learning a \"routing function that selects a (variable-size) subset of adapters for each task,\" which is substantively equivalent to the contribution's MLP-based selector.\n\n**evaluation**: The evaluation design, which consists of comparing the parameter count of the proposed lightweight module against an alternative, is a standard method for validating claims of parameter efficiency in this field. This design is foundational to the entire domain of parameter-efficient fine-tuning, as exemplified by papers like [3] which focuses on \"parameter-efficient adaptation of PLMs\" and the survey [17] which details method comparisons \"with a specific focus on real-life efficiency.\"\n\n**domain**: The application area of parameter-efficient fine-tuning and multi-task adaptation for large language models is explicitly the domain of nearly every paper listed. For instance, [2] is titled \"An Adapter Family for Parameter-Efficient Fine-Tuning of Large Language Models,\" and [3] is titled \"Parameter-efficient fine-tuning of large-scale pre-trained language models.\"\n\nVERDICT purpose = 5\nVERDICT mechanism = 10\nVERDICT evaluation = 3\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     5,
+     7
+    ],
+    "mechanism": [
+     7
+    ],
+    "evaluation": [
+     5,
+     7
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to reduce inference-time overhead caused by multi-LoRA fusion, particularly addressing inefficiencies from token-level MoE gating (e.g., MeteoRA). Paper [5] (\"MeteoRA\") explicitly identifies the same problem of token-level routing inflating inference costs, stating: \"requires explicit task intention selection, posing challenges for autonomous task sensing and switching during inference with multiple existing LoRA adapters embedded in a single LLM.\" This aligns with the same objective of mitigating overhead from token-level routing in multi-LoRA setups.\n\n### Mechanism\nThe mechanism involves sentence-level LoRA selection and fusion, leveraging parallel CUDA acceleration and GEMM optimization by removing per-token independence constraints, with LoRAs stored as contiguous tensors in HBM. Paper [7] (\"LoRA-Switch\") describes a similar system-algorithm co-design approach to reduce latency in dynamic LoRA adapters, including addressing fragmented CUDA kernel inefficiencies. Additionally, paper [13] (\"Flexible Performant GEMM Kernels on GPUs\") discusses GEMM optimization techniques for efficient matrix operations on GPUs, which aligns with the GEMM optimization aspect of the mechanism. Both papers cover the underlying technical primitives used here.\n\n### Evaluation\nThe evaluation demonstrates achieving less than twice the inference time of single-LoRA inference, outperforming token-level MoE gating routers in efficiency. Paper [5] (\"MeteoRA\") evaluates token-level MoE gating routers in terms of inference efficiency, and paper [7] (\"LoRA-Switch\") evaluates dynamic LoRA adapters with a focus on inference latency reduction. Both use similar evaluation designs, including latency benchmarks and comparisons against token-level routing methods. Thus, the evaluation design is covered.\n\n### Domain\nThe domain is efficient LLM inference. Papers [1] (\"A Survey on Efficient Inference for Large Language Models\") and [12] (\"LLM Inference Unveiled\") both explicitly focus on efficient LLM inference as their application area, covering this domain. Paper [5] (\"MeteoRA\") also operates within the same domain, addressing efficient inference for multi-LoRA setups.\n\n---\n\nVERDICT purpose = 5  \nVERDICT mechanism = 7  \nVERDICT evaluation = 5  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Reduce inference-time overhead of multi-LoRA fusion inflated by token-level MoE gating**\n\nPaper [7] (LoRA-Switch) directly addresses this: \"dynamic adapters incur modest computational complexity, they surprisingly lead to huge inference latency overhead, slowing down the decoding speed by 2.5+ times\" and analyzes \"fine-grained costs of the dynamic adapters.\" Paper [5] (MeteoRA) is the named target system. Paper [3] (MiLoRA) also addresses \"significant latency in multi-tenant settings due to the LoRA modules and MOE routers.\" The purpose of reducing inference overhead from token-level MoE LoRA routing is clearly covered by [7] and [3].\n\n**MECHANISM: Sentence-level (rather than token-level) LoRA selection/fusion with parallel CUDA/GEMM optimization, contiguous HBM tensor storage**\n\nPaper [7] (LoRA-Switch) addresses \"fragmented CUDA kernels\" and proposes system-algorithm co-design to fix this — it explicitly targets the same CUDA kernel fragmentation problem and proposes batching/coalescing solutions. Paper [18] discusses \"Sequence-level routing\" vs token-level routing in MoE: \"Sequence-level routing can result in topic-specific weak expert specialization\" — this is the same primitive of routing at sequence/sentence level rather than token level. Paper [3] (MiLoRA) considers each LoRA module as an expert with a different granularity approach. The sentence-level selection primitive is covered by [18] (sequence-level routing) and the CUDA/GEMM optimization angle is covered by [7]. Paper [13] covers GEMM kernel optimization on GPUs directly.\n\n**EVALUATION: Less than 2× single-LoRA inference time; efficiency comparison against token-level MoE gating routers**\n\nPaper [7] uses the same evaluation design: measuring inference latency/decoding speed of LoRA adapters and comparing against token-level MoE baselines (reporting \"2.5+ times\" slowdown as baseline). This is the same metric semantics (inference latency ratio relative to single-LoRA) and same comparison protocol. Paper [16] (S-LoRA) also benchmarks LoRA serving throughput/latency. The evaluation design (latency ratio vs. single-LoRA, comparison to MoE-LoRA baselines) is covered by [7].\n\n**DOMAIN: Efficient LLM inference**\n\nPaper [1] is a survey on efficient LLM inference. Paper [7], [3], [5], [16] all operate in efficient LLM inference. This domain is clearly covered by multiple papers.\n\nVERDICT purpose = 7\nVERDICT mechanism = 7\nVERDICT evaluation = 7\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     2,
+     8
+    ],
+    "mechanism": [
+     2,
+     8
+    ],
+    "evaluation": [
+     2,
+     8
+    ],
+    "domain": [
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": 2
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**Purpose:**  \nThe purpose of the contribution is to empirically validate DLP-LoRA across a broad set of tasks and composite (multi-task) settings. Paper [2] (\"MultiLoRA: Democratizing LoRA for Better Multi-Task Learning\") explicitly addresses multi-task LoRA validation, focusing on its performance in complex multi-task scenarios. Paper [7] (\"Mixture of LoRA Experts\") also explores the amalgamation of multiple LoRAs for multi-task settings, aiming to empower models across diverse tasks. Both papers share the same objective of validating LoRA approaches in multi-task contexts, making the purpose covered.  \n\n**Mechanism:**  \nThe mechanism involves extensive evaluation across 26 tasks spanning multiple-choice questions (MCQ) and question answering (QA), comparing DLP-LoRA to single-task LoRA and composite settings. Paper [2] evaluates LoRA in multi-task scenarios, comparing its performance to single-task LoRA and composite settings, which aligns with the described mechanism. Paper [7] also investigates LoRA fusion across multiple tasks, focusing on modular composition and performance comparison, which matches the mechanism at the primitive level.  \n\n**Evaluation:**  \nThe evaluation design includes metrics like average accuracy, BLEU, and ROUGE improvements, as well as comparisons to single-task LoRA models and composite task settings. Paper [2] uses similar evaluation metrics (accuracy, BLEU, ROUGE) and comparisons to single-task LoRA models, making the evaluation design covered. Paper [7] also employs comparable metrics and validation setups for multi-task LoRA fusion, further confirming coverage.  \n\n**Domain:**  \nThe domain is multi-task LLM evaluation, specifically spanning MCQ and QA tasks. Paper [2] operates in the same general application area of multi-task LLM evaluation, addressing LoRA performance across diverse tasks. Paper [7] also works in multi-task LLM evaluation, focusing on LoRA fusion for diverse downstream tasks. Both papers cover the domain facet.  \n\n**Verdicts:**  \nVERDICT purpose = 2  \nVERDICT mechanism = 2  \nVERDICT evaluation = 2  \nVERDICT domain = 2  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Empirically validate DLP-LoRA across a broad set of tasks and composite (multi-task) settings.**\n\nThe purpose here is to demonstrate that a specific LoRA variant (DLP-LoRA) works well across many tasks and multi-task/composite settings, comparing to single-task baselines. Papers [2] (MultiLoRA), [8] (Mixture-of-LoRAs), and [1] (LoraHub) all pursue empirical validation of LoRA-based multi-task methods across diverse tasks, comparing to single-task LoRA baselines. For instance, [8] explicitly validates a multi-task LoRA architecture across multiple tasks comparing to single-task LoRA. The purpose of \"empirically validate a LoRA-based method across broad tasks including composite/multi-task settings vs. single-task LoRA\" is substantively equivalent to what [2] and [8] do. This is covered.\n\n**MECHANISM: Extensive evaluation across 26 tasks (MCQ + QA), across different LLM backbones, comparing to single-task LoRA and composite settings.**\n\nThe mechanism here is a multi-task evaluation protocol: run on many tasks (MCQ + QA types), multiple backbones, compare single-task vs. multi-task LoRA. Papers [2], [8], [1], [7] all use this same evaluation design — multiple tasks, multiple backbone comparisons, single-task LoRA as baseline. Paper [8] specifically trains individual LoRAs per task and evaluates composite/multi-task performance vs. single-task LoRA across diverse task types. This is a standard evaluation protocol covered by multiple prior papers.\n\n**EVALUATION: Average accuracy 92.34% on MCQ; BLEU/ROUGE on QA; comparable to single-task LoRA; improved composite settings.**\n\nThe evaluation design uses accuracy on MCQ benchmarks and BLEU/ROUGE on QA benchmarks, comparing to single-task LoRA baselines. Papers [1] (LoraHub) uses accuracy on unseen tasks; [2] (MultiLoRA) uses accuracy and generation metrics across tasks; [8] (Mixture-of-LoRAs) uses accuracy and ROUGE/BLEU metrics comparing multi-task vs. single-task LoRA. The design (accuracy for classification/MCQ, BLEU/ROUGE for generation/QA, vs. single-task LoRA baseline) is covered by [8] and [2].\n\n**DOMAIN: Multi-task LLM evaluation (MCQ + QA).**\n\nMultiple prior papers work in the domain of multi-task LLM fine-tuning and evaluation with LoRA variants, including MCQ and QA tasks. Papers [1], [2], [8] all operate in multi-task LLM settings with similar task types (classification/MCQ and generation/QA). This domain is clearly covered.\n\nVERDICT purpose = 8\nVERDICT mechanism = 8\nVERDICT evaluation = 8\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

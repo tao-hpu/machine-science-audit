@@ -1,0 +1,317 @@
+{
+ "paper_id": "ySJSGZxN7M",
+ "title": "Dual-Branch HNSW Approach with Skip Bridges and LID-Driven Optimization",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     10,
+     18
+    ],
+    "mechanism": [
+     11,
+     14
+    ],
+    "evaluation": [
+     5,
+     7
+    ],
+    "domain": [
+     2,
+     7
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to address two specific issues in HNSW-based approximate nearest neighbor (ANN) search: (1) mitigating local optima and cluster disconnection during greedy search, and (2) improving graph construction speed. These objectives are not explicitly addressed in any prior paper. While [7] introduces HNSW and discusses its hierarchical structure, it does not focus on the specific problems of local optima or cluster disconnection. Similarly, [10] addresses performance degradation and unreachable points in real-time updates but does not target the same issues. No prior paper explicitly identifies or solves the dual objectives of this contribution.\n\n### Mechanism\nThe mechanism involves introducing a dual-branch HNSW graph structure to increase the diversity of navigation paths, allowing traversal from multiple directions. [11] discusses diverse k-NN graphs, which aim to improve search diversity, but it does not propose a dual-branch structure or explicitly address HNSW. [19] and [13] explore diverse paths in other contexts (e.g., robotic motion planning, navigation), but these are not directly tied to HNSW or ANN search. No prior paper proposes a substantively equivalent mechanism of dual-branch graph structures for ANN search.\n\n### Evaluation\nThe evaluation involves testing on six CV/NLP datasets, measuring recall improvements (up to 30% for CV, 18% for NLP) and construction time reductions (up to 20%), with ablation studies showing the relative contribution of the dual-branch mechanism. This evaluation design — using recall as the primary metric and conducting ablation studies — is standard in ANN research. For example, [7], [3], and [8] all use recall as a metric and perform ablation studies to validate their methods. While the specific datasets and results differ, the evaluation design itself is covered by prior work.\n\n### Domain\nThe domain is approximate nearest neighbor (ANN) search and vector indexing. This is a well-established area addressed by numerous prior papers, including [7], [3], [8], and [10]. While this contribution targets specific issues within HNSW-based ANN search, it does not introduce a new application area.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 7  \nVERDICT domain = 7  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses the same objective of alleviating HNSW greedy search local optima and cluster disconnection while accelerating construction.  \n\nFACET: mechanism | FINAL: COVERED-BY 14 | reason: \"Graphs are called navigable if one can find short paths through them using only local knowledge... nodes vertices are 'similar' in two different ways, and tend to connect to those most similar in either way,\" aligns with the dual-branch graph structure increasing navigation path diversity."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 10
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: 缓解 HNSW 贪婪搜索陷入局部最优、簇断连的问题,同时加快构建速度**\n\nPaper [7] is the original HNSW paper, which introduces HNSW but doesn't specifically address fixing its local optima/cluster disconnection problems. Paper [10] explicitly addresses \"Unreachable Points and Performance Degradation\" in HNSW, covering the disconnection/unreachable point problem. Paper [5] studies HNSW comparatively and discusses its limitations. Paper [9] addresses adaptive entry point selection to escape local optima in graph-based ANNS. Paper [11] addresses the local optima problem in graph-based ANN search by combining exploitation and exploration. The purpose of mitigating local optima and cluster disconnection in HNSW while speeding construction is most directly covered by [10] (unreachable points, performance degradation in HNSW) and [11] (escaping local optima in graph-based search). Paper [10] states \"performance of HNSW...become unacceptable when faced with...\" disconnection issues, and [11] explicitly targets \"local optima\" in graph-based ANN.\n\n**MECHANISM: 双分支 HNSW 图结构,增加导航路径多样性,允许从多个方向遍历**\n\nPaper [11] proposes a \"k-Diverse Nearest Neighbor Graph\" that explicitly combines diverse neighbors to improve exploration in graph-based ANN search — \"diverse graph which has good exploration ability.\" Paper [8] uses a \"Direction Navigating Graph\" with directional diversity. Paper [14] uses \"Double Clustering\" to construct navigable graphs with two similarity dimensions, creating dual-structure graphs. None of these is precisely a \"dual-branch HNSW\" structure. Paper [11] is closest: it builds a graph combining k-NN (exploitation) and diverse neighbors (exploration) to increase path diversity — \"a neighbor of a neighbor\" plus diverse neighbors. This is substantively equivalent to adding a second branch for path diversity. Paper [14] explicitly uses a double/dual graph construction for navigability. The dual-branch structure for path diversity is most closely matched by [11]'s k-diverse NN graph combining two graph types.\n\n**EVALUATION: 六个 CV/NLP 数据集上相对原始 HNSW recall 提升,构建时间减少;消融显示双分支贡献**\n\nPapers [5], [7], [3], [2] all evaluate graph-based ANN methods using recall vs. speed tradeoffs on standard CV/NLP benchmark datasets (SIFT, GIST, GloVe, etc.) — the same benchmark family and metric semantics (recall@k, queries per second, build time). Paper [5] specifically does comparative studies on HNSW across multiple datasets measuring recall and build time. The evaluation design (recall improvement on standard ANN benchmarks + build time + ablation) is standard in this field and covered by [5], [7], [3].\n\n**DOMAIN: 近似最近邻(ANN)检索 / 向量索引**\n\nPapers [2], [3], [4], [5], [6], [7], [8], [9], [10], [11] all operate in the ANN retrieval / vector indexing domain. This is clearly covered.\n\nVERDICT purpose = 10\nVERDICT mechanism = 11\nVERDICT evaluation = 5\nVERDICT domain = 7",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 18
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe purpose is to mitigate the problem of greedy search in HNSW getting stuck in local optima or being hampered by disconnected graph components. This is a specific instance of the general problem of escaping local optima in iterative search. Paper [18] explicitly addresses this general problem, stating \"a key research topic on iterative improvement search is the development of effective techniques for escaping local optima.\" Paper [11] also addresses this in the ANN context by balancing \"good exploitation ability\" (which can lead to local optima) with \"good exploration ability\" to improve search.\n\n**MECHANISM**\nThe mechanism is a \"dual-branch HNSW graph structure\" intended to \"increase navigation path diversity\" and allow traversal from multiple directions. This primitive of building a graph using multiple connectivity principles to improve navigability is covered. Paper [14] proposes a model where nodes are \"similar in two different ways, and tend to connect to those most similar to them in either way\" to create navigable graphs. Paper [11] also proposes a hybrid graph combining a k-NN graph and a k-diverse-NN graph to provide both exploitation and exploration paths.\n\n**EVALUATION**\nThe evaluation design consists of measuring recall and build time on standard high-dimensional vector datasets (from CV/NLP) and comparing performance against the original HNSW algorithm. This is the standard evaluation protocol for new ANN graph-based indexing methods. Paper [7], which introduced HNSW, used this design (\"approximate K-nearest neighbor search... on SIFT1B, GIST1M\"), as did many subsequent papers like [2] and [3] which compare new algorithms against baselines on standard datasets using recall and speed metrics.\n\n**DOMAIN**\nThe application area is Approximate Nearest Neighbor (ANN) search and vector indexing. This is a well-established domain. Numerous prior papers operate in this exact domain, including [2] (\"An Extremely Fast Approximate Nearest Neighbor Search Algorithm\"), [3] (\"Fast Approximate Nearest Neighbor Search\"), and [7] (\"Efficient and Robust Approximate Nearest Neighbor Search\").\n\nVERDICT purpose = 18\nVERDICT mechanism = 14\nVERDICT evaluation = 7\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     11,
+     22
+    ],
+    "evaluation": [
+     1,
+     2,
+     3,
+     4,
+     26
+    ],
+    "domain": [
+     1,
+     2,
+     3,
+     4
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": [
+        1,
+        2,
+        3,
+        4
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        2,
+        3,
+        4
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to improve inter-cluster connectivity and reduce the risk of local optima. This objective aligns with optimizing graph-based ANN search structures for better connectivity and search performance. Paper [1] discusses improving graph-based ANN indices for streaming similarity search, focusing on recall and latency, but does not explicitly address inter-cluster connectivity or local optima. Paper [2] mentions proximity graph maintenance for dynamic ANN search but does not target inter-cluster connectivity or local optima reduction. Paper [3] focuses on accelerating index construction but does not address inter-cluster connectivity or local optima. None of the prior papers explicitly share the same purpose.\n\n#### Mechanism:\nThe contribution introduces a node insertion strategy based on Local Intrinsic Dimensionality (LID), prioritizing outliers (high LID) for insertion into higher layers. Papers [6], [7], [9], [10], [11], [23], and [24] discuss LID estimation and its applications, including outlier detection and dimensionality-aware methods. Paper [11] specifically uses LID for outlier detection, which is conceptually similar to the mechanism here, as both leverage LID to handle outliers. However, none of these papers apply LID to node insertion strategies in graph-based ANN indices. Thus, the mechanism is uncovered.\n\n#### Evaluation:\nThe contribution uses ablation studies to demonstrate that the LID-based insertion strategy has the highest performance impact among three components. Ablation studies are a generic experimental move and do not constitute a novel evaluation design. Papers [1], [2], [3], and [4] all use ablation studies to validate ANN index performance claims, covering the evaluation design. The specific focus on LID insertion is tied to the mechanism, not the evaluation design.\n\n#### Domain:\nThe contribution operates in the domain of approximate nearest neighbor (ANN) search and vector indexing. Papers [1], [2], [3], and [4] all work in the ANN search domain, covering this facet. While the specific sub-problem of LID-based insertion is new, the domain itself is not.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = [1, 2, 3, 4]  \nVERDICT domain = [1, 2, 3, 4]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses the objective of \"改善簇间连通性,进一步降低局部最优风险\" under any terminology, framing, or domain vocabulary.  \n\nFACET: mechanism | FINAL: COVERED-BY 11 | reason: Paper [11] explicitly describes a dimensionality-aware outlier detection method using local intrinsic dimensionality (LID) values, which aligns with the mechanism of prioritizing high LID outliers for insertion into higher layers. Quote: \"Our 'dimensionality-aware' outlier detection method, DAO, is derived as an estimator of an asymptotic local expected density ratio involving the query point and a close neighbor drawn at random. The dimensionality-aware behavior of DAO is due to its use of local estimation of LID values in a targeted manner.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: 改善簇间连通性,进一步降低局部最优风险 (improve inter-cluster connectivity, reduce local optima risk in graph-based ANN index)**\n\nPapers [1], [2], [3], [4] all deal with graph-based ANN index construction and search. Papers [1] and [2] address dynamic/streaming ANN graphs. Paper [3] focuses on accelerating index construction. None of these papers specifically target the purpose of \"improving inter-cluster connectivity to reduce local optima risk\" via a node insertion strategy based on intrinsic dimensionality. The closest are [1]-[4] which address ANN graph quality generally, but none specifically frame their purpose as using LID-based insertion to improve inter-cluster connectivity. The purpose is about a specific structural improvement mechanism — no prior paper frames this exact objective.\n\n**MECHANISM: LID-based node insertion strategy that prioritizes inserting outlier nodes (high LID) into higher layers**\n\nPaper [11] (DAO) uses LID for outlier detection, connecting high LID to outlier-like behavior. Papers [6], [7], [9], [10], [23], [24], [25] all deal with LID estimation methods. Paper [23] discusses applications of local intrinsic dimension estimation. However, none of these papers apply LID to control which layer a node is inserted into in a hierarchical graph index (like HNSW). The specific primitive — using LID scores to assign nodes to higher layers in a proximity graph index — does not appear in any prior paper. Papers [1]-[4] deal with graph-based ANN but don't use LID for layer assignment. This combination is absent.\n\n**EVALUATION: Ablation study showing LID insertion contributes most among three components**\n\nAblation studies are generic experimental moves. However, the question is whether the *design* — an ablation study comparing component contributions in an ANN index — appears in prior work. Papers [1], [2], [3], [4] all include ablation studies on ANN index components. Paper [3] in particular ablates components of graph construction. This is a standard ablation design (component swap, measure recall/performance) applied to ANN indexing, which is covered by prior papers. The design (ablation of index construction components measuring ANN performance) is present in [1]-[4].\n\n**DOMAIN: 近似最近邻(ANN)检索 / 向量索引 (Approximate Nearest Neighbor search / vector indexing)**\n\nPapers [1], [2], [3], [4] all explicitly operate in the ANN search / graph-based vector index domain. This is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 3\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly targets improving inter-cluster connectivity to reduce local optima risk in graph-based ANNS; the closest papers ([1],[2],[4]) address dynamic indexing or graph construction speed but not this specific objective, and no quoted phrase from any paper matches this goal even under different terminology.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper combines LID-based node characterization with a tiered insertion strategy that prioritizes high-LID (outlier) nodes into higher layers of a hierarchical graph index; LID papers ([6],[7],[9],[10],[11],[23],[24],[25]) estimate or apply LID for outlier detection or dimensionality reduction but none quote any mechanism of using LID scores to govern layer assignment during graph index construction."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 22
+      },
+      "evaluation": {
+       "covered_by": 26
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution aims to improve inter-cluster connectivity in an ANN graph to reduce the risk of getting stuck in local optima during a search. None of the prior papers state this specific objective; papers [1-4] focus on other goals like dynamic updates, construction speed, or memory footprint, not the specific structural problem of inter-cluster connectivity for escaping local optima.\n\n**mechanism**: The mechanism is a node insertion strategy that uses Local Intrinsic Dimension (LID) to identify outlier points and prioritizes inserting them into higher layers of a hierarchical graph. Paper [22] proposes using a \"fuzzy local dimension (FLD)\" to \"rank the influential nodes in complex networks,\" which is substantively equivalent to the primitive of using a local dimensionality metric to identify structurally important nodes.\n\n**evaluation**: The evaluation is an ablation study to quantify the performance contribution of the LID-based insertion component. An ablation study is a standard evaluation protocol. Paper [26] proposes a heuristic that \"combines ideas from tabu search and genetic algorithms,\" and a standard evaluation for such a hybrid method involves ablating one component to show the benefit of the combination, making its evaluation design equivalent.\n\n**domain**: The application area is Approximate Nearest Neighbor (ANN) search and vector indexing. Papers [1], [2], [3], and [4] are all explicitly focused on \"Approximate Nearest Neighbor Search\" and graph-based indices, directly covering this domain.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 22\nVERDICT evaluation = 26\nVERDICT domain = 1",
+      "stage2": "FACET: purpose: 改善簇间连通性,进一步降低局部最优风险 | FINAL: NONE | reason: No prior paper states the objective of improving inter-cluster connectivity specifically to reduce the risk of local optima. The most relevant prior work, [5], has a more general objective to \"improve ... search ... in networks\" by adding links, but it does not mention the specific mechanism of connecting clusters or the specific problem of avoiding local optima, which is required to meet the strict matching criteria. The other ANN papers focus on different objectives like dynamic updates, faster construction, or lower memory usage."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     2
+    ],
+    "mechanism": [
+     1,
+     6
+    ],
+    "evaluation": [
+     1
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to accelerate the query process, mitigate the additional computational overhead introduced by dual-branch methods, and make \\(O(n \\log n)\\) complexity more achievable.  \n- **Paper [1]** discusses improving ANN search efficiency by adaptive early termination, which aligns with the goal of reducing computational overhead in query processes. Quote: \"retrieving these vectors and computing the corresponding similarity scores from a large database is computationally challenging... ANN search relaxes the guarantee of exactness for efficiency.\"  \n- **Paper [2]** focuses on hierarchical product quantization to accelerate ANN search, which also addresses computational efficiency in query processes. Quote: \"Towards answering queries in large scale problems... ANN search returns the nearest neighbor with high probability for efficiency.\"  \n- **Paper [20]** explicitly addresses accelerating query processes for nearest neighbor search, with a focus on modern hardware. Quote: \"methods for accelerating metric similarity search... provide substantial speedups on a range of datasets.\"  \n\nThese papers share the same objective of improving query efficiency in ANN search, making the purpose facet **covered**.\n\n#### Mechanism:\nThe contribution introduces a mechanism based on LID (local intrinsic dimensionality) thresholding to skip redundant intermediate layers via bridges.  \n- **Paper [6]** discusses graph-based ANN search with subgraph sampling and pruning, which involves bypassing redundant graph components to optimize search. Quote: \"Optimizing graph-based nearest neighbor search with subgraph sampling and pruning.\"  \n- **Paper [3]** introduces EFANNA, which uses kNN graph-based methods to accelerate ANN search by leveraging neighbor relationships to bypass unnecessary computations. Quote: \"a neighbor of a neighbor is also likely to be a neighbor.\"  \n- **Paper [20]** discusses methods for accelerating ANN search by factoring computations into parallelizable components, which can be seen as a mechanism to bypass redundant computations. Quote: \"methods for accelerating metric similarity search... their search performance is provably sub linear in the size of the database.\"  \n\nThese mechanisms share the underlying primitive of bypassing redundant computations or layers, making the mechanism facet **covered**.\n\n#### Evaluation:\nThe contribution evaluates the mechanism by maintaining inference speed (qualitative: no observed trade-off) and quantitatively measuring query acceleration.  \n- **Paper [1]** evaluates ANN search efficiency using query speed metrics and qualitative observations of computational trade-offs. Quote: \"retrieving these vectors and computing the corresponding similarity scores from a large database is computationally challenging... ANN search relaxes the guarantee of exactness for efficiency.\"  \n- **Paper [2]** evaluates query acceleration quantitatively in hierarchical product quantization methods. Quote: \"state-of-the-art methods employ Approximate Nearest Neighbors (ANN) search... demonstrated state-of-the-art performance in several problems.\"  \n- **Paper [20]** evaluates ANN search acceleration quantitatively and qualitatively, focusing on speedups and efficiency. Quote: \"methods for accelerating metric similarity search... provide substantial speedups on a range of datasets.\"  \n\nThe evaluation design (query speed metrics and qualitative/quantitative validation of acceleration) is reused across these papers, making the evaluation facet **covered**.\n\n#### Domain:\nThe contribution operates in the domain of approximate nearest neighbor (ANN) search and vector indexing.  \n- **Paper [1]** explicitly addresses ANN search in applications like image search and recommendation systems. Quote: \"applications ranging from image search to recommendation systems... Approximate nearest neighbor (ANN) search relaxes the guarantee of exactness for efficiency.\"  \n- **Paper [2]** focuses on ANN search in high-dimensional metric spaces. Quote: \"search for the Nearest Neighbor in high dimensional metric spaces... state-of-the-art methods employ Approximate Nearest Neighbors (ANN) search.\"  \n- **Paper [6]** discusses graph-based ANN search for high-dimensional vector data management. Quote: \"Nearest Neighbor Search (NNS) has recently drawn a rapid growth of interest because of its core role in high-dimensional vector data management.\"  \n\nThese papers operate in the same general application area of ANN search and vector indexing, making the domain facet **covered**.\n\n---\n\n### Verdicts:\nVERDICT purpose = 1  \nVERDICT mechanism = 6  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: 加速查询过程，弥补双分支引入的额外计算开销，使 O(n log n) 复杂度更可达**\n\nThe purpose is to accelerate the query process in ANN search to compensate for extra computational overhead. Paper [1] \"Improving Approximate Nearest Neighbor Search through Learned Adaptive Early Termination\" explicitly aims to speed up ANN search queries by reducing computation. Paper [2] \"Accelerated Approximate Nearest Neighbors Search Through Hierarchical Product Quantization\" also targets accelerating ANN search. Both share the same objective: reduce query-time computational cost in ANN search. This is covered.\n\n**MECHANISM: 基于 LID 阈值的跳层桥接(bridges)，绕过冗余的中间层**\n\nThe mechanism is using LID (Local Intrinsic Dimensionality) thresholds to create \"bridges\" that skip over redundant intermediate layers in a hierarchical index structure. Paper [1] uses learned adaptive early termination — skipping remaining computation when a condition is met — but this is early exit, not layer-skipping bridges. No prior paper describes using LID-based thresholds to bridge/skip intermediate levels in a hierarchical ANN index. The skip connection papers (12, 18, 19, 21, 28) are about neural network skip connections, not ANN index traversal. Paper [16] \"Skip graphs\" is a distributed data structure but not about skipping layers based on LID thresholds. This mechanism — LID-threshold-driven layer bridging in a hierarchical ANN index — appears genuinely absent from prior work.\n\n**EVALUATION: 维持推理速度不变（定性：未观察到 trade-off）；量化查询加速见正文**\n\nThe evaluation design involves measuring query speed/throughput in ANN search benchmarks. Papers [1] and [2] both evaluate ANN search methods using speed/accuracy tradeoff metrics, which is the standard evaluation design in this domain. The design of measuring query acceleration (speed metrics) in ANN search is well-established and covered by [1] and [2].\n\n**DOMAIN: 近似最近邻（ANN）检索 / 向量索引**\n\nThe domain is ANN search / vector indexing. Papers [1], [2], [3], [6], [20], [23] all operate in the ANN search / vector indexing domain. Clearly covered.\n\nVERDICT purpose = 1\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes LID-threshold-based layer-bridging that skips redundant intermediate layers during inference. Paper [12] introduces a skip connection with double bypass in Transformer, and papers [18][19][21][28] discuss skip connections, but none use a local intrinsic dimensionality (LID) threshold as the criterion to dynamically bridge across specific intermediate layers at inference time. No equivalent mechanism under any alternative terminology is found."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: COVERED by [1], [2], [3], [6], and [20], all of which explicitly aim to accelerate Approximate Nearest Neighbor search. For example, paper [2] is titled \"Accelerated Approximate Nearest Neighbors Search\" and paper [20] is titled \"Accelerating Nearest Neighbor Search on Manycore Systems\", both sharing the same objective of speeding up the query process.\n\n**mechanism**: COVERED by [1], [24], and [30]. The contribution's mechanism is to bypass redundant intermediate layers based on a threshold, which is an instance of adaptive early exiting. Paper [1] proposes \"Learned Adaptive Early Termination\" to skip computation in ANN search, and paper [24] describes an \"early exiting mechanism\" to speed up inference by skipping layers, both of which are substantively equivalent primitives.\n\n**evaluation**: COVERED by [1], [2], [3], and [6]. The evaluation design consists of measuring query acceleration (speed) against any change in accuracy, which is the standard design for any paper proposing to speed up ANN search. For instance, paper [1] must use this same design to validate its \"Adaptive Early Termination\" by showing a favorable speed-accuracy trade-off.\n\n**domain**: COVERED by [1], [2], [3], [4], [6], and many others. The contribution operates in the domain of \"Approximate Nearest Neighbor (ANN) search\", which is the explicit domain of all these prior papers.\n\nVERDICT purpose = 2\nVERDICT mechanism = 1\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

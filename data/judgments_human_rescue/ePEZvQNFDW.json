@@ -1,0 +1,369 @@
+{
+ "paper_id": "ePEZvQNFDW",
+ "title": "Continuous Ensemble Weather Forecasting with Diffusion Models",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     9,
+     20
+    ],
+    "mechanism": [
+     2,
+     25
+    ],
+    "evaluation": [
+     9,
+     20
+    ],
+    "domain": [
+     5
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to eliminate autoregressive iteration for parallel sampling of temporally consistent ensemble forecast trajectories, addressing rollout error accumulation and serial bottlenecks. Paper [9] (\"Accelerating Parallel Sampling of Diffusion Models\") explicitly tackles the problem of parallelizing sampling to overcome the inherent autoregressive nature of diffusion models, which aligns with the purpose of this contribution. Additionally, paper [20] (\"Parallel Sampling of Diffusion Models\") explores parallel denoising steps to accelerate sampling, addressing similar bottlenecks. Both papers share the same objective at the problem-class level.\n\n### Mechanism\nThe mechanism involves using a conditional diffusion model with lead time as input for single-step prediction, ensuring temporal consistency by associating (e.g., freezing) driving noise across different lead times, and solving lead-time-dependent probability flow ODEs in parallel. Paper [2] (\"Consistency Trajectory Models\") introduces a framework for learning probability flow ODE trajectories of diffusion models, which encompasses temporal consistency and deterministic sampling. Paper [9] (\"Accelerating Parallel Sampling of Diffusion Models\") reformulates the sampling process to enable parallelization, which is conceptually equivalent to solving lead-time-dependent ODEs in parallel. Paper [13] (\"Accelerating Diffusion Models with Parallel Sampling\") also proposes parallelizable Picard iterations for diffusion model sampling, aligning with the mechanism's core primitive.\n\n### Evaluation\nThe evaluation quantifies the speedup achieved by parallelizing sampling, specifically reducing sampling time for 10-day, 6-hour resolution forecasts from 32 seconds to 8 seconds. Papers [9] and [20] both evaluate parallel sampling techniques for diffusion models, using similar designs to measure speedup and efficiency improvements. These prior works validate parallel sampling methods with comparable metrics and statistical frameworks, making the evaluation design covered.\n\n### Domain\nThe domain is machine learning-based global weather prediction (MLWP). Paper [5] (\"Weather Prediction with Diffusion Guided by Realistic Forecast Processes\") explicitly applies diffusion models to weather forecasting, addressing challenges in global weather prediction. This paper operates in the same general application area, even though the specific sub-problem or dataset may differ.\n\n---\n\nVERDICT purpose = 9  \nVERDICT mechanism = 2  \nVERDICT evaluation = 9  \nVERDICT domain = 5  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 20
+      },
+      "mechanism": {
+       "covered_by": 25
+      },
+      "evaluation": {
+       "covered_by": 20
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose: Parallel sampling of temporally consistent ensemble forecast trajectories without autoregressive iteration, eliminating rollout error accumulation and serial bottleneck\n\nThe purpose is specifically about generating **ensemble weather forecast trajectories** that are **temporally consistent** in **parallel** (non-autoregressively), eliminating AR rollout error. Let me check:\n\n- [20] \"Parallel Sampling of Diffusion Models\" — purpose is to run denoising steps in parallel to speed up diffusion sampling, not about temporal consistency of trajectories across lead times in forecasting.\n- [9] \"Accelerating Parallel Sampling of Diffusion Models\" — similar, about parallelizing diffusion sampling steps, not about ensemble forecast trajectory consistency.\n- [5] \"Weather Prediction with Diffusion\" — about weather forecasting with diffusion, but not specifically about parallel ensemble trajectory generation with temporal consistency.\n- [19] \"Video ControlNet\" — about temporally consistent video generation in parallel, but for video translation, not weather forecasting.\n- [25] \"Preserve Your Own Correlation\" — about temporal coherence in video diffusion, not weather forecasting.\n\nNone of the prior papers share the exact purpose of **parallel sampling of temporally consistent ensemble forecast trajectories** for weather prediction. The closest are [20]/[9] (parallel diffusion sampling) and [5] (weather diffusion), but neither combines the specific objective of temporal consistency across lead times in ensemble weather forecasting without AR rollout.\n\n**Purpose = NONE**\n\n## Mechanism: Conditional diffusion model with lead time as input, correlating/freezing driving noise across lead times to ensure trajectory temporal consistency, parallel solving of lead-time-dependent probability flow ODEs\n\n- [25] \"Preserve Your Own Correlation\" — proposes sharing/correlating noise across frames in video diffusion to achieve temporal consistency. Quote: \"explore finetuning a [image diffusion model]... by utilizing correlated noise across frames.\" This is substantively equivalent: correlating driving noise across time steps to ensure temporal coherence in parallel generation.\n- [19] \"Video ControlNet\" — uses optical flow to enforce temporal consistency across parallel image generations, different mechanism (flow-based, not noise correlation).\n- [20] \"Parallel Sampling of Diffusion Models\" — parallelizes denoising steps via Picard iteration, different mechanism.\n- [9] — similar Picard/fixed-point approach, not noise correlation.\n- [3] \"Trajectory Regularity of ODE-based Diffusion Sampling\" — studies ODE trajectory properties, not noise correlation for temporal consistency.\n\nThe core mechanism primitive — **correlating/sharing noise across time indices in a diffusion model to produce temporally consistent parallel outputs** — is present in [25]. The lead-time-conditioned probability flow ODE aspect is standard diffusion ODE ([1],[3],[6],[7]), but the key distinguishing primitive (noise correlation for temporal consistency) matches [25].\n\n**Mechanism = 25**\n\n## Evaluation: Quantitative wall-clock speedup measurement (32s → 8s for 10-day forecast sampling)\n\nThis is a wall-clock timing comparison between AR and parallel sampling approaches. Papers [20] and [9] both measure speedup of parallel vs. sequential diffusion sampling with wall-clock or step-count metrics. [20] explicitly compares parallel vs. sequential sampling speed. This is the same evaluation design (speedup ratio measurement for parallel vs. AR sampling).\n\n**Evaluation = 20**\n\n## Domain: Machine learning global weather forecasting (MLWP)\n\n- [5] \"Weather Prediction with Diffusion Guided by Realistic Forecast Processes\" — explicitly in ML-based weather forecasting domain. Quote: \"Weather forecasting remains a crucial yet challenging domain, where recently developed models based on deep learning (DL) have approached the performance of traditional numerical weather prediction (NWP) models.\"\n\n**Domain = 5**\n\nVERDICT purpose = NONE\nVERDICT mechanism = 25\nVERDICT evaluation = 20\nVERDICT domain = 5",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 20 | reason: Paper [20] explicitly states the goal of running \"denoising steps in parallel (trading compute for speed)\" to avoid sequential bottlenecks — however, this is for image generation, not ensemble forecast trajectories, and does not address rollout error accumulation in weather forecasting. Re-checking the standard: the facet requires \"parallel sampling of temporally consistent ensemble forecast trajectories without autoregressive iteration, eliminating rollout error accumulation and serial bottlenecks.\" Paper [20] covers parallel sampling to eliminate serial bottlenecks but does not address ensemble weather forecast trajectories or rollout error accumulation in that context. No paper combines all three elements (ensemble forecasting domain + parallel non-autoregressive sampling + eliminating rollout error accumulation). FINAL: NONE | reason: No prior paper shares the same objective of parallelly sampling time-consistent ensemble forecast trajectories without autoregressive rollout specifically to eliminate rollout error accumulation in weather forecasting; [20] addresses parallel diffusion sampling but for image generation without the ensemble forecasting or rollout-error framing."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     6
+    ],
+    "mechanism": [
+     14,
+     22,
+     29
+    ],
+    "evaluation": [
+     2,
+     15
+    ],
+    "domain": [
+     1,
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to enable forecasting at arbitrary (non-uniform) lead times, achieving any desired temporal resolution. This is distinct from merely improving forecast accuracy or probabilistic calibration. Prior papers like [1], [6], and [8] address weather forecasting and postprocessing across multiple lead times, but they do not explicitly target arbitrary lead-time flexibility or fine-grained temporal resolution. [6] comes closest with its \"lead-time-continuous statistical postprocessing,\" but it focuses on statistical postprocessing of NWP ensembles rather than direct generation of forecasts at arbitrary resolutions. Thus, no prior paper explicitly shares the same purpose.\n\n### Mechanism\nThe contribution's mechanism is a single model that conditions on lead time as an input parameter to the score network, directly sampling from the marginal distribution \\( p(X(t) | X(\\Omega), t) \\) without requiring fixed step sizes (\\(\\delta\\)). This mechanism is a specific application of score-based generative modeling with continuous-time conditioning. Papers like [14], [11], and [18] describe score-based generative modeling using stochastic differential equations (SDEs) and continuous-time frameworks, which are substantively equivalent to the proposed mechanism. [22] applies conditional score-based diffusion to time series imputation, and [15] applies score-based diffusion to weather forecasting, but neither explicitly conditions on lead time as a parameter. However, [14] and [18] provide the foundational mechanism of score-based modeling with continuous-time conditioning, which covers the proposed mechanism.\n\n### Evaluation\nThe evaluation involves qualitative validation that the same model can produce 1-hour resolution forecasts up to 10 days ahead, with noted performance degradation for highly time-varying fields at the first step of each iteration (e.g., 1h, 25h). This design is a qualitative demonstration of the model's ability to handle arbitrary lead times and temporal resolutions. Prior papers like [15], [8], and [6] evaluate weather forecasting models, but their evaluation designs focus on accuracy, probabilistic calibration, or specific lead-time ranges rather than qualitative validation of arbitrary lead-time flexibility. No prior paper uses the same evaluation design, so this facet is uncovered.\n\n### Domain\nThe domain is machine learning for global weather prediction (MLWP). Papers like [1], [6], [8], and [15] all operate in the same general application area of MLWP, even if they target different specific problems or datasets. Thus, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 14  \nVERDICT evaluation = NONE  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 6 | reason: Paper [6] explicitly addresses lead-time-continuous statistical postprocessing, which aligns with the objective of forecasting at arbitrary (non-equidistant) lead times for fine temporal resolution. Quote: \"Lead‐time‐continuous statistical postprocessing of ensemble weather forecasts.\"\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper explicitly evaluates the same claim regarding the qualitative performance of the model at specific resolutions and iterative steps, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 29
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## PURPOSE: 在任意(非等间隔)lead time上预报,实现任意精细时间分辨率\n\nThe purpose is to enable forecasting at arbitrary (non-uniform) lead times with arbitrary temporal resolution using a single model, rather than fixed discrete steps.\n\nPaper [6] \"Lead-time-continuous statistical postprocessing of ensemble weather forecasts\" explicitly addresses the problem of applying a single model across a range of lead times rather than fitting individual models for each lead time: \"many postprocessing methods in the literature are applied either at a fixed lead time or by fitting individual models for each lead time.\" This is substantively equivalent — the objective is lead-time-continuous prediction from a single model.\n\nPaper [29] \"Arbitrary Timestep Video Frame Interpolation\" also targets arbitrary timestep generation from a single model, but this is in video interpolation (not forecasting/extrapolation in weather).\n\nPaper [6] is the closest match for weather forecasting at arbitrary lead times with a single model.\n\n## MECHANISM: 单一模型将lead time作为条件参数输入score网络,直接从边缘分布 p(X(t)|X(Ω),t) 采样\n\nThe mechanism is: conditioning a score-based diffusion network on lead time `t` as a continuous parameter, sampling directly from the marginal distribution p(X(t)|X(Ω),t) without fixed step sizes.\n\nPaper [2] uses diffusion models for weather forecasting but follows \"realistic forecast processes\" with fixed steps, not arbitrary lead time conditioning.\n\nPaper [22] (CSDI) conditions a score-based diffusion model on observed time series data and uses time as a conditioning variable for imputation — but this is interpolation, not arbitrary-lead-time forecasting from marginals.\n\nPaper [29] conditions a decoder on arbitrary timestep `t` for video frame interpolation — the mechanism of injecting continuous time `t` as a conditioning parameter into a generative network is equivalent at the primitive level.\n\nPaper [6] uses lead-time-continuous postprocessing but via statistical models (not score networks).\n\nPaper [30] discusses conditional sampling within diffusion models, conditioning on observations to sample from conditional distributions — partially related but not specifically lead-time conditioning.\n\nNo prior paper combines: (1) score network + (2) lead time as continuous conditioning parameter + (3) direct marginal sampling without fixed steps in a forecasting context. Paper [29] has the closest mechanism (arbitrary timestep as conditioning parameter in a generative model), but it's interpolation not forecasting. At the primitive level, \"inject continuous time t as conditioning parameter into a generative/score network to sample at arbitrary resolution\" is present in [29].\n\n## EVALUATION: 定性展示1小时分辨率10天预报;首步外推误差分析\n\nThe evaluation involves: (1) qualitative demonstration of 1-hour resolution 10-day forecasts from a single model, and (2) analysis showing that strongly time-varying fields (t2m) perform worse at the first step of each iteration (1h, 25h...) due to extrapolation.\n\nPaper [6] evaluates lead-time-continuous models across lead times and analyzes performance degradation patterns. Paper [2] evaluates diffusion-based weather forecasting qualitatively and quantitatively. Neither paper uses this specific evaluation design (showing arbitrary-resolution forecasts + first-step extrapolation error analysis). The \"first-step extrapolation error\" analysis is a specific diagnostic tied to this contribution's architecture. However, the qualitative demonstration of forecast quality across lead times is a standard evaluation design in weather forecasting papers.\n\nThe evaluation design here is somewhat standard (show forecast quality at various lead times, analyze error patterns) but the specific \"first-step extrapolation\" diagnostic appears genuinely new. However, the broader design of evaluating across lead times and showing qualitative forecast maps is covered by [2] and [6].\n\n## DOMAIN: 机器学习全球天气预报(MLWP)\n\nPapers [2], [8], [15] all work in ML-based weather forecasting. This domain is clearly covered.\n\n---\n\nVERDICT purpose = 6\nVERDICT mechanism = 29\nVERDICT evaluation = 2\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 22
+      },
+      "evaluation": {
+       "covered_by": 15
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The objective of creating a single model for forecasting at arbitrary or continuous lead times, rather than fixed intervals, is substantively equivalent to the goal in paper [6], which aims for \"Lead‐time‐continuous statistical postprocessing of ensemble weather forecasts\" to avoid fitting individual models for each lead time.\n\n**mechanism**: The use of a single score-based model conditioned on a continuous lead time `t` to directly sample the state `X(t)` is an application of a known primitive. Paper [22] introduces \"Conditional Score-based Diffusion models for Imputation (CSDI)\" for time series, which is a conditional score model that must inherently take time as a parameter to generate values for arbitrary missing locations.\n\n**evaluation**: The evaluation design, consisting of a qualitative demonstration of the model's capability (generating high-resolution forecasts) and an analysis of a specific failure mode (extrapolation errors), is a standard protocol for assessing new generative models. This design is used in papers like [15] (\"Diffusion Models for High-Resolution Solar Forecasts\"), which show generated forecasts to validate their method.\n\n**domain**: The application area of machine learning for weather prediction is explicitly addressed by several prior papers. For example, paper [2] focuses on \"Weather Prediction with Diffusion\" and paper [8] on \"Probabilistic Weather Forecasting\", establishing prior work in the same domain.\n\nVERDICT purpose = 6\nVERDICT mechanism = 22\nVERDICT evaluation = 15\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     3,
+     9
+    ],
+    "evaluation": [
+     7,
+     8
+    ],
+    "domain": [
+     7,
+     9
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose:\nThe contribution's purpose is to combine autoregressive methods with continuous forecasting to improve performance on long rollouts while maintaining high-resolution accuracy. This objective is not explicitly covered by any prior paper. While several papers address autoregressive forecasting (e.g., [1], [3], [8], [12]) or continuous forecasting ([15], [28]), none explicitly aim to combine these approaches for the stated purpose of improving long-rollout performance while preserving high-resolution accuracy.\n\n### Mechanism:\nThe mechanism, ARCI, combines continuous forecasting with autoregressive rollout by parallelizing continuous steps within autoregressive steps (e.g., ARCI-24/6h: 24h autoregressive steps with parallel 6h continuous steps). Paper [15] discusses non-autoregressive diffusion-based temporal point processes for continuous-time long-term event prediction, but it does not combine continuous forecasting with autoregressive rollout. Paper [3] introduces autoregressive prediction with a rolling mechanism, but it does not integrate continuous forecasting. No prior paper combines these primitives in the described manner.\n\n### Evaluation:\nThe evaluation design involves comparing ARCI-24+6h against external baselines (e.g., Graph-EFM, GenCast-style AR-6h) and demonstrating superior performance at 6h resolution while matching AR-24h on most metrics. Papers [8], [12], and [23] use multi-step forecasting benchmarks and metrics to validate their models, which aligns with the evaluation design here. Although the specific benchmarks and baselines differ, the evaluation design (multi-step forecasting comparison with external baselines) is substantively equivalent.\n\n### Domain:\nThe domain is machine learning for global weather prediction (MLWP). Paper [9] explicitly addresses weather forecasting using LSTM and ARIMA models, and paper [7] examines ensemble forecasts for medium-range weather prediction. Both papers operate in the same general application area of weather forecasting, even though the specific datasets and sub-problems differ.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 8  \nVERDICT domain = 9  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly shares the same objective of combining autoregression with continuous forecasting to improve long-rollout performance while maintaining high-resolution accuracy.  \nFACET: mechanism | FINAL: COVERED-BY 3 | reason: \"a novel autoregressive (AR) prediction approach with rolling mechanism is proposed\" aligns with combining autoregressive rollout with a continuous mechanism."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n## Purpose: 结合自回归以在长rollout上提升性能并保持高分辨率精度\n\nThe purpose is to combine autoregressive rollout with continuous (parallel) forecasting to improve long-rollout performance while maintaining high-resolution accuracy in ML weather prediction. Paper [15] addresses error accumulation in autoregressive frameworks for long-term prediction, but proposes non-autoregressive diffusion as a solution rather than combining AR with continuous steps. Paper [19] (NAOMI) addresses error propagation in long-range sequences via non-autoregressive multiresolution imputation — similar concern but different solution direction. Paper [8] addresses multi-step prediction degradation. None of these specifically target the objective of \"combine AR rollout with continuous forecasting to get both long-rollout performance AND high-resolution accuracy\" in the MLWP context. The closest is [8] (improving multi-step prediction), but the specific dual objective (long rollout + high-res accuracy via hybrid AR+continuous) is not covered.\n\n## Mechanism: ARCI — combining continuous forecasting with autoregressive rollout (e.g., ARCI-24/6h: 24h AR steps with parallel 6h continuous steps inside)\n\nThe mechanism is a hybrid where each AR step internally runs parallel continuous sub-steps (coarser AR outer loop + finer continuous inner loop). Paper [29] (VAR) uses coarse-to-fine \"next-scale prediction\" in autoregressive image generation — this is a hierarchical AR mechanism but not combining AR with a separate continuous forecasting primitive. Paper [19] (NAOMI) uses non-autoregressive multiresolution imputation combining coarse-to-fine generation, but it's non-AR. Paper [23] uses multi-scale hierarchical modeling for time series. None of these prior papers describe the specific primitive of \"outer AR rollout steps wrapping inner parallel continuous forecast steps\" as a combined forecasting mechanism. This appears genuinely absent.\n\n## Evaluation: Tab.1/Fig.4 comparing ARCI against external baselines (Graph-EFM, GenCast-style AR-6h) and AR-24h on 6h resolution metrics\n\nThe evaluation design involves comparing ML weather forecasting models on standard weather prediction benchmarks/metrics (skill scores at multiple resolutions). Paper [7] evaluates ensemble NWP forecasts with probabilistic skill scores comparing dual-resolution configurations. The general design of comparing ML weather models on standard skill metrics (like RMSE, ACC on pressure levels) is a well-established evaluation design in MLWP. The comparison against external baselines and ablation variants on standard weather metrics is a standard evaluation design in this domain. This evaluation design (benchmark comparison with standard meteorological skill scores) is covered by the general MLWP evaluation paradigm present in [7] and implicitly in [9].\n\n## Domain: 机器学习全球天气预报 (MLWP)\n\nPaper [7] explicitly works on medium-range weather forecasts with ECMWF's IFS, covering ensemble NWP. Paper [9] addresses weather forecasting using LSTM+ARIMA. These papers operate in the weather forecasting domain. The domain of ML-based global weather prediction is covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 7\nVERDICT domain = 7",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper describes the objective of combining autoregressive rollout with continuous forecasting specifically to improve long-rollout performance while maintaining high-resolution accuracy in weather/spatiotemporal forecasting. The closest candidates (e.g., [8] on multi-step prediction, [15] on non-autoregressive vs autoregressive for long-term prediction) address error accumulation in autoregressive models but none frame the purpose as combining the two paradigms to jointly achieve long-rollout performance and high-resolution fidelity.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes a hybrid architecture that interleaves continuous (parallel) forecasting steps within autoregressive rollout steps at specified time-step granularities (e.g., 24h autoregressive outer loop with 6h continuous inner steps). [3] uses rolling AR prediction, [8] addresses recursive vs. multi-output strategies, and [15] contrasts non-autoregressive diffusion with autoregressive TPPs, but none combine a continuous multi-step forecasting module nested inside an autoregressive outer loop in the specific ARCI-style configuration described."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: The objective is to improve long-rollout performance while maintaining high-resolution accuracy by combining different forecasting granularities. This purpose is covered by prior work on multi-resolution or multi-scale forecasting, such as [7], which aims to improve forecast skill by \"pooling k lower‐resolution and m higher‐resolution members,\" and [18], which uses \"multiresolution prediction [to] capture short-range and long-term dependencies.\"\n\nmechanism: The mechanism is a hybrid model that combines a continuous forecasting primitive with an autoregressive rollout primitive. This is substantively equivalent to prior work that creates hybrid models by combining different forecasting primitives, such as [9] which proposes a \"merged-Long Short-term Memory for forecasting... and Autoregressive Integrated Moving Average (ARIMA) Model,\" and [28] which combines a continuous-time Latent ODE with a discrete-step LSTM.\n\nevaluation: The evaluation design consists of comparing the proposed model's performance against baseline models on a forecasting task using standard metrics. This is a canonical benchmark comparison design, which is covered by numerous prior papers, including [7] which applies its dual-resolution approach to \"medium‐range weather forecasts\" and [12] which compares different \"multi-step prediction strategies\" for wind forecasting.\n\ndomain: The application area is machine learning for global weather prediction. This domain is covered by [7], which applies its method to \"medium‐range weather forecasts with ECMWF's Integrated Forecasting System,\" and [9], which addresses \"weather forecasting\" for ground visibility.\n\nVERDICT purpose = 7\nVERDICT mechanism = 9\nVERDICT evaluation = 7\nVERDICT domain = 7",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     2,
+     12
+    ],
+    "mechanism": [
+     2,
+     12,
+     19
+    ],
+    "evaluation": [
+     2,
+     12,
+     19
+    ],
+    "domain": [
+     2,
+     12,
+     19
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        2,
+        12
+       ]
+      },
+      "mechanism": {
+       "covered_by": [
+        2,
+        12,
+        19
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        2,
+        12,
+        19
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        2,
+        12,
+        19
+       ]
+      },
+      "single_paper_covers_all": 2
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to demonstrate competitive performance and good probabilistic properties for global weather forecasting. Paper [2] explicitly addresses probabilistic weather forecasting and evaluates probabilistic metrics like CRPS and spread-skill ratio, which align with the stated purpose of validating probabilistic properties. Paper [12] also targets global medium-range weather forecasting and demonstrates competitive performance using machine learning methods, which aligns with the goal of achieving competitive performance in global weather forecasting. Therefore, the purpose is covered by [2] and [12].\n\n#### Mechanism:\nThe contribution uses RMSE, CRPS, and Spread/Skill-Ratio (SSR) for evaluation, comparing against baselines such as Deterministic, AR-6/24h (GenCast reimplementation), CI-6h, DYffusion, and Graph-EFM. Paper [2] evaluates probabilistic weather forecasts using CRPS and spread-skill ratio, which matches the mechanism of using these metrics for probabilistic evaluation. Paper [19] introduces DYffusion, which is one of the baselines explicitly mentioned in the contribution, and uses diffusion models for probabilistic spatiotemporal forecasting. Paper [12] introduces GraphCast, another baseline mentioned in the contribution, and uses machine learning methods for global weather forecasting. Thus, the mechanism is covered by [2], [12], and [19].\n\n#### Evaluation:\nThe contribution evaluates z500/t850 variables for 5/10-day forecasts, showing that probabilistic models outperform deterministic ones and exceed baselines like GenCast and DYffusion. Paper [2] uses probabilistic metrics like CRPS and spread-skill ratio for medium-range weather forecasts, which matches the evaluation design. Paper [12] evaluates medium-range global weather forecasts for 10-day lead times, which aligns with the evaluation design of the contribution. Paper [19] evaluates DYffusion for probabilistic spatiotemporal forecasting, which matches the evaluation design of comparing against DYffusion as a baseline. Therefore, the evaluation design is covered by [2], [12], and [19].\n\n#### Domain:\nThe contribution operates in the domain of machine learning for global weather forecasting (MLWP). Paper [2] explicitly addresses probabilistic machine learning methods for medium-range weather forecasts, which is part of the MLWP domain. Paper [12] focuses on global medium-range weather forecasting using machine learning, which directly overlaps with the MLWP domain. Paper [19] applies diffusion models to spatiotemporal forecasting, which is a subfield of MLWP. Therefore, the domain is covered by [2], [12], and [19].\n\n---\n\n### Verdicts:\nVERDICT purpose = 2, 12  \nVERDICT mechanism = 2, 12, 19  \nVERDICT evaluation = 2, 12, 19  \nVERDICT domain = 2, 12, 19  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 12
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: 证明方法在全球天气预报上达到有竞争力的性能且概率性质良好**\n\nThe purpose is to demonstrate that a method achieves competitive performance on global weather forecasting with good probabilistic properties. Paper [2] (WeatherBench Probability) explicitly establishes probabilistic verification for medium-range weather forecasts and benchmarks ML methods. Paper [12] (GraphCast) demonstrates competitive ML-based global weather forecasting performance. Paper [19] (DYffusion) demonstrates probabilistic spatiotemporal forecasting with competitive performance. However, none of these papers specifically demonstrate that *their own new method* achieves competitive probabilistic global weather forecasting — they either establish benchmarks or demonstrate deterministic forecasting. Paper [2] is closest: it benchmarks probabilistic ML methods for medium-range weather forecasting, establishing the same objective of showing competitive probabilistic performance. This is substantively equivalent at the problem-class level.\n\n**MECHANISM: 在ERA5上以RMSE、CRPS、Spread/Skill-Ratio(SSR)评估,并对比多个baseline**\n\nThe mechanism involves evaluating on ERA5 using RMSE, CRPS, and SSR metrics against multiple baselines including deterministic and probabilistic models. Paper [2] explicitly introduces spread-skill ratio, CRPS, and rank histograms for probabilistic weather benchmark evaluation on ERA5-derived data. Paper [12] uses RMSE on ERA5. Paper [19] uses CRPS and compares against baselines including DYffusion itself. The combination of RMSE+CRPS+SSR on ERA5 with multi-baseline comparison is directly described in [2]: \"spread-skill ratio, the continuous ranked probability score (CRPS) and rank histograms.\"\n\n**EVALUATION: z500/t850等变量5/10天预报;概率模型优于确定性;超越baseline;重训误差棒**\n\nThe evaluation design uses standard WeatherBench-style variables (z500, t850) at 5/10-day lead times with RMSE/CRPS metrics, comparing probabilistic vs. deterministic models, and running multiple seeds for error bars. Paper [2] uses exactly this evaluation design: WeatherBench variables, medium-range lead times, CRPS/spread-skill ratio, comparing probabilistic vs. deterministic baselines. Paper [12] also evaluates z500/t850 at multi-day lead times on ERA5. The design (WeatherBench benchmark family, same metric semantics, same variable/lead-time protocol) is clearly covered by [2] and [12].\n\n**DOMAIN: 机器学习全球天气预报(MLWP)**\n\nPapers [2], [12], [3], [19] all operate in the domain of machine learning for global weather forecasting. This is unambiguously covered.\n\nVERDICT purpose = 2\nVERDICT mechanism = 2\nVERDICT evaluation = 2\nVERDICT domain = 12",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

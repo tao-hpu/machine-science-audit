@@ -1,0 +1,323 @@
+{
+ "paper_id": "FA0316",
+ "title": "Time-Varying Mutual Information Decoding for Mitigating Visual Forgetting in Vision-Language Models",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     8
+    ],
+    "mechanism": [
+     1,
+     10
+    ],
+    "evaluation": [
+     6,
+     30
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 30
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to counteract progressive visual forgetting during long chain-of-thought reasoning in vision-language models (VLMs). Paper [8] explicitly addresses \"visual forgetting in video reasoning\" caused by \"visual anchor drifting,\" which is conceptually equivalent to the contribution's purpose. Both aim to mitigate the degradation of visual grounding during extended reasoning processes, even though [8] focuses on video reasoning rather than general VLM inference.\n\n### Mechanism\nThe contribution introduces a time-varying mutual information decoding mechanism that amplifies the difference between image-conditioned and image-masked logits, with a correction weight increasing over generation steps via an exponential schedule. Paper [27] discusses time-varying decoding in convolutional codes, which is conceptually similar in its use of dynamic programming to adjust decoding weights over time. Additionally, paper [10] analyzes mutual information loss in decoding, and paper [16] discusses maximum mutual information decoding in space-time block codes. While these papers do not address VLMs or hallucination mitigation, the underlying primitive of time-varying mutual information decoding is covered across these works.\n\n### Evaluation\nThe contribution evaluates its method using HallusionBench and MMStar benchmarks, reporting accuracy improvements. Paper [30] introduces HallusionBench as a benchmark for evaluating hallucination in VLMs, making the evaluation design covered. Additionally, papers [1], [3], [4], [5], [6], [7], [14], and [31] all use similar evaluation designs for hallucination mitigation in VLMs, employing standard benchmarks and metrics to validate their methods. The use of HallusionBench and MMStar is a change of benchmark instance, not a new evaluation design.\n\n### Domain\nThe contribution operates in the domain of vision-language model inference and hallucination mitigation during decoding. Papers [1], [3], [4], [5], [6], [7], [11], [14], [17], [29], and [31] all address hallucination mitigation in VLMs, which is the same general application area. While some focus on specific sub-problems (e.g., medical VLMs in [4] and [7]), the domain is clearly covered.\n\n---\n\nVERDICT purpose = 8  \nVERDICT mechanism = 10  \nVERDICT evaluation = 30  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Counteract progressive visual forgetting during long chain-of-thought reasoning in VLMs.**\n\nPaper [8] \"When Thinking Hurts: Mitigating Visual Forgetting in Video Reasoning via Frame Repetition\" directly addresses \"visual anchor drifting\" where models increasingly rely on self-generated text during extended CoT reasoning, sidelining visual inputs — this is substantively the same objective of counteracting progressive visual forgetting during long chain-of-thought reasoning in VLMs. Paper [1] (CRoPS) also notes \"effectiveness declines toward the end of generation, where hallucinations are most likely to occur,\" which partially overlaps, but [8] is the clearest match.\n\n---\n\n**MECHANISM: Time-varying mutual information decoding with exponential schedule gamma_t amplifying (l_c - l_u) difference, gated by confidence threshold.**\n\nThe core primitive has two parts: (a) contrastive decoding amplifying image-conditioned vs. image-masked logit differences, and (b) a time-varying/dynamic weight that increases over generation steps, gated by confidence.\n\nFor (a): Papers [6], [17], [5], [14], [31], [4], [7] all use contrastive decoding that amplifies the difference between image-conditioned and image-degraded/masked logits — this is the same primitive of l_c - l_u amplification.\n\nFor (b) the time-varying exponential schedule: Paper [1] (CRoPS) explicitly addresses declining effectiveness toward end of generation and builds a hallucination model that compensates — it uses a position-aware correction. Paper [14] (Octopus) uses dynamic contrastive decoding that adapts weights per token. Paper [19] (Uncertainty-Aware Contrastive Decoding) uses dynamic weighting between models based on uncertainty. Paper [12] (Thinking by Subtraction) uses confidence-driven contrastive decoding for LLM reasoning with a confidence gate.\n\nThe specific combination of: exponential time-varying gamma_t increasing over steps + confidence-based gate (max prob < alpha) applied to VLM contrastive decoding is most closely approximated by combining [1] (time-varying correction over generation) + [14] (dynamic per-token weighting) + [19] (uncertainty/confidence-based dynamic weighting). Paper [12] uses confidence-driven contrastive decoding with a gate. Paper [1] explicitly uses a correction weight that varies over generation position. The underlying primitives — dynamic/adaptive contrastive decoding weight + confidence gating — are covered by [1], [14], [19], and [12] collectively. The exponential schedule is a specific parameterization of \"increasing weight over time,\" which is the same primitive as [1]'s position-aware correction. I'll cite [1] as the primary cover for the combined mechanism.\n\n---\n\n**EVALUATION: HallusionBench aAcc and MMStar metrics on VLAA-Thinker-7B.**\n\nHallusionBench is a named benchmark used in prior VLM hallucination work. Paper [30] introduces hallucination evaluation frameworks for LVLMs. Papers [1], [3], [6], [14] all evaluate on standard VLM hallucination benchmarks (POPE, MME, HallusionBench family). The evaluation design — measuring aAcc on HallusionBench and accuracy on MMStar — uses existing named benchmarks with standard metrics. This is a standard evaluation design (named benchmark + accuracy metric) used across many prior papers in this space, e.g., [1], [6], [14]. The design is covered.\n\n---\n\n**DOMAIN: Vision-language model inference / hallucination mitigation (training-free decoding).**\n\nNumerous prior papers ([1], [2], [3], [4], [5], [6], [7], [11], [14], [17], [31]) operate in exactly this domain: training-free decoding for hallucination mitigation in VLMs.\n\n---\n\nVERDICT purpose = 8\nVERDICT mechanism = 1\nVERDICT evaluation = 6\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     13
+    ],
+    "mechanism": [
+     13
+    ],
+    "evaluation": [
+     13,
+     16
+    ],
+    "domain": [
+     13,
+     22
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 13
+      },
+      "single_paper_covers_all": 13
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to demonstrate hallucination reduction without sacrificing general reasoning capability. Paper [13] introduces Conditional Pointwise Mutual Information (C-PMI) decoding to reduce hallucinations in LVLMs while maintaining reasoning performance, explicitly addressing the same objective of balancing hallucination mitigation and reasoning capability. The purpose is therefore **covered** by [13].\n\n### Mechanism\nThe mechanism evaluates adaptive MI decoding against vanilla and visual replay baselines on hallucination and reasoning benchmarks. Paper [13] employs Conditional Pointwise Mutual Information (C-PMI) decoding, which adaptively strengthens mutual information during decoding to reduce hallucinations. This is substantively equivalent to adaptive MI decoding, as both approaches leverage mutual information calibration during decoding to mitigate hallucinations. The mechanism is therefore **covered** by [13].\n\n### Evaluation\nThe evaluation uses HallusionBench and MMStar benchmarks, reporting hallucination reduction and reasoning performance metrics. Paper [13] evaluates hallucination mitigation using benchmarks that measure reasoning and hallucination performance, including metrics for visual-dependent questions. While the specific benchmarks differ, the evaluation design — benchmarking hallucination reduction and reasoning performance using standard metrics — is substantively equivalent. The evaluation is therefore **covered** by [13].\n\n### Domain\nThe domain is visual hallucination benchmarking, specifically using HallusionBench and MMStar. Paper [13] operates in the same general application area of visual hallucination benchmarking for LVLMs, even though it does not use the exact same benchmarks. The domain is therefore **covered** by [13].\n\n---\n\nVERDICT purpose = 13  \nVERDICT mechanism = 13  \nVERDICT evaluation = 13  \nVERDICT domain = 13  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": 22
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Demonstrate hallucination reduction without sacrificing general reasoning capability.**\n\nThis purpose is specifically about showing a *trade-off resolution* — reducing hallucinations while preserving general reasoning. Paper [13] (C-PMI calibrated decoding) explicitly addresses reducing hallucinations in LVLMs via MI-based decoding and evaluates on both hallucination and reasoning benchmarks. Paper [16] (MoD) similarly proposes hallucination mitigation while evaluating on multiple benchmark types. Paper [9] (HIO) also evaluates hallucination reduction while checking general capability. However, the specific claim of \"demonstrating no sacrifice to general reasoning\" as the primary finding — i.e., the trade-off preservation claim — appears in [13] which states it \"adaptively strengthens\" visual grounding and evaluates on reasoning benchmarks, and [16] which evaluates on both hallucination and general benchmarks. Paper [18] also explicitly discusses whether contrastive decoding methods preserve general performance. The purpose of showing hallucination reduction without sacrificing reasoning is substantively covered by [13] and [16].\n\n**MECHANISM: Evaluate adaptive MI decoding against vanilla and visual replay baselines on hallucination and reasoning benchmarks.**\n\nThe mechanism here is adaptive mutual information (MI) decoding for hallucination mitigation. Paper [13] introduces \"Conditional Pointwise Mutual Information (C-PMI) calibrated decoding strategy, which adaptively strengthens the mutual information\" — this is essentially the same primitive: adaptive MI-based decoding to reduce hallucinations in LVLMs. Paper [27] (Diver) uses \"span-level PMI verification\" for LLM decoding. Paper [9] uses contrastive decoding with visual uncertainty. The closest match is [13], which uses adaptive conditional PMI decoding — the same underlying primitive of MI-based adaptive decoding for LVLM hallucination reduction.\n\n**EVALUATION: HallusionBench +1.51pp (67.76%) with MMStar essentially unchanged (62.07% vs 62.13% vanilla); largest gain on visual-dependent questions (+2.37pp).**\n\nThe evaluation design uses HallusionBench and MMStar as named benchmarks. HallusionBench is used in [13] (C-PMI paper mentions hallucination benchmarks), [16] (MoD uses HallusionBench), and [9]. MMStar as a general reasoning benchmark appears in [16] and [13]. The design of evaluating on HallusionBench + a general reasoning benchmark (MMStar) with percentage-point comparisons is used in [13] and [16]. This evaluation design (named benchmark family + metric semantics of accuracy comparison) is covered.\n\n**DOMAIN: Visual hallucination benchmarking (HallusionBench, MMStar).**\n\nThe domain is visual hallucination in large vision-language models, evaluated on specific benchmarks. This is clearly the domain of papers [1], [3], [6], [7], [9], [13], [15], [16], [17], [18], [19], [20], [21], [22], [24], among many others. This domain is thoroughly covered.\n\nVERDICT purpose = 13\nVERDICT mechanism = 13\nVERDICT evaluation = 16\nVERDICT domain = 22",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     7,
+     13
+    ],
+    "mechanism": [
+     6,
+     9
+    ],
+    "evaluation": [
+     16
+    ],
+    "domain": [
+     2,
+     13
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to validate that the method addresses the underlying visual forgetting mechanism. Paper [7] explicitly identifies and empirically validates inter-modal forgetting in unified multimodal models, which includes visual forgetting as part of the broader phenomenon. Paper [15] investigates catastrophic forgetting in multimodal large language models, which encompasses visual forgetting as a specific case. Both papers substantively share the same objective of addressing visual forgetting mechanisms.\n\n### Mechanism\nThe contribution analyzes the PDM-H (Prompt Dependency Measure for Hallucination) trajectory over generation steps for MI decoding versus vanilla decoding. Paper [9] introduces Conditional Pointwise Mutual Information (C-PMI) calibrated decoding, which adaptively strengthens mutual information between visual and textual inputs during decoding. Paper [26] uses Pointwise Mutual Information as a metric for evaluating faithfulness in document-grounded dialogs, which aligns with the underlying primitive of mutual information-based analysis. Both papers employ substantively equivalent mechanisms of mutual information trajectory analysis, albeit under different names and contexts.\n\n### Evaluation\nThe contribution evaluates AUC ratios and first-100-step decline metrics to show that MI decoding slows decay of visual reliance. Paper [16] evaluates hallucination benchmarks for large vision-language models, including metrics that assess visual grounding decay. Paper [20] introduces a hallucination benchmark with intrinsic and extrinsic evaluation tasks, which include metrics for visual reliance. Both papers reuse evaluation designs that measure visual grounding decay, making the evaluation facet covered.\n\n### Domain\nThe contribution operates in the domain of mechanistic analysis of visual grounding decay. Paper [2] addresses visual signal enhancement for object hallucination mitigation in multimodal large language models, which falls within the same general application area of visual grounding decay. Paper [6] proposes Visual Grounding Score Guided Decoding for hallucination mitigation in medical VLMs, which also targets visual grounding decay. Both papers substantively overlap in domain.\n\n---\n\nVERDICT purpose = 7  \nVERDICT mechanism = 9  \nVERDICT evaluation = 16  \nVERDICT domain = 2  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 13
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**PURPOSE: Validate that the method addresses the underlying visual forgetting mechanism.**\n\nThe purpose is to empirically demonstrate that MI (mutual information) decoding specifically counteracts visual reliance decay during generation — i.e., that the method works *because* it slows the forgetting of visual grounding. Papers [2], [6], [9], [10], [12], [13], [18], [23] all propose hallucination mitigation methods and validate them, but none specifically aim to validate that their method addresses a \"visual forgetting/decay mechanism\" as the underlying cause. Paper [23] mentions \"instability in visual features during decoding\" and paper [13] analyzes layer-wise suppression of visual information, but neither establishes the same empirical relationship: \"our decoding method slows the decay of visual reliance over generation steps.\" No prior paper reports this specific relationship between MI decoding and PDM trajectory/visual reliance decay.\n\n**MECHANISM: Analyze PDM-H trajectory over generation steps for MI decoding vs vanilla.**\n\nThe mechanism is tracking a visual-grounding dependency measure across generation timesteps and comparing two decoding strategies. Paper [13] performs empirical analysis of visual object recognition across layers. Paper [23] discusses visual feature instability during decoding. Paper [6] introduces a Visual Grounding Score and tracks it. However, none of these specifically track a PDM-H (or equivalent prompt dependency measure for hallucination) as a time-series trajectory over generation steps comparing MI vs. vanilla decoding. This is a specific analysis protocol not found in prior work.\n\n**EVALUATION: AUC ratios and first-100-step decline metrics on MMStar and HallusionBench.**\n\nThe evaluation uses AUC ratios and step-wise decline metrics on MMStar and HallusionBench — these are existing benchmark families. Papers [2], [9], [10], [12], [23] all use HallusionBench and/or MMStar as evaluation benchmarks. The AUC ratio as a metric for comparing trajectory curves is somewhat specific, but the benchmarks themselves (MMStar, HallusionBench) are used in prior work. However, the evaluation *design* here is a trajectory analysis with AUC ratios — not a standard accuracy/score benchmark evaluation. This is a newly defined metric (AUC of PDM-H trajectory, ratio between conditions) applied to a mechanistic analysis, not a standard benchmark accuracy evaluation. No prior paper uses this specific evaluation design.\n\n**DOMAIN: Mechanistic analysis of visual grounding decay.**\n\nThe domain is mechanistic analysis of hallucination in multimodal LLMs, specifically visual grounding. Papers [2], [6], [9], [10], [12], [13], [18], [23] all work in the domain of hallucination mitigation in multimodal/vision-language models. Paper [13] explicitly performs mechanistic/empirical analysis of visual information suppression in MLLMs. This is clearly the same application area.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 13",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the specific objective of validating that a decoding method addresses an underlying *visual forgetting* mechanism in LVLMs; papers like [13] analyze layer-wise suppression and [23] discuss visual instability during decoding, but none frame their validation purpose as confirming the method targets a visual forgetting mechanism specifically.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper defines or tracks anything equivalent to a \"Prompt Dependency Measure for Hallucination (PDM-H)\" trajectory over generation steps to compare MI-based vs. vanilla decoding; [9] uses C-PMI for token-level calibration and [10] measures attention consistency, but neither analyzes a step-wise forgetting trajectory metric of this kind.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports AUC ratios of adaptive MI vs. vanilla decoding (or any equivalent ratio metric) on MMStar and HallusionBench, nor measures first-100-step visual reliance decline as a quantitative indicator of slowed visual forgetting; the specific numeric claims and the ratio-based evaluation design are absent from all prior papers."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to validate an empirical relationship: that MI decoding mitigates hallucination by specifically addressing the mechanism of visual forgetting over the generation process. While prior works like [13] speculate that hallucinations are caused by \"the strong knowledge priors of the language model suppressing the visual information,\" and others like [6] and [23] identify \"over-reliance on language priors\" as the problem, none appear to have the explicit purpose of validating that a specific decoding method works by counteracting this decay mechanism.\n\n**mechanism**: The analysis method is to track a \"Prompt Dependency Measure for Hallucination\" (PDM-H) over generation steps. The underlying technical primitive is to measure visual grounding by comparing model behavior with and without (or with degraded) visual information. This primitive is substantively equivalent to the one used in [6], which proposes a \"Visual Grounding Score\" based on the \"key insight is that hallucinated tokens maintain or increase their probability when visual information is degraded, while visually grounded tokens decrease in probability.\"\n\n**evaluation**: The evaluation design involves computing metrics (AUC ratios, decay slopes) on named hallucination benchmarks (MMStar, HallusionBench) to compare two decoding methods. The use of a standard benchmark family for hallucination is a covered evaluation design, as evidenced by prior work that either introduces such benchmarks [20] (\"introduces a comprehensive hallucination benchmark\") or analyzes their quality [16] (\"Quality Evaluation of Hallucination Benchmarks for Large Vision-Language Models\").\n\n**domain**: The application area is the mechanistic analysis of how visual grounding decays during text generation in multimodal models. This is a sub-problem within the well-established domain of mitigating and understanding hallucinations in Large Vision-Language Models, which is the explicit domain of numerous prior papers such as [2], [3], [6], [9], and [23].\n\nVERDICT purpose = NONE\nVERDICT mechanism = [6]\nVERDICT evaluation = [16]\nVERDICT domain = [2]",
+      "stage2": "FACET: purpose: Validate that the method addresses the underlying visual forgetting mechanism. | FINAL: COVERED-BY [13] | reason: The paper's objective is to first empirically validate a specific mechanism—that visual information is recognized in early layers but suppressed later by language priors (a form of \"visual forgetting\")—and then propose a method motivated by that finding. The quote \"we present an empirical analysis and find that, although MLLMs incorrectly generate the objects in the final output, they are actually able to recognize visual objects in the preceding layers\" explicitly states this validation objective."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     4,
+     24
+    ],
+    "evaluation": [
+     8,
+     33
+    ],
+    "domain": [
+     1,
+     7
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to show that the method generalizes beyond reasoning-specialized architectures. None of the prior papers explicitly establish or demonstrate this specific empirical relationship. While some papers (e.g., [1], [5], [6], [10]) discuss adaptive decoding strategies or improvements in multimodal models, they do not address the generalization of adaptive MI decoding beyond reasoning-specialized architectures. This relationship itself appears to be novel.\n\n### Mechanism\nThe mechanism involves applying adaptive MI decoding to a standard instruction-tuned VLM (Qwen2.5-VL-7B-Instruct). Paper [4] proposes span-level mutual information verification for decoding in LLMs, which is substantively equivalent to adaptive MI decoding as both rely on mutual information as a decoding primitive. Paper [26] also uses mutual information maximization in decoding, though in a different application domain (formality style transfer). These papers demonstrate the same underlying primitive (adaptive decoding based on mutual information), making the mechanism covered.\n\n### Evaluation\nThe evaluation reports a +3.34pp improvement on a 300-item MMStar subset. Paper [8] introduces VLUE, a multi-task benchmark for evaluating vision-language models, and paper [19] presents LVLM-EHub, a comprehensive evaluation benchmark for LVLMs. Both papers use benchmark-based evaluation designs for vision-language models, which match the design-level semantics of the MMStar subset evaluation. While the specific benchmark instance differs, the evaluation design is covered.\n\n### Domain\nThe domain is instruction-tuned VLM generalization. Paper [7] discusses advancements in multimodal large language models (MLLMs) that follow interleaved vision-language instructions, and paper [19] evaluates instruction-tuned VLMs like InstructBLIP and LLaVA. Both papers operate in the same general application area of instruction-tuned VLMs, making the domain covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 4  \nVERDICT evaluation = 8  \nVERDICT domain = 7  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly demonstrates generalization beyond reasoning-specialized architectures."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 24
+      },
+      "evaluation": {
+       "covered_by": 33
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Show the method generalizes beyond reasoning-specialized architectures.**\n\nThe purpose is to demonstrate generalization of a decoding method to a standard instruction-tuned VLM (not a reasoning-specialized one). I need to find a prior paper that establishes the same empirical relationship: that a decoding method works beyond its originally targeted architecture type. Papers [1], [6], [10], [13], [21], [35] all propose decoding methods for LVLMs and test them across multiple model architectures/types to show generalization. For instance, [1] (Self-Aug) tests its decoding strategy across multiple LVLMs to show generalization. [6] (MoD) similarly demonstrates its approach on various LVLMs. However, the specific relationship being shown here is \"adaptive MI decoding generalizes beyond reasoning-specialized architectures to standard instruction-tuned VLMs\" — this is a specific generalization claim about architecture type. None of the prior papers specifically establish this same relationship (reasoning-specialized vs. standard instruction-tuned). The closest are papers showing generalization across model families, but not this specific architectural distinction. This appears uncovered.\n\n**MECHANISM: Apply adaptive MI decoding to a standard instruction-tuned VLM (Qwen2.5-VL-7B-Instruct).**\n\nThe mechanism is adaptive MI-based decoding applied to a VLM. Paper [4] (Diver) uses span-level PMI for LLM decoding. Paper [38] uses PMI-based decoding for faithful generation. Paper [30] uses PMI as a performance gauge for RAG. Paper [1] uses entropy-adaptive decoding for LVLMs. Paper [24] (CAMD) uses coverage-aware multimodal decoding with adaptive strategies. None of these specifically combine \"adaptive MI decoding\" as a unified primitive applied to instruction-tuned VLMs in the same way. However, [4] uses PMI-based decoding for LLMs, and [1] uses adaptive decoding for LVLMs — the combination of MI + adaptive + VLM is partially covered. The mechanism of applying MI-based decoding to VLMs is covered by [4] (MI decoding for language models) and [1] (adaptive decoding for VLMs). Paper [24] also uses adaptive decoding for MLLMs. The underlying primitive of adaptive MI decoding for VLMs is covered by combining [1] and [4], but as a single paper, [24] comes closest with adaptive decoding for MLLMs. I'll mark [24] as the closest.\n\n**EVALUATION: +3.34pp improvement on a 300-item MMStar subset.**\n\nMMStar is a named benchmark. Paper [33] explicitly discusses MMStar: \"Are We on the Right Way for Evaluating Large Vision-Language Models?\" — this paper introduces MMStar as a benchmark. The evaluation design uses a subset of MMStar with accuracy metrics, which is a standard LVLM benchmark evaluation. Paper [33] uses MMStar as an evaluation benchmark. This is covered.\n\n**DOMAIN: Instruction-tuned VLM generalization.**\n\nThe domain is instruction-tuned VLMs. Papers [1], [6], [9], [10], [12], [13], [21], [35] all work in the domain of large vision-language models. This is clearly covered by numerous papers.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 24\nVERDICT evaluation = 33\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the objective of demonstrating that a decoding method generalizes beyond reasoning-specialized architectures; the closest papers (e.g., [24] CAMD, [10] MAD) focus on reasoning efficiency or modality control but do not frame their contribution as proving architecture-agnostic generalization beyond reasoning-specialized models."
+     }
+    }
+   }
+  }
+ ]
+}

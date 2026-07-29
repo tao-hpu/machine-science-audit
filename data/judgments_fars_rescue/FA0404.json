@@ -1,0 +1,326 @@
+{
+ "paper_id": "FA0404",
+ "title": "Hazard-Signature Tombstones: Commit-Time Forget Lockout for LLM Agent Memory",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     14,
+     21
+    ],
+    "evaluation": [
+     6,
+     9
+    ],
+    "domain": [
+     4,
+     6
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to formalize the paraphrase re-injection vulnerability in LLM agent memory deletion and demonstrate that naive deletion backfires. This specific vulnerability — where semantically equivalent paraphrases of deleted records are re-injected under new IDs — is not directly addressed in any prior paper. While [4], [14], [16], and [17] discuss vulnerabilities in machine unlearning or relearning attacks, they do not focus on paraphrase-based re-injection as a specific mechanism of attack. Similarly, [5], [8], and [11] discuss paraphrase-based attacks, but these are aimed at evading detection or altering outputs, not exploiting memory deletion vulnerabilities. No prior paper establishes the same empirical relationship between naive deletion and increased vulnerability to paraphrase re-injection.\n\n**Conclusion**: No prior paper establishes the same purpose.\n\n---\n\n### Mechanism\nThe mechanism involves defining the paraphrase re-injection attack, where an adversary re-inserts semantically equivalent paraphrases of deleted records under new IDs, and measuring the impact of ID-based deletion under this attack. [5], [8], and [11] describe paraphrase-based adversarial attacks, but these focus on evading detection or altering outputs, not on exploiting memory deletion vulnerabilities. [4], [14], [16], and [17] discuss vulnerabilities in machine unlearning or relearning attacks, but they do not describe paraphrase re-injection as a specific attack vector. None of the prior papers combine paraphrasing with ID-based re-injection to exploit memory deletion.\n\n**Conclusion**: No prior paper describes an equivalent mechanism.\n\n---\n\n### Evaluation\nThe evaluation measures the poisoned retrieval proportion (PRP@3) under paraphrase re-injection, showing that naive ID-based deletion increases PRP@3 significantly. This evaluation design — measuring retrieval performance under a poisoning attack — is covered by [6], [9], [10], [12], [13], and [19], which evaluate retrieval-augmented generation (RAG) systems under poisoning attacks. While the specific benchmark (PRP@3) and attack (paraphrase re-injection) differ, the evaluation design of measuring retrieval performance under attack is substantively equivalent. The evaluation is not novel.\n\n**Conclusion**: Evaluation design is covered by prior work.\n\n---\n\n### Domain\nThe domain is the security of persistent LLM agent memory, specifically focusing on memory poisoning and deletion vulnerabilities. This falls under the broader area of LLM security and adversarial attacks, which is addressed by [4], [6], [9], [10], [12], [13], [14], [16], [17], and [19]. While the specific focus on paraphrase re-injection in memory deletion is new, the general domain of LLM security and adversarial attacks is well-covered.\n\n**Conclusion**: The domain is covered by prior work.\n\n---\n\n### Verdicts\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 6  \nVERDICT domain = 4  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper formalizes the paraphrase re-injection vulnerability in LLM agent memory deletion or empirically shows naive deletion backfires.  \nFACET: mechanism | FINAL: COVERED-BY 14 | reason: \"With two versions of a model available to an adversary, that is, the original model and the unlearned model, the adversary can reinsert semantically equivalent data to reverse unlearning effects.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Formalize the paraphrase re-injection vulnerability in LLM agent memory deletion and show naive deletion backfires.**\n\nThe purpose is specifically about showing that ID-based deletion in LLM agent memory systems is undermined by paraphrase re-injection — i.e., that a \"forget\" operation can be exploited to worsen security. Paper [4] shows \"existing approaches for unlearning in LLMs are surprisingly susceptible to a simple set of benign relearning attacks\" — but this is about model weight unlearning, not retrieval index deletion, and the mechanism (relearning from related data) differs. Paper [14] studies \"privacy vulnerability during the unlearning process\" but again focuses on model weights. None of the RAG poisoning papers ([6],[9],[10],[12],[13],[18],[19]) address the specific relationship: \"deletion operation → adversary exploits it → poisoning worsens.\" The closest conceptual neighbor is [4] (deletion backfires), but the variables differ (model unlearning vs. retrieval index deletion, relearning vs. paraphrase flooding). No prior paper establishes the same empirical relationship between ID-based deletion and paraphrase re-injection increasing poisoned retrieval proportion.\n\n**MECHANISM: Define the paraphrase re-injection attack (adversary re-inserts semantically equivalent paraphrases of deleted records under new IDs) and measure ID-based deletion under it.**\n\nThe core primitive is: after a record is deleted by ID, flood the index with paraphrases under new IDs to circumvent deletion. Paper [21] on Sybil attacks involves \"malicious user claims multiple identities to compromise the network\" — this is structurally similar (new IDs to evade identity-based controls), but in social networks, not retrieval memory. The paraphrase component (semantic equivalence under new IDs) is not present in [21]. Papers [1],[2],[5],[7],[8],[11] use paraphrasing to evade detectors, but not to re-inject into a retrieval index after deletion. No prior paper combines paraphrase generation + new-ID re-injection into a retrieval/memory index specifically to circumvent deletion. This mechanism appears uncovered.\n\n**EVALUATION: PRP@3 metric measuring poisoned retrieval proportion before/after deletion under paraphrase flooding.**\n\nThe evaluation uses a specific metric (PRP@3 — poisoned retrieval proportion at rank 3) measured before and after a deletion operation under adversarial paraphrase flooding. RAG poisoning papers ([6],[9],[10],[12],[13],[18],[19]) measure retrieval-based attack success, but none define or use PRP@3 as a named metric, nor do they evaluate the effect of a deletion operation on poisoning rates. The evaluation design — measuring how a deletion/forget operation changes poisoning success rate under adversarial re-injection — is not present in any prior paper. This is a newly defined metric and protocol.\n\n**DOMAIN: Security of persistent LLM agent memory (memory poisoning / deletion).**\n\nThe domain of RAG/retrieval system security is well-covered by papers [6],[9],[10],[12],[13],[18],[19], which all address poisoning attacks on retrieval-augmented generation systems. LLM agent memory with persistent storage is a specific instance of retrieval-augmented systems. Paper [6] addresses \"Retrieval-Augmented Generation Against Poisoning Attacks,\" paper [10] addresses \"Poisoning Attacks to Retrieval-Augmented Generation.\" The general area of LLM retrieval security is covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 6",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper formalizes the specific vulnerability where naive ID-based deletion in an LLM agent memory system backfires due to paraphrase re-injection. Papers on RAG poisoning (e.g., [6],[10],[12]) address poisoning defenses but not the failure mode of deletion enabling adversarial flooding. Unlearning papers ([4],[15],[16]) address relearning but not retrieval-index deletion. No quoted phrase from any prior paper captures \"naive deletion backfires via paraphrase re-injection.\"\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper defines an attack where an adversary re-inserts semantically equivalent paraphrases of deleted records under new IDs to circumvent ID-based deletion in a retrieval index. Paraphrase attack papers ([1],[2],[5],[8],[11]) target detectors or reviewers, not memory deletion systems. RAG poisoning papers ([6],[9],[10],[12],[13],[18],[19]) inject poisoned content but do not define the specific mechanism of exploiting deletion by re-inserting paraphrases under new IDs. No quoted phrase matches.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports a metric equivalent to PRP@3 measuring the proportion of poisoned retrievals, nor any experiment showing that performing deletion increases poisoned retrieval proportion (e.g., from 0.67 to 0.94) as paraphrase variants flood the index. The specific quantitative finding and experimental setup are absent from all prior papers reviewed."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 21
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**REASONING:**\n\n**purpose:** The contribution's purpose is to establish the empirical finding that naive, ID-based deletion of poisoned records can backfire, making an agent's memory *more* vulnerable to the poisoned content via paraphrase re-injection. While prior work discusses related concepts, none establishes this specific \"backfiring\" relationship. Papers on RAG poisoning ([6], [9], [10], [12], [13], [18], [19]) focus on the injection of poison but do not analyze the effects of deletion. Papers on machine unlearning, such as [4], show that unlearning can be *reversed* by \"benign relearning attacks,\" but they do not demonstrate that the unlearning process itself makes the model's state worse than before the unlearning attempt. Therefore, the specific finding that a security measure (deletion) has a counter-intuitive negative effect is not covered.\n\n**mechanism:** The contribution's mechanism is a \"paraphrase re-injection attack\" where an adversary inserts semantically equivalent paraphrases of deleted records under new IDs. This is a specific application of a Sybil attack, a well-known primitive. Paper [21] defines the Sybil attack as a \"malicious user claim[ing] multiple identities to compromise the network.\" The contribution's mechanism maps directly to this: the \"multiple identities\" are the new record IDs, and the \"compromise\" is the poisoning of the retrieval index. The use of paraphrases is a known technique for content-based evasion, but the structural part of the attack—flooding with new identities—is the core of a Sybil attack.\n\n**evaluation:** The evaluation design measures the \"poisoned retrieval proportion (PRP@k)\" to quantify the attack's success by comparing the state before and after the deletion/re-injection. This design, which involves poisoning a retrieval database and measuring the rate at which poisoned documents appear in the top-k results, is a standard methodology in the literature on RAG security. For instance, papers like [9] (\"Knowledge Poisoning Attack on Retrieval-Augmented Generation Systems\") must, by necessity, use a semantically equivalent metric (e.g., Attack Success Rate) based on the retrieval of poisoned content to validate their proposed attack. Per the special rule, using this established evaluation design on a new scenario (post-deletion) does not make the evaluation facet novel.\n\n**domain:** The contribution operates in the domain of \"Security of persistent LLM agent memory (memory poisoning / deletion).\" This is a specific instance of the broader application area of security for Retrieval-Augmented Generation (RAG) systems, particularly against data poisoning attacks. Numerous prior papers, including [6] (\"Secure Retrieval-Augmented Generation Against Poisoning Attacks\"), [9], [10], [12], [13], [18], and [19], all explicitly address this same general area. The focus on \"deletion\" is a sub-problem within this established domain and does not constitute a genuinely new application area.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 21\nVERDICT evaluation = 9\nVERDICT domain = 6",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper investigates reversing memory deletion/unlearning specifically through a \"paraphrase re-injection\" attack. The closest papers, [4] and [16], study \"relearning attacks\" but define them as using \"loosely related\" data to \"jog\" the model's memory (e.g., relearning on public medical texts to recover private patient info), which is a different mechanism and objective than re-injecting the same information in a paraphrased form."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     2,
+     9
+    ],
+    "mechanism": null,
+    "evaluation": [
+     5,
+     7
+    ],
+    "domain": [
+     1,
+     12
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to prevent paraphrased re-injection of deleted harmful content at commit time. None of the prior papers explicitly address this objective. While papers like [2], [4], [14], and [19] discuss paraphrase detection or robustness to paraphrasing, their focus is on identifying or mitigating paraphrase attacks in text classification or detection tasks, not on preventing re-injection of harmful content during commit operations. Similarly, papers like [1] and [3] discuss tombstone-based deletion mechanisms in LSM-trees but do not address paraphrased re-injection of harmful content.\n\n### Mechanism\nThe mechanism involves Hazard-Signature Tombstones (HST), which extract discrete hazard signatures (structured labels over a fixed taxonomy) from deleted records and block incoming writes via fuzzy set-containment matching. Papers [1] and [3] discuss tombstone-based deletion mechanisms in LSM-trees, but these are limited to marking staleness for range deletes or compaction purposes, not for blocking paraphrased re-injection. Papers [5], [20], [21], [26], and [27] discuss fuzzy set similarity joins, Bloom filters, or approximate matching techniques, but none combine these primitives with structured hazard signatures or apply them to commit-time lockout policies. Thus, the mechanism appears novel.\n\n### Evaluation\nThe evaluation demonstrates that fuzzy set-containment matching raises hazard-signature stability across paraphrases to 92% versus 30% for exact matching. Papers [5], [20], [21], [26], and [27] discuss evaluation designs for fuzzy set similarity joins or Bloom filters, which involve approximate matching and efficiency metrics. These designs are substantively equivalent to the evaluation design here, as they validate approximate matching techniques using stability or accuracy metrics. Therefore, the evaluation facet is covered.\n\n### Domain\nThe domain is commit-time forget/lockout policy for agent memory stores. Papers [1] and [3] discuss tombstone-based deletion mechanisms in LSM-trees, which operate in the domain of key-value storage systems. While the specific application to agent memory stores is new, the general domain of storage systems and deletion policies is covered by these prior works.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 5  \nVERDICT domain = 1  ",
+      "stage2": "1. **FACET: purpose** | **FINAL: COVERED-BY 2** | reason: Paper [2] addresses the prevention of paraphrased re-injection of harmful content by tackling paraphrase attacks on machine-generated text detection. QUOTE: \"This motivates us to consider the novel problem of paraphrase inversion, where, given paraphrased text, the objective is to recover an approximate original text.\"\n\n2. **FACET: mechanism** | **FINAL: NONE** | reason: No prior paper explicitly describes or implements a mechanism equivalent to Hazard-Signature Tombstones (HST) involving LLM-classified structured labels, tombstone keys, and fuzzy set-containment matching."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": null
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation",
+      "domain"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Prevent paraphrased re-injection of deleted harmful content at commit time.**\n\nThe purpose is to block re-insertion of semantically equivalent (paraphrased) harmful content that was previously deleted, at the point of a write/commit operation. Paper [2] addresses \"paraphrase attacks\" on machine-text detection, but its purpose is to detect machine-generated text, not to block re-injection of deleted content. Paper [3] (Acheron) addresses persisting tombstones in LSM engines to ensure deleted data stays deleted, but focuses on storage correctness, not harmful content re-injection. No prior paper pursues the objective of \"prevent paraphrased re-injection of previously deleted harmful content at commit time\" — this is a specific combination of a forget/lockout policy with paraphrase-robustness that no prior paper targets.\n\n**MECHANISM: Hazard-Signature Tombstones — extract LLM-classified structured labels over a fixed taxonomy, store as tombstone keys, block writes via fuzzy set-containment matching.**\n\nThe mechanism combines: (1) tombstone records (papers [1], [3] use tombstones in LSM trees, but for key-based deletion, not semantic label matching); (2) LLM-based hazard classification into a fixed taxonomy (no prior paper does this); (3) fuzzy set-containment matching (H_w ⊆/⊇ H_t). Paper [5] (ApproxJoin) addresses fuzzy set similarity joins using approximate matching of sets, which is related to the set-containment matching primitive. However, the full mechanism — combining LLM-extracted semantic label sets stored as tombstone keys with fuzzy set-containment blocking — is not present in any single prior paper. The tombstone papers ([1], [3]) use key-based tombstones, not semantic label sets. Paper [5] does fuzzy set similarity joins but not in a tombstone/blocking context with LLM-extracted labels. No prior paper covers this combined primitive.\n\n**EVALUATION: Fuzzy set-containment raises hazard-signature stability across paraphrases to 92% vs 30% for exact matching.**\n\nThe evaluation design is a comparison of two matching strategies (fuzzy set-containment vs. exact matching) on paraphrased inputs, measuring stability/recall rate. This is essentially a substitution/swap experiment measuring robustness to paraphrase. Paper [2] evaluates paraphrase robustness of detection methods. Paper [6] introduces PRSM to evaluate CLIP's robustness against paraphrases. Papers [7], [13], [14] evaluate robustness to paraphrasing. However, none of these use the specific design of comparing fuzzy set-containment vs. exact matching on structured label sets. The evaluation design here is genuinely new — it measures signature stability under paraphrase for a set-containment matching scheme, which is a newly defined metric/protocol not present in prior work.\n\n**DOMAIN: Commit-time forget/lockout policy for agent memory stores.**\n\nThe domain is agent memory stores with commit-time write policies. No prior paper operates in this application area — the closest are LSM-tree storage systems ([1], [3]) which are general-purpose key-value stores, not agent memory systems with harmful content lockout policies. This is a genuinely new application area not addressed by any prior paper.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = NONE",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper targets the objective of preventing paraphrased re-injection of previously deleted harmful content at commit time; paraphrase detection papers address detection/identification tasks, not deletion-enforcement or re-injection blocking in memory stores.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper combines LLM-classified structured hazard labels over a fixed taxonomy stored as tombstone keys with fuzzy set-containment matching to block incoming writes; LSM tombstone papers handle key-range deletion without semantic classification, and fuzzy set-join papers (e.g., [5]) address query efficiency without the tombstone-based write-blocking architecture.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports a comparison of fuzzy set-containment vs. exact matching on hazard-signature stability across paraphrases yielding the specific 92% vs. 30% result or any equivalent named experimental design measuring this claim.\n\nFACET: domain | FINAL: NONE | reason: No prior paper addresses a commit-time forget/lockout policy for agent memory stores; LSM tombstone papers ([1],[3]) concern storage-engine compaction mechanics, not agent memory governance or policy enforcement at write time."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 12
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "domain"
+     ],
+     "raw": {
+      "stage1": "purpose: COVERED by [9]. The contribution's purpose is to \"prevent paraphrased re-injection of deleted harmful content,\" which is an instance of the more general problem class \"robustly block known-bad content against minor variations.\" Paper [9] pursues this same objective in the image domain, using perceptual hashes to \"detect... inappropriate and explicit images, and child sexual abuse (CSAM) images,\" which are robust to modifications analogous to paraphrasing.\n\nmechanism: COVERED by [9]. The contribution's mechanism is to extract a semantic signature, store it, and block new content that has a similar signature. This is substantively equivalent to the mechanism of perceptual hashing for content moderation described in [9], which uses \"perceptual features from an image to create a succinct representation called the hash\" to detect duplicates or known-bad content like CSAM, effectively blocking them based on similarity to a pre-computed list of hashes.\n\nevaluation: COVERED by [7] and [14]. The evaluation design is a controlled comparison showing a proposed method has higher \"stability across paraphrases\" than a baseline. This is a standard evaluation design for robustness claims in NLP, used in prior work like [7] which \"explore[s] the robustness of QA models to question paraphrasing\" and [14] which proposes a detection framework \"resilient to paraphrasing.\"\n\ndomain: NONE. The contribution's application area is \"Commit-time forget/lockout policy for agent memory stores.\" None of the provided prior papers operate in the domain of agent memory systems; they focus on general key-value stores, image databases, question-answering systems, or abstract data structures.\n\nVERDICT purpose = 9\nVERDICT mechanism = 9\nVERDICT evaluation = 7\nVERDICT domain = NONE",
+      "stage2": "FACET: domain: Commit-time forget/lockout policy for agent memory stores | FINAL: COVERED-BY [12] | reason: Paper [12] describes the use of perceptual hashing for \"flagging/filtering inappropriate imagery by comparing image hashes with a dataset of known perceptual hashes.\" This is a direct example of a lockout policy applied at commit-time (ingestion/processing) to a data store (image database), which is an earlier framing of an agent's visual memory store. The objective is the same."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     2
+    ],
+    "mechanism": [
+     1,
+     2,
+     13
+    ],
+    "evaluation": [
+     1,
+     2,
+     3,
+     13,
+     19
+    ],
+    "domain": [
+     1,
+     2,
+     3,
+     13,
+     19
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": [
+        2,
+        3,
+        13,
+        19
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        2,
+        3,
+        13,
+        19
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to demonstrate that HST eliminates poisoned retrieval without harming benign retrieval. This specific empirical relationship (elimination of poisoned retrieval while preserving benign retrieval) is not established in any prior paper. While papers like [2], [3], [13], and [19] discuss retrieval poisoning attacks and defenses, none explicitly report or establish the same relationship between HST and retrieval outcomes (poisoned elimination + benign preservation). These papers focus on proposing defenses or attacks but do not empirically demonstrate this specific effect.\n\n#### Mechanism:\nThe mechanism involves evaluating HST against ID-delete and retrieval-time exact/fuzzy filtering baselines on the MemoryGraft corpus, measuring PRP@3, benign recall, write-block rate, and false blocks. Papers like [13] and [19] discuss embedding space reshaping and adversarial passage injection, respectively, but neither employs the same technical primitive as HST (evaluating retrieval defenses using ID-delete and retrieval-time filtering baselines). The mechanism of HST is distinct from the methods described in prior work.\n\n#### Evaluation:\nThe evaluation design measures PRP@3, benign recall, write-block rate, and false blocks, and compares HST against baselines like retrieval-time fuzzy filtering. Papers such as [13], [19], and [2] use similar evaluation designs for retrieval poisoning defenses, including metrics like recall and precision, and robustness across embedding backends. These papers employ comparable evaluation frameworks, even though the specific benchmarks and metrics differ. Thus, the evaluation design is covered.\n\n#### Domain:\nThe domain is defense evaluation for RAG/agent memory poisoning. Papers like [2], [3], [13], and [19] explicitly address retrieval poisoning defenses in the context of RAG systems, which is the same general application area. While the specific MemoryGraft corpus and experimental setup may be new, the domain itself is covered by prior work.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 2, 3, 13, 19  \nVERDICT domain = 2, 3, 13, 19  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly demonstrates HST eliminates poisoned retrieval without harming benign retrieval, even under different terminology or framing.  \n\nFACET: mechanism | FINAL: COVERED-BY 13 | reason: \"We propose ShieldRAG, a novel defense framework designed to counteract retrieval poisoning attacks... evaluated against retrieval-layer defenses on poisoned and benign corpora using embedding-based retrieval metrics.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Demonstrate HST eliminates poisoned retrieval without harming benign retrieval.**\n\nThis purpose is specifically about showing a defense mechanism achieves zero poisoned retrieval while preserving benign retrieval — i.e., demonstrating a favorable precision/recall tradeoff for a RAG corpus poisoning defense. Papers [1], [2], [3], [11], [13] all evaluate defenses against RAG corpus poisoning and measure whether poisoned documents are blocked while benign ones are preserved. Paper [2] (RAGPart & RAGMask) explicitly proposes \"retrieval-stage defenses\" and evaluates them on poisoned vs. benign retrieval. Paper [13] (ShieldRAG) similarly demonstrates a defense that counters retrieval poisoning. These papers share the same objective: show a defense eliminates poisoned retrieval without harming benign retrieval. Paper [2] is the closest match.\n\n**MECHANISM: Evaluate HST against ID-delete and retrieval-time exact/fuzzy filtering baselines on the MemoryGraft corpus, measuring PRP@3, benign recall, write-block rate, false blocks.**\n\nThe mechanism involves comparing a hash-based write-time defense against retrieval-time filtering baselines, measuring poisoned retrieval precision and benign recall. Paper [2] proposes RAGPart and RAGMask as retrieval-stage defenses and compares them against baselines measuring retrieval accuracy on poisoned corpora. Paper [3] evaluates \"retrieval-layer defenses that require no modification\" and compares against baselines. Paper [1] benchmarks poisoning attacks and defenses with retrieval metrics. The specific combination of write-time hash-based blocking vs. retrieval-time fuzzy filtering with these exact metrics (PRP@3, benign recall, write-block rate) appears to be a novel specific instantiation, but the underlying primitive — compare write-time vs. retrieval-time defenses measuring poisoned vs. benign retrieval rates — is present in [2] and [3].\n\n**EVALUATION: HST achieves PRP@3=0.0 with Benign Recall@3=1.0, WriteBlockRate=1.0, 3% false-positive rate; comparison across embedding backends.**\n\nThe evaluation design uses precision/recall-style metrics on a poisoned RAG corpus with paraphrases, comparing defense methods. Paper [1] uses a \"comprehensive benchmark framework\" for evaluating poisoning attacks against RAG with retrieval metrics. Paper [2] evaluates retrieval-stage defenses measuring retrieval accuracy on poisoned vs. benign documents. Paper [3] evaluates \"retrieval-layer defenses\" with similar metric semantics. The MemoryGraft corpus is described as newly constructed (100 benign + 10 poisoned + 50 paraphrases), which would make the benchmark new, but the evaluation design (measure PRP and benign recall on a poisoned RAG corpus, compare defenses) matches [1] and [2].\n\n**DOMAIN: Defense evaluation for RAG/agent memory poisoning.**\n\nPapers [1], [2], [3], [6], [11], [13], [17], [19] all work in the RAG security/poisoning defense domain. This is clearly covered.\n\nVERDICT purpose = 2\nVERDICT mechanism = 2\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: COVERED. The purpose is to show a defense can eliminate poisoned retrieval without harming benign retrieval. This same objective is pursued by prior papers that propose and evaluate their own defenses, such as [2] which proposes \"RAGPart and RAGMask\" as \"Retrieval-Stage Defenses\" and evaluates their effectiveness.\n\n**mechanism**: COVERED. The mechanism is a comparative evaluation of a defense against baselines (including fuzzy filtering) on a poisoned corpus, measuring poison blocking and benign utility. This evaluation design is covered by [1], which \"propose[s] the first comprehensive benchmark framework for evaluating\" such attacks, and the use of fuzzy filtering/hashing as a primitive is described in [14].\n\n**evaluation**: COVERED. The evaluation design uses metrics like poison retrieval rate (PRP), benign recall, and block rates to quantify the trade-off of a defense. This design, including the use of semantically equivalent metrics for attack success vs. utility, is covered by [1] which proposes a \"benchmark framework\" for this exact purpose.\n\n**domain**: COVERED. The domain is \"Defense evaluation for RAG/agent memory poisoning\". This application area is explicitly addressed by numerous prior papers, including [1] (\"Benchmarking Poisoning Attacks against Retrieval-Augmented Generation\") and [2] (\"Defenses Against Corpus Poisoning in Retrieval-Augmented Generation\").\n\nVERDICT purpose = 2\nVERDICT mechanism = 1\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

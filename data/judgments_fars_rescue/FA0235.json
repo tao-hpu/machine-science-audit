@@ -1,0 +1,301 @@
+{
+ "paper_id": "FA0235",
+ "title": "ReInk: A Training-Free Inference Wrapper for Robust Chart Question Answering Under Visual Degradations",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     4
+    ],
+    "mechanism": [
+     11
+    ],
+    "evaluation": [
+     1,
+     20
+    ],
+    "domain": [
+     1,
+     25
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution aims to improve VLM robustness on visually corrupted charts without any model training. Paper [1] evaluates VLM performance on corrupted charts but does not propose a method to improve robustness. Paper [4] introduces a training-free approach for improving VLM robustness against adversarial samples, but it does not specifically target visually corrupted charts or chart question answering. No prior paper explicitly shares the same objective of improving VLM robustness on visually corrupted charts without training.  \n**Verdict: NONE**\n\n#### Mechanism:\nThe mechanism, ReInk, uses OCR (EasyOCR) to extract text from corrupted charts, re-renders the text on a clean canvas, and feeds both the corrupted chart and the re-inked canvas to a multi-image VLM. Paper [9] discusses robust OCR for degraded documents, and Paper [14] uses EasyOCR for text extraction in a pipeline, but neither combines OCR with re-rendering text on a clean canvas for VLM robustness. Paper [11] reconstructs damaged text in documents using OCR and other techniques, but it focuses on document restoration rather than chart question answering. No prior paper employs the same mechanism of re-rendering extracted text on a clean canvas for VLM inference.  \n**Verdict: NONE**\n\n#### Evaluation:\nThe contribution evaluates ReInk on the ChartQAPro-Corrupted benchmark, measuring overall accuracy improvement. Paper [20] introduces the ChartQAPro benchmark, which is used in this contribution, and Paper [1] evaluates VLM performance on corrupted charts. Both papers use similar evaluation designs (benchmarking VLM performance on chart QA tasks under corruption). Although the specific benchmark instance (ChartQAPro-Corrupted) is new, the evaluation design (benchmarking VLM robustness on corrupted charts) is covered by prior work.  \n**Verdict: 1**\n\n#### Domain:\nThe domain is chart question answering under visual corruption. Paper [1] explicitly addresses VLM robustness on corrupted charts, and Paper [20] focuses on chart question answering with a diverse benchmark. Both papers operate in the same general application area of chart question answering under visual corruption.  \n**Verdict: 1**\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly aims to improve VLM robustness on visually corrupted charts without any model training, even under different terminology or framing.  \nFACET: mechanism | FINAL: COVERED-BY 11 | reason: \"DocRevive...combining state-of-the-art Optical Character Recognition (OCR)...to restore and reconstruct text while preserving visual integrity\" aligns with the mechanism of using OCR to extract and re-render text for downstream tasks."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 20
+      },
+      "domain": {
+       "covered_by": 25
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Improve VLM robustness on visually corrupted charts without any model training.**\n\nPaper [4] proposes \"a truly zero-shot and training-free approach\" to improve VLM robustness against adversarial samples. However, its purpose is adversarial robustness for CLIP-style VLMs on general vision tasks, not chart-specific visual corruption robustness. Paper [1] evaluates VLM degradation on imperfect/corrupted charts but does not propose a method to improve robustness — it's a finding paper. Paper [6] benchmarks robustness of adaptation methods under multimodal corruptions but focuses on adaptation methods (LoRA, prompts, adapters), not training-free inference wrappers. No prior paper has the specific purpose of improving VLM robustness on visually corrupted charts without training. The closest is [4] (training-free VLM robustness), but the target (corrupted charts vs. adversarial perturbations) and the problem class differ enough that this is not substantively equivalent at the purpose level — improving robustness to visual corruption in chart QA is a distinct objective from adversarial robustness in general VLMs.\n\nActually, reconsidering: [4]'s purpose is \"improve VLM robustness without training\" — same objective class. But the problem being solved is adversarial attacks on CLIP, not visual corruption on charts. Per the special rule, the host architecture/domain difference belongs to domain, not purpose. The gap being closed is \"VLM robustness without training\" — this is substantively equivalent at the problem-class level.\n\n**PURPOSE verdict: [4]**\n\n---\n\n**MECHANISM: OCR extracts text from corrupted image → re-renders text at original bounding-box locations on clean canvas → feeds both images to multi-image VLM.**\n\nPaper [11] (DocRevive) combines OCR with image analysis and diffusion models to restore document text, but it reconstructs the document visually rather than creating a parallel clean canvas for a VLM. Paper [18] proposes \"OCR-augmented GPT\" where OCR provides coarse text estimation to help GPT infer text from images — this is conceptually similar (OCR assists a vision model), but the mechanism is different: it feeds OCR text as a prompt/hint, not re-rendering at bounding-box locations on a clean canvas fed as a second image. Paper [23] uses structured parsing (color-aware) for chart QA but not OCR-based re-rendering. Paper [14] uses EasyOCR + BART for summarization, not re-rendering. No prior paper describes the specific primitive of: run OCR on corrupted input → spatially re-render extracted text at original bounding-box coordinates on a blank canvas → provide both images to a multi-image VLM. This combination — spatial re-rendering as a clean parallel channel for a multi-image VLM — is not present in any prior paper.\n\n**MECHANISM verdict: NONE**\n\n---\n\n**EVALUATION: ChartQAPro-Corrupted benchmark, accuracy metric, baseline vs. ReInk comparison.**\n\nPaper [20] introduces ChartQAPro, the benchmark family from which ChartQAPro-Corrupted is derived. The evaluation design (accuracy on ChartQA-family benchmarks) is used in papers [25] (ChartQA benchmark, accuracy metric) and [20] (ChartQAPro). Per the special rule, using the same benchmark family and metric semantics (accuracy on chart QA) counts as covered even if the specific corrupted variant is new. Paper [1] also evaluates VLMs on corrupted charts with accuracy-style metrics.\n\n**EVALUATION verdict: [20]**\n\n---\n\n**DOMAIN: Chart question answering under visual corruption (VLM robustness).**\n\nChart question answering is the domain of papers [25], [20], [5], [3], [23], [24], [2]. Visual corruption of charts is addressed in [1] and [6] (multimodal corruptions on VLMs). The general application area of chart QA / VLM robustness is clearly covered by prior work.\n\n**DOMAIN verdict: [25]**\n\n---\n\nVERDICT purpose = 4\nVERDICT mechanism = NONE\nVERDICT evaluation = 20\nVERDICT domain = 25",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes a training-free inference wrapper that runs off-the-shelf OCR (EasyOCR) on a corrupted chart, renders extracted text at original bounding-box locations on a clean canvas, and feeds both the corrupted chart and the re-inked canvas as dual inputs to a multi-image VLM. Paper [18] uses OCR-augmented GPT but feeds OCR output as text to a single-image LLM, not as a spatially re-rendered canvas to a multi-image VLM. Paper [11] combines OCR with diffusion-based restoration but modifies the image itself rather than creating a parallel clean-canvas input. No paper contains this specific dual-image, bounding-box re-rendering pipeline."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: Paper [4] shares the same objective of improving VLM robustness in a \"truly zero-shot and training-free approach.\" While the contribution focuses on general visual corruption and [4] on adversarial samples, the high-level purpose of improving robustness to input perturbations without model training is substantively equivalent.\n\nmechanism: Paper [11] introduces a \"unified pipeline for document text restoration\" which combines \"OCR... to restore and reconstruct text while preserving visual integrity.\" The contribution's mechanism of using OCR to extract text and its location from a corrupted image and then re-rendering it on a clean canvas is a specific implementation of this same underlying primitive: using OCR to generate a cleaner visual representation from a degraded one.\n\nevaluation: Paper [1] establishes the exact evaluation design used by the contribution, as its purpose is to \"evaluate ... VLM responses ... on imperfect charts\" and measure how performance degrades \"under corruption or occlusion.\" This matches the contribution's design of measuring accuracy on a corrupted chart benchmark.\n\ndomain: Paper [1] operates in the identical domain, as it explicitly studies how \"VLM responses degrade on imperfect charts.\" This directly covers the contribution's domain of \"Chart question answering under visual corruption.\"\n\nVERDICT purpose = 4\nVERDICT mechanism = 11\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     12,
+     17
+    ],
+    "evaluation": [
+     1,
+     3,
+     4,
+     5,
+     6,
+     7,
+     17
+    ],
+    "domain": [
+     1,
+     3,
+     4,
+     5,
+     6,
+     7
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 17
+      },
+      "evaluation": {
+       "covered_by": [
+        1,
+        3,
+        4,
+        5,
+        6,
+        7
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        3,
+        4,
+        5,
+        6,
+        7
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to demonstrate that gains in chart question answering come from correct text semantics rather than layout cues. None of the prior papers explicitly establish this specific empirical relationship. While papers like [1], [3], [4], [5], [6], and [7] discuss challenges in chart question answering and robustness under visual corruption, they do not isolate or empirically demonstrate the semantic-text-versus-layout relationship. Papers such as [17] and [21] explore shuffled text and word order effects, but these are unrelated to chart question answering or visual corruption contexts.\n\n### Mechanism\nThe mechanism involves comprehensive experiments on ChartQAPro-Corrupted, including a scrambled-text control that preserves bounding-box layout but permutes text strings across boxes. Papers like [1], [3], [4], [5], [6], and [7] discuss multimodal reasoning, OCR noise, and structural embeddings for chart question answering, but none employ a scrambled-text control or a similar permutation-based mechanism to isolate semantic text effects. Papers like [17] and [21] explore shuffled text in NLP tasks but do not apply this mechanism to chart question answering or bounding-box layout preservation.\n\n### Evaluation\nThe evaluation design compares performance gains using metrics like percentage-point improvements over baselines and controls. Papers like [1], [3], [4], [5], [6], and [7] use standard evaluation setups for chart question answering, including accuracy metrics and comparisons across baselines. This contribution's evaluation design aligns with these prior works, as it uses similar statistical frameworks and benchmark comparisons. The specific dataset (ChartQAPro-Corrupted) and control instance are new, but the evaluation design itself is covered.\n\n### Domain\nThe domain is chart question answering under visual corruption, specifically robustness in handling distorted charts. Papers like [1], [3], [4], [5], [6], and [7] all address chart question answering and robustness under visual corruption, making this domain covered. While the specific dataset and corruption type (ChartQAPro-Corrupted) are new, the general application area is not.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = [1, 3, 4, 5, 6, 7]  \nVERDICT domain = [1, 3, 4, 5, 6, 7]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly demonstrates gains from correct text semantics over layout cues.  \nFACET: mechanism | FINAL: COVERED-BY 17 | reason: \"language models pretrained and/or fine-tuned on randomly permuted sentences exhibit competitive performance,\" aligns with scrambled-text control preserving layout but permuting text.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Demonstrate that gains come from correct text semantics rather than layout cues.**\n\nThis purpose is about isolating whether a model's improvement is driven by semantic text content vs. spatial/layout information in charts. Looking through all papers: Paper [5] investigates capabilities and limitations of VisualQA models on charts, but doesn't specifically target the semantic-vs-layout distinction. Paper [17] studies word order vs. content in language models, but that's about word order not layout vs. semantics in chart QA. Paper [10] is about text-content-based layout analysis (using text to inform layout), which is the inverse relationship. None of the papers specifically pursue the objective of demonstrating that performance gains come from text semantics rather than layout cues in chart understanding. This specific empirical relationship (semantic text content > layout cues as source of gain) is not established in any prior paper.\n\n**MECHANISM: Scrambled-text control that preserves bounding-box layout but permutes text strings across boxes.**\n\nThis is a controlled ablation where spatial layout is preserved but text content is randomized/permuted. Paper [17] studies shuffled language models where word order is permuted. Paper [21] studies word order through iterative shuffling. Paper [12] uses a shuffle test for text coherence. However, none of these involve permuting text strings across bounding boxes while preserving spatial layout in a chart QA context. The closest conceptually is the shuffle/permutation idea, but the specific primitive of \"swap text content across spatial bounding boxes while keeping layout intact\" as a control condition doesn't appear in any prior paper.\n\n**EVALUATION: ReInk gives +12.21pp over baseline and +8.50pp over scrambled-text control on ChartQAPro-Corrupted.**\n\nThe evaluation design uses a corrupted chart benchmark with percentage-point comparisons between conditions. Paper [1] evaluates VLMs on corrupted/distorted charts and measures performance drops. The design of evaluating on corrupted charts with performance metrics is present in [1]. However, the specific design of comparing against a scrambled-text control condition as part of the evaluation protocol is not present in [1] or elsewhere. The benchmark (ChartQAPro-Corrupted) appears to be newly constructed, and the specific evaluation design involving the scrambled-text control comparison is novel.\n\n**DOMAIN: Chart question answering under visual corruption (VLM robustness).**\n\nPapers [1], [2], [3], [4], [5], [6], [7], [18] all work in chart question answering. Paper [1] specifically addresses VLMs on imperfect/corrupted charts. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper contains the same objective of demonstrating that VLM chart-QA gains derive from correct text semantics rather than layout cues; [1] evaluates degradation under corruption but does not isolate text semantics vs. layout as competing explanations for performance; no other paper frames this diagnostic purpose even under different terminology.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes a scrambled-text control that preserves bounding-box layout while permuting text strings across boxes as a diagnostic experiment on a chart benchmark; [1] uses corruption/occlusion but not this specific layout-preserving text-scramble design; no equivalent mechanism appears under any other framing in the prior papers."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 10
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: COVERED. Paper [10] establishes the same empirical relationship, arguing that for document layout analysis, relying on \"only graphical information is problematic or impossible\" and that one must \"actually read some text,\" thus demonstrating the primacy of text semantics over layout cues.\n\n**mechanism**: COVERED. Paper [12] explicitly analyzes the \"Shuffle Test,\" an experimental design where text is permuted to break semantic coherence while preserving other properties. The contribution's \"scrambled-text control\" that \"preserves bounding-box layout but permutes text strings\" is a direct application of this same analysis primitive.\n\n**evaluation**: COVERED. Paper [17] uses the same evaluation design by comparing model performance on a standard benchmark (GLUE) under normal conditions versus a condition where the input text is composed of \"randomly permuted sentences.\" This is substantively equivalent to the contribution's design of comparing performance against a \"scrambled-text control.\"\n\n**domain**: COVERED. Paper [1] operates in the identical domain of VLM robustness on charts, as its purpose is to \"evaluate how VLM responses degrade on imperfect charts\" and it finds \"sharp performance drops under corruption or occlusion.\"\n\nVERDICT purpose = 10\nVERDICT mechanism = 12\nVERDICT evaluation = 17\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     7,
+     10
+    ],
+    "evaluation": [
+     7,
+     10
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to determine which components of ReInk actually matter, specifically by identifying the relative importance of text content, spatial rendering, bounding-box outlines, and clean-chart benefits in the context of chart question answering (CQA). None of the prior papers explicitly report or establish the same empirical relationship (i.e., the relative contributions of these components). While some papers (e.g., [1], [2], [4], [10], [15], [34]) address robustness or performance improvements in CQA, they do not focus on isolating the importance of specific components like spatial rendering or bounding-box outlines. Therefore, the purpose is **not covered**.\n\n### Mechanism\nThe mechanism involves an ablation study comparing spatially-rendered canvas vs OCR-as-text-in-prompt, removing bounding-box outlines, and performing a clean-chart sanity check. Ablation studies are a common analysis method, and prior papers like [7] and [5] use ablation techniques. However, these papers do not apply ablation to the same specific components (e.g., spatial rendering, bounding-box outlines) or the same context (CQA robustness). The closest match is [9], which investigates OCR routing bottlenecks in vision-language models using causal interventions, but this is not equivalent to the specific ablation setup here. Thus, the mechanism is **not covered**.\n\n### Evaluation\nThe evaluation design involves quantifying the contributions of text content, spatial rendering, bounding-box outlines, and clean-chart benefits to CQA performance. This is a standard ablation-based evaluation design, which is widely used in prior work. For example, [5] evaluates robustness under adversarial attacks, and [7] uses ablation mapping. While these papers do not evaluate the exact same components or claims, the evaluation design (ablation to isolate contributions) is **covered**.\n\n### Domain\nThe domain is chart question answering (CQA) under visual corruption, which falls under the broader area of CQA. Several prior papers ([1], [2], [4], [10], [15], [34]) explicitly address CQA, including robustness and performance improvements. While this contribution targets a specific sub-problem (visual corruption), it remains within the established domain of CQA. Therefore, the domain is **covered**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 7  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses determining which components of ReInk matter, even under different terminology or framing.  \nFACET: mechanism | FINAL: COVERED-BY 7 | reason: \"Integrated with the ablation mapping system\" directly mentions ablation studies, satisfying the mechanism facet standard.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Determine which components of ReInk actually matter.**\n\nThe purpose is to identify which specific components of a chart-corruption-recovery pipeline contribute to performance gains — essentially an ablation to attribute credit among sub-components. I need to find a prior paper that reports the same empirical relationship: that text content (OCR) dominates over spatial rendering in a chart QA recovery system. No prior paper appears to investigate the relative contribution of OCR-text vs. spatial canvas rendering vs. bounding-box outlines in a chart corruption recovery context. Papers [10] and [15] address OCR noise in chart QA but don't ablate these specific components or establish this specific relationship. Paper [34] does chart QA with structured parsing but doesn't ablate OCR-text vs. spatial rendering contributions. None of the prior papers establish the same empirical relationship (OCR text >> spatial rendering >> bounding boxes in a corruption-recovery pipeline).\n\n**MECHANISM: Ablation study comparing spatially-rendered canvas vs OCR-as-text-in-prompt, removing bounding-box outlines, plus clean-chart sanity check.**\n\nThe mechanism is a controlled ablation study — a standard analysis protocol. Ablation studies appear throughout the prior literature. Papers [1], [2], [10], [15], [34] all involve chart QA systems and likely include ablations. The generic shape of \"remove component, measure accuracy\" is a standard ablation design. However, per the special rule for finding-type contributions, the mechanism (analysis method) is judged at design level — a standard ablation protocol appearing in prior work counts as COVERED. Papers [10] and [15] explicitly address OCR noise in chart QA and use component-level analysis. Paper [2] uses policy optimization with component comparisons. The ablation design itself is standard and appears in prior chart QA work.\n\n**EVALUATION: Text content is primary driver (+11.57pp from OCR text alone); spatial rendering adds +0.64pp; bounding-box outlines add +0.10pp; clean-chart benefit negligible (+0.13pp).**\n\nThese are the specific quantitative findings. As a finding-type contribution, the evaluation facet is judged at design level. The evaluation design here is a component-swap ablation measuring accuracy deltas — a standard ablation design used across prior chart QA papers [1], [2], [10], [15], [34]. This design (swap component, measure accuracy change) appears in prior work on chart QA systems.\n\n**DOMAIN: Chart question answering under visual corruption (VLM robustness).**\n\nPapers [1], [2], [4], [10], [15], [34] all work in chart question answering. Papers [5], [6] address VQA robustness. The domain of chart QA is clearly covered by multiple prior papers. Visual corruption robustness in VLMs is addressed by [5] and [6] in the VQA space. The combination exists within the general area covered by these papers.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 10\nVERDICT evaluation = 10\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the objective of determining which components of a specific system (ReInk) actually matter through ablation or component analysis — none of the listed papers contain this same objective even under different terminology or framing."
+     }
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,289 @@
+{
+ "paper_id": "ExuBFYtCQU",
+ "title": "MaskGCT: Zero-Shot Text-to-Speech with Masked Generative Codec Transformer",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     1
+    ],
+    "mechanism": [
+     1,
+     2
+    ],
+    "evaluation": [
+     1,
+     4,
+     15
+    ],
+    "domain": [
+     1,
+     4,
+     15
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": 1
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to build a zero-shot TTS system that avoids the poor robustness and duration control of autoregressive (AR) systems and the need for explicit text-speech alignment supervision and phone-level duration prediction in non-autoregressive (NAR) systems. Paper [1] explicitly identifies the same objective, stating: \"The recent large-scale text-to-speech (TTS) systems are usually grouped as autoregressive and non-autoregressive systems. The autoregressive systems... exhibit certain deficiencies in robustness and lack of duration controllability. Non-autoregressive systems require explicit alignment information... which may compromise their naturalness.\" This matches the purpose at the problem-class level.\n\n### Mechanism\nThe mechanism is MaskGCT, a fully non-autoregressive two-stage masked generative codec transformer trained with mask-and-predict. Stage 1 (T2S) predicts masked semantic tokens via in-context learning without duration prediction, and Stage 2 (S2A) predicts masked acoustic tokens from an RVQ codec. Inference generates tokens of specified length in parallel with few iterative steps. Paper [1] describes the same mechanism, introducing \"Masked Generative Codec Transformer\" with a two-stage architecture: \"Stage 1 predicts masked semantic tokens via in-context learning... Stage 2 predicts masked acoustic tokens from an RVQ codec.\" This is a direct match. Additionally, paper [11] (Mask-Predict) introduces the mask-and-predict paradigm for parallel decoding, which is a foundational primitive reused here. Paper [3] (MaskGIT) applies a similar masked generative transformer mechanism in the image domain, and paper [2] (MAGNeT) applies it to audio token generation. These cross-domain examples confirm the mechanism is not novel.\n\n### Evaluation\nThe evaluation uses standard zero-shot TTS benchmarks (LibriSpeech, SeedTTS test-en, SeedTTS test-zh) and metrics (SIM-O, SMOS, CMOS, WER). Paper [1] evaluates MaskGCT on the same benchmarks and metrics, explicitly reporting results on LibriSpeech and SeedTTS. This matches the evaluation design. Paper [4] (LiveSpeech) and paper [15] (VALL-E) also evaluate zero-shot TTS systems using similar benchmarks and metrics, confirming the evaluation design is standard. No new evaluation design is introduced here.\n\n### Domain\nThe domain is zero-shot text-to-speech (TTS) / speech generation. Paper [1] explicitly operates in the same domain, as it introduces MaskGCT for zero-shot TTS. Papers [4], [7], [8], [9], [10], [12], [13], [14], and [15] also work in zero-shot TTS, confirming this is a well-established application area.\n\n---\n\nVERDICT purpose = 1  \nVERDICT mechanism = 1  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 15
+      },
+      "domain": {
+       "covered_by": 15
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE:**\nThe purpose is to build a zero-shot TTS system that avoids AR robustness/duration issues AND avoids NAR systems' need for explicit text-speech alignment supervision and phone-level duration prediction. Paper [1] is literally the same paper (MaskGCT itself), so it trivially covers this. Looking at other papers: [7] (VALL-E R) addresses robustness issues of AR TTS but uses monotonic alignment (still requires alignment). [9] (Mega-TTS) addresses controllability but uses AR/diffusion. [15] (VALL-E) is AR. No prior paper (excluding [1]) simultaneously targets both the AR robustness problem AND the NAR alignment-supervision problem as a unified purpose. However, paper [1] is the contribution itself — it must be excluded from \"prior papers\" in spirit, but it's listed. Since [1] is the contribution paper itself, I should treat it as the contribution being described. The question is whether any OTHER prior paper covers this purpose. None of the others simultaneously address both AR robustness AND NAR alignment-supervision elimination. NONE (excluding [1] as the paper itself).\n\n**MECHANISM:**\nThe mechanism is a two-stage masked generative codec transformer (mask-and-predict, non-autoregressive) for TTS: Stage 1 T2S with in-context learning (no duration prediction), Stage 2 S2A with RVQ codec tokens, parallel iterative decoding. Paper [2] (MAGNeT) uses masked generative sequence modeling with non-autoregressive transformer for audio tokens with iterative decoding steps — this is the same mask-and-predict primitive applied to audio. Paper [3] (MaskGIT) introduces the masked generative image transformer with bidirectional transformer and iterative parallel decoding — same underlying primitive. Paper [11] (Mask-Predict) introduces the mask-and-predict parallel decoding paradigm for conditional masked language models. The combination of codec tokens + two-stage + in-context learning for TTS specifically appears only in [1]. But the core mechanism primitive (masked generative transformer with iterative parallel decoding over discrete tokens) is covered by [2], [3], and [11]. Paper [2] is closest — masked generative modeling over audio tokens with iterative decoding.\n\n**EVALUATION:**\nThe evaluation uses LibriSpeech test-clean, SeedTTS test-en, SeedTTS test-zh benchmarks with metrics WER, SIM (speaker similarity), SMOS, CMOS for zero-shot TTS evaluation. Papers [15] (VALL-E), [7] (VALL-E R), [10] (VoiceCraft), [4] (LiveSpeech) all evaluate zero-shot TTS on LibriSpeech with WER and speaker similarity metrics. The evaluation design (LibriSpeech benchmark, WER + speaker similarity metrics for zero-shot TTS) is well-established in prior work. Paper [15] uses LibriSpeech with WER and speaker similarity. Paper [7] uses similar benchmarks. The design is covered.\n\n**DOMAIN:**\nZero-shot text-to-speech / speech generation is clearly covered by [15], [7], [4], [10], [9], [8], [13], [14], [12], [5] — all operate in zero-shot TTS or speech generation.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 2\nVERDICT evaluation = 15\nVERDICT domain = 15",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 1 | reason: Paper [1] explicitly states \"The autoregressive systems implicitly model duration but exhibit certain deficiencies in robustness and lack of duration controllability. Non-autoregressive systems require explicit alignment information between text and speech during training and predict durations for linguistic units (e.g. phone)\" — this is the same objective, not merely the same topic. MaskGCT (paper [1]) is the paper being evaluated, so this facet is intrinsic to it, but among the *prior* papers, none state this same combined purpose. However, re-reading the task: paper [1] IS the paper under review and its abstract directly quotes this purpose. Since the question is whether prior papers cover this facet, and no prior paper (2–24) articulates the same combined objective of avoiding AR robustness/duration issues AND NAR alignment supervision AND phone-level duration prediction simultaneously, the answer remains NONE.\n\nFACET: purpose | FINAL: NONE | reason: No prior paper among [2]–[24] articulates the same combined objective of avoiding AR robustness/duration-control problems while also eliminating the need for explicit text-speech alignment supervision and phone-level duration prediction in a zero-shot TTS system. Paper [7] (VALL-E R) addresses AR robustness but relies on monotonic alignment supervision; no paper matches all three simultaneously."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution aims to build a zero-shot TTS system that simultaneously avoids the specific drawbacks of both autoregressive models (poor robustness, lack of duration control) and standard non-autoregressive models (need for explicit alignment and duration prediction). While prior papers address subsets of these issues (e.g., [7] targets AR robustness), none articulate the same combined objective of finding a \"third way\" that sidesteps the canonical failure modes of both dominant paradigms.\n\n**mechanism**: The core technical primitive is a non-autoregressive, iterative \"mask-and-predict\" generative process applied to audio tokens from a neural codec. This is substantively equivalent to the mechanism in [2], which introduces \"MAGNeT, a masked generative sequence modeling method that operates directly over several streams of audio tokens\" using a \"single-stage, non-autoregressive transformer\" where inference \"gradually construct[s] the output sequence using several decoding steps.\" The general mask-predict-refine algorithm is also described in [11].\n\n**evaluation**: The evaluation design consists of measuring quality, similarity, and intelligibility (SIM-O, SMOS, CMOS, WER) on standard benchmarks like LibriSpeech and comparing to SOTA. This exact evaluation design is used in prior work; for example, [4] evaluates its zero-shot TTS system on \"LibriSpeech test-clean\" using metrics that include \"WER, speaker similarity (SIM-O), CMOS.\"\n\n**domain**: The application area is zero-shot text-to-speech (TTS) and speech generation. This is the explicit domain of numerous prior papers, including [4] (\"Low-Latency Zero-shot Text-to-Speech\"), [7] (\"Zero-Shot Text-to-Speech Synthesis\"), and [15] (\"Zero-Shot Text to Speech Synthesizers\").\n\nVERDICT purpose = NONE\nVERDICT mechanism = 2\nVERDICT evaluation = 4\nVERDICT domain = 4",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY [1] | reason: Paper [1] states the identical objective, quoting that \"The autoregressive systems implicitly model duration but exhibit certain deficiencies in robustness and lack of duration controllability. Non-autoregressive systems require explicit alignment information between text and speech during training and predict durations for linguistic units (e.g. phone)\"."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     9,
+     11,
+     14
+    ],
+    "mechanism": [
+     9,
+     11,
+     14,
+     18
+    ],
+    "evaluation": [
+     8,
+     9,
+     11
+    ],
+    "domain": [
+     1,
+     8,
+     19
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        9,
+        11
+       ]
+      },
+      "mechanism": {
+       "covered_by": [
+        9,
+        11,
+        18
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        9,
+        11
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        8,
+        19
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to obtain higher-quality discrete semantic representations of speech than the common k-means approach. Paper [11] (\"vq-wav2vec\") shares a substantively equivalent purpose, as it aims to learn discrete representations of audio segments for downstream tasks using self-supervised learning and quantization methods. Similarly, paper [9] (\"Vector-quantized neural networks for acoustic unit discovery\") also aims to learn discrete representations of speech, separating phonetic content from speaker-specific details, which aligns with the goal of improving discrete semantic representations. Both papers address the same problem-class level objective of improving discrete speech representations.\n\n### Mechanism\nThe contribution's mechanism involves training a VQ-VAE to quantize speech self-supervised-learning (SSL) embeddings instead of using k-means, minimizing information loss even with a single codebook. Paper [11] (\"vq-wav2vec\") uses vector quantization (VQ) to discretize SSL embeddings, which is substantively equivalent to the mechanism described here. Paper [9] also employs VQ-VAE to map continuous features to discrete codes, which matches the underlying primitive of using VQ-VAE for quantization. Paper [18] (\"Self-supervised speech unit discovery\") similarly uses VQ-VAE to learn discrete representations from speech data, aligning with the mechanism described.\n\n### Evaluation\nThe contribution's evaluation is qualitative/architectural, focusing on enabling single-codebook semantic tokens used by the T2S stage, with ablations in the appendix. Paper [11] (\"vq-wav2vec\") evaluates discrete speech representations using downstream tasks like phoneme classification and speech recognition, which involves qualitative validation of the learned representations. Paper [9] (\"Vector-quantized neural networks for acoustic unit discovery\") uses ABX tests to validate the learned discrete units, which is a standard evaluation design for speech representation quality. Both papers reuse existing evaluation designs (e.g., downstream task validation, ABX tests), making the evaluation facet covered.\n\n### Domain\nThe contribution operates in the domain of zero-shot text-to-speech (TTS) and discrete speech representation. Paper [1] (\"Zero-Shot Text-to-Speech Synthesis Conditioned Using Self-Supervised Speech Representation Model\") explicitly addresses zero-shot TTS using self-supervised speech representations, which matches the application area. Paper [8] (\"CosyVoice\") also works in the domain of zero-shot TTS, focusing on speech tokenization for LLM-based TTS models. Paper [19] (\"Speak, Read and Prompt\") similarly operates in the domain of TTS using discrete speech representations. All these papers address the same general application area.\n\n---\n\nVERDICT purpose = 9, 11  \nVERDICT mechanism = 9, 11, 18  \nVERDICT evaluation = 9, 11  \nVERDICT domain = 1, 8, 19  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 14
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Obtain higher-quality discrete semantic representations of speech than the common k-means approach**\n\nPaper [14] (RepCodec) explicitly states: \"this discretization gives rise to a loss of information, consequently impairing overall performance. To improve the performance of these discrete speech tokens, we present RepCodec, a novel speech representation codec for semantic speech tokenization... RepCodec learns a vector quantized representation space to reconstruct the input speech representation.\" This is substantively equivalent — same objective of improving quality of discrete speech representations over naive quantization approaches. Paper [10] also analyzes discrete SSL representations for quality improvement. Paper [7] (QS-TTS) also aims to improve TTS quality via VQ-S3RL.\n\n**MECHANISM: Train a VQ-VAE to quantize SSL embeddings, minimizing information loss with a single codebook**\n\nPaper [14] (RepCodec) uses \"a vector quantized representation space to reconstruct the input speech representation\" — i.e., VQ applied to SSL embeddings to minimize reconstruction loss. This is the same primitive: VQ-VAE trained to reconstruct SSL embeddings rather than raw audio, minimizing information loss. Paper [7] (QS-TTS) also uses \"Vector-Quantized Self-Supervised Speech Representation Learning\" combining VQ with SSL representations. Paper [9] uses VQ-VAE for speech discrete representations. The closest match is [14], which specifically applies VQ to SSL embeddings (not raw audio) to minimize information loss — the same mechanism.\n\n**EVALUATION: Qualitative/architectural; enables single-codebook semantic tokens used by T2S stage (ablations in appendix)**\n\nThe evaluation design here is ablation studies within a TTS system, which is a generic experimental move. However, the contribution's evaluation is described as primarily qualitative/architectural — it's validated by its role in enabling the downstream TTS system. Papers like [8], [19], [7] all use ablation studies within TTS pipelines to validate tokenization choices. This is a standard ablation design within TTS evaluation, covered by multiple prior papers (e.g., [8], [19]).\n\n**DOMAIN: Zero-shot text-to-speech / discrete speech representation**\n\nMultiple prior papers work in zero-shot TTS with discrete speech representations: [8] (CosyVoice), [19] (SPEAR-TTS), [7] (QS-TTS), [17], [20], [21]. This domain is clearly covered.\n\nVERDICT purpose = 14\nVERDICT mechanism = 14\nVERDICT evaluation = 8\nVERDICT domain = 8",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     7,
+     13
+    ],
+    "mechanism": [
+     4,
+     7
+    ],
+    "evaluation": [
+     4,
+     7,
+     13
+    ],
+    "domain": [
+     4,
+     5,
+     7,
+     8,
+     13,
+     14
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": [
+        4,
+        7
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        4,
+        5,
+        7,
+        8,
+        13,
+        14
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to demonstrate that the model generalizes beyond zero-shot TTS as a foundational speech-generation model. None of the prior papers explicitly establish or report this specific empirical relationship. While several papers address zero-shot TTS (e.g., [4], [5], [7], [8], [13], [14]), they focus on improving zero-shot TTS performance, emotional control, or specific tasks like voice conversion, rather than demonstrating generalization across multiple speech-generation tasks. No prior paper explicitly shows the model's scalability across diverse tasks such as speech translation, voice conversion, emotion control, and speech content editing.\n\n### Mechanism\nThe contribution applies MaskGCT via zero-shot or post-training to multiple speech-generation tasks (speech translation, voice conversion, emotion control, and speech content editing). Paper [4] introduces MaskGCT for zero-shot TTS, which is the same technical primitive used here. Although [4] does not apply MaskGCT to the same set of tasks, the mechanism itself — using MaskGCT for speech generation — is covered. Cross-domain equivalence applies, as the mechanism remains the same regardless of the specific tasks.\n\n### Evaluation\nThe evaluation involves a qualitative scalability study across additional tasks, with code and model checkpoints released in Amphion. Paper [4] evaluates MaskGCT for zero-shot TTS using qualitative studies, and [7] evaluates a versatile speech-generation model across multiple tasks. Both papers use similar evaluation designs (qualitative scalability studies across tasks), even though the specific tasks differ. Therefore, the evaluation design is covered.\n\n### Domain\nThe contribution operates in the domain of zero-shot text-to-speech (TTS) and speech generation. Papers [4], [5], [7], [8], [13], and [14] all address zero-shot TTS or speech generation, making the domain covered. While this contribution applies MaskGCT to additional tasks (e.g., speech translation, voice conversion, emotion control, and speech content editing), these tasks fall within the broader domain of speech generation, which is addressed by prior work.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 4  \nVERDICT evaluation = 4, 7  \nVERDICT domain = 4, 5, 7, 8, 13, 14  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 13 | reason: Seed-TTS explicitly describes itself as a \"foundational speech-generation model\" excelling in multiple tasks, including zero-shot TTS, satisfying the same objective."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Show the model generalizes beyond zero-shot TTS as a foundational speech-generation model**\n\nPaper [13] (Seed-TTS) explicitly states it \"serves as a foundation model for speech generation\" and demonstrates generalization across multiple tasks. Paper [7] (SpeechX) introduces \"a versatile speech generation model capable of zero-shot TTS and various speech transformation tasks.\" Both pursue the same objective: demonstrating that a speech model generalizes beyond zero-shot TTS as a foundation/versatile model. Paper [4] (MaskGCT itself) also mentions this but is the contribution paper. Papers [13] and [7] clearly cover this purpose.\n\n**MECHANISM: Apply MaskGCT via zero-shot or post-training to speech translation (cross-lingual dubbing), voice conversion, emotion control, and speech content editing**\n\nPaper [7] (SpeechX) applies a single model to zero-shot TTS, voice conversion, and speech editing tasks. Paper [13] (Seed-TTS) applies a foundation model to multiple speech tasks including voice conversion and emotion control. Paper [18] (SpeechComposer) unifies multiple speech tasks including TTS, voice conversion, and editing. The primitive here is \"extend/adapt a single TTS-based model to multiple downstream speech tasks (VC, emotion, editing, translation) via zero-shot or fine-tuning.\" Papers [7], [13], and [18] all employ this same primitive across overlapping task sets.\n\n**EVALUATION: Demonstrated across additional tasks (qualitative scalability study); code and model checkpoints released**\n\nThe evaluation design here is a qualitative scalability/generalization study showing a model works across multiple tasks — essentially a multi-task demonstration rather than a rigorous quantitative benchmark. Paper [7] (SpeechX) evaluates across multiple tasks with standard speech metrics. Paper [13] (Seed-TTS) similarly demonstrates generalization across tasks. The \"qualitative scalability study\" design (showing a model extends to new tasks) is used in both [7] and [13]. Code/checkpoint release is not an evaluation design. The evaluation design of demonstrating cross-task generalization is covered by [7] and [13].\n\n**DOMAIN: Zero-shot text-to-speech / speech generation**\n\nMultiple prior papers operate in this exact domain. Papers [4], [7], [13], [14], [8], [5] all work in zero-shot TTS and/or speech generation. This is clearly covered.\n\nVERDICT purpose = 7\nVERDICT mechanism = 7\nVERDICT evaluation = 13\nVERDICT domain = 4",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

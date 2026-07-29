@@ -1,0 +1,246 @@
+{
+ "paper_id": "AMegoEnlpS",
+ "title": "LoKO: Low-Rank Kalman Optimizer for Online Fine-Tuning of Large Models",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     2,
+     19
+    ],
+    "mechanism": [
+     3
+    ],
+    "evaluation": [
+     2,
+     8
+    ],
+    "domain": [
+     8
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to provide a second-order alternative to gradient-based optimizers for online fine-tuning of large models, cast as an optimal filtering/state-estimation problem. Paper [2] compares backpropagation with the Extended Kalman Filter (EKF) for training neural networks, explicitly positioning EKF as a second-order alternative to gradient-based methods. Paper [19] interprets optimization as a stochastic filtering problem, aligning with the state-estimation framing. Both papers share the same problem-class objective: leveraging second-order methods (EKF) for neural network optimization. Thus, the purpose is **covered**.\n\n### Mechanism\nThe mechanism combines LoRA's low-rank decomposition with the Extended Kalman Filter (EKF) to estimate only the low-rank trainable parameters online. Paper [3] introduces a low-rank EKF for online learning of neural networks, using a decomposition of the posterior precision matrix to reduce computational cost. Paper [23] also proposes a low-rank Kalman filter under model uncertainty, demonstrating compatibility with low-rank systems. Both papers substantively overlap with the mechanism's core primitive: combining low-rank decomposition with EKF for efficient parameter estimation. Thus, the mechanism is **covered**.\n\n### Evaluation\nThe evaluation reports convergence with fewer iterations and comparable or better performance than commonly used optimizers with LoRA. Paper [8] evaluates LoRA's convergence and performance in parameter-efficient fine-tuning, while Paper [2] compares EKF and backpropagation in terms of convergence speed and effectiveness. Both papers use similar evaluation designs: comparing convergence and performance metrics across optimizers. The evaluation design is **covered**.\n\n### Domain\nThe domain is parameter-efficient fine-tuning/optimization for large models. Paper [8] explicitly addresses LoRA for fine-tuning large-scale models, and Paper [18] discusses adaptive freezing in LoRA-based fine-tuning. Both papers operate in the same general application area of parameter-efficient fine-tuning for large models. The domain is **covered**.\n\n---\n\nVERDICT purpose = 2  \nVERDICT mechanism = 3  \nVERDICT evaluation = 8  \nVERDICT domain = 8  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 19
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\n\nThe purpose is: \"Provide a second-order alternative to gradient-based optimizers for online fine-tuning of large models, cast as an optimal filtering/state-estimation problem.\"\n\nPaper [2] compares EKF as a \"second-order training method which can be applied to the problem of learning neural network parameters.\" Paper [19] (KOALA) proposes \"to consider the loss as a noisy observation with respect to some reference optimum\" — casting optimization as a filtering/state-estimation problem for neural network training. Paper [6] explores EKF as \"a viable alternative\" to first-order algorithms for training deep neural networks. However, none of these specifically target *fine-tuning large models* as the objective — they target training from scratch. The purpose of providing a second-order optimizer *for fine-tuning large models* (not training from scratch) is partially covered by the LoRA-related papers, but those use first-order methods. The closest is [19] which casts optimization as state estimation for neural networks, and [2]/[6] which use EKF as second-order alternative. At the problem-class level — \"second-order/filtering alternative to gradient optimizers for neural network parameter learning\" — papers [2], [6], [19] cover this. The \"large model fine-tuning\" specificity belongs to domain.\n\n## Mechanism\n\nThe mechanism is: \"Combine LoRA's low-rank decomposition with EKF so that only the small set of low-rank trainable parameters is estimated online (LoRA-Kalman compatibility).\"\n\nPaper [3] proposes \"an efficient online approximate Bayesian inference algorithm... based on the extended Kalman filter (EKF), but uses a novel low-rank plus diagonal decomposition of the posterior precision matrix.\" This combines EKF with low-rank structure for online neural network learning — very close. However, [3]'s low-rank is on the *precision matrix* (covariance approximation), not on the *parameter space* via LoRA decomposition. Paper [7] addresses \"low-rank systems\" with Kalman filtering using Kronecker product decomposition. Paper [5] uses decoupled EKF for factorization models (which are inherently low-rank). The key primitive here is: restrict EKF to operate only on LoRA's low-rank parameters. Paper [3] is the closest — it combines EKF with low-rank decomposition for online neural network learning — but the low-rank structure in [3] is applied to the covariance/precision matrix, not to the parameter space itself via LoRA. No prior paper explicitly combines LoRA (low-rank parameter reparameterization) with EKF for large transformer fine-tuning. This appears genuinely absent.\n\n## Evaluation\n\nThe evaluation design: \"Converges with fewer iterations and yields better/comparable performance than commonly used optimizers with LoRA.\"\n\nThis is a standard comparative evaluation design — comparing convergence speed and final performance against baseline optimizers. Paper [2] explicitly compares EKF vs backpropagation \"with respect to their effectiveness and speed of convergence.\" Paper [6] compares EKF against first-order algorithms for image classification. Paper [27] reviews second-order vs first-order convergence comparisons. The evaluation design (compare second-order method vs first-order baselines on convergence and accuracy) is well-covered by [2] and [6].\n\n## Domain\n\nThe domain is: \"Parameter-efficient fine-tuning / optimization for large models.\"\n\nPapers [8], [12], [14], [18], [20], [21], [24], [25], [26], [29] all work in parameter-efficient fine-tuning of large models using LoRA variants. This domain is clearly covered.\n\nVERDICT purpose = 19\nVERDICT mechanism = NONE\nVERDICT evaluation = 2\nVERDICT domain = 8",
+      "stage2": "FACET: mechanism | FINAL: COVERED-BY 3 | reason: Paper [3] explicitly proposes combining EKF with low-rank decomposition of the posterior for online neural network parameter estimation — \"uses a novel low-rank plus diagonal decomposition of the posterior precision matrix\" applied to EKF-based learning — which is the same structural combination (low-rank + EKF for parameter estimation) as LoKO's core mechanism, even if LoKO specifically uses LoRA's A/B parameterization rather than a low-rank precision matrix. However, re-examining the facet-specific standard: the claimed novelty is specifically \"LoRA-Kalman compatibility\" and being \"the first to fine-tune large transformers (millions of parameters) with a Kalman filter\" — paper [3] does apply low-rank EKF to neural networks but does not use LoRA's decomposition (BA structure) nor demonstrate this on large transformers. The mechanism of combining LoRA's specific low-rank parameterization with EKF is not present in [3] or any other prior paper. FINAL: NONE | reason: No prior paper combines LoRA's specific BA low-rank parameterization with EKF to fine-tune large transformers; [3] uses a different low-rank structure (precision matrix decomposition) not LoRA's adapter structure, and none demonstrate Kalman-based fine-tuning of large transformer models."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     7,
+     34
+    ],
+    "mechanism": [
+     7
+    ],
+    "evaluation": [
+     7,
+     8
+    ],
+    "domain": [
+     8
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**Purpose:**  \nThe purpose of reducing computational complexity in Kalman iterations and making observation-noise estimation robust is covered by multiple prior papers. Paper [34] addresses computational complexity by proposing an inverse-free Kalman filter to avoid matrix inversion, which aligns with the goal of reducing complexity. Paper [7] uses exponential moving average (EMA) for adaptive noise covariance estimation, directly addressing robust observation-noise estimation. Paper [13] also discusses adaptive adjustment of noise covariance for dynamic state estimation, which overlaps with the robustness goal.  \n\n**Mechanism:**  \nThe mechanism of using a diagonal approximation of the covariance matrix \\( P \\) to reduce complexity and an exponential moving average (EMA) for observation noise covariance \\( R \\) estimation is covered. Paper [34] introduces a diagonal approximation of the covariance matrix to avoid matrix inversion, which is equivalent to the diagonal approximation in this contribution. Paper [7] uses EMA for process noise covariance estimation, which matches the EMA-based estimation of \\( R \\) in this contribution. Paper [28] also applies EMA filters to input signals for use in an extended Kalman filter, further confirming coverage of the EMA mechanism.  \n\n**Evaluation:**  \nThe evaluation design, which demonstrates improved performance without additional computational cost and minimal sensitivity to covariance initialization, is covered. Paper [34] evaluates the inverse-free Kalman filter by showing reduced computational cost and improved performance, which matches the evaluation design here. Paper [7] uses numerical simulations to validate the robustness of the EMA-based adaptive Kalman filter, aligning with the sensitivity analysis in this contribution. Paper [28] also evaluates the EMA-based extended Kalman filter for robustness in battery state-of-charge estimation, which aligns with the evaluation design.  \n\n**Domain:**  \nThe domain of parameter-efficient fine-tuning/optimization for large models is covered. Paper [8] explicitly addresses parameter-efficient fine-tuning strategies, including LoRA, which is the framework integrated into this contribution. This confirms that the domain is not novel.  \n\n**Verdict Lines:**  \nVERDICT purpose = 7  \nVERDICT mechanism = 7  \nVERDICT evaluation = 7  \nVERDICT domain = 8  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 34
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose: Reduce computational complexity of Kalman iterations and make observation-noise estimation robust.\n\nThe purpose has two parts: (1) reducing computational complexity of Kalman filter iterations, and (2) robust estimation of observation noise covariance R. Paper [9] (Kalman Optimizer) applies Kalman filtering to DNN optimization and discusses computational efficiency. Paper [34] addresses computational complexity of Kalman filter via inverse-free methods. Papers [1], [4], [13], [17], [26], [29] address adaptive/robust noise covariance estimation. However, the specific combined purpose of reducing complexity *within a LoRA/PEFT optimization context* while also making R estimation robust is partially covered: [34] covers complexity reduction, and [13]/[17]/[29] cover robust noise covariance estimation. Paper [9] specifically targets Kalman-based neural network optimization efficiency. The purpose at the problem-class level (reduce KF complexity + robust R estimation) is covered by [34] (complexity) and [13]/[17] (robust R estimation).\n\n## Mechanism: Diagonal approximation of P (quadratic→linear complexity) + EMA for R estimation + Taylor-based refinement of R, integrated into LoRA.\n\n**Diagonal approximation of P**: Paper [32] uses diagonal approximation of covariance in spectral ensemble Kalman filters. Paper [34] uses diagonal approximation of innovation covariance matrix for inverse-free KF. These cover the diagonal covariance approximation primitive.\n\n**EMA for noise covariance estimation**: Paper [7] explicitly uses exponential moving average to estimate process noise covariance via innovation term covariance. Paper [28] uses EMA in an extended Kalman filter context. Paper [10] analyzes the equivalence between EMA and Kalman filter. These cover the EMA-for-covariance-estimation primitive.\n\n**Integration into LoRA**: No prior paper combines these within LoRA specifically, but the individual primitives (diagonal P approximation, EMA for R) are covered. The Taylor-based refinement of R is not clearly covered by any prior paper. However, the core mechanism primitives (diagonal P + EMA for R) are covered by [32]/[34] and [7]/[28] respectively.\n\nThe combination integrated into LoRA is new as a whole, but the individual primitives are covered. Since the question asks whether any prior paper contains a substantively equivalent element, the diagonal approximation is in [32]/[34], and EMA for noise estimation is in [7]. The Taylor refinement is not clearly covered. Given the mechanism is a combination, I'll cite the closest matches.\n\n## Evaluation: Performance improvement without additional computational cost; sensitivity analysis of covariance initialization (CIFAR-100/ViT-B16).\n\nThe evaluation design involves: (1) benchmark performance comparison (standard classification benchmarks), (2) sensitivity/ablation analysis on initialization. Paper [8] evaluates PEFT methods on standard benchmarks. The sensitivity analysis to initialization is a generic ablation. The benchmark family (image classification with ViT) is used in [8] and [36]. The evaluation design (standard benchmark + ablation/sensitivity) is covered by [8] and [36].\n\n## Domain: Parameter-efficient fine-tuning / optimization for large models.\n\nPaper [8] explicitly addresses parameter-efficient fine-tuning design spaces including LoRA. Paper [9] applies Kalman filtering to DNN optimization. The domain of PEFT for large models is clearly covered by [8].\n\nVERDICT purpose = 34\nVERDICT mechanism = 7\nVERDICT evaluation = 8\nVERDICT domain = 8",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     4,
+     17
+    ],
+    "evaluation": [
+     2,
+     17
+    ],
+    "domain": [
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution aims to empirically demonstrate LoKO's effectiveness for online fine-tuning across vision and language classification tasks. None of the prior papers explicitly report or establish the same empirical relationship — i.e., LoKO's effectiveness for online fine-tuning across both vision and language tasks. While several papers discuss parameter-efficient fine-tuning (e.g., [2], [3], [5], [7], [14], [20]), they do not empirically demonstrate LoKO's specific effectiveness in this context. Papers like [17] and [18] discuss online continual learning and optimization but do not address LoKO or its effectiveness across these tasks.\n\n#### Mechanism:\nThe mechanism involves online fine-tuning experiments across computer vision and language modeling benchmarks. Papers such as [4], [8], [9], [17], [18], and [19] discuss online optimization or online learning algorithms, which are substantively equivalent to the mechanism of online fine-tuning. For example, [4] and [8] describe online gradient descent learning algorithms, and [18] introduces the Kalman Optimizer for consistent gradient descent, which aligns with the primitive of online fine-tuning experiments.\n\n#### Evaluation:\nThe evaluation uses benchmarks like MNIST, CIFAR-10/100, ImageNet100, SST-2, COLA, and MRPC, and validates LoKO's superiority or comparability with commonly used optimizers. Papers such as [2], [3], [5], [7], [14], and [20] use similar evaluation designs for parameter-efficient fine-tuning methods, including comparisons against standard optimizers and validation across benchmarks. For instance, [2] and [3] evaluate PEFT methods across diverse benchmarks, and [20] uses LoRA variants with rank stabilization scaling factors, which aligns with the evaluation design.\n\n#### Domain:\nThe domain is parameter-efficient fine-tuning/optimization for large models. This domain is extensively covered by prior papers such as [2], [3], [5], [7], [14], and [20], which all address parameter-efficient fine-tuning techniques for large models. For example, [2] introduces design spaces for PEFT, [3] discusses HydraLoRA for efficient fine-tuning, and [20] explores rank stabilization scaling factors for LoRA-based fine-tuning.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = 4  \nVERDICT evaluation = 2  \nVERDICT domain = 2  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly demonstrates LoKO's effectiveness for online fine-tuning across vision and language classification tasks, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 23
+      },
+      "mechanism": {
+       "covered_by": 17
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Empirically demonstrate LoKO's effectiveness for online fine-tuning across vision and language classification tasks.**\n\nThe purpose is to show that a specific optimizer (LoKO) achieves superiority or comparability with common optimizers on online fine-tuning benchmarks. Papers [2], [3], [4], [5], [10], [14], [20] all evaluate PEFT methods against baselines, but none specifically targets demonstrating effectiveness of a Kalman-filter-based online optimizer for fine-tuning. Paper [18] (Kalman Optimizer) and [23] (KOALA) demonstrate Kalman-based optimizers' effectiveness for neural network training, which is the same empirical relationship — showing a Kalman-based optimizer achieves superiority/comparability with common optimizers. Paper [23] explicitly proposes a Kalman-based optimizer and demonstrates it against standard optimizers. This is substantively equivalent to demonstrating LoKO's effectiveness against commonly used optimizers.\n\n**MECHANISM: Online fine-tuning experiments across computer vision and language modeling benchmarks.**\n\nThe mechanism is running online fine-tuning experiments across CV and NLP benchmarks. Paper [17] conducts online continual learning experiments with visual data across benchmarks. Papers [2], [3] run fine-tuning experiments across CV and NLP benchmarks. This is a standard experimental design — running a fine-tuning/training method across multiple benchmark domains — which appears in [2], [3], [17].\n\n**EVALUATION: MNIST, CIFAR-10/100, ImageNet100, SST-2, COLA, MRPC; comparing against commonly used optimizers.**\n\nThe evaluation design uses standard CV benchmarks (MNIST, CIFAR, ImageNet variants) and NLP benchmarks (GLUE tasks: SST-2, CoLA, MRPC) with optimizer comparison. Paper [2] uses GLUE benchmarks and CV benchmarks for PEFT comparison. Paper [3] uses similar benchmark families. Paper [23] (KOALA) evaluates on standard benchmarks comparing against common optimizers. The benchmark families (GLUE, CIFAR, ImageNet) and metric semantics (accuracy, comparison against baselines) are well-established and appear across [2], [3], [23].\n\n**DOMAIN: Parameter-efficient fine-tuning / optimization for large models.**\n\nPapers [2], [3], [4], [5], [10], [14], [20] all work in parameter-efficient fine-tuning and optimization for large models. This domain is clearly covered by multiple prior papers.\n\nVERDICT purpose = 23\nVERDICT mechanism = 17\nVERDICT evaluation = 2\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 17
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe purpose is to \"empirically demonstrate LoKO's effectiveness for online fine-tuning\". This is a finding about a specific relationship: a particular optimizer (LoKO, presumably a combination of LoRA and the Kalman Optimizer from [18]) is effective for a particular training regime (online fine-tuning) in the modern PEFT context. While prior work introduces the Kalman Optimizer ([18]) and others have demonstrated the effectiveness of Kalman-filter-based methods for online learning of older models like LSTMs ([9], [11], [16]), no prior paper appears to establish this specific empirical relationship for LoKO in the context of online parameter-efficient fine-tuning for modern vision and language models.\n\n**MECHANISM**\nThe mechanism is \"Online fine-tuning experiments across computer vision and language modeling benchmarks.\" This refers to the experimental design of setting up and running an online or sequential learning procedure. This experimental design is not new. For example, [17] conducts an \"Empirical Study\" on \"Online Continual Learning with Natural Distribution Shifts... with Visual Data,\" which is a substantively equivalent experimental approach. Similarly, [9] employs an \"ALGORITHM FOR LSTM-BASED ONLINE LEARNING,\" representing the same class of experimental mechanism.\n\n**EVALUATION**\nThe evaluation design consists of measuring performance on a suite of standard, named benchmarks (MNIST, CIFAR, ImageNet, GLUE subsets) and comparing the proposed method against other common optimizers. This comparative evaluation design on standard benchmark families is a widely used protocol. For instance, [17] performs an \"Empirical Study with Visual Data\" in an online setting, which necessitates using standard vision benchmarks for comparison. Likewise, the many papers on PEFT (e.g., [2], [3], [5]) implicitly rely on this same design of \"through a series of experiments\" on standard tasks to validate their contributions against baselines like LoRA.\n\n**DOMAIN**\nThe domain is \"Parameter-efficient fine-tuning / optimization for large models.\" This application area is explicitly addressed by numerous prior papers. For example, [2] is titled \"Parameter-Efficient Fine-Tuning Design Spaces,\" and [3] states its context is \"Parameter-Efficient Fine-Tuning (PEFT) techniques, such as LoRA.\" Many other papers ([5], [7], [10], [14], [20]) also operate squarely within this domain.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 17\nVERDICT evaluation = 17\nVERDICT domain = 2",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the objective to empirically demonstrate a method's effectiveness for *online fine-tuning* specifically across both *vision and language* tasks. Paper [17] is the closest, addressing \"online continual learning,\" but its empirical study is explicitly limited to \"visual data\" and does not cover language tasks. Other papers on \"online learning\" are either theoretical, for different domains, or concern training models from scratch rather than fine-tuning large pre-trained models."
+     }
+    }
+   }
+  }
+ ]
+}

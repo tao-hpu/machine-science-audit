@@ -1,0 +1,401 @@
+{
+ "paper_id": "sOdeh2WJL2",
+ "title": "Unified Multi-Task Learning & Model Fusion for Efficient Language Model Guardrailing",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     1,
+     4
+    ],
+    "evaluation": null,
+    "domain": [
+     3,
+     22
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": [
+        3,
+        22
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to provide LLM guardrailing that avoids the latency, memory, and hosting cost of LLM-based guardrails while beating state-of-the-art detection accuracy. Paper [3] (\"LionGuard\") shares the same objective of improving LLM safety via guardrails, but it focuses on localized moderation classifiers rather than addressing latency, memory, or hosting costs. Paper [22] (\"LLM-Mod\") also explores LLM-based content moderation but does not explicitly aim to reduce resource costs or improve detection accuracy beyond state-of-the-art. No prior paper explicitly combines the dual goals of reducing resource costs and achieving superior detection accuracy, making the purpose uncovered.\n\n### Mechanism\nThe mechanism involves fine-tuning sub-1GB classifiers on high-quality task-specific synthetic data produced by a custom guardrail-policy synthetic data pipeline (TaskGuard). Paper [1] (\"Synthetic Data Generation with Large Language Models for Text Classification\") discusses using LLMs to generate synthetic datasets for text classification tasks, but it does not describe a guardrail-policy pipeline or focus on sub-1GB classifiers. Paper [4] (\"Knowledge Distillation in Automated Annotation\") uses LLM-generated training labels for supervised text classification but does not involve synthetic data pipelines tailored to guardrail policies. Paper [13] (\"Synthetic Data Generation using Imitation Training\") proposes synthetic data generation for improving machine learning models but does not describe a guardrail-policy pipeline or sub-1GB classifiers. No prior paper describes a substantively equivalent mechanism, making it uncovered.\n\n### Evaluation\nThe evaluation uses public datasets and newly proposed benchmarks (CustomGuardBenchmark) to measure classifier performance against GPT-4 and Aegis-LlamaGuard. Paper [8] (\"Benchmarking GPT-4 on Algorithmic Problems\") systematically evaluates GPT-4 on various benchmarks, but the evaluation design differs as it focuses on algorithmic problems rather than guardrail benchmarks. Paper [10] (\"GPT-4 Technical Report\") evaluates GPT-4 on professional and academic benchmarks but does not use guardrail-specific benchmarks. Paper [22] (\"LLM-Mod\") evaluates LLMs for content moderation but does not use the same benchmark family or validation framework. The evaluation design appears novel, as no prior paper uses the same benchmark family or statistical framework for guardrail-specific validation.\n\n### Domain\nThe domain is LLM safety/content guardrailing. Paper [3] (\"LionGuard\") operates in the same domain, focusing on moderation classifiers for unsafe LLM outputs. Paper [22] (\"LLM-Mod\") also addresses content moderation using LLMs. Both papers work in the general application area of LLM safety/content guardrailing, making the domain covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [3, 22]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses the same objective of providing LLM guardrailing that avoids latency, memory, and hosting costs while beating state-of-the-art detection accuracy.  \n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes fine-tuning sub-1GB classifiers on high-quality task-specific synthetic data produced by a custom guardrail-policy synthetic data pipeline (TaskGuard).  \n\nFACET: evaluation | FINAL: NONE | reason: No prior paper evaluates classifiers on the same combination of 7 public datasets and 4 self-created guardrail benchmarks with the specific F1 improvements stated.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Provide LLM guardrailing that avoids the latency, memory, and hosting cost of LLM-based guardrails while beating state-of-the-art detection accuracy.**\n\nThe purpose is specifically about replacing large LLM-based guardrails with smaller, cheaper classifiers that still outperform them on safety/content moderation. Paper [3] (LionGuard) builds a moderation classifier as a guardrail against unsafe LLM outputs, but its purpose is localization (Singapore context), not cost/latency reduction vs. LLM guardrails. Paper [22] (LLM-Mod) explores using LLMs for content moderation but doesn't pursue the goal of replacing LLMs with smaller models for cost/latency reasons. No prior paper has the specific purpose of \"beat LLM-based guardrails on accuracy while being dramatically cheaper/faster.\" The closest is [3] which builds a classifier guardrail, but its purpose is contextual coverage, not cost-efficiency vs. LLM guardrails. None of the papers squarely target this objective.\n\n**MECHANISM: Fine-tune sub-1GB classifiers on high-quality task-specific synthetic data produced by a custom guardrail-policy synthetic data pipeline (TaskGuard).**\n\nThe mechanism combines: (a) synthetic data generation via LLM for a specific task, and (b) fine-tuning small classifiers on that data. Paper [1] explores using LLMs to generate synthetic datasets for text classification and fine-tuning models on them — this is substantively equivalent to the core primitive. Paper [4] also uses LLM-generated training labels to fine-tune supervised text classifiers. Paper [3] (LionGuard) fine-tunes a moderation classifier but uses human-annotated data, not synthetic. The combination of LLM-generated synthetic data + fine-tuning small classifiers is covered by [1] and [4] at the primitive level, even though the guardrail-policy pipeline framing is specific to this work.\n\n**EVALUATION: 7 public datasets + 4 self-created benchmarks, F1 comparisons against GPT-4 and Aegis-LlamaGuard, speed benchmarks.**\n\nThe evaluation design uses standard benchmark comparison with F1 metrics and speed/latency comparisons. Paper [3] (LionGuard) evaluates a moderation classifier on public datasets using F1 metrics against baseline models. Paper [22] benchmarks LLMs for content moderation on existing datasets. The use of public safety/moderation benchmarks with F1 metrics is covered by [3]. However, the self-created CustomGuardBenchmark is a newly constructed benchmark — but the evaluation design overall (F1 on public datasets, comparison to LLM baselines) is covered. The speed comparison design (14x faster) is a standard latency benchmark. The overall evaluation design is covered by [3].\n\n**DOMAIN: LLM safety / content guardrailing.**\n\nPaper [3] (LionGuard) explicitly operates in LLM safety/content moderation guardrailing. Paper [22] (LLM-Mod) also works in content moderation for LLM-adjacent contexts. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 1\nVERDICT evaluation = 3\nVERDICT domain = 3",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of providing LLM guardrailing that simultaneously avoids the latency, memory, and hosting cost of LLM-based guardrails while beating state-of-the-art detection accuracy. LionGuard [3] builds a moderation classifier for guardrailing but does not frame its purpose around avoiding LLM-based guardrail costs; LLM-Mod [22] explores LLMs for moderation but goes in the opposite direction (using LLMs, not replacing them for cost reasons). No paper quotes an equivalent combined objective."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 25
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "**purpose**: COVERED. The purpose of creating a smaller, more efficient model to replace a large, costly one is covered by the literature on knowledge distillation. For example, paper [25] states its goal is \"training a small 'student' model to replicate the strong performance of a high-capacity 'teacher' model, enabling efficient deployment in resource-constrained settings,\" which is substantively the same objective.\n\n**mechanism**: COVERED. The mechanism of using a large language model to generate synthetic data to train a smaller text classifier is covered by prior work. Paper [4] describes this exact primitive: \"augment or replace human-generated training data with surrogate training labels from generative large language models (LLMs)\" in order to \"fine-tune supervised text classifiers.\"\n\n**evaluation**: NONE. The evaluation design includes the creation and use of new benchmarks (\"4 self-created guardrail benchmarks,\" \"newly proposed CustomGuardBenchmark\"). According to the special rule for evaluation, the design is considered novel if it involves \"a newly constructed benchmark,\" which is the case here.\n\n**domain**: COVERED. The domain of LLM safety and content guardrailing is addressed by prior work. Paper [3] operates in the exact same domain, describing \"a Singapore-contextualized moderation classifier that can serve as guardrails against unsafe LLM outputs.\"\n\nVERDICT purpose = 25\nVERDICT mechanism = 4\nVERDICT evaluation = NONE\nVERDICT domain = 3",
+      "stage2": "FACET: evaluation | FINAL: NONE | reason: No prior paper presents a new model and makes the same quantitative claims of being significantly faster (e.g., 14x) while also outperforming the specific SOTA models (gpt-4, gpt-4o, Aegis-LlamaGuard) by large, specific F1 margins on a combination of public and newly created benchmarks."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": [
+     7,
+     11,
+     16,
+     18,
+     21,
+     29
+    ],
+    "domain": [
+     7,
+     11,
+     21
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        1,
+        3,
+        4,
+        5,
+        6,
+        8,
+        9,
+        12,
+        14,
+        19
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        7,
+        11,
+        16,
+        18,
+        21
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        7,
+        11,
+        21
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to improve guardrail generalization across policies with a single model rather than one model per policy. No prior paper explicitly addresses this objective. Papers like [7] (LoRA-Guard) and [11] (Auditing GPT's Content Moderation Guardrails) focus on guardrails for content moderation but do not aim to generalize across policies with a single model. Papers on multi-task learning ([1], [4], [5], [6], [8], [9], [14], [19]) aim to improve generalization across tasks but do not specifically target guardrail generalization across policies. Thus, no prior paper shares this purpose.\n\n### Mechanism\nThe mechanism involves MultiTaskGuard, a multi-task learning approach performing guardrail-specific pretraining (Guardrail Instruction Pretraining) on a large synthetically generated dataset with unique task instructions, enabling cross-task shared representations. Papers [1], [4], [5], [6], [8], [9], [14], and [19] describe multi-task learning approaches that leverage shared representations across tasks, which is substantively equivalent to the mechanism here. Additionally, [3] (Instruction-based Hypergraph Pretraining) and [12] (Instruction Matters) use instruction-based pretraining, which aligns with the guardrail-specific pretraining described in this contribution. Therefore, the mechanism is covered.\n\n### Evaluation\nThe evaluation design involves comparing MultiTaskGuard's performance against baselines like TaskGuard and RoBERTaLarge, using metrics like average F1 and classification-layer fine-tuning (CFT). Papers [7] (LoRA-Guard), [11] (Auditing GPT's Content Moderation Guardrails), and [21] (Jailbreaking Large Language Models Against Moderation Guardrails) evaluate guardrail performance using similar benchmark setups and metrics, such as classification accuracy and F1 scores. Additionally, [16] (Exploring the Role of Task Transferability in Large-Scale Multi-Task Learning) and [18] (Intermediate-Task Transfer Learning with Pretrained Language Models) use comparable evaluation designs for multi-task learning models. Thus, the evaluation design is covered.\n\n### Domain\nThe domain is LLM safety/content guardrailing. Papers [7] (LoRA-Guard), [11] (Auditing GPT's Content Moderation Guardrails), and [21] (Jailbreaking Large Language Models Against Moderation Guardrails) explicitly address LLM safety and content guardrailing, making the domain covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 1, 3, 4, 5, 6, 8, 9, 12, 14, 19  \nVERDICT evaluation = 7, 11, 16, 18, 21  \nVERDICT domain = 7, 11, 21  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses improving guardrail generalization across policies with a single model rather than one model per policy, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 29
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Improve guardrail generalization across policies with a single model rather than one model per policy.**\n\nThe purpose is specifically about replacing per-policy guardrail models with a single generalizable model. Paper [7] (LoRA-Guard) addresses guardrail adaptation for content moderation of LLMs, but its purpose is parameter efficiency on resource-constrained devices, not cross-policy generalization with a single model. Paper [11] audits GPT's content moderation guardrails but doesn't aim to improve generalization. No prior paper pursues the same objective of \"one guardrail model generalizing across multiple policies\" — the MTL papers [1,4,5,6,9,14] aim at multi-task performance improvement generally, not guardrail policy generalization specifically. The closest is the general MTL purpose of shared representations across tasks, but the specific problem-class (guardrail policy generalization) is not addressed by any prior paper.\n\n**MECHANISM: Multi-task learning with guardrail-specific pretraining on synthetically generated data with unique task instructions.**\n\nThe mechanism combines: (a) multi-task learning with shared representations [1,4,6,14 cover this], (b) instruction-based pretraining [3,12 cover instruction-based approaches], (c) synthetic data generation for instructions [27 covers synthetic instruction generation]. Paper [18] covers intermediate-task transfer learning with pretrained language models. Paper [12] covers instruction tuning for task selection. However, the specific combination of guardrail-specific pretraining on synthetic data with task-specific instructions for multi-task guardrail learning is not fully covered. That said, the underlying primitives — MTL with shared representations + instruction-based pretraining on synthetic data — are each covered. The combination as a primitive is: \"instruction-based pretraining on synthetic task-specific data for multi-task learning.\" Paper [3] does instruction-based pretraining; papers [1,4,6] do MTL with shared representations; paper [27] does synthetic instruction generation. No single paper combines all three in this way for this purpose.\n\n**EVALUATION: MultiTaskGuard vs. single-task baseline, comparison against GPT-4 and other baselines, CFT vs. full fine-tuning comparison.**\n\nThe evaluation design involves: comparing multi-task vs. single-task models (standard MTL evaluation design, covered by [1,4,6,9,14]), comparing against LLM baselines like GPT-4 (LLM-as-judge/baseline comparison, covered by [7,11]), and CFT vs. full fine-tuning comparison (covered by [29,30] which explicitly compare linear probing vs. full fine-tuning). Papers [29] and [30] directly address \"classification-layer fine-tuning vs. full fine-tuning\" as an evaluation design. The F1 metric comparison against baselines is standard NLP evaluation.\n\n**DOMAIN: LLM safety / content guardrailing.**\n\nPapers [7], [11], and [21] all operate in LLM safety/content guardrailing. Paper [7] explicitly addresses \"content moderation of large language models\" with guardrails. Paper [11] audits \"content moderation guardrails.\" Paper [21] addresses \"moderation guardrails\" for LLMs.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 29\nVERDICT domain = 7",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper addresses the specific objective of improving guardrail generalization across multiple safety policies with a single unified model. LoRA-Guard (7) addresses parameter efficiency for guardrails but not cross-policy generalization via a single model. No other paper combines guardrails + multi-policy generalization as an objective, even under different terminology.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper combines all three elements: (1) guardrail-specific pretraining, (2) on a large synthetically generated dataset, (3) with unique per-task instructions for cross-task shared representations in a safety/content-moderation context. Paper 3 does instruction-based hypergraph pretraining but in a graph domain. Papers 1/4/6/14 cover multi-task learning with shared representations but not guardrail pretraining on synthetic data with task instructions. No quoted phrase from any prior paper captures this combined mechanism."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 29
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "**purpose**: COVERED by [1], [4], and others. The contribution's purpose to \"improve guardrail generalization across policies with a single model\" is a specific application of the general purpose of multi-task learning, which is to \"improve the performance of multiple related learning tasks by leveraging useful information among them\" [4].\n\n**mechanism**: NONE. The mechanism is a specific combination of primitives: multi-task learning, intermediate-task pretraining, synthetic data generation, and instruction formatting. While prior work covers these primitives individually (e.g., [1] for MTL, [18] for intermediate-task training, [27] for synthetic instruction generation, [12] for instruction tuning), no single paper describes the combined pipeline of using synthetically generated, instruction-formatted data for multi-task intermediate pretraining.\n\n**evaluation**: COVERED by [29]. The evaluation design includes comparing the performance of full fine-tuning against a more parameter-efficient alternative (classification-layer fine-tuning). This is a standard evaluation design, used in [29] which compares \"full fine-tuning\" against \"linear probing\" to validate claims about feature distortion.\n\n**domain**: COVERED by [7], [11], [21]. These papers all operate in the same general application area of LLM safety and content moderation. For instance, [7] introduces \"LoRA-Guard: Parameter-Efficient Guardrail Adaptation for Content Moderation of Large Language Models,\" and [11] audits \"Content Moderation Guardrails.\"\n\nVERDICT purpose = 1\nVERDICT mechanism = NONE\nVERDICT evaluation = 29\nVERDICT domain = 7",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes the specific mechanism of a multi-task learning approach that performs guardrail-specific pretraining using a large, synthetically generated, instruction-formatted dataset. While individual components like multi-task learning, intermediate-task pretraining, and synthetic instruction generation exist in isolation in papers like [1], [18], and [27] respectively, no paper combines them into the proposed \"Guardrail Instruction Pretraining\" mechanism for building guardrail models."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     5
+    ],
+    "mechanism": [
+     3,
+     9
+    ],
+    "evaluation": [
+     1,
+     5
+    ],
+    "domain": [
+     1,
+     5
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to \"squeeze further guardrail performance by optimally merging single-policy and multi-policy models without manual/grid hyperparameter tuning.\" Paper [5] (\"EMR-Merging\") shares a similar purpose, as it aims to improve model merging performance without requiring additional tuning or training, which aligns with the goal of optimizing guardrail performance without manual hyperparameter tuning. Paper [15] (\"DELLA-Merging\") also addresses reducing interference in model merging, which indirectly supports improved guardrail performance. Both papers target the same problem-class level objective of improving model merging performance.\n\n### Mechanism\nThe contribution mechanism is \"UniGuard: a search-based model merging (MMS) that frames the search over merge weightings as a multi-armed bandit (Thompson Sampling) maximizing held-out F1, integrated with TIES/SLERP/MSA/DARE merging strategies.\" Paper [3] (\"Neural Thompson Sampling\") introduces Thompson Sampling for contextual multi-armed bandit problems, which is substantively equivalent to the bandit-based search mechanism used in UniGuard. Paper [5] (\"EMR-Merging\") and Paper [15] (\"DELLA-Merging\") both discuss model merging strategies, including TIES and DARE, which are explicitly integrated into UniGuard. Paper [6] (\"Partitioned Surrogates and Thompson Sampling for Multidisciplinary Bayesian Optimization\") also applies Thompson Sampling in a search-based optimization context, making it relevant to the mechanism.\n\n### Evaluation\nThe evaluation facet involves combining the best MultiTaskGuard and TaskGuard models to achieve SoTA guardrailing performance, using MMS with existing SoTA merging methods to increase model performance. Paper [5] (\"EMR-Merging\") evaluates merging methods to achieve high-performance multitask capabilities, which matches the evaluation design of validating merging strategies for performance improvement. Paper [15] (\"DELLA-Merging\") similarly evaluates merging techniques (e.g., MAGPRUNE) for multitask performance, aligning with the evaluation design of UniGuard. Both papers use comparable evaluation setups (benchmarking merging methods for multitask performance), making the evaluation facet covered.\n\n### Domain\nThe domain facet is \"LLM safety / model merging.\" Paper [1] (\"TIES-Merging\") and Paper [5] (\"EMR-Merging\") both operate in the domain of model merging, specifically targeting multitask capabilities, which is substantively equivalent to the application area of UniGuard. Paper [15] (\"DELLA-Merging\") also addresses model merging techniques, further confirming coverage of the domain facet.\n\n---\n\nVERDICT purpose = 5  \nVERDICT mechanism = 3  \nVERDICT evaluation = 5  \nVERDICT domain = 5  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: \"Squeeze further guardrail performance by optimally merging single-policy and multi-policy models without manual/grid hyperparameter tuning.\"**\n\nThe purpose is to improve model merging performance by automating the search over merge weightings (avoiding manual/grid search). Paper [5] (EMR-Merging) addresses \"tuning-free high-performance model merging\" and explicitly targets avoiding \"requiring tuning by additional data or training.\" Paper [9] (MeGA) uses genetic algorithms to \"optimize weight combinations\" for merging multiple pre-trained networks. Both share the objective of finding optimal merge configurations without manual tuning. Paper [5] is the closest match — same objective of automated, high-performance model merging without manual hyperparameter tuning.\n\n**MECHANISM: \"Search-based model merging (MMS) framing merge weighting search as a multi-armed bandit (Thompson Sampling) maximizing held-out F1, integrated with TIES/SLERP/MSA/DARE merging strategies.\"**\n\nThe mechanism combines two primitives: (1) multi-armed bandit / Thompson Sampling for search, and (2) model merging strategies (TIES, DARE, etc.). Paper [1] covers TIES-Merging. Paper [15] covers DELLA/DARE merging. Paper [3] covers Neural Thompson Sampling for bandit problems. Paper [9] (MeGA) uses a search algorithm (genetic algorithm) over merge weightings to optimize model combination — this is the same primitive of \"search over merge weight configurations to maximize performance,\" just using GA instead of Thompson Sampling. However, no prior paper combines Thompson Sampling specifically with model merging weight search. The closest is [9] (search-based merging optimization) and [3] (Thompson Sampling). The combination of TS as the search mechanism over merge weightings is not present in any single prior paper. Paper [9] covers search-based merging but uses GA, not TS. The underlying primitive \"use a bandit/search algorithm to find optimal merge weights\" is covered by [9] at the level of \"search over merge weightings to optimize performance.\"\n\n**EVALUATION: \"UniGuard combines best MultiTaskGuard and TaskGuard models to achieve SoTA guardrailing; MMS with existing SoTA merging methods increases model performance (Algorithm 1, Thompson Sampling with TIES).\"**\n\nThe evaluation design involves: comparing merged models against baselines on a held-out benchmark using F1/performance metrics, and ablating merging strategies. Papers [1], [5], [9], [15] all evaluate model merging methods by comparing merged model performance against baselines on downstream benchmarks using standard accuracy/performance metrics. This is the same evaluation design (benchmark comparison + ablation of merging strategies). Paper [5] and [1] both use this design.\n\n**DOMAIN: \"LLM safety / model merging.\"**\n\nModel merging is covered by [1], [5], [9], [11], [12], [15]. LLM safety as an application area — none of the prior papers explicitly work in LLM safety/guardrailing. However, the domain facet rule says it's covered if any prior paper works in the same general application area. The model merging papers ([1], [5], [9]) work in the model merging area. LLM safety is a distinct application area not addressed by any prior paper listed. But \"model merging\" as a domain IS covered. Since the domain is \"LLM safety / model merging,\" and model merging is covered by [1], [5], [9], etc., the domain is covered.\n\nVERDICT purpose = 5\nVERDICT mechanism = 9\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     18,
+     23
+    ],
+    "mechanism": [
+     12,
+     23
+    ],
+    "evaluation": [
+     15,
+     18
+    ],
+    "domain": [
+     14,
+     23
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 18
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 18
+      },
+      "domain": {
+       "covered_by": 23
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to characterize the drivers of guardrail performance, specifically comparing synthetic versus real training data. Paper [18] discusses the \"real-versus-synthetic imagery training data reality gap\" and analyzes the performance differences between models trained on synthetic versus real data, which aligns with the purpose of understanding the impact of synthetic versus real data on model performance. Paper [23] also investigates factors influencing safety fine-tuning, including synthetic data generation, which overlaps with the purpose of analyzing synthetic data's role in guardrail performance. Both papers establish empirical relationships between synthetic and real data performance, covering the purpose.\n\n### Mechanism\nThe contribution employs a comprehensive analysis varying (1) number of training samples, (2) synthetic vs real training data, (3) merge search parameters, and (4) number of active fine-tuning parameters with/without pretraining. Paper [23] uses synthetic data generation frameworks to model interactions between task-specific factors, which aligns with varying synthetic vs real data and task parameters. Paper [12] explores parameter-efficient fine-tuning design spaces, including varying active fine-tuning parameters, which matches the mechanism of analyzing fine-tuning parameters. Paper [18] analyzes statistical metrics and measures for synthetic vs real data, which partially overlaps with the mechanism of varying synthetic vs real data. Together, these papers cover the mechanism.\n\n### Evaluation\nThe contribution evaluates synthetic task-specific guardrail data yielding models that outperform training on real data, with significant improvements across tasks. Paper [18] uses statistical metrics and measures to evaluate the performance gap between synthetic and real data, which matches the evaluation design of comparing synthetic and real data performance. Paper [23] evaluates synthetic data generation frameworks for safety fine-tuning, which aligns with the evaluation design of assessing synthetic data's impact on task-specific performance. Paper [15] evaluates synthetic data in multimodal relation extraction tasks, which also involves comparing synthetic and real data performance. These papers collectively cover the evaluation design.\n\n### Domain\nThe contribution operates in the domain of LLM safety/content guardrailing. Paper [23] explicitly addresses safety fine-tuning for LLMs, which directly overlaps with the domain. Paper [14] discusses inference-time guardrails for LLMs, which also falls within the domain of LLM safety. Paper [7] explores synthetic data generation for text classification tasks using LLMs, which is adjacent to the domain of LLM safety. These papers cover the domain.\n\n---\n\nVERDICT purpose = 18  \nVERDICT mechanism = 12  \nVERDICT evaluation = 18  \nVERDICT domain = 23  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 15
+      },
+      "domain": {
+       "covered_by": 14
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Characterize the drivers of guardrail performance, notably synthetic vs real training data.**\n\nThe purpose is to understand what drives guardrail (LLM safety classifier) performance, specifically comparing synthetic vs. real training data in that context. Paper [23] studies \"What Makes and Breaks Safety Fine-tuning\" using synthetic data to understand factors that make models safe — this is closely related but focuses on mechanistic understanding of safety fine-tuning broadly, not specifically guardrail performance drivers. Paper [7] studies \"effectiveness of LLM-generated synthetic data in supporting model training\" across classification tasks, examining when synthetic data helps vs. hurts. However, none of these papers specifically characterize drivers of *guardrail* performance (synthetic vs. real training data for content moderation/guardrailing). Paper [23] is the closest — it explicitly studies what makes safety fine-tuning work using synthetic data frameworks — but its purpose is mechanistic understanding of safety alignment, not guardrail classifier performance characterization. The specific relationship \"synthetic data outperforms real data for guardrail training\" is not established by any prior paper.\n\n**MECHANISM: Comprehensive analysis varying (1) number of training samples, (2) synthetic vs real training data, (3) which parameters are selected during merge search, (4) number of active fine-tuning parameters with/without pretraining.**\n\nThis mechanism involves a multi-factor ablation study combining data quantity, data source (synthetic/real), parameter selection in model merging, and fine-tuning parameter count. Paper [12] explores \"parameter-efficient fine-tuning design spaces\" with systematic variation of design choices. Paper [10] covers model soups/weight averaging with hyperparameter variation. Paper [25] covers merging by matching models in task parameter subspaces. The combination of merge-search parameter selection with synthetic/real data comparison is not found as a unified analysis protocol in any single prior paper. However, as a generic ablation/sensitivity analysis design, this is a standard experimental shape. The specific combination (merge search + synthetic vs. real + parameter count) is not found together, but individually these are standard analysis moves.\n\n**EVALUATION: Synthetic task-specific guardrail data yields models that outperform training on real data.**\n\nThis is a finding/result about synthetic data outperforming real data. Paper [15] explicitly reports \"Training on Synthetic Data Beats Real Data in Multimodal Relation Extraction\" — the same evaluation design (compare model trained on synthetic vs. real data, measure downstream task performance). Paper [3] also explores \"potential of synthetic data to replace real data\" with similar comparative evaluation. Paper [7] evaluates LLM-generated synthetic data vs. real data for text classification. These all use the same evaluation design: train on synthetic, train on real, compare performance metrics. This design is clearly covered.\n\n**DOMAIN: LLM safety / content guardrailing.**\n\nPaper [14] explicitly addresses \"Safe and Helpful LLMs\" with \"Inference-Time Guardrails.\" Paper [23] addresses \"Safety Fine-tuning\" for LLMs. Paper [20] addresses \"NLP Content Moderation.\" These papers clearly operate in the LLM safety/content guardrailing domain.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 15\nVERDICT domain = 14",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of characterizing drivers of guardrail performance (synthetic vs. real training data for safety/content moderation guardrails). Paper [23] studies safety fine-tuning mechanistically but focuses on task/concept interactions, not synthetic vs. real data as a performance driver for guardrails. Papers [3], [8], [18] compare synthetic vs. real data but in entirely different domains (vision, RF signals) with no connection to guardrail performance characterization.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper conducts a comprehensive ablation varying all four dimensions simultaneously—(1) number of training samples, (2) synthetic vs. real training data, (3) parameter selection during merge search, and (4) number of active fine-tuning parameters with/without pretraining—in the context of guardrail or safety classifier development. Paper [12] explores parameter-efficient fine-tuning design spaces but does not address merge search parameter selection or synthetic vs. real data. Paper [10] covers model soups/weight averaging but not this combination of variables."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 23
+      },
+      "mechanism": {
+       "covered_by": 23
+      },
+      "evaluation": {
+       "covered_by": 15
+      },
+      "domain": {
+       "covered_by": 14
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: Paper [23] covers this purpose, as it conducts a \"Mechanistic Study\" to understand \"the underlying factors that make models safe via safety fine-tuning,\" which is substantively equivalent to characterizing the drivers of guardrail performance.\n\nmechanism: Paper [23] covers this mechanism design, as its \"Mechanistic Study\" of safety fine-tuning implies a comprehensive analysis of varying factors, which is the same standard analysis protocol (a multi-factor controlled study) used by the contribution.\n\nevaluation: Paper [15] covers this evaluation design, as it compares models trained on synthetic versus real data to see which performs better on a downstream task, finding that \"Training on Synthetic Data Beats Real Data in Multimodal Relation Extraction\".\n\ndomain: Papers [14] and [23] cover this domain. The contribution is in \"LLM safety / content guardrailing,\" and [14] explicitly addresses \"Inference-Time Guardrails (ITG)\" while [23] studies \"Safety fine-tuning\" for LLMs.\n\nVERDICT purpose = 23\nVERDICT mechanism = 23\nVERDICT evaluation = 15\nVERDICT domain = 14",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

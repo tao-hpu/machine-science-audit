@@ -1,0 +1,223 @@
+{
+ "paper_id": "zgs450VzkU",
+ "title": "Test-Time RAG: Enhancing Long Context Understanding in LLMs with Retrieval-Augmented Mechanisms",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     23
+    ],
+    "mechanism": [
+     5,
+     7,
+     29
+    ],
+    "evaluation": null,
+    "domain": [
+     1,
+     13,
+     14,
+     23
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 23
+      },
+      "mechanism": {
+       "covered_by": [
+        5,
+        7,
+        29
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        5,
+        7
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        13,
+        14,
+        23
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to address the limitations of classical Retrieval-Augmented Generation (RAG) systems, which require pre-indexing and cannot handle large-scale dynamic or privacy-sensitive contexts that emerge only at test time. Additionally, it aims to mitigate quality degradation and high latency issues in long-context models.  \n- **Paper [1]** discusses RAG systems and their limitations in unseen scenarios but does not explicitly address dynamic or privacy-sensitive contexts at test time.  \n- **Paper [14]** focuses on privacy issues in RAG systems but proposes synthetic data as a solution, which does not align with the contribution's purpose of handling dynamic contexts without pre-indexing.  \n- **Paper [23]** introduces a pre-trained IR system without an explicit index, which aligns with the contribution's purpose of avoiding pre-indexing.  \n- **Paper [31]** addresses privacy concerns in IR but does not tackle dynamic contexts or latency issues in long-context models.  \n\n**Verdict:** Paper [23] contains a substantively equivalent purpose.\n\n---\n\n### Mechanism\nThe contribution introduces three test-time compute techniques:  \n1. **Conditional embeddings** dynamically generate per-query document representations using a bidirectional encoder (DistilBERT) conditioned on the query prefix and mask pooling.  \n2. **Iterative query rewriting** uses an LLM to iteratively refine queries based on whether the answer is found in the context.  \n3. **Conditional compute** allocates processing depth based on query type.  \n- **Paper [2]** discusses query embedding pruning for dense retrieval but does not dynamically generate per-query embeddings conditioned on the query prefix.  \n- **Paper [5]** and **Paper [7]** both discuss query rewriting techniques for retrieval-augmented systems, with iterative refinement mechanisms similar to the contribution's iterative query rewriting.  \n- **Paper [26]** and **Paper [29]** discuss conditional compute mechanisms in the context of Mixture-of-Experts models, which align with the contribution's conditional compute approach of allocating processing depth based on query type.  \n\n**Verdict:** Papers [5], [7], and [29] contain substantively equivalent mechanisms.\n\n---\n\n### Evaluation\nThe contribution evaluates its techniques qualitatively and through mechanism descriptions, emphasizing their application during inference without additional integration costs, making them suitable for privacy-sensitive domains like healthcare and finance.  \n- **Paper [1]** evaluates RAG systems but does not use the same evaluation design.  \n- **Paper [5]** and **Paper [7]** evaluate query rewriting techniques qualitatively and quantitatively, which aligns with the evaluation design of the contribution.  \n- **Paper [14]** evaluates privacy-preserving RAG systems but does not use the same evaluation design.  \n- **Paper [23]** evaluates a pre-trained IR system without an explicit index, but its evaluation design does not match the contribution's focus on inference-time application without integration costs.  \n\n**Verdict:** Papers [5] and [7] contain substantively equivalent evaluation designs.\n\n---\n\n### Domain\nThe contribution operates in the domain of long-context LLMs and retrieval-augmented generation (RAG).  \n- **Paper [1]** and **Paper [13]** both work in the RAG domain, addressing retrieval-augmented systems for LLMs.  \n- **Paper [14]** addresses privacy issues in RAG systems, which also falls within the same domain.  \n- **Paper [23]** operates in the domain of IR systems without explicit indexing, which overlaps with retrieval-augmented generation.  \n\n**Verdict:** Papers [1], [13], [14], and [23] contain substantively equivalent domain coverage.\n\n---\n\n### Final Verdicts\nVERDICT purpose = 23  \nVERDICT mechanism = 5, 7, 29  \nVERDICT evaluation = 5, 7  \nVERDICT domain = 1, 13, 14, 23  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE:**\nThe contribution's purpose is to solve the problem of classical RAG requiring pre-indexing (making it unsuitable for test-time-only, dynamic, or privacy-sensitive contexts) and long-context LLMs suffering quality degradation and high latency. I need to find a paper addressing the same objective: enabling retrieval/QA over contexts that only appear at test time without pre-indexing.\n\nPaper [14] addresses privacy issues in RAG via synthetic data, but its purpose is privacy preservation through data substitution, not eliminating pre-indexing. Paper [23] \"DynamicRetriever: A Pre-trained Model-based IR System Without an Explicit Index\" — this directly targets eliminating the explicit index in retrieval. However, its framing is about model-based indexing (encoding docs into model parameters), not test-time dynamic contexts. Still, \"without an explicit index\" is close. Paper [13] (LoRAG) focuses on iterative refinement for quality, not on the pre-indexing problem. No paper squarely addresses \"contexts only available at test time + privacy sensitivity + long-context degradation\" as a combined purpose. Paper [23] is the closest but targets a different mechanism (model-as-index). The purpose as stated — handling dynamic/privacy-sensitive contexts unavailable at index time — is not squarely covered.\n\n**MECHANISM:**\n(1) Conditional embeddings: query-conditioned document representations using a bidirectional encoder with query prefix + masked pooling. Paper [2] uses multiple embedded representations per query for dense retrieval. Paper [16] (ColBERT-PRF) uses contextual embeddings for query/doc. Paper [20] (DeepCT) uses BERT to generate context-aware term weights. None of these generate per-query document embeddings conditioned on the query at test time using a prefix+masking approach. Paper [12] uses text embeddings for retrieval but not query-conditioned. This specific primitive (conditioning document encoding on query via prefix) is not covered.\n\n(2) Iterative query rewriting with LLM-based answer verification: Papers [7] (Rewrite-Retrieve-Read), [1] (RQ-RAG), [5] (LLM-aided query rewriting), [10] (MaFeRw), [13] (LoRAG iterative loop) all cover iterative query rewriting with LLM feedback. Paper [7] explicitly introduces \"Rewrite-Retrieve-Read\" with LLM-based rewriting. Paper [13] uses iterative loops with retrieval. The mechanism of \"LLM judges if answer is present, else rewrites query iteratively\" is substantively covered by [7] and [13].\n\n(3) Conditional compute by query type: Paper [26] (MoE with Expert Choice Routing) and [28/29] (AdaMoE) allocate compute adaptively per token/input. This is a form of conditional compute, though in a different architectural context.\n\nSince the mechanism is a combination of three techniques, and at least one (iterative query rewriting with LLM verification) is clearly covered by [7]/[13], I'll note the closest match. The conditional embeddings primitive is not clearly covered. The overall mechanism bundle is partially covered but the key novel primitive (conditional embeddings via query-prefix + masked pooling) is not found.\n\n**EVALUATION:**\nThe contribution's evaluation is described as qualitative + mechanism description — no benchmarks, no metrics, no experimental results. This is essentially a position/proposal paper with no empirical evaluation design. None of the prior papers use \"no evaluation\" as a design. However, the special rule says mark NONE only when the evaluation design is genuinely new. Since there's no evaluation design at all (purely qualitative), this doesn't match any prior paper's evaluation design. This is effectively NONE — there's no evaluation design to match.\n\n**DOMAIN:**\nThe domain is long-context LLM / retrieval-augmented generation. Papers [1], [7], [10], [13], [14] all work in RAG with LLMs. This is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 7\nVERDICT evaluation = NONE\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: Paper [14] addresses RAG privacy via synthetic data substitution, not the specific combination of no-pre-indexing + dynamic/test-time-only context + long-context quality degradation as a unified problem. No paper frames the exact objective of replacing pre-indexed RAG and long-context models simultaneously for privacy-sensitive dynamic contexts appearing only at test time.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper contains a named design or explicit claim matching \"all three techniques applied at inference time with zero integration overhead and no pre-indexing, suitable for medical/financial privacy scenarios\" as a stated evaluative claim or design characterization. Paper [14] touches privacy in RAG but does not make this zero-overhead, no-pre-index, inference-only claim."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 23
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution aims to solve the problems of pre-indexing, handling dynamic/private test-time contexts, and performance degradation in long-context models for RAG. The problem of creating retrieval systems that do not require a static, pre-built index is explicitly addressed by [23], which proposes \"A Pre-trained Model-based IR System Without an Explicit Index\". The challenge of handling private data in RAG is the central purpose of [14], which aims at \"Mitigating the Privacy Issues in Retrieval-Augmented Generation (RAG)\".\n\n**mechanism**: The contribution proposes three techniques. (1) Conditional embeddings are substantively equivalent to the core idea of index-free retrieval models like [23] that compute representations at query time. (2) Iterative query rewriting using an LLM is a well-established technique, explicitly described in [7] as a \"Rewrite-Retrieve-Read\" framework and in [5] which proposes \"utilizing large language models (LLMs) as query rewriters\". (3) Conditional compute based on query type is an application of adaptive computation, a primitive found in Mixture-of-Experts models like [29], which uses \"Token-Adaptive Routing\" to vary the number of experts used per token.\n\n**evaluation**: The evaluation is a qualitative description of the method's purported benefits (inference-time application, no pre-indexing, suitability for private data). This is not a formal evaluation design (e.g., a benchmark, metric, or protocol) reused from prior work, nor is it a genuinely new evaluation design. According to the rules, this does not constitute coverage by a prior paper, but it also does not constitute a novel evaluation contribution; it is the absence of a formal evaluation design.\n\n**domain**: The contribution is situated in \"长上下文 LLM / 检索增强生成\" (Long-context LLMs / Retrieval-Augmented Generation). This is the explicit domain of numerous prior papers, including [1] (\"Retrieval Augmented Generation\"), [7] (\"Retrieval-Augmented Large Language Models\"), and [13] (\"Loops On Retrieval Augmented Generation\").\n\nVERDICT purpose = 23\nVERDICT mechanism = 7\nVERDICT evaluation = NONE\nVERDICT domain = 1",
+      "stage2": "FACET: evaluation: 定性+机制描述：三技术均在推理时应用、对现有模型零额外集成开销；无需预索引，适合医疗/金融等隐私场景 | FINAL: NONE | reason: The core claims are the combination of \"no pre-indexing required\" and \"zero additional integration overhead\". While papers [23] and [30] discuss systems \"without an explicit index\", they replace it with a neural indexer that requires extensive, corpus-specific training, which is a form of pre-computation and is not a zero-overhead add-on. Other papers discussing privacy ([14], [31]) do so with different mechanisms (e.g., synthetic data, differential privacy) that do not rely on the specific architectural claim of forgoing pre-indexing entirely. No prior paper makes this specific combination of claims."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "resource",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     2
+    ],
+    "mechanism": [
+     4,
+     11
+    ],
+    "evaluation": [
+     10,
+     11
+    ],
+    "domain": [
+     1,
+     2,
+     6,
+     11
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to integrate three techniques into an end-to-end system and demonstrate its scalability to handle long contexts up to millions of tokens for knowledge-intensive QA tasks. This objective is **not explicitly covered** by any prior paper. While many papers address aspects of retrieval-augmented generation (RAG) or long-context processing, none explicitly aim to integrate multiple techniques into a unified system with a focus on scalability to such extreme token lengths. For example, [1], [2], and [13] discuss improving RAG systems for long contexts, but they do not explicitly target the integration of multiple techniques into a single scalable system.\n\n### Mechanism\nThe mechanism involves the TTRAG integrated system, which uses conditional compute to classify queries, applies conditional embedding filtering, iteratively rewrites queries, and performs iterative retrieval until a golden context is found, followed by generation. This mechanism is **partially covered** by prior work:\n- [14] and [17] discuss conditional computation, which aligns with the \"conditional compute\" aspect of the mechanism.\n- [4] and [16] describe iterative refinement and query rewriting, which align with the iterative query rewriting and retrieval components.\n- However, no single prior paper combines all these elements into a unified system as described in the contribution. The closest match is [4], which integrates iterative loops into RAG, but it does not include conditional compute or embedding filtering.\n\n### Evaluation\nThe evaluation involves demonstrating improvements on QA benchmarks (HotpotQA, QASPER, Natural Questions), testing scalability to context lengths of 1M–9.6M tokens, and achieving high exact match (EM) scores on 20M-token retrieval tasks. This evaluation design is **covered** by prior work:\n- [10] introduces a long-context benchmark for QA tasks, which aligns with the use of QA benchmarks in the contribution.\n- [13] evaluates RAG systems with long-context LLMs, which aligns with the scalability testing in the contribution.\n- [19] and [24] also evaluate RAG systems on long-context tasks, using similar benchmark families and metrics (e.g., EM scores).\nThus, the evaluation design is not novel, as it reuses existing benchmark families and metrics.\n\n### Domain\nThe domain is knowledge-intensive QA and long-context tasks. This domain is **covered** by prior work:\n- [1], [2], [13], and [19] all address knowledge-intensive QA and long-context processing, which are the same general application areas as the contribution.\n- While the specific datasets or tasks may differ, the domain itself is not new.\n\n---\n\n**Final Verdicts:**\nVERDICT purpose = NONE  \nVERDICT mechanism = 4  \nVERDICT evaluation = 10  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly integrates three techniques into an end-to-end system and demonstrates scalability to million-token long-context processing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose: 把三种技术整合为端到端系统并证明其可扩展到百万级 token 的长上下文处理\n\nThe purpose is to integrate three techniques into an end-to-end system scalable to million-token long-context processing. Paper [2] (MemoRAG) explicitly addresses \"processing long contexts\" with RAG for \"computationally expensive\" long contexts. Paper [13] (LongRAG) addresses enhancing RAG with long-context LLMs. Paper [19] (ChatQA 2) bridges gaps in \"long context understanding and retrieval-augmented generation.\" However, none of these specifically target the integration of conditional compute + conditional embedding + iterative rewriting as a unified system for million-scale token contexts. The closest is [2] and [13] for long-context RAG scalability, but the specific purpose of integrating these three primitives into a scalable end-to-end system is partially covered by [2] and [13] at the problem-class level (scale RAG to very long contexts).\n\nPaper [11] (Adaptive-RAG) covers the purpose of adapting retrieval to query complexity, which partially overlaps. At the problem-class level, \"scale RAG to handle very long contexts efficiently\" is covered by [2] and [13].\n\n## Mechanism: TTRAG 集成系统：conditional compute 先分类 query，多数走 conditional embedding 过滤→迭代改写→重检索直到找到 golden context 再生成\n\nBreaking this down:\n- **Conditional compute for query classification**: Paper [11] (Adaptive-RAG) classifies queries by complexity to route them to different retrieval strategies — \"Learning to Adapt Retrieval-Augmented Large Language Models through Question Complexity.\" This is the same primitive: classify query → route to different compute paths.\n- **Conditional embedding filtering**: Paper [3] (xRAG) uses document embeddings as features to filter/compress context. Paper [1] addresses flexible context adaptation. These are related but not identical to using embeddings as a pre-filter gate.\n- **Iterative rewriting → re-retrieval until golden context found**: Papers [4] (LoRAG), [7] (RQ-RAG), [5] (MaFeRw), [18] (Query Rewriting for RAG), [16] (IterCQR), [24] (Active RAG) all cover iterative retrieval/rewriting loops. Paper [8] (CRAG) covers corrective retrieval with re-retrieval when documents are irrelevant.\n\nThe full pipeline combination is novel as an integrated system, but each primitive is covered. The conditional compute classification is in [11], iterative rewriting/re-retrieval is in [4]/[7]/[8]/[18]/[24]. The specific combination of all three as one pipeline is not explicitly covered, but the mechanism primitives individually are. Since the question asks about substantive equivalence of the underlying primitive, and the mechanism is a pipeline of three primitives each covered separately, I'll note the closest matches.\n\n## Evaluation: HotpotQA, QASPER, Natural Questions (exact match); context lengths 1M–9.6M tokens; KV retrieval 20M token context; conditional compute token reduction\n\n- HotpotQA, Natural Questions with exact match: standard benchmarks used in [7], [8], [11], [13], [20], [24] among others. Paper [11] uses \"HotpotQA\" and \"exact match.\" Paper [20] (Self-RAG) uses similar benchmarks.\n- QASPER is used in some RAG papers.\n- The evaluation design (standard QA benchmarks + exact match metric) is clearly covered by [11], [20], [8].\n- The long-context scaling evaluation (1M+ tokens) is used in [10] (long-context benchmark) and [13] (LongRAG).\n\nThe evaluation design is covered by existing papers using the same benchmark families and metric semantics.\n\n## Domain: 知识密集型 QA / 长上下文任务\n\nKnowledge-intensive QA and long-context tasks are the domain of [2], [7], [8], [11], [13], [19], [20], [24] among many others. This is clearly covered.\n\nVERDICT purpose = 2\nVERDICT mechanism = 11\nVERDICT evaluation = 11\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": [
+        4,
+        11
+       ]
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": [
+        6,
+        11
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to integrate multiple techniques into an end-to-end system and demonstrate its scalability for long-context processing. This falls under the general objective of improving the performance and efficiency of RAG on long-context tasks, which is covered by prior work such as [2] which aims at \"Boosting Long Context Processing with Global Memory-Enhanced Retrieval Augmentation\".\n\n**mechanism**: The TTRAG system is an integration of three main primitives: (1) conditional compute to classify and route queries, (2) iterative query rewriting, and (3) re-retrieval. Each of these primitives is substantively equivalent to mechanisms in prior work. For example, [11] introduces \"Adaptive-RAG\" which adapts the retrieval process based on \"Question Complexity,\" equivalent to conditional compute. [4] introduces \"Loops On Retrieval Augmented Generation (LoRAG)\" which uses an \"iterative loop mechanism\" for refinement, equivalent to the iterative re-retrieval.\n\n**evaluation**: The evaluation design uses standard question-answering benchmarks (HotpotQA, QASPER, Natural Questions) with a standard metric (exact match). The protocol of measuring performance and efficiency (token reduction) against increasing context length is a standard design for validating long-context systems, as exemplified by the work in [10] which focuses on \"Benchmarking Long-Context LLMs with Extended Multi-Doc QA\".\n\n**domain**: The application area is knowledge-intensive question answering and long-context tasks. This is a well-established domain for RAG research and is explicitly addressed by numerous prior papers, including [6] (\"question-answering (QA) over long documents\") and [11] (\"enhancing response accuracy in several tasks, such as Question-Answering (QA)\").\n\nVERDICT purpose = 2\nVERDICT mechanism = 4, 11\nVERDICT evaluation = 10\nVERDICT domain = 6, 11",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

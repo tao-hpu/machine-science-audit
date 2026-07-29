@@ -53,16 +53,37 @@ def crossref_abs(doi):
         return ''
 
 
+_OA_KEY_DEAD = [False]
+def _oa_params(p):
+    """2026-07-08:premium key 配额耗尽时 OpenAlex 对带 key 请求一律 429,无 key
+    polite pool 正常 —— key 一旦 429 永久降级(与 retrieve_s2_slow 同教训)。"""
+    p = dict(p); p['mailto'] = 'tan1@my.hpu.edu'
+    if ENV.get('OPENALEX_API_KEY') and not _OA_KEY_DEAD[0]:
+        p['api_key'] = ENV['OPENALEX_API_KEY']
+    return p
+
+def _oa_get(url_base, p):
+    p = _oa_params(p)
+    try:
+        return http(f'{url_base}?{urllib.parse.urlencode(p)}')
+    except urllib.error.HTTPError as e:
+        if e.code == 429 and 'api_key' in p:
+            _OA_KEY_DEAD[0] = True
+            p.pop('api_key')
+            try:
+                return http(f'{url_base}?{urllib.parse.urlencode(p)}')
+            except Exception:
+                return None
+        return None
+    except Exception:
+        return None
+
 def oa_by_doi(doi):
     """OpenAlex 兜底。已知风险:个别记录 title 对但 abstract 被污染成别的论文
     (实测 H2O 2306.14048 挂着 Hyde-IKV 摘要),故仅作 arXiv/Crossref 之后的最后备选。"""
-    p = {'select': 'abstract_inverted_index'}
-    if ENV.get('OPENALEX_API_KEY'): p['api_key'] = ENV['OPENALEX_API_KEY']
-    try:
-        w = http(f'https://api.openalex.org/works/doi:{urllib.parse.quote(doi)}?{urllib.parse.urlencode(p)}')
-        return deinvert(w.get('abstract_inverted_index'))
-    except Exception:
-        return ''
+    w = _oa_get(f'https://api.openalex.org/works/doi:{urllib.parse.quote(doi)}',
+                {'select': 'abstract_inverted_index'})
+    return deinvert(w.get('abstract_inverted_index')) if w else ''
 
 
 def norm(t):
@@ -70,16 +91,12 @@ def norm(t):
 
 
 def oa_by_title(title):
-    p = {'filter': f'title.search:{title[:200]}', 'per-page': '3',
-         'select': 'title,abstract_inverted_index'}
-    if ENV.get('OPENALEX_API_KEY'): p['api_key'] = ENV['OPENALEX_API_KEY']
-    try:
-        res = http(f'https://api.openalex.org/works?{urllib.parse.urlencode(p)}')
-        for w in res.get('results', []):
-            if norm(w.get('title') or '') == norm(title):
-                return deinvert(w.get('abstract_inverted_index'))
-    except Exception:
-        pass
+    res = _oa_get('https://api.openalex.org/works',
+                  {'filter': f'title.search:{title[:200]}', 'per-page': '3',
+                   'select': 'title,abstract_inverted_index'})
+    for w in (res or {}).get('results', []):
+        if norm(w.get('title') or '') == norm(title):
+            return deinvert(w.get('abstract_inverted_index'))
     return ''
 
 

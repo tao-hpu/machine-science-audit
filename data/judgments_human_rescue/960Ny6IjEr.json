@@ -1,0 +1,167 @@
+{
+ "paper_id": "960Ny6IjEr",
+ "title": "Low-Rank Compression of Language Models Via Gradient-Based Rank Selection",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     2
+    ],
+    "mechanism": null,
+    "evaluation": [
+     2,
+     5
+    ],
+    "domain": [
+     3
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to solve per-layer rank selection for low-rank (SVD) LLM compression without requiring post-compression fine-tuning, jointly optimizing compression rate and downstream accuracy across layers. Paper [2] explicitly addresses the problem of determining the optimal rank for each layer in neural network compression, describing it as a mixed discrete-continuous optimization problem. Paper [6] also tackles joint rank selection for low-rank compression, emphasizing efficient rank-selection methods. Both papers share the same objective at the problem-class level: optimizing per-layer rank selection for low-rank compression. Therefore, the purpose is **covered**.\n\n### Mechanism\nThe mechanism involves applying SVD to each target weight matrix, inserting a learnable masking layer in the reconstruction, and training only the mask parameters on a small calibration set to progressively increase compression while minimizing divergence of intermediate activations from the original model. Paper [5] uses SVD for LLM compression but focuses on truncation-aware singular value selection and updating compressed weights, which differs from the learnable masking approach. Paper [9] discusses learning pruning masks with stochastic optimization, which is conceptually similar to the learnable masking layer but operates in a different context (pruning rather than rank selection). No prior paper combines SVD with learnable masking layers and total-variation loss for contiguous singular-value selection. Thus, the mechanism is **uncovered**.\n\n### Evaluation\nThe evaluation uses a calibration set of 3,000 documents and compares performance against fine-tuning-free rank-selection baselines (STRS, ARS, LLM-Pruner) on Llama-2-7B/13B, Llama-3-8B, and Gemma-7B for common-sense reasoning and open-domain QA. Papers [2], [5], and [6] all evaluate rank-selection methods for low-rank compression using standard benchmarks and metrics, such as accuracy improvements on downstream tasks. While the specific datasets and models differ, the evaluation design (benchmark-based comparison of rank-selection methods) is substantively equivalent. Therefore, the evaluation is **covered**.\n\n### Domain\nThe domain is LLM compression via low-rank decomposition. Papers [3], [5], and [6] explicitly address LLM compression using low-rank methods, making this application area well-established. Although the contribution targets specific models (e.g., Llama-2-13B, Llama-3-8B), this is a change of instance, not a new domain. Thus, the domain is **covered**.\n\n---\n\nVERDICT purpose = 2  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 2  \nVERDICT domain = 3  ",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper explicitly describes the combination of SVD-based low-rank compression with learnable masking layers, progressive calibration training, and TV loss for contiguous singular-value selection."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Solve per-layer rank selection for low-rank (SVD) LLM compression without any post-compression fine-tuning, jointly optimizing compression rate and downstream accuracy across layers.**\n\nPaper [2] explicitly addresses \"determining what the optimal rank of each layer is\" for neural net compression, described as \"an architecture search problem with one hyperparameter per layer\" with \"a mixed discrete-continuous optimization jointly over the ranks.\" Paper [3] addresses \"low-rank compression of LLMs\" with focus on \"the key to low-rank compression lies in low-rank factorization\" and rank selection. Paper [5] addresses SVD-based LLM compression. However, the specific constraint of *no post-compression fine-tuning* is a distinguishing element — paper [5] explicitly notes \"lack of update on the compressed weights after SVD truncation\" as a limitation it tries to address (meaning it does use updates). Paper [2] is about general neural nets with training involved. The closest match to the fine-tuning-free joint rank selection purpose for LLMs is paper [3], which applies Bayesian optimization to rank selection in LLMs. But the \"without fine-tuning\" constraint is central. Paper [5] covers SVD LLM compression but uses weight updates. The purpose at the problem-class level — \"jointly select per-layer ranks for SVD compression to optimize accuracy\" — is covered by [2] and [3].\n\n---\n\n**MECHANISM: SVD on weight matrices + learnable masking layer in reconstruction + train only mask parameters on calibration set + progressive compression + TV loss for contiguous singular-value selection.**\n\nPaper [12] (SMCP) uses soft masking during pruning to allow pruned channels to adaptively return — a learnable mask trained during compression. Paper [9] studies \"learning pruning masks by optimizing the expected loss of stochastic pruning masks.\" Paper [23] uses differentiable/learnable structure search for pruning. However, none of these combine: (1) SVD decomposition specifically, (2) a masking layer inserted into the SVD reconstruction, (3) training only mask parameters on a calibration set, (4) TV loss for contiguous singular value selection. The TV loss for encouraging contiguous selection of singular values is a distinctive primitive not found in any prior paper. The combination of SVD + learnable mask + TV regularization for contiguous selection appears genuinely absent. Paper [5] uses SVD for LLMs but with weight updates and truncation-aware data whitening, not a masking layer with TV loss. No prior paper combines these specific primitives.\n\n---\n\n**EVALUATION: Calibration set of 3,000 documents; comparison against fine-tuning-free baselines (STRS, ARS, LLM-Pruner) on Llama-2/3, Gemma on commonsense reasoning and open-domain QA benchmarks.**\n\nThe evaluation design uses standard NLP benchmarks (MMLU, BoolQ, OpenbookQA, NQ-Open, PIQA) — a well-established benchmark family for LLM evaluation. Papers [3] and [5] both evaluate SVD-based LLM compression on standard LLM benchmarks with similar metrics. The design of \"evaluate compressed LLM on commonsense reasoning / QA benchmarks, compare against baselines at fixed compression ratios\" is used in [3] and [5]. This is a covered evaluation design.\n\n---\n\n**DOMAIN: LLM compression / low-rank decomposition.**\n\nPapers [3] and [5] both work in LLM compression via low-rank/SVD decomposition. This domain is clearly covered.\n\n---\n\nVERDICT purpose = 2\nVERDICT mechanism = NONE\nVERDICT evaluation = 5\nVERDICT domain = 3",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper combines all of: SVD decomposition with an inserted learnable masking layer over singular values, training only mask parameters on a calibration set, minimizing intermediate activation divergence, and a total-variation loss to encourage contiguous singular-value selection. SVD-LLM [5] uses SVD with weight updates but no learnable mask layer or TV loss; [2] learns ranks via mixed optimization but not via a masking layer over singular values with TV regularization; no other paper contains this specific combination even under different terminology."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     12,
+     19
+    ],
+    "mechanism": null,
+    "evaluation": [
+     12,
+     19,
+     23
+    ],
+    "domain": [
+     1,
+     5,
+     11,
+     12,
+     19
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 19
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": [
+        12,
+        19,
+        23
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        5,
+        11,
+        12,
+        19
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to escape the restriction of prior methods that keep only the top-k singular values (magnitude-ordered), enabling more flexible compression. Paper [19] discusses truncation-aware singular value decomposition for LLM compression, which addresses the issue of truncating smaller singular values leading to higher compression loss. While [19] focuses on improving compression by addressing truncation, it does not explicitly aim to escape the restriction of top-k singular values or enable \"any-k\" selection. No other paper explicitly addresses this purpose.  \n**Conclusion:** NONE.\n\n---\n\n### Mechanism\nThe contribution introduces a learnable singular-value masking linear parameter vector that selects the best \"any-k\" singular values in a fine-tuning-free setting. Paper [19] uses SVD for LLM compression but focuses on truncation-aware methods and updating compressed weights post-SVD truncation, which differs from the learnable masking mechanism here. Paper [2] discusses learning matrix singular values with neural networks, but it does not propose a masking mechanism for \"any-k\" selection. Paper [3] introduces sparse learnable masks for feature selection, which is conceptually similar to the masking mechanism but operates in a different context (feature selection, not singular value selection). Despite the conceptual similarity, no prior paper directly matches the mechanism of learnable singular-value masking for \"any-k\" selection.  \n**Conclusion:** NONE.\n\n---\n\n### Evaluation\nThe evaluation includes ablations analyzing the TV loss contribution and demonstrates practical performance improvements from selectively reducing individual-layer ranks. Paper [23] uses total variation regularization in spectral unmixing, which matches the use of TV loss as a regularization term. Paper [12] discusses layer-selective rank reduction in LLMs, which aligns with the evaluation's focus on selectively reducing individual-layer ranks. Paper [19] evaluates SVD-based compression methods for LLMs, including layer-wise rank allocation, which is consistent with the evaluation design here. These prior papers collectively cover the evaluation design, even though the specific benchmarks and objects differ.  \n**Conclusion:** [12], [19], [23].\n\n---\n\n### Domain\nThe contribution operates in the domain of LLM compression and low-rank decomposition. Papers [1], [5], [11], [12], and [19] all address LLM compression or low-rank decomposition, making this domain well-covered.  \n**Conclusion:** [1], [5], [11], [12], [19].\n\n---\n\n### Verdicts\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = [12], [19], [23]  \nVERDICT domain = [1], [5], [11], [12], [19]  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 19 | reason: \"Truncation-aware Singular Value Decomposition for Large Language Model Compression\" explicitly addresses escaping the restriction of prior methods that keep only the top-k singular values by proposing a method that avoids truncating smaller singular values, enabling more flexible compression.  \nFACET: mechanism | FINAL: NONE | reason: No prior paper describes a learnable singular-value masking linear parameter vector for selecting 'any-k' singular values in a fine-tuning-free setting; closest works use different mechanisms (e.g., RNNs/GRUs or fixed configurations)."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 12
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Escape the restriction of top-k (magnitude-ordered) singular value selection, enabling more flexible/any-k compression.**\n\nPaper [12] (LASER) demonstrates that \"selectively removing higher-order components\" (i.e., removing top singular values, not just keeping them) improves LLM performance — this directly motivates escaping the top-k restriction. Paper [18] discusses learned subproblem selection. Paper [1] discusses adaptive low-rank compression of LLMs. However, the specific purpose of \"enabling any-k selection beyond magnitude-ordered top-k\" is most directly addressed by [12], which shows that keeping top-k by magnitude is suboptimal and that selective rank reduction (including removing high-magnitude components) improves performance. This is substantively equivalent to the purpose of escaping top-k magnitude ordering. Paper [19] (SVD-LLM) also notes that \"truncating smaller singular values may lead to higher compression loss,\" implicitly motivating non-magnitude-ordered selection.\n\n**MECHANISM: Learnable singular-value masking via a linear parameter vector that selects any-k singular values in a fine-tuning-free setting; lighter than ARS (RNN/GRU-based).**\n\nPaper [3] (SLM) proposes \"Sparse Learnable Masks\" for end-to-end feature selection — a learnable sparse mask that selects which features to keep. This is the same primitive (learnable binary/soft mask over a set of components) applied to a different domain. However, SLM is for feature selection in general ML, not singular value selection. Paper [6] addresses learning/updating singular values via optimization. Paper [7] covers singular value thresholding. None of the prior papers describe a learnable linear masking vector specifically over singular values for LLM compression in a fine-tuning-free setting. The combination of (a) learnable mask, (b) applied to singular values, (c) fine-tuning-free, (d) any-k selection is not covered. Paper [3]'s learnable sparse mask is the closest primitive match at the mechanism level.\n\n**EVALUATION: Ablations on TV loss contribution; any-k vs top-k comparison; per-layer rank analysis across architectures.**\n\nPaper [12] performs per-layer rank reduction analysis and shows layer-selective rank reduction improves 0-shot performance — directly matching the \"selectively reducing individual-layer ranks can improve 0-shot performance\" finding cited as consistent with Sharma et al. 2024. Paper [1] performs ablations on LLM compression components. The evaluation design (ablation of loss components, per-layer analysis, 0-shot benchmark evaluation) is a standard design used across multiple prior papers [1], [12], [19]. The \"TV loss ablation\" is a specific component ablation, and per-layer rank analysis appears in [12] and [19].\n\n**DOMAIN: LLM compression / low-rank decomposition.**\n\nPapers [1], [5], [12], [18], [19] all work in LLM compression with low-rank decomposition. This domain is clearly covered.\n\nVERDICT purpose = 12\nVERDICT mechanism = NONE\nVERDICT evaluation = 12\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes a learnable singular-value masking linear parameter vector that selects any-k (not top-k) singular values in a fine-tuning-free setting lighter than RNN/GRU-based approaches. Paper [12] (LASER) removes higher-order components but uses fixed truncation, not a learnable mask vector. Paper [19] (SVD-LLM) truncates smaller singular values deterministically. No paper uses the specific \"learnable mask over singular values for any-k selection without fine-tuning\" mechanism described."
+     }
+    }
+   }
+  }
+ ]
+}

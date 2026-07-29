@@ -1,0 +1,287 @@
+{
+ "paper_id": "mjtCqmujYP",
+ "title": "Reward-Augmented Data Enhances Direct Preference Alignment of LLMs",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     9
+    ],
+    "mechanism": [
+     12,
+     27,
+     28
+    ],
+    "evaluation": [
+     3,
+     24
+    ],
+    "domain": [
+     3,
+     24
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to fix limitations of direct alignment algorithms (e.g., DPO) that ignore response quality scores, leading to unnecessary unlearning of high-quality rejected responses, indiscriminate learning of low-quality chosen responses, and poor generalization to sparse highest-reward responses. None of the prior papers explicitly address this specific objective. While several papers (e.g., [3], [6], [9], [19]) discuss challenges in DPO or RLHF, they focus on issues like catastrophic forgetting, dataset quality, or hyperparameter sensitivity rather than the specific problem of response quality score integration and its impact on alignment. Thus, no prior paper shares this purpose.\n\n### Mechanism\nThe mechanism involves a data relabeling method that constructs a reward-augmented dataset by conditioning preference pairs on judge-model quality scores, using a goal-conditioned reward \\( R(x, y, g) = -(g - r(x, y))^2 \\). This relabeling approach is conceptually similar to methods in papers like [2], [12], [14], [17], and [26], which use goal-conditioned relabeling or reward shaping in reinforcement learning tasks. For example, [12] discusses goal-conditioned supervised learning with iterative relabeling, and [17] uses hindsight relabeling for hierarchical RL. While these papers operate in different domains (e.g., robotics or hierarchical RL), the underlying primitive of relabeling data based on a goal-conditioned reward is substantively equivalent. Therefore, the mechanism is covered.\n\n### Evaluation\nThe evaluation design involves applying DPO on reward-augmented UltraFeedback across multiple LLMs and measuring performance improvements on benchmarks like AlpacaEval 2.0, MT-Bench, Arena-Hard-Auto, and task accuracy on GSM8K, GPQA, MUSR, TruthfulQA, BBH, and ARC. Papers like [3], [6], [9], [19], and [24] evaluate DPO or RLHF methods using similar benchmark families (e.g., AlpacaEval, MT-Bench) and metrics (e.g., win rates, accuracy improvements). While the specific datasets and models differ, the evaluation design — using standard preference alignment benchmarks and metrics — is not novel. Thus, the evaluation facet is covered.\n\n### Domain\nThe domain is LLM preference alignment. Many prior papers, including [3], [4], [5], [6], [9], [19], and [24], operate in this same general application area. Although the contribution targets specific sub-problems (e.g., sparse highest-reward responses), this is a narrower instance within the established domain of LLM preference alignment. Therefore, the domain facet is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 12  \nVERDICT evaluation = 3  \nVERDICT domain = 3  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses the limitations of direct alignment algorithms (e.g., DPO) regarding response quality scores, unnecessary unlearning of high-quality rejected responses, indiscriminate learning of low-quality chosen responses, and poor generalization to sparse highest-reward responses."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": 27
+      },
+      "evaluation": {
+       "covered_by": 24
+      },
+      "domain": {
+       "covered_by": 24
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE:**\nThe contribution's purpose is to fix specific DPO limitations: unnecessary unlearning of high-quality rejected responses, indiscriminate learning of low-quality chosen responses, and poor generalization to sparse highest-reward responses.\n\nPaper [9] (Filtered DPO) explicitly addresses dataset quality issues in DPO, confirming that text quality in preference datasets affects DPO performance. Paper [19] (β-DPO) addresses data quality impact on DPO performance. Paper [25] (Robust Preference Optimization) addresses DPO's tendency to overfit and degenerate. However, none of these specifically target the asymmetric problem of \"unlearning high-quality rejected / indiscriminate learning of low-quality chosen\" as a unified objective. Paper [9] is closest — it filters low-quality pairs to address quality issues in DPO — but the specific framing of conditioning on reward scores to handle both ends of the quality spectrum simultaneously is not quite the same. Still, at the problem-class level, paper [9] pursues the same objective: fix DPO's insensitivity to response quality scores in preference data. This is substantively equivalent at the problem-class level.\n\n---\n\n**MECHANISM:**\nThe mechanism is: relabel preference pairs by conditioning on judge-model quality scores using a goal-conditioned reward R(x,y,g) = -(g - r(x,y))^2, creating reward-augmented pairs; plug-and-play with any direct alignment algorithm.\n\nPaper [20] (Decision Transformer) uses return-conditioning — conditioning a policy on desired return levels as inputs — which is the same underlying primitive of \"condition on a scalar reward/return goal.\" Paper [28] (Upside-Down RL) explicitly maps reward commands to actions via supervised learning, treating rewards as inputs. Paper [26] (Generalized Hindsight) relabels data by reassigning goals/tasks to make low-reward data informative for other tasks. Paper [29] (Hindsight Experience Replay) relabels goals in replay buffers. Paper [27] (DPA) uses multi-objective reward vectors to condition LLM alignment. \n\nThe specific combination of (1) data relabeling + (2) goal-conditioning on reward scores + (3) applied to preference pairs for LLM alignment is most closely matched by paper [27], which conditions LLM alignment on reward vectors, and by papers [20]/[28] for the return-conditioning primitive. The goal-conditioned reward relabeling primitive (relabeling data with reward goals) is covered by [26] and [29] at the mechanism level. Paper [27] applies directional/multi-objective reward conditioning to LLM preference alignment specifically.\n\n---\n\n**EVALUATION:**\nThe contribution evaluates on AlpacaEval 2.0, MT-Bench, Arena-Hard-Auto (LC win rate), plus GSM8K/GPQA/MUSR/TruthfulQA/BBH/ARC, across multiple LLM backbones (Zephyr-7B, Mistral-7B, etc.).\n\nPaper [24] (Zephyr) uses AlpacaEval and MT-Bench for evaluating DPO-based alignment on Zephyr-7B. Paper [27] (DPA) evaluates on AlpacaEval 2.0 and MT-Bench. Paper [19] (β-DPO) evaluates on AlpacaEval and MT-Bench. These are the same benchmark families and metric semantics (LC win rate on AlpacaEval, MT-Bench scores).\n\n---\n\n**DOMAIN:**\nThe domain is LLM preference alignment. Papers [3], [4], [5], [6], [8], [9], [15], [16], [19], [24], [25], [27] all work in LLM preference alignment.\n\n---\n\nVERDICT purpose = 9\nVERDICT mechanism = 27\nVERDICT evaluation = 24\nVERDICT domain = 24",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": 28
+      },
+      "evaluation": {
+       "covered_by": 24
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: COVERED by [9] and [19]. The contribution's purpose is to fix limitations of DPO related to ignoring response quality scores, which is a specific instance of the broader problem of DPO's sensitivity to data quality. Prior work shares this objective: [9] \"addresses the issue of text quality within the preference dataset by focusing on direct preference optimization,\" and [19] addresses DPO's sensitivity \"to the quality of the preference data.\"\n\nmechanism: COVERED by [2], [20], and [28]. The core mechanism is relabeling data by conditioning on a desired reward/goal. This is a well-established primitive in reinforcement learning, described in [2] as \"Reward Relabelling,\" and more broadly framed in [28] as \"Upside Down RL\" which \"uses rewards as task-defining inputs,\" and in [20] \"Decision Transformer\" which casts RL as \"conditional sequence modeling\" on returns.\n\nevaluation: COVERED by [24]. The evaluation design uses standard LLM-as-judge benchmarks (AlpacaEval 2.0, MT-Bench) and academic capability benchmarks (GSM8K, TruthfulQA, etc.) to compare a new alignment method against a baseline. This is a standard validation design in the field, used for instance by [24] which evaluates its model \"on two benchmarks of chat capabilities: MT-Bench and AlpacaEval\" and also reports on TruthfulQA.\n\ndomain: COVERED by [3], [4], [5], [6], and many others. The application area is LLM preference alignment. Numerous prior papers operate in this exact domain, for example [3] which aims to \"improve the alignment of large language models (LLMs) with human values\" using DPO, and [4] which proposes \"Preference Ranking Optimization for Human Alignment.\"\n\nVERDICT purpose = 9\nVERDICT mechanism = 28\nVERDICT evaluation = 24\nVERDICT domain = 3",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": [
+     3,
+     13,
+     26
+    ],
+    "domain": [
+     2,
+     3,
+     11,
+     12
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to provide a theoretical justification for reward-augmented Direct Preference Optimization (DPO). Paper [3] discusses theoretical paradigms for understanding learning from human preferences, including DPO, but does not establish the same theoretical justification or convergence guarantees. Paper [12] conducts a theoretical analysis of DPO's optimization objective but focuses on verbosity effects rather than global convergence or suboptimality decay. Paper [17] explores ternary preferences in DPO but does not address theoretical guarantees for reward augmentation. None of the prior papers substantively establish the same theoretical relationship.\n\n### Mechanism\nThe contribution uses theoretical analysis to prove global convergence to the optimal policy with suboptimality decaying at order \\( N^{-1/2} \\). Paper [13] provides gap-dependent bounds for offline RL, which are related to sample complexity but do not address reward-augmented DPO or the specific convergence rate. Paper [26] proves convergence for actor-critic methods, but this is unrelated to DPO or reward augmentation. Paper [24] discusses convergence guarantees in optimization but does not address RL or DPO. None of the prior papers provide a substantively equivalent mechanism.\n\n### Evaluation\nThe contribution uses formal theorem and proof (Appendix A.4/A.5) and qualitative comparison to prior goal-conditioned RL results. Paper [13] uses formal theorems and proofs for gap-dependent bounds in offline RL, which matches the evaluation design (formal theorem and proof) but applies to a different object. Paper [26] also uses formal proofs for convergence guarantees in RL, which matches the evaluation design but applies to actor-critic methods. Both papers demonstrate the same evaluation design (formal theorem and proof), making this facet covered.\n\n### Domain\nThe contribution operates in the domain of LLM preference alignment and RL theory. Paper [2] and Paper [3] both address DPO in the context of LLM preference alignment, making the domain covered. Additionally, Paper [13] and Paper [26] address RL theory, which overlaps with the broader domain of the contribution.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 13  \nVERDICT domain = 2  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 3 | reason: Paper [3] provides theoretical justification for reward-augmented DPO, stating: \"Recently, Direct Preference Optimisation (DPO) has been proposed as an approach that bypasses the second approximation [reward model generalization] and directly optimizes preferences, providing a theoretical basis for its efficacy.\"\n\nFACET: mechanism | FINAL: NONE | reason: No paper explicitly proves global convergence to the optimal policy with suboptimality decaying at order N^{-1/2}, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**PURPOSE: Provide theoretical justification for reward-augmented DPO.**\n\nThe purpose is to prove that a specific reward-augmented DPO method converges globally to the optimal policy. Paper [3] (\"A General Theoretical Paradigm to Understand Learning from Human Preferences\") explicitly provides theoretical analysis of DPO and RLHF, studying convergence and optimality properties. Paper [14] (\"Rethinking Goal-conditioned Supervised Learning\") provides theoretical justification for GCSL, showing it optimizes a lower bound. Paper [22] studies problem-dependent generalization error bounds. However, the specific purpose of providing theoretical justification for *reward-augmented DPO* (a specific variant combining reward signals with DPO) is not directly addressed by any prior paper. Paper [3] covers DPO theory but not reward-augmented DPO specifically. The gap being closed — justifying reward augmentation in DPO — is distinct from general DPO theory. No prior paper pursues the same objective of theoretically justifying reward-augmented DPO with global convergence guarantees. NONE.\n\n**MECHANISM: Theoretical analysis proving global convergence to optimal policy with N^{-1/2} suboptimality decay.**\n\nPaper [3] provides theoretical analysis of DPO/RLHF but focuses on different properties (approximation errors, not global convergence rates). Paper [14] proves GCSL optimizes a lower bound (local improvement, not global convergence). Paper [22] studies generalization error bounds with near-optimal rates in statistical learning. Paper [10] covers provable RL with statistical efficiency. Paper [13] studies gap-dependent bounds for offline RL with O(1/ε) rates. None of these specifically prove global convergence of a reward-augmented DPO-style algorithm with N^{-1/2} suboptimality decay. The mechanism is a novel convergence proof for this specific algorithmic combination. NONE.\n\n**EVALUATION: Formal theorem and proof; qualitative comparison showing stronger results than prior goal-conditioned RL-with-supervised-learning.**\n\nThe evaluation design here is a formal mathematical proof (theorem + proof in appendix) combined with a qualitative comparison to prior theoretical results. Paper [14] uses exactly this design: formal theorems proving properties of GCSL and comparing to prior theoretical results. Paper [3] similarly uses formal theorems and proofs to analyze DPO/RLHF and compares to prior theoretical frameworks. The design of \"formal theorem + proof + comparison to prior theoretical guarantees\" is standard in theoretical ML papers and appears in [3] and [14]. This evaluation design is covered.\n\n**DOMAIN: LLM preference alignment / RL theory.**\n\nPaper [3] works directly in LLM preference alignment and RL theory (DPO, RLHF). Paper [2], [11], [12], [17] all work in LLM preference alignment/DPO. This domain is clearly covered by multiple prior papers.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 3\nVERDICT domain = 3",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper provides theoretical justification specifically for reward-augmented DPO; [3] analyzes DPO theoretically but does not address reward augmentation, and no other paper matches this specific objective.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper proves global convergence to the optimal policy with suboptimality decaying at order N^{-1/2} for a reward-augmented DPO setting; [3] and [10] contain convergence analyses but neither establishes this specific rate for this specific algorithm."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        13,
+        26
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        13,
+        26
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        2,
+        11,
+        12
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "purpose: NONE. The contribution is a finding, establishing a specific theoretical result: that reward-augmented DPO achieves global convergence with a specific rate. While prior work like [3] and [12] provides theoretical analyses of DPO, none establishes this particular relationship for this variant of DPO. Per the finding-specific rule, the purpose is uncovered because no prior paper reports or establishes the same theoretical result.\n\nmechanism: COVERED. The mechanism is a \"theoretical analysis proving global convergence... with a suboptimality... rate\". This is a standard analysis method in RL theory. For example, [13] conducts a theoretical analysis to derive an improved sample complexity \"rate... of O(1/epsilon)\", and [26] provides a \"Convergence Proof for Actor-Critic Methods\". These papers use the same primitive of formal convergence and rate analysis.\n\nevaluation: COVERED. The evaluation design is a \"formal theorem and proof\". This is a standard validation framework in theoretical machine learning. Numerous prior papers use this design, for instance [26] is explicitly a \"Convergence Proof for Actor-Critic Methods\", and [13] presents a \"systematic study on gap-dependent sample complexity\" which relies on formal proofs for its claims.\n\ndomain: COVERED. The domain is \"LLM preference alignment / RL theory\". Multiple prior papers operate in this exact area. For example, [2] (\"Direct Preference Optimization with an Offset\"), [11] (\"Filtered Direct Preference Optimization\"), and [12] (\"Length Desensitization in Direct Preference Optimization\") all work directly on DPO for LLM preference alignment.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 13, 26\nVERDICT evaluation = 13, 26\nVERDICT domain = 2, 11, 12",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the objective of providing a theoretical justification for a hybrid method that combines the DPO loss with an explicit, external reward function. Paper [3] provides a theoretical framework to unify DPO and reward-model-based RLHF, but its objective is to understand how both methods use the same underlying preference data, not to justify augmenting DPO with a separate, external reward signal."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     6
+    ],
+    "evaluation": [
+     14
+    ],
+    "domain": [
+     1,
+     14
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to demonstrate that gains in preference alignment stem from better utilization of preference data (mitigated unlearning), not merely from a larger dataset. Paper [13] discusses unlearning factual knowledge in LLMs, focusing on mitigating the influence of specific training data, which aligns with the idea of \"mitigated unlearning.\" However, it does not establish the same empirical relationship between preference data utilization and alignment gains. No prior paper explicitly reports or establishes the same relationship.\n\n### Mechanism\nThe contribution uses ablation studies (e.g., DPO on half the data with reward augmentation, implicit-reward augmentation for binarized datasets, log-probability analysis of high-quality rejected responses, and varying AI-feedback quality). Paper [14] identifies core aspects of preference-based learning, including preference data and learning algorithms, and disentangles their impact, which overlaps with the ablation approach. Paper [6] uses implicit rewards in a bootstrapping fashion, which aligns with implicit-reward augmentation. Paper [7] discusses reject penalties in DPO training, which relates to the log-probability analysis of rejected responses. These papers collectively cover the mechanism.\n\n### Evaluation\nThe contribution evaluates DPO performance using implicit-reward augmentation, log-probability restoration, and varying reward model quality. Paper [14] discusses evaluation designs for preference-based learning, including ablation studies and comparisons of reward models, which match the evaluation design. Paper [6] evaluates DPO performance with implicit rewards, and Paper [7] evaluates reject penalties in DPO training. These papers collectively cover the evaluation design.\n\n### Domain\nThe contribution operates in the domain of LLM preference alignment. Papers [1], [2], [6], [7], [8], and others address LLM preference alignment, including methods like RLHF and DPO. This domain is well-covered by prior work.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 6  \nVERDICT evaluation = 14  \nVERDICT domain = 1  ",
+      "stage2": "1. **FACET: purpose** | **FINAL: NONE** | reason: No prior paper explicitly demonstrates that gains come from better utilization of preference data (mitigated unlearning) rather than merely from a larger dataset. No equivalent objective was found under different terminology, framing, or domain vocabulary."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 14
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Show that gains come from better utilization of preference data (mitigated unlearning), not merely from a larger dataset.**\n\nThis is a specific empirical claim about *why* a method works — attributing gains to mitigated unlearning/better data utilization rather than dataset size. Paper [14] (\"Unpacking DPO and PPO: Disentangling Best Practices for Learning from Preference Feedback\") explicitly disentangles the impact of different aspects of preference learning including data, and Paper [7] (\"Minor DPO reject penalty to increase training robustness\") discusses the unlearning problem in DPO (suppression of rejected responses). However, neither paper specifically establishes the relationship \"gains come from mitigated unlearning, not dataset size.\" Paper [6] (\"Bootstrapping Language Models with DPO Implicit Rewards\") uses DPO implicit rewards for further alignment but doesn't make this specific attribution claim. No prior paper reports the same empirical relationship between dataset size vs. unlearning mitigation as the source of gains.\n\n**MECHANISM: Ablation studies including half-data with reward augmentation, implicit-reward augmentation for binarized datasets, log-probability analysis of rejected responses, varying AI-feedback quality.**\n\nPaper [14] uses ablation/disentanglement studies across preference learning components. Paper [6] uses DPO implicit rewards in a bootstrapping fashion. Paper [4] analyzes log-probability behavior in DPO. Paper [7] analyzes the penalty on rejected responses in DPO. These are standard ablation designs applied to DPO variants. The combination of half-data ablation, implicit reward augmentation, and log-prob analysis is a standard controlled ablation design — the generic shape of \"swap a component, measure performance\" appears broadly. However, per the rules, generic ablation shapes don't establish coverage unless validating the same claim. The log-probability analysis of rejected responses appears in [4] and [7] as a diagnostic tool. The implicit reward augmentation mechanism appears in [6]. These are standard analysis protocols in the DPO literature.\n\n**EVALUATION: DPO (Half RA) vs full data; second DPO round with implicit-reward-augmented data; log-prob restoration; strong vs weak reward model conditioning.**\n\nPaper [14] uses benchmark comparisons across DPO variants with different data/algorithms. Paper [6] evaluates DPO bootstrapping with implicit rewards on standard LLM benchmarks. Paper [4] evaluates reward model distillation variants. These use the same evaluation design family (standard LLM alignment benchmarks, log-prob analysis, ablation comparisons) that appear throughout the DPO literature. The evaluation design — comparing DPO variants on standard benchmarks with log-prob diagnostics — is covered by [14] and [6].\n\n**DOMAIN: LLM preference alignment.**\n\nPapers [1], [2], [4], [6], [7], [10], [14] all work in LLM preference alignment. This is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 6\nVERDICT evaluation = 14\nVERDICT domain = 14",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper contains the specific objective of demonstrating that performance gains come from better utilization of preference data via mitigated unlearning (as opposed to simply having more data). Paper [14] disentangles aspects of preference learning but does not frame this as an unlearning mitigation effect, and no other paper uses equivalent terminology or pursues this same empirical attribution goal."
+     }
+    }
+   }
+  }
+ ]
+}

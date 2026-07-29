@@ -1,0 +1,294 @@
+{
+ "paper_id": "0nxocR2qx4",
+ "title": "ROPO: Robust Preference Optimization for Large Language Models",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     1
+    ],
+    "mechanism": [
+     1,
+     10
+    ],
+    "evaluation": [
+     1,
+     2
+    ],
+    "domain": [
+     1,
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": 1
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to make preference alignment robust to the 20-40% label noise prevalent in preference data, without relying on prior fixes like label smoothing or teacher-LLM filtering, which have specific weaknesses. Paper [1] explicitly addresses the same problem of robust preference alignment under noisy preference data, stating: \"the performance of preference alignment is highly sensitive to the prevalent noise in the preference data.\" Paper [12] also tackles noisy preference data in preference-based reinforcement learning, aiming to ensure robustness by filtering out noise. Both papers share the same high-level objective of addressing robustness to noisy preference data, making the purpose covered.\n\n### Mechanism\nThe mechanism involves the ROPO framework, which formulates noisy-preference learning as a constrained optimization problem with per-sample quality-aware weights, solved iteratively by alternating noise-tolerant model training and noisy-sample filtering. Paper [1] describes the same ROPO framework, including the robust loss with a noise-aware term (l_na) that suppresses gradients of high-uncertainty samples, and the iterative paradigm for noise-tolerant training and filtering. Paper [10] also formulates robust learning under label noise as a constrained optimization problem with instance reweighting, but it does not include the specific iterative paradigm or the noise-aware term (l_na) used in ROPO. Therefore, the mechanism is fully covered by [1].\n\n### Evaluation\nThe evaluation uses three datasets (UltraFeedback Binarized, Alpaca Comparison, Reddit TL;DR) and measures GPT-4-judged win rates under varying levels of artificial symmetric noise. Paper [1] evaluates ROPO on the same datasets and with the same evaluation design, including GPT-4-judged win rates under artificial noise. This matches the evaluation design exactly. No other paper uses this specific evaluation design, so [1] fully covers the evaluation.\n\n### Domain\nThe domain is LLM alignment and preference optimization, specifically Direct Preference Optimization (DPO). Paper [1] explicitly operates in the same domain of LLM alignment and preference optimization, as does [2], which focuses on DPO and its limitations. Paper [7] also addresses preference optimization for LLMs, including DPO. Thus, the domain is covered by [1], [2], and [7].\n\n---\n\nVERDICT purpose = 1  \nVERDICT mechanism = 1  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE:**\nThe purpose is to make preference alignment (DPO-style) robust to label noise in preference data, without relying on label smoothing or costly teacher-LLM filtering. Paper [1] is literally the same paper (ROPO itself). Paper [2] addresses robustness in DPO but focuses on reward model distillation to prevent reward overfit/degeneration, not specifically noise robustness. Paper [12] (RIME) addresses robust preference-based RL with noisy preferences, but in the robotics/RL setting rather than LLM alignment. No prior paper addresses the exact same objective: robust LLM preference alignment (DPO) against label noise without teacher-LLM filtering or label smoothing. However, paper [1] IS the contribution itself — it's the same paper being described. Setting that aside, no other paper covers this exact purpose at the problem-class level combining (a) LLM preference alignment + (b) noise robustness + (c) avoiding teacher-LLM filtering.\n\n**MECHANISM:**\nThe mechanism is: constrained optimization with per-sample quality-aware weights, iterative alternation of noise-tolerant training and noisy-sample filtering, with a novel loss where gradient weight *decreases* as reward margin grows (opposite to DPO). Paper [10] proposes constrained instance reweighting for noisy label learning. Paper [5] proposes iterative noise-filtering with semi-supervised learning. Paper [8] proposes adaptive sample selection for robust learning under label noise. Paper [12] uses sample selection-based discriminator to filter noise in preference-based RL. None of these combine the specific \"reward-margin-based inverse weighting\" primitive in a preference optimization context. However, the broader primitive of \"per-sample weighting + iterative filtering via constrained optimization\" is covered by [10] (constrained optimization for instance weights) and [5] (iterative noise-filtering). Paper [12] also uses sample selection for noisy preferences. The specific inverse-margin weighting is somewhat novel, but the constrained optimization + iterative filtering paradigm is covered by [10] and [5].\n\n**EVALUATION:**\nThe evaluation uses GPT-4-judged win rates (LLM-as-judge), standard alignment benchmarks (UltraFeedback, Alpaca, TL;DR), multiple LLM backbones, with artificial symmetric noise injection at 0/20/40%. LLM-as-judge evaluation design appears in many alignment papers. The use of UltraFeedback, Alpaca Comparison, TL;DR with GPT-4 win rates is a standard evaluation design in the LLM alignment literature. Paper [2] uses similar evaluation setups for DPO robustness. Paper [25] uses preference optimization evaluation with similar benchmarks. The evaluation design (LLM-as-judge win rate on standard alignment benchmarks) is a standard protocol in the alignment literature, covered by [2] and [25].\n\n**DOMAIN:**\nThe domain is LLM alignment / preference optimization (DPO). Paper [2] explicitly works in LLM post-training/alignment with DPO. Paper [25] works in LLM preference optimization. Paper [7] works in preference learning for LLMs. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 10\nVERDICT evaluation = 2\nVERDICT domain = 2",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 1 | reason: Paper [1] (ROPO) explicitly states the same objective in nearly identical terms: \"the performance of preference alignment is highly sensitive to the prevalent noise in the preference data. Recent efforts for this problem either marginally alleviate the impact of noise without the ability to actually reduce its presence, or rely on costly teacher LLMs prone to reward misgeneralization\" — this is the same purpose (robust preference alignment addressing the same two named weaknesses of prior fixes)."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     3,
+     12
+    ],
+    "mechanism": [
+     2,
+     11
+    ],
+    "evaluation": [
+     1,
+     3,
+     16
+    ],
+    "domain": [
+     16,
+     23
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 16
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to recover useful information lost when noisy samples are filtered out, such as valuable queries discarded due to incorrect ranking labels. Several prior papers address noisy label issues but focus on mitigating their impact on model training or improving sample selection strategies rather than explicitly recovering lost information. For example:\n- Paper [1] discusses strategies for handling noisy labels but does not focus on recovering discarded samples.\n- Paper [5] and [24] address biases in sample selection for noisy labels but do not explicitly aim to recover lost information.\n- Paper [18] filters noisy labels but does not attempt to recover discarded samples.\nNo prior paper explicitly shares the same objective of recovering lost information from filtered noisy samples.\n\n### Mechanism\nThe mechanism involves a robustness-guided rejection sampling technique that samples K new responses per filtered query and selects replacements based on ROPO loss values (reflecting sample quality) rather than external-reward scores. Papers [4], [9], [11], and [25] discuss rejection sampling techniques, but none use ROPO loss values or apply rejection sampling in the context of recovering filtered noisy samples:\n- Paper [4] introduces pliable rejection sampling but focuses on kernel estimators for sampling proposals.\n- Paper [9] discusses gradient-refined proposals for rejection sampling but does not use ROPO loss or address noisy sample recovery.\n- Paper [11] proposes optimal budgeted rejection sampling for generative models but does not use ROPO loss or address noisy sample recovery.\n- Paper [25] applies rejection sampling to diffusion models but does not use ROPO loss or address noisy sample recovery.\nNo prior paper uses the same mechanism of robustness-guided rejection sampling with ROPO loss values.\n\n### Evaluation\nThe evaluation involves ablation studies showing the impact of rejection sampling, noise-aware terms, and filtering stages, as well as performance improvements across training epochs under varying noise levels. Ablation studies are a common experimental design in prior work:\n- Paper [1] uses ablation studies to analyze strategies for noisy label classification.\n- Paper [5] and [24] use ablation studies to evaluate sample selection strategies under noisy labels.\n- Paper [18] uses ablation studies to validate filtering methods for noisy labels.\nThe evaluation design (ablation studies) is covered by prior work, even though the specific objects and claims differ.\n\n### Domain\nThe domain is LLM alignment, which involves adapting large language models to human preferences and values. Papers [16], [23], [29], [31], and [32] address LLM alignment or RLHF (Reinforcement Learning from Human Feedback), making this domain covered:\n- Paper [16] discusses group-robust preference optimization in RLHF.\n- Paper [23] examines policy optimization methods in RLHF.\n- Paper [29] explores seamlessness between reward and policy models in RLHF.\n- Paper [31] introduces a theory of reward generalization in RLHF.\n- Paper [32] addresses reward confusion in offline preference learning for RLHF.\nThe domain of LLM alignment is covered by prior work.\n\n### Verdicts\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 1  \nVERDICT domain = 16  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses recovering useful information lost when noisy samples are filtered out, even under different terminology or framing.  \n\nFACET: mechanism | FINAL: COVERED-BY 11 | reason: \"Optimal Budgeted Rejection Sampling (OBRS) scheme... evaluates the quality of samples... refines them based on $f$-divergence,\" aligns with robustness-guided rejection sampling using quality metrics."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": 16
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\n\nThe contribution's purpose is: **recover useful information lost when noisy samples are filtered out** (e.g., a valuable query discarded due to an incorrect ranking label).\n\nThis is specifically about recovering/salvaging filtered-out samples in the context of noisy label learning. Papers [3], [6], [24] address the problem that sample selection methods discard \"hard\" or \"informative\" samples that happen to have high loss. Paper [3] explicitly analyzes \"why clean samples are misidentified\" and that \"large loss 'hard' samples\" get discarded. Paper [6] discusses \"informative samples (e.g., hard samples or samples from minority subpopulations)\" being misclassified as noisy. Paper [24] discusses \"data and training bias\" from sample selection. However, none of these papers specifically frame the purpose as *recovering* the filtered-out samples by generating new responses — they focus on better selection criteria to avoid discarding them in the first place. The closest is [3] and [24] which address the problem of valuable samples being lost, but their solution is improved selection, not recovery via resampling. Still, the underlying objective — \"don't lose valuable samples that were incorrectly filtered\" — is substantively equivalent to what [3], [6], and [24] pursue.\n\nPaper [3]: \"cannot distinguish between large loss 'hard' samples and noise samples\" — same gap being closed.\n\n## Mechanism\n\nThe contribution's mechanism is: **robustness-guided rejection sampling that samples K new responses per filtered query and selects replacements based on ROPO loss values** (not external reward scores).\n\nThis combines: (1) rejection sampling applied to LLM response generation, (2) using a loss-based quality signal (rather than reward model) to select among candidates. \n\nRejection sampling for LLM alignment appears in [23] implicitly, but none of the prior papers use loss-based (ROPO-style) criteria to select among K sampled responses as a replacement mechanism for filtered queries. Papers [1]-[8], [12]-[13], [15], [17]-[22], [24] all deal with noisy label learning but none use rejection sampling to *generate replacement samples* for filtered queries using a loss-based criterion. Papers [4], [9], [11], [14], [25] deal with rejection sampling but in statistical/generative model contexts, not LLM alignment with loss-based selection. The specific primitive — \"for each filtered query, sample K new responses and pick the best by loss value rather than reward\" — does not appear in any prior paper.\n\n## Evaluation\n\nThe contribution's evaluation is: **ablation study (Table 3) showing each component improves performance; multi-epoch training win-rate measurements under 40% noise**.\n\nAblation studies are generic experimental moves. The multi-epoch training evaluation under noise conditions is a standard design. Papers [1]-[3], [5]-[8], [12]-[13], [15], [17]-[22], [24] all conduct ablation studies validating components of noisy-label learning methods. This is a standard ablation design. Paper [16] and [23] conduct win-rate evaluations in LLM alignment. The combination of ablation + win-rate under noise is standard enough that it's covered by the combination of these prior works.\n\n## Domain\n\nThe contribution operates in **LLM alignment**. Papers [16], [23], [29], [31], [32] all work in LLM alignment/RLHF. This is clearly covered.\n\n---\n\nVERDICT purpose = 3\nVERDICT mechanism = NONE\nVERDICT evaluation = 16\nVERDICT domain = 16",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes a robustness-guided rejection sampling technique that samples K new responses per filtered query and selects replacements based on ROPO loss values rather than external-reward scores. The rejection sampling papers (4, 9, 11, 14, 25) concern statistical sampling from distributions, not LLM response filtering via robust loss. The noisy-label papers use loss-based sample selection but none combine rejection sampling with a robust preference optimization loss as the selection criterion for replacement generation in RLHF."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 12
+      },
+      "mechanism": {
+       "covered_by": [
+        2,
+        11
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        1,
+        3
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        16,
+        23
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to recover the value of a query that was discarded due to a noisy label, by generating a new, better response for it. Prior work on noisy labels ([1], [2], [3], [5], [6], etc.) focuses on making the training process robust to noisy labels, typically by filtering or down-weighting them, but not on the subsequent step of salvaging the input query to create a new training sample. Therefore, the specific objective of recovering lost information from the filtered inputs appears to be absent from prior work.\n\n**mechanism**: The mechanism is a rejection sampling technique guided by a loss value to select good samples. This combines two well-established primitives: (1) using rejection sampling to improve the quality of samples from a generative model, as seen in [11] (\"Rejection sampling methods have recently been proposed to improve the performance of discriminator-based generative models\"), and (2) using a small loss value as a criterion to identify clean/high-quality samples, which is the core idea in the noisy label literature, e.g., [2] (\"deep learning methods for dealing with noisy labels have been developed, many of which are based on the small-loss criterion\").\n\n**evaluation**: The evaluation design involves measuring performance (win-rate) on data with a controlled percentage of injected noise and using ablation studies to validate the contribution of individual components. This is the standard evaluation protocol for the entire field of learning with noisy labels, used by numerous prior papers to demonstrate the effectiveness of their methods under noise, such as [1] which examines \"strategies to address noisy labels\" and [3] which proposes a method for \"combating noisy labels\".\n\n**domain**: The contribution is applied to LLM alignment. Several prior papers operate in this same general application area. For example, [16] addresses \"Group Robust Preference Optimization in Reward-free RLHF\" and [23] studies \"Policy Optimization in RLHF,\" both of which are core topics within LLM alignment.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 2, 11\nVERDICT evaluation = 1, 3\nVERDICT domain = 16, 23",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY [12] | reason: The objective to \"apply different learning strategies to each group of samples\" (clean vs. noisy) is a direct implementation of recovering information from the noisy samples that would otherwise be filtered out and their information lost."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     11
+    ],
+    "mechanism": [
+     2,
+     8,
+     12
+    ],
+    "evaluation": [
+     2,
+     8
+    ],
+    "domain": [
+     2,
+     11
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 11
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "domain"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to theoretically and empirically justify why the noise-aware loss achieves noise tolerance and sample discrimination. Paper [8] discusses robust loss functions under label noise and mentions noise-tolerant learning, but it does not specifically justify the mechanism of noise-aware loss achieving both noise tolerance and sample discrimination. Paper [11] provides theoretical analysis for learning from noisy labels but focuses on explaining the small-loss criterion rather than the specific properties of noise-aware loss. Paper [13] introduces asymmetric loss functions for noise-tolerant learning but does not address the specific justification of noise-aware loss achieving sample discrimination. None of the prior papers establish the same empirical relationship or theoretical justification for this specific purpose.\n\n### Mechanism\nThe contribution uses theoretical analysis of the optimal preference probability under label flipping (Theorems 3.2/3.4) and loss-distribution analysis separating clean vs noisy samples. Paper [12] proves sufficient conditions for loss functions to be tolerant to label noise under risk minimization, which overlaps with the theoretical analysis of noise tolerance. Paper [8] discusses robust loss functions and their inherent noise tolerance, which aligns with the mechanism of analyzing loss functions under label noise. Paper [11] provides theoretical analysis for noisy label learning, including the small-loss criterion, which is conceptually similar to analyzing loss distributions for clean vs noisy samples. These papers collectively cover the mechanism at the primitive level.\n\n### Evaluation\nThe evaluation design includes theoretical results (Theorem 3.4) showing the optimal preference probability is unaffected by noise when flip probability η < 1/2, and empirical results (Figure 2) demonstrating loss separation for filtering noisy samples. Paper [12] provides theoretical proofs for noise tolerance under risk minimization, which matches the theoretical evaluation design. Paper [8] evaluates robust loss functions empirically under noisy labels, which aligns with the empirical evaluation design of loss separation. Paper [11] includes theoretical and empirical analyses of noisy label learning, which also matches the evaluation design. The evaluation design is covered by these prior works.\n\n### Domain\nThe contribution operates in the domain of LLM alignment/theory. None of the prior papers explicitly address LLM alignment or theory as their application area. While many papers focus on noisy label learning in general (e.g., [8], [11], [12]), these works are primarily situated in computer vision or general supervised learning contexts, not LLM alignment. The domain is therefore uncovered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 8  \nVERDICT evaluation = 8  \nVERDICT domain = NONE  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly or empirically justifies why the noise-aware loss achieves both noise tolerance and sample discrimination under the same objective.  \n\nFACET: domain | FINAL: COVERED-BY 11 | reason: \"In this paper, we theoretically analyze why these methods could learn well from noisy labels,\" aligns with LLM alignment/theory as it provides theoretical insights into noisy label learning."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 11
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": null
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "domain"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Theoretically and empirically justify why the noise-aware loss achieves noise tolerance and sample discrimination.**\n\nThe purpose is to provide theoretical justification for why a specific loss function is noise-tolerant (optimal preference probability unaffected by label flipping) AND enables sample discrimination (larger losses for noisy vs. clean samples). Paper [11] \"Towards Understanding Deep Learning from Noisy Labels with Small-Loss Criterion\" explicitly provides theoretical analysis of why small-loss methods work under noisy labels. Paper [7] \"Noise Tolerance Under Risk Minimization\" theoretically analyzes noise tolerance of loss functions under label corruption. Paper [12] \"Making risk minimization tolerant to label noise\" proves sufficient conditions on loss functions for noise tolerance under label flipping. Paper [13] \"Asymmetric Loss Functions for Noise-Tolerant Learning: Theory and Applications\" systematically studies noise-tolerant learning with theoretical analysis of loss functions. However, the specific combination — proving that the *optimal preference probability* (a preference learning / RLHF concept) is unaffected by noise AND that the loss distribution separates clean/noisy samples — is specific to the RLHF/DPO setting. The closest in purpose is [11] and [12], but those target classification, not preference optimization. The purpose at the problem-class level (\"theoretically justify why a loss is noise-tolerant\") is covered by [7], [11], [12], [13].\n\n**MECHANISM: Theoretical analysis of optimal preference probability under label flipping, plus loss-distribution analysis separating clean vs noisy samples.**\n\nThe mechanism involves two parts: (1) deriving the optimal solution under a noisy label model (label flipping) and showing it equals the clean optimum, and (2) analyzing loss distributions to show noisy samples have larger losses. For part (1), paper [7] analyzes risk minimization under label noise and shows certain losses are noise-tolerant by examining the optimal classifier. Paper [12] proves sufficient conditions on loss functions for noise tolerance under uniform label noise — same primitive of analyzing the optimal solution under flipped labels. Paper [13] similarly derives theoretical conditions. For part (2), paper [2] \"Analyzing Deep Neural Networks with Noisy Labels\" observes loss distributions of clean vs. noisy samples. Paper [11] provides theoretical analysis of why small-loss criterion works. The mechanism of \"derive optimal solution under label flipping, show invariance\" is covered by [7] and [12]. The loss-distribution separation analysis is covered by [2] and [11].\n\n**EVALUATION: Theorem 3.4 showing optimal preference probability unaffected by noise; Figure 2 showing larger losses for noisy than clean samples.**\n\nThe evaluation design here is: (1) a theoretical theorem proving noise invariance of the optimal solution, and (2) a loss-distribution visualization/analysis separating clean vs. noisy samples. For the theorem-based evaluation, papers [7], [11], [12], [13] all use theorem-proving as the validation framework for noise tolerance claims. For the loss-distribution figure, paper [2] explicitly observes and plots loss distributions of clean vs. noisy samples. Paper [11] provides theoretical analysis supporting the small-loss criterion with similar distribution arguments. These evaluation designs (theorem + loss distribution analysis) are present in prior work.\n\n**DOMAIN: LLM alignment / theory**\n\nLLM alignment is the application area. None of the prior papers operate in LLM alignment or RLHF/DPO preference optimization — they all work in supervised classification with noisy labels (computer vision, general deep learning). The domain of LLM alignment / preference learning is genuinely absent from all prior papers listed.\n\nVERDICT purpose = 11\nVERDICT mechanism = 12\nVERDICT evaluation = 2\nVERDICT domain = NONE",
+      "stage2": "FACET: domain | FINAL: NONE | reason: All prior papers address noisy label learning, robust loss functions, or classical ML theory — none operate in the domain of LLM alignment or alignment theory. No paper uses different terminology that maps to this domain."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 11
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe contribution's purpose is to theoretically and empirically justify why a specific loss function is noise-tolerant and can discriminate between sample types. This is covered by prior work that seeks to provide theoretical explanations for why methods for learning with noisy labels are effective. For example, [11] states its purpose is to provide \"theoretical analyses to explain why these methods [based on the small-loss criterion] could learn well from noisy labels.\"\n\n**MECHANISM**\nThe mechanism consists of two analysis methods: theoretical analysis of optimal behavior under label flipping, and analysis of loss distributions to separate clean vs. noisy samples. Both are standard methods in the \"learning with noisy labels\" (LNL) literature. Paper [12] uses theoretical analysis to \"prove a sufficient condition on a loss function for the risk minimization under that loss to be tolerant to uniform label noise.\" Paper [2] explicitly uses the second method, stating they \"investigate the sample selection by observing the loss distribution of training samples with clean and noisy labels.\"\n\n**EVALUATION**\nThe evaluation design combines a formal theorem about noise tolerance with plots of loss distributions to show separability between clean and noisy samples. This evaluation design is covered by prior work. Paper [12] uses the design of proving a theorem about a loss function's noise tolerance. Paper [2] uses the design of analyzing and showing loss distributions for clean and noisy samples in experiments.\n\n**DOMAIN**\nThe contribution's domain is LLM alignment. The prior papers work in the general application area of \"learning with noisy labels\" for deep neural networks (DNNs), often for classification. LLM alignment is a specific application of training a DNN (a transformer) with noisy supervision (preference data), which falls within the general area established by prior work like [2] \"Analyzing Deep Neural Networks with Noisy Labels\".\n\nVERDICT purpose = 11\nVERDICT mechanism = 2\nVERDICT evaluation = 2\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

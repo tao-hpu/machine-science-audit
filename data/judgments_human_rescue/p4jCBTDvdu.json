@@ -1,0 +1,285 @@
+{
+ "paper_id": "p4jCBTDvdu",
+ "title": "MirrorCheck: Efficient Adversarial Defense for Vision-Language Models",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     6
+    ],
+    "mechanism": [
+     1,
+     31
+    ],
+    "evaluation": [
+     1,
+     5,
+     6
+    ],
+    "domain": [
+     1,
+     3,
+     6
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": 1
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to detect adversarial samples against Vision-Language Models (VLMs), addressing the gap that existing defenses optimized for unimodal image classification fall short on VLMs. Paper [6] explicitly discusses the need for adversarial detection tools for large VLMs due to their vulnerability to adversarial examples, which aligns with the same problem-class level objective. Paper [1] also identifies the susceptibility of VLMs to adversarial attacks and proposes a detection framework, explicitly targeting the same purpose. Both papers share the same objective of defending VLMs against adversarial examples.\n\n### Mechanism\nThe mechanism, MirrorCheck, uses a Text-to-Image (T2I) model to regenerate an image from the caption produced by the victim VLM and compares embeddings of the input and regenerated images via cosine similarity to flag attacks. Paper [1] describes the exact same mechanism, including leveraging T2I models for regeneration and cosine similarity for semantic consistency checks. Paper [16] also discusses using T2I diffusion models for adversarial robustness, but it focuses on robustification rather than detection, making it not equivalent. No other paper describes a substantively equivalent mechanism.\n\n### Evaluation\nThe evaluation uses ImageNet-1K clean images and adversarial examples generated via AttackVLM (perturbation bound 8, L-inf, 100-step PGD), measuring detection accuracy with CLIP RN50 encoder across victim models. Paper [1] uses the same evaluation design, including adversarial examples generated for VLMs and detection accuracy metrics, making it equivalent. Paper [6] also evaluates adversarial detection for VLMs but uses attention patterns rather than embeddings, which is a different evaluation design. No other paper matches the evaluation design.\n\n### Domain\nThe domain is adversarial robustness for Vision-Language Models (VLMs). Papers [1], [6], and [3] all operate in the same general application area of adversarial robustness for VLMs, even though they may target different specific sub-problems or datasets. This domain is well-established in prior work.\n\n---\n\nVERDICT purpose = 1  \nVERDICT mechanism = 1  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Detect adversarial samples against Vision-Language Models, filling the gap that existing defenses are optimized for unimodal image classification and fall short on VLMs**\n\nPaper [1] is literally the same paper (MirrorCheck, 2024-06-13) — this IS the contribution being audited, so it trivially covers the purpose. Setting that aside and looking at others: Paper [6] (PIP) explicitly states \"LVLMs are in urgent need of detection tools for adversarial examples to prevent incorrect responses\" and proposes detection for adversarial examples in Large Vision-Language Models. This is substantively equivalent — same objective of detecting adversarial examples specifically targeting VLMs, same gap being closed. Paper [3] studies adversarial attacks on VLP models but focuses on attacking, not defending/detecting.\n\nPaper [6] covers the purpose directly: detecting adversarial examples in LVLMs/VLMs.\n\n---\n\n**MECHANISM: Use a T2I model to regenerate an image from the VLM-produced caption, then compare input image vs. regenerated image embeddings via cosine similarity; low score = attack**\n\nThe core primitive is: (1) generate a caption from the input image via the victim model, (2) regenerate an image from that caption via T2I, (3) compare original vs. regenerated image embeddings. This is a \"round-trip consistency check\" — image → text → image — where inconsistency signals adversarial manipulation.\n\nPaper [31] uses round-trip translation (text→language→text) and similarity comparison to detect machine-translated text. The primitive is structurally similar (round-trip + similarity), but the modality and the use of the victim model's output as the intermediate are different. However, the round-trip consistency check primitive is present.\n\nPaper [10] checks \"intrinsic context consistencies\" for adversarial detection, but uses object-to-object relationships, not a generative round-trip.\n\nPaper [22] uses cycle-consistent GAN for anomaly detection — cycle consistency is related but the mechanism is training a GAN, not using a pre-trained T2I model in a zero-shot manner.\n\nPaper [32] (SAC3) uses cross-check consistency in LMs for hallucination detection — semantically related but different modality and purpose.\n\nNo prior paper uses the specific primitive of: VLM caption → T2I regeneration → embedding cosine similarity comparison for adversarial detection. Paper [31] is the closest with round-trip + similarity, but it's text-only and not for adversarial detection against VLMs. The mechanism appears genuinely novel — no prior paper combines T2I regeneration with VLM caption output for adversarial detection via embedding comparison.\n\n---\n\n**EVALUATION: ImageNet-1K clean + adversarial examples from AttackVLM (L-inf, PGD), CLIP encoder detection accuracy, compared against FeatureSqueeze, MagNet, PuVAE baselines**\n\nThe evaluation design uses: a standard image benchmark (ImageNet), adversarial examples generated with a known attack protocol (PGD, L-inf), detection accuracy as metric, and comparison against established baselines (FeatureSqueeze, MagNet, PuVAE). \n\nPapers [6], [26], [29], [4], [13] all use detection accuracy on adversarial examples generated from standard benchmarks (often ImageNet or CIFAR) with PGD/FGSM attacks, compared against baselines. This evaluation design (clean + adversarial images from standard benchmark, detection accuracy, baseline comparison) is standard in adversarial detection literature. Paper [6] specifically evaluates on VLMs with adversarial examples and compares baselines. The design is covered.\n\n---\n\n**DOMAIN: Adversarial robustness / vision-language models**\n\nPaper [6] operates in adversarial robustness for Large Vision-Language Models. Paper [3] works on adversarial attacks against vision-language pre-training models. Paper [21] addresses adversarial examples in Visual Language Models. The domain is clearly covered by multiple prior papers.\n\n---\n\nVERDICT purpose = 6\nVERDICT mechanism = NONE\nVERDICT evaluation = 6\nVERDICT domain = 6",
+      "stage2": "FACET: mechanism | FINAL: COVERED-BY 1 | reason: Paper [1] is literally MirrorCheck itself — it describes \"leverages Text-to-Image (T2I) models to regenerate visual content from captions produced by the target model and assesses semantic consiste[ncy]\", which is exactly the mechanism in question. No other prior paper contains this mechanism under any alternative framing.\n\nWait — re-reading the task: the goal is to find whether any *other* prior paper (i.e., a paper that is not the target paper itself) covers this mechanism. Paper [1] appears to be the target paper (MirrorCheck, 2024-06-13). The remaining papers do not describe regenerating an image from a VLM-produced caption via a T2I model and comparing embeddings via cosine similarity to detect adversarial attacks.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper other than the target paper itself describes the specific mechanism of using a T2I model to regenerate an image from a VLM-produced caption, then comparing input and regenerated image embeddings via cosine similarity to detect adversarial examples in a training-free, zero-shot, model-agnostic manner."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 31
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The objective is to detect adversarial examples specifically for Vision-Language Models (VLMs), noting that prior work focused on unimodal models. This exact purpose is shared by paper [6], which states \"LVLMs are in urgent need of detection tools for adversarial examples to prevent incorrect responses.\"\n\n**mechanism**: The proposed mechanism is a round-trip consistency check: an image is captioned by a VLM (Image -> Text), a new image is generated from that caption using a T2I model (Text -> Image'), and the original and regenerated images are compared. This \"round-trip-and-compare\" primitive is substantively equivalent to the mechanism in [31] for detecting machine-translated text, which performs a \"round-trip translation... and translated back into the original language\" and compares the original and final text. Paper [11] also uses the same primitive in the reverse direction (\"Text-to-Image-to-Text Translation using Cycle Consistent Adversarial Networks\").\n\n**evaluation**: The evaluation design involves generating adversarial examples on a standard benchmark (ImageNet) using a known attack family (PGD-based AttackVLM) and measuring detection accuracy against established baselines (FeatureSqueeze, MagNet). This is a canonical evaluation protocol for adversarial defense methods and is used in numerous prior works, such as [5], which proposes a \"reconstruction-based defense framework\" and would have evaluated it using the same design of applying standard attacks to standard datasets and measuring performance.\n\n**domain**: The application area is adversarial robustness for vision-language models. Several prior papers operate in this exact domain, including those that introduce attacks like [3] (\"adversarial attack on Vision-Language Pre-training Models\") and [9] (\"adversarial examples for vision and language models\"), as well as defenses like [6].\n\nVERDICT purpose = 6\nVERDICT mechanism = 31\nVERDICT evaluation = 5\nVERDICT domain = 3",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     3
+    ],
+    "mechanism": [
+     10
+    ],
+    "evaluation": [
+     6,
+     13
+    ],
+    "domain": [
+     3,
+     6,
+     10
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": [
+        6,
+        13
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        6,
+        3,
+        10
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to demonstrate that the MirrorCheck approach generalizes beyond Vision-Language Models (VLMs) to adversarial detection in image classification tasks, showcasing adaptability and model-agnostic nature. Paper [3] explicitly addresses model-agnostic adversarial example detection, stating: \"existing adversarial example detection methods heavily rely on the underlying classifier and may fail when the classifier is upgraded. In this paper, we propose a model-agnostic detection method.\" This aligns with the contribution's purpose of demonstrating adaptability and classifier independence. Therefore, the purpose is **covered** by [3].\n\n### Mechanism\nThe contribution adapts MirrorCheck to classifiers by extracting the predicted class name via argmax, regenerating an image using Stable Diffusion/ControlNet, and computing similarity. Paper [10] introduces MirrorCheck for VLMs, leveraging text-to-image models to regenerate visual content and assess semantic consistency. While the application domain differs (VLMs vs image classifiers), the underlying mechanism — using generative models to regenerate content and assess similarity — is substantively equivalent. Therefore, the mechanism is **covered** by [10].\n\n### Evaluation\nThe evaluation uses CIFAR10 with DenseNet and ImageNet with MobileNet, comparing detection accuracy against FeatureSqueeze and MagNet. Paper [13] evaluates adversarial attacks and defenses on ImageNet, stating: \"To evaluate attacks and defenses in the field of adversarial machine learning, ImageNet remains one of the most frequently used datasets.\" Paper [6] evaluates adversarial example detection methods on CIFAR10, stating: \"We propose an effective method to detect adversarial examples... evaluated on CIFAR10.\" Both papers use the same benchmark families (ImageNet and CIFAR10) and metrics (detection accuracy), making the evaluation design **covered** by [6] and [13].\n\n### Domain\nThe contribution operates in the domain of adversarial robustness for image classification. Papers [6], [3], and [10] all address adversarial robustness in image classification tasks, with [6] stating: \"We propose an effective method to detect adversarial examples in image classification,\" and [3] emphasizing model-agnostic adversarial detection for classifiers. The domain is therefore **covered** by [6], [3], and [10].\n\n---\n\nVERDICT purpose = 3  \nVERDICT mechanism = 10  \nVERDICT evaluation = 6, 13  \nVERDICT domain = 6, 3, 10  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**Purpose:** The contribution's purpose is to show that MirrorCheck generalizes beyond VLMs to adversarial detection in image classification, demonstrating model-agnostic adaptability. Paper [3] explicitly proposes \"a model-agnostic detection method\" for adversarial examples in image classification. Paper [10] is the original MirrorCheck paper for VLMs, which is what this contribution extends. The purpose of demonstrating model-agnostic adversarial detection in image classification is covered by [3].\n\n**Mechanism:** The mechanism involves adapting MirrorCheck (originally for VLMs) to classifiers by extracting the predicted class name via argmax, regenerating an image with Stable Diffusion/ControlNet, and computing similarity — then comparing against FeatureSqueeze and MagNet. Paper [10] describes MirrorCheck using T2I models to regenerate visual content and assess semantic consistency, which is the core primitive. The adaptation to classifiers (argmax → class name → regenerate → compare) is a direct extension of [10]'s mechanism. No other prior paper uses this specific regeneration-via-T2I-then-similarity primitive for classifier-based adversarial detection. Paper [17] (Defense-GAN) uses generative models to reconstruct images for defense, but the mechanism (GAN-based reconstruction, not T2I regeneration from predicted class label + similarity scoring) is different. The mechanism is covered by [10].\n\n**Evaluation:** The evaluation uses CIFAR10 and ImageNet benchmarks with standard detection accuracy metrics, compared against FeatureSqueeze and MagNet baselines under FGSM and BIM attacks. Paper [6] (\"Detecting Adversarial Examples Through Image Transformation\") evaluates adversarial detection on standard image classification benchmarks with detection accuracy metrics against FGSM and similar attacks. Paper [3] also evaluates on standard image classification benchmarks with detection accuracy. The evaluation design (standard benchmark + detection accuracy + comparison against baseline detectors under FGSM/BIM) is covered by [3] and [6].\n\n**Domain:** The domain is adversarial robustness / image classification. Papers [3], [6], [7], [8], [9], [16], and many others all operate in adversarial robustness for image classification. This is clearly covered.\n\nVERDICT purpose = 3\nVERDICT mechanism = 10\nVERDICT evaluation = 6\nVERDICT domain = 3",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     6
+    ],
+    "mechanism": [
+     3,
+     9
+    ],
+    "evaluation": [
+     1,
+     6
+    ],
+    "domain": [
+     1,
+     9
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "domain"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to demonstrate the resilience of a defense mechanism against adaptive attacks where the attacker knows the defense pipeline. Paper [1] discusses adaptive attacks and evaluates defenses under adaptive conditions, but its focus is on circumventing defenses rather than demonstrating resilience. Paper [6] evaluates ensemble defenses against adaptive attackers, but it does not specifically address resilience when attackers know the defense pipeline. Paper [20] introduces Morphence, a moving target defense against adversarial examples, which shifts the defense landscape to make adaptive attacks harder, but it does not explicitly demonstrate resilience under attacker knowledge of the defense pipeline. None of the prior papers substantively establish the same empirical relationship.\n\n### Mechanism\nThe mechanism involves ablation over attacker knowledge of CLIP image encoders and a One-Time-Use (OTU) approach that injects noise into encoder weights, measuring detection accuracy under EOT-based adaptive attacks. Paper [6] discusses ensemble defenses and evaluates robustness against adaptive attacks but does not use the specific OTU noise injection mechanism or ablation over attacker knowledge of CLIP encoders. Paper [20] introduces a moving target defense but does not involve OTU noise injection or ablation over attacker knowledge. Paper [17] discusses weight perturbation for adversarial training but focuses on training rather than inference-time noise injection. None of the prior papers use the same mechanism.\n\n### Evaluation\nThe evaluation design involves measuring detection accuracy under EOT-based adaptive attacks and analyzing the qualitative finding that using multiple/unknown encoders makes undetectable adversarial samples hard to craft. Paper [6] evaluates ensemble defenses against adaptive attacks using detection accuracy as a metric, which matches the evaluation design. Paper [13] evaluates ensemble diversity for adversarial robustness using detection accuracy, which also matches the evaluation design. Paper [20] evaluates Morphence using detection accuracy under adaptive attacks, which aligns with the evaluation design. The evaluation design is covered.\n\n### Domain\nThe domain is adversarial robustness in vision-language models. Paper [6] addresses adversarial robustness but focuses on general ensemble defenses rather than vision-language models specifically. Paper [13] discusses adversarial robustness in CNN ensembles but does not address vision-language models. Paper [20] addresses adversarial robustness but focuses on general machine learning models rather than vision-language models. None of the prior papers operate in the specific domain of adversarial robustness for vision-language models.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 6  \nVERDICT domain = NONE  ",
+      "stage2": "- **FACET: purpose** | **FINAL: COVERED-BY 1** | reason: Paper [1] discusses adaptive attacks where the attacker knows the defense pipeline, stating: *\"Adaptive attacks have (rightfully) become the de facto standard for evaluating defenses to adversarial examples.\"* This aligns with the purpose facet's objective of demonstrating resilience under such conditions.  \n- **FACET: mechanism** | **FINAL: NONE** | reason: No prior paper explicitly performs ablation over attacker knowledge of specific CLIP encoders or introduces a One-Time-Use (OTU) approach injecting noise into encoder weights under EOT-based adaptive attacks.  \n- **FACET: domain** | **FINAL: COVERED-BY 9** | reason: Paper [9] explicitly addresses adversarial robustness in vision-language models, stating: *\"Adversarial samples generated for a particular model can transfer across other models, and decrease accuracy and other performance metrics.\"* This situates the work within the same domain.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Demonstrate resilience of the defense against adaptive attacks where the attacker knows the defense pipeline**\n\nPaper [1] \"On Adaptive Attacks to Adversarial Example Defenses\" directly addresses evaluating defenses against adaptive attacks where the attacker knows the defense. Paper [6] \"CARE: Ensemble Adversarial Robustness Evaluation Against Adaptive Attackers\" also evaluates ensemble defenses against adaptive attackers. Paper [20] \"Morphence\" evaluates a moving target defense against adaptive adversaries. The purpose of demonstrating resilience against adaptive/white-box attackers who know the defense is well-covered by [1] and [6].\n\n**MECHANISM: Ablation over attacker knowledge of CLIP image encoders + One-Time-Use (OTU) noise injection into encoder weights; EOT-based adaptive attacks**\n\nPaper [9] \"Moving Target Defense against Adversarial Machine Learning\" uses randomization/rotation of models to prevent adversarial transferability — similar to the OTU approach of changing encoder weights. Paper [20] \"Morphence\" regularly moves the decision function to make the model a moving target. Paper [4] \"Weight Perturbation as Defense against Adversarial Word Substitutions\" injects perturbations into model weights as a defense. The OTU noise injection into encoder weights is mechanistically similar to weight perturbation defenses in [4] and moving target defenses in [9]/[20]. The ablation over attacker knowledge of specific encoders combined with EOT-based evaluation is partially covered by [6] which evaluates ensemble defenses against adaptive attackers. However, the specific combination of CLIP encoder ensemble + OTU weight noise is not fully covered as a unified primitive. Paper [9] covers the moving-target/randomization primitive most closely.\n\n**EVALUATION: Table showing detection accuracy vs. number of encoders + OTU; EOT-based adaptive attack evaluation**\n\nPaper [1] establishes the standard of adaptive attack evaluation as the de facto evaluation design for defenses. Paper [6] uses detection accuracy under adaptive attacks against ensemble defenses — same evaluation design (accuracy metric under adaptive/EOT attacks). Paper [20] measures robustness under repeated adaptive attacks. The evaluation design (measuring detection accuracy under adaptive/EOT attacks, ablating defense components) is covered by [1] and [6].\n\n**DOMAIN: Adversarial robustness / vision-language models**\n\nMultiple papers work in adversarial robustness for vision/image classification ([1], [6], [9], [13], [14], [20], [27]). The vision-language model aspect (CLIP) is a specific instance within the broader adversarial robustness domain for vision models. Paper [18] specifically addresses adversarial robustness for face recognition with ensemble feature extractors, which is close. The general domain of adversarial robustness in vision is well-covered.\n\nVERDICT purpose = 1\nVERDICT mechanism = 9\nVERDICT evaluation = 6\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe purpose is to demonstrate that a defense using ensembles and randomization is resilient to adaptive attacks where the attacker has knowledge of the defense. This is covered by [6], which poses the exact question of whether \"stronger adaptive attacks [will] defeat existing ensemble defense strategies,\" and by [13], which aims to \"demonstrat[e] the influence of diversity in the ensemble... on... hardening the generation of white-box adversarial attacks,\" which is the same objective as showing resilience to a knowledgeable attacker.\n\n**MECHANISM**\nThe mechanism combines two primitives: an ensemble of diverse models (different CLIP encoders) and randomization (injecting noise into encoder weights). Both primitives are well-established. [3] explicitly proposes using \"Multiple Classifiers and Randomisation\" for adversarial classification, and [10] proposes an \"ensemble approach to improve the robustness... by using diversified feature selection and a stochastic aggregation,\" which are substantively equivalent ideas.\n\n**EVALUATION**\nThe evaluation design consists of measuring detection accuracy under an adaptive, EOT-based attack where the attacker's knowledge is varied. This evaluation protocol is not new; [1] established that \"Adaptive attacks have (rightfully) become the de facto standard for evaluating defenses,\" and [16] specifically analyzes how to construct adaptive attacks (like EOT) against stochastic defenses.\n\n**DOMAIN**\nThe domain is adversarial robustness for vision-language models. Numerous prior papers operate in the general area of adversarial robustness, including [1], [3], [6], [9], and [13]. Applying these ideas to vision-language models is a new instance within an existing area, which, per the rules, means the domain is covered.\n\nVERDICT purpose = 6\nVERDICT mechanism = 3\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

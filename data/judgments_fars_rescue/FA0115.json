@@ -1,0 +1,382 @@
+{
+ "paper_id": "FA0115",
+ "title": "OCR-Anchor Reranking: When Best-of-N Selection Fails Due to Candidate Homogeneity",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     2,
+     3
+    ],
+    "mechanism": [
+     4
+    ],
+    "evaluation": [
+     3,
+     4
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to improve document-OCR outputs of vision-language models (VLMs) by selecting the best among multiple VLM-generated parsing candidates without retraining. This specific purpose is not directly addressed by any prior paper. While [3] discusses post-OCR error correction by reconciling multiple OCR views, it focuses on reducing errors in OCR outputs using language models, not on selecting the best parsing candidate from VLM outputs. Similarly, [1] and [6] address challenges in document understanding and OCR capabilities of VLMs but do not focus on selecting the best parsing candidate. No prior paper explicitly shares the same purpose.\n\n### Mechanism\nThe mechanism involves a training-free method, OCR-Anchor Reranking, which extracts high-confidence anchor tokens from a classical OCR engine (PaddleOCR) and selects the VLM candidate with the highest fraction of anchor-token coverage. [4] proposes an anchor-based pairwise comparison for reranking in recommendation systems, which is conceptually similar in using anchors for reranking. However, [4] applies this mechanism to recommendation systems, not OCR or VLM parsing. Despite the domain difference, the underlying primitive of anchor-based reranking is substantively equivalent. Therefore, the mechanism is covered by [4].\n\n### Evaluation\nThe evaluation design involves comparing the proposed method against a single-sample baseline. This is a standard evaluation design and does not introduce a new benchmark, metric, or protocol. [4] evaluates its anchor-based reranking method using a similar comparative design, albeit in the recommendation domain. Additionally, [9] and [13] also evaluate reranking methods using comparative designs. Thus, the evaluation design is covered by prior work.\n\n### Domain\nThe domain is document OCR and VLM-based PDF-to-Markdown parsing. This falls under the broader area of document understanding and OCR, which is addressed by [1], [6], [10], and [11]. These papers work on improving OCR and document understanding using VLMs or related methods. While the specific task of PDF-to-Markdown parsing may not be explicitly addressed, it is a sub-problem within the established domain of document OCR. Therefore, the domain is covered.\n\n---\n\n**VERDICT purpose = NONE**  \n**VERDICT mechanism = 4**  \n**VERDICT evaluation = 4**  \n**VERDICT domain = 1**  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses improving document-OCR outputs of vision-language models by selecting the best among multiple VLM-generated parsing candidates without retraining, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Improve document-OCR outputs of VLMs by selecting the best among multiple VLM-generated parsing candidates without retraining.**\n\nThe purpose combines: (1) improving VLM OCR output quality, and (2) doing so via candidate selection (reranking) without retraining. Paper [3] addresses \"post-OCR correction\" using multiple OCR views to reduce errors, but focuses on combining views rather than selecting among VLM candidates. Paper [1] (DocVLM) improves VLM document understanding but via architectural changes, not selection. Paper [2] is a training-free reranker for RAG, not OCR output improvement. No prior paper specifically targets \"select the best VLM-generated document parse without retraining\" — the closest is [3] (multi-view OCR reconciliation) but it combines rather than selects, and doesn't involve VLMs. However, the general objective of \"pick the best output from multiple candidates without retraining\" is covered by [2] (training-free reranking to improve output quality in LLM systems). The purpose-level objective — training-free best-candidate selection to improve output quality — is substantively present in [2].\n\n**MECHANISM: OCR-Anchor Reranking — extract high-confidence tokens from a classical OCR engine, use coverage of those anchor tokens to score and select among VLM candidates.**\n\nThis is a specific primitive: use a trusted external signal (classical OCR high-confidence tokens) as anchors to score candidates by coverage. Paper [4] uses \"anchor-based pairwise comparison\" for recommendation reranking, but anchors there are reference items in a list, not external-signal tokens. Paper [3] uses multiple OCR views and a language model to reconcile them — different primitive (LM scoring, not anchor-token coverage). Paper [18] uses \"translation consensus between decoders\" — n-gram agreement to rerank, which is structurally similar (shared tokens across outputs used as signal), but the anchor comes from within the candidate set, not from an external trusted source. Paper [19] (consensus decoding) similarly uses agreement among hypotheses. None of these use an *external* classical system's high-confidence outputs as anchor tokens to score VLM candidates by coverage. This mechanism appears genuinely absent.\n\n**EVALUATION: Method proposed but shown not to beat the single-sample baseline.**\n\nThe evaluation design here is essentially: propose a method, run it on a benchmark, compare against a baseline (single-sample), and report that it fails to improve. This is a standard ablation/comparison experimental design. Papers like [27] (MBR decoding properties, empirical evaluation against baselines) and [3] use standard benchmark comparisons. The evaluation design — comparing a reranking method against a single-output baseline on a document/text quality metric — is a generic experimental shape present across many papers (e.g., [3], [27], [2]). However, per the special rule, generic experimental moves don't establish coverage unless they validate the same claim with a named benchmark/metric family. The evaluation here seems to use document parsing quality metrics (likely CER/WER or similar OCR metrics), which appear in [3] and [10]. Paper [3] uses standard OCR error metrics to compare multi-view correction against baselines. This design (OCR quality metric comparison against baseline) is covered by [3].\n\n**DOMAIN: Document OCR / VLM-based PDF-to-Markdown parsing.**\n\nPaper [1] (DocVLM) works in document understanding with VLMs. Paper [6] (Ocean-OCR) works in OCR with VLMs. Paper [11] (FireRed-OCR) specializes VLMs for document OCR. Paper [10] (TrOCR) is transformer-based OCR. These all operate in the document OCR / VLM document understanding area. Domain is clearly covered by [1], [6], [10], [11].\n\nVERDICT purpose = 2\nVERDICT mechanism = NONE\nVERDICT evaluation = 3\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes extracting high-confidence anchor tokens from a classical OCR engine and using coverage of those tokens across VLM candidates as a training-free reranking signal. Paper [3] combines multiple OCR views with a language model but does not use OCR output as anchor tokens to score/select among VLM candidates. Paper [18]/[19] use n-gram consensus across decoder outputs but operate in MT, not OCR-anchored VLM reranking. No other paper contains an equivalent mechanism even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The objective is to improve document OCR output by selecting the best candidate from a pool of VLM-generated options, without retraining. This is an instance of the general problem of improving a generative task's output by selecting from or combining multiple hypotheses. This objective is covered by prior work in machine translation, speech recognition, and classical OCR. For example, paper [3] aims to \"reconcile the different OCR views such that their combination contains fewer errors than each individual view,\" and paper [22] aims to improve speech recognition by \"combining word scripts produced by different speech recognizers.\"\n\n**mechanism**: The mechanism is to rerank VLM-generated candidates by scoring them against a set of high-confidence \"anchor tokens\" extracted by a classical OCR engine. This primitive—using a trusted subset of information (anchors) to score and select from a list of candidates—is covered by prior work in other domains. Paper [4] proposes an \"Anchor-based Pairwise Comparison for recommendation Reranking,\" and paper [15] uses \"terminological tokens\" to \"rank extracted term candidates,\" both of which are substantively equivalent mechanisms.\n\n**evaluation**: The evaluation design consists of applying the proposed reranking method to a set of candidates and comparing the accuracy of the selected output against a baseline (e.g., a single-sample VLM output). This is a standard experimental design for any post-processing or selection method. Paper [3] uses this exact design, evaluating its method by checking if the \"combination contains fewer errors than each individual view,\" which is the same design as comparing a reranked candidate to a baseline.\n\n**domain**: The application area is document OCR using Vision-Language Models (VLMs), specifically for parsing PDFs into Markdown. This general area is well-established in the literature. For instance, paper [1] focuses on making VLMs efficient for \"document understanding\" which requires \"fine-grained text processing,\" and paper [6] explicitly presents a \"Vision-Language Model\" for \"General OCR Application.\"\n\nVERDICT purpose = 3\nVERDICT mechanism = 4\nVERDICT evaluation = 3\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     8
+    ],
+    "evaluation": [
+     3,
+     8
+    ],
+    "domain": [
+     1,
+     3,
+     4,
+     5,
+     13
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        3,
+        4,
+        5,
+        13
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Per-Facet Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to test whether proxy-verifier reranking improves over baselines. This is a specific empirical relationship: the effect of reranking strategies on OCR performance. None of the prior papers explicitly test this relationship. Papers [2], [6], [8], [10], [19], and [24] discuss reranking methods, but they focus on different objectives, such as improving parsing accuracy ([10]), information retrieval ([8], [24]), or other tasks unrelated to OCR. No prior paper establishes the empirical relationship between reranking strategies and OCR performance improvement.\n\n#### Mechanism:\nThe mechanism involves a comprehensive evaluation comparing all selection strategies, including random selection, against the single-sample baseline. Papers [8], [24], and [30] discuss reranking methods and selection strategies, but they do not evaluate these strategies in the context of OCR or proxy-verifier reranking. While [8] and [24] evaluate reranking methods in information retrieval, and [30] discusses best-of-N sampling for LLM alignment, the underlying mechanism of comparing selection strategies against a single-sample baseline is not substantively equivalent to the contribution's mechanism.\n\n#### Evaluation:\nThe evaluation design involves comparing selection strategies (including random selection) against a single-sample baseline on the olmOCR-Bench, with results showing no improvement over the baseline. Papers [8], [24], and [30] use systematic evaluation designs for reranking methods, but none of them employ the same evaluation design as the contribution. Specifically, no prior paper uses the same benchmark family (olmOCR-Bench) or evaluates reranking strategies in the context of OCR performance. The evaluation design appears to be novel.\n\n#### Domain:\nThe domain is OCR, specifically the olmOCR-Bench. Papers [1], [3], [4], [5], and [13] address OCR tasks, including benchmarks and models for OCR. While the specific benchmark (olmOCR-Bench) is new, the general application area of OCR is well-covered by prior work. Therefore, the domain is not novel.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [1, 3, 4, 5, 13]  ",
+      "stage2": "- **FACET: purpose** | **FINAL: NONE** | reason: No prior paper explicitly tests whether the proxy-verifier reranking improves over baselines, even under different terminology or framing.  \n- **FACET: mechanism** | **FINAL: COVERED-BY 8** | reason: \"We present a systematic and comprehensive empirical evaluation of state-of-the-art reranking methods... across several established benchmarks\" (paper 8).  \n- **FACET: evaluation** | **FINAL: NONE** | reason: No prior paper reports a negative result where all selection strategies, including random, fail to outperform a single-sample baseline.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Test whether proxy-verifier reranking actually improves over baselines.**\n\nThe purpose is to empirically test whether a specific reranking method (proxy-verifier reranking) improves over baselines, with the finding being a negative result. Paper [8] evaluates whether LLM-based rerankers improve over baselines in IR tasks — \"systematic and comprehensive empirical evaluation of state-of-the-art reranking methods... with respect to their performance.\" Paper [13] tests whether consensus-based OCR selection improves quality. However, the specific relationship being tested — proxy-verifier reranking vs. baselines in OCR — is not established by any prior paper. Paper [8] tests reranking in IR, not OCR with proxy verifiers. The purpose at the problem-class level is \"does this reranking method beat baselines?\" which is a generic evaluation goal, but the specific empirical relationship (proxy-verifier reranking fails to improve over single-sample baseline in OCR) is not reported by any prior paper. No prior paper establishes this same empirical relationship with the same variables.\n\n**MECHANISM: Comprehensive evaluation on olmOCR-Bench comparing all selection strategies including random selection against single-sample baseline.**\n\nThe mechanism is a comparative evaluation design: multiple selection strategies (including random) benchmarked against a single-sample baseline. Paper [8] uses a similar design — comparing 22 reranking methods including baselines across benchmarks. Paper [13] compares multi-VLM consensus strategies for OCR quality. Paper [29] studies training instance selection strategies including random sampling as a baseline. These all use the same analysis design: compare multiple selection strategies including random against a baseline. This is a standard comparative evaluation protocol covered by multiple prior papers.\n\n**EVALUATION: Negative result showing all strategies fall within 0.3-point band (82.0-82.3%), none beating single-sample baseline.**\n\nThe evaluation design here is: run multiple selection strategies on a named benchmark (olmOCR-Bench), report accuracy scores, compare to baseline. Paper [8] uses exactly this design on TREC/BEIR benchmarks. Paper [13] evaluates OCR selection strategies on benchmarks. The design (compare reranking variants on a named benchmark, measure accuracy, compare to baseline) is covered. The specific benchmark (olmOCR-Bench) is new, but per the special rule, swapping the benchmark instance doesn't make the evaluation design novel.\n\n**DOMAIN: OCR benchmark (olmOCR-Bench).**\n\nOCR as an application area is covered by papers [1], [4], [7], [13], [3], and [5]. Paper [13] specifically works on OCR quality evaluation with VLMs. Paper [5] introduces olmOCR 2 and olmOCR-Bench directly. The domain of OCR benchmarking is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 8\nVERDICT evaluation = 8\nVERDICT domain = 5",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper tests whether a proxy-verifier reranking improves over baselines; [8] evaluates LLM-based rerankers broadly but does not share the same objective (testing a proxy-verifier reranking scheme), and no other paper contains an equivalent empirical relationship under any alternative terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The purpose is to test whether a specific reranking method improves over baselines. This objective, at the problem-class level of empirically evaluating reranking methods, is covered by [8], which presents a \"systematic and comprehensive empirical evaluation of state-of-the-art reranking methods\". It is also covered by [29], which investigates the effect of different \"training instance selection strategies\" compared to a random baseline.\n\n**mechanism**: The mechanism is a comparative evaluation of multiple selection strategies, including random selection and a single-sample baseline, on a benchmark. This analysis method is covered by [8], which evaluates \"22 methods... across several established benchmarks\" to compare their performance.\n\n**evaluation**: The evaluation design is a benchmark-based accuracy test for an OCR system. This design is covered by [3], which introduces \"GlotOCR Bench, a comprehensive benchmark evaluating OCR generalization\", and by older papers like [1] and [4] focused on \"Testing OCR accuracy\".\n\n**domain**: The application area is Optical Character Recognition (OCR). This domain is covered by several prior papers, including [3] (\"GlotOCR Bench\"), [5] (\"olmOCR 2... for Document OCR\"), and [7] (\"to Correct OCR Errors\").\n\nVERDICT purpose = 8\nVERDICT mechanism = 8\nVERDICT evaluation = 3\nVERDICT domain = 3",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     8,
+     11
+    ],
+    "mechanism": [
+     8
+    ],
+    "evaluation": [
+     8
+    ],
+    "domain": [
+     11,
+     12,
+     16
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 11
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 11
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to explain why best-of-N reranking fails in this setting. This requires identifying the root cause of failure in the reranking process. Paper [11] (\"Best-of-∞ - Asymptotic Performance of Test-Time Compute\") analyzes best-of-N sampling and its limitations, including computational inefficiencies and challenges in scaling. Paper [16] (\"Evaluation of Best-of-N Sampling Strategies for Language Model Alignment\") discusses reward hacking and other issues in best-of-N sampling but does not directly address failure due to candidate homogeneity. Paper [13] (\"Scalable Best-of-N Selection for Large Language Models via Self-Certainty\") focuses on improving best-of-N selection but does not explain failure mechanisms. None of the prior papers explicitly explain failure due to homogeneity across samples at low temperature, making the purpose novel.\n\n#### Mechanism:\nThe mechanism involves analyzing candidate diversity across samples at low decoding temperature. Paper [8] (\"Understanding the Role of Temperature in Diverse Question Generation by GPT-4\") studies the effect of temperature on diversity in GPT-4-generated questions, finding that higher temperatures lead to greater diversity. Paper [9] (\"Epistemic Diversity and Knowledge Collapse in Large Language Models\") discusses homogeneity in LLM outputs but focuses on broader societal risks rather than technical analysis of diversity at low temperature. Paper [7] (\"A Simple, Fast Diverse Decoding Algorithm for Neural Generation\") proposes a decoding algorithm to foster diversity but does not analyze diversity at low temperature. Paper [5] (\"Arithmetic Sampling: Parallel Diverse Decoding for Large Language Models\") mentions temperature sampling and its lack of guarantees about duplicate samples but does not analyze diversity specifically. Paper [8] is substantively equivalent in analyzing diversity across samples at different temperatures, covering the mechanism.\n\n#### Evaluation:\nThe evaluation identifies candidate homogeneity as the root cause of best-of-N failure, with 90.6% of pages producing identical candidates across all 8 samples at low temperature (0.1). Paper [8] (\"Understanding the Role of Temperature in Diverse Question Generation by GPT-4\") evaluates diversity across samples at different temperatures, using metrics to quantify similarity between generated sets. Paper [7] (\"A Simple, Fast Diverse Decoding Algorithm for Neural Generation\") evaluates diversity in neural generation but does not focus on homogeneity at low temperature. Paper [5] (\"Arithmetic Sampling: Parallel Diverse Decoding for Large Language Models\") discusses duplicate samples but does not quantify homogeneity. Paper [8] uses a similar evaluation design (temperature-based diversity analysis), covering the evaluation facet.\n\n#### Domain:\nThe domain is diagnostic analysis of best-of-N failure. Paper [11] (\"Best-of-∞ - Asymptotic Performance of Test-Time Compute\") and Paper [16] (\"Evaluation of Best-of-N Sampling Strategies for Language Model Alignment\") both work in the domain of best-of-N sampling for large language models, analyzing its performance and limitations. Paper [13] (\"Scalable Best-of-N Selection for Large Language Models via Self-Certainty\") also addresses best-of-N sampling but focuses on improving selection methods. These papers operate in the same general application area, covering the domain facet.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = 8  \nVERDICT evaluation = 8  \nVERDICT domain = 11  ",
+      "stage2": "1. **FACET: purpose** | **FINAL: COVERED-BY 11** | reason: Paper [11] explicitly analyzes why best-of-N reranking fails in certain settings, stating: *\"While this approach achieves impressive performance in the limit, it requires an infinite test-time budget.\"* This aligns with the objective of explaining failure in this context."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 16
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Explain why best-of-N reranking fails in this setting.**\n\nThe purpose is to identify the root cause of best-of-N failure — specifically that candidate homogeneity at low temperature prevents effective selection. Paper [5] discusses diversity of outputs in decoding methods and notes that temperature sampling has \"no guarantees about duplicate samples.\" Paper [8] explicitly studies \"the effect of GPT's temperature parameter on the diversity of GPT4-generated questions\" and finds \"higher temperature values leads to significantly higher diversity.\" Paper [11] studies best-of-N performance limits. Paper [16] evaluates best-of-N sampling strategies and discusses failure modes (reward hacking). None of these papers establish the same empirical relationship: that best-of-N fails *because* low decoding temperature causes candidate homogeneity (identical samples). Paper [8] comes closest by linking temperature to diversity, but it doesn't frame this as explaining best-of-N failure. No prior paper reports the same variables-and-direction relationship: low temperature → identical candidates → best-of-N failure.\n\n**MECHANISM: Analyze candidate diversity across samples at low decoding temperature.**\n\nPaper [8] directly analyzes \"the effect of GPT's temperature parameter on the diversity of GPT4-generated questions,\" measuring diversity across generated samples at different temperatures. Paper [5] discusses diversity guarantees (or lack thereof) in temperature sampling. Paper [10] studies candidate samplers and contrasts diversity across sampling strategies. The mechanism of measuring/analyzing candidate diversity across samples at varying temperatures is clearly present in [8], and to a lesser extent [5] and [10].\n\n**EVALUATION: Root cause is candidate homogeneity: at low temperature (0.1), 90.6% of pages produce identical candidates across all 8 samples.**\n\nThis is a specific quantitative measurement (90.6% identical across 8 samples at temperature 0.1). The evaluation design involves measuring the rate of duplicate/identical outputs across multiple samples at a specific temperature setting. Paper [8] uses a similar evaluation design — measuring diversity of generated outputs across temperature settings. Paper [5] also discusses duplicate sample rates. The design of \"measure duplication/diversity rate across N samples at different temperatures\" is present in [8]. This is a standard diversity measurement design applied to a specific setting.\n\n**DOMAIN: Diagnostic analysis of best-of-N failure.**\n\nThe domain is best-of-N reranking/sampling for LLMs. Papers [11], [12], [13], [16], [19] all work in this exact domain. This is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 8\nVERDICT evaluation = 8\nVERDICT domain = 16",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explains why best-of-N reranking specifically fails in a particular setting (e.g., low output diversity, reward hacking in a specific domain); [16] discusses reward hacking in BoN but does not explain failure due to diversity collapse or analogous structural causes, and no other paper provides the same objective of diagnosing BoN failure mechanisms in this context."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 12
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to explain that best-of-N fails due to candidate homogeneity at low decoding temperatures. This causal relationship is established by prior work; paper [8] empirically demonstrates that lower temperature leads to lower diversity (\"using higher temperature values leads to significantly higher diversity\"), and paper [7] states that diversity is critical for the success of reranking (\"diverse decoding helps across all tasks, especially those for which reranking is needed\").\n\n**mechanism**: The mechanism is an analysis of candidate diversity as a function of decoding temperature. This is the exact analysis method used in paper [8], which states, \"We conduct a preliminary study of the effect of GPT's temperature parameter on the diversity of GPT4-generated questions.\"\n\n**evaluation**: The evaluation design involves measuring the rate of identical candidates at a specific temperature to quantify homogeneity. This is a direct application of the evaluation design in paper [8], which measures diversity and similarity as a function of temperature to establish its findings.\n\n**domain**: The domain is the analysis of best-of-N sampling as a technique for large language models. This application area is covered by numerous prior papers, including paper [12], which focuses on \"Best-of-N sampling that selects the best generation among N candidates\" for LLMs.\n\nVERDICT purpose = 8\nVERDICT mechanism = 8\nVERDICT evaluation = 8\nVERDICT domain = 12",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     5,
+     8
+    ],
+    "mechanism": [
+     5,
+     8
+    ],
+    "evaluation": [
+     5,
+     8
+    ],
+    "domain": [
+     5
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 5
+      },
+      "mechanism": {
+       "covered_by": 5
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": 5
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to draw a general lesson about the applicability of best-of-N approaches, specifically emphasizing the requirement of candidate diversity for success. Paper [5] (\"On the Effect of Sampling Diversity in Scaling LLM Inference\") explicitly studies the relationship between solution accuracy and response diversity in best-of-N scaling, providing theoretical explanations and empirical evidence. Paper [13] (\"Diversity, accuracy and efficiency in ensemble learning\") discusses the tension between diversity and accuracy in ensembles, which aligns conceptually but does not directly address best-of-N sampling. Paper [16] (\"The diversity-accuracy duality in ensembles of classifiers\") similarly investigates diversity's role in ensemble accuracy but does not generalize to best-of-N. Paper [5] is the closest match, as it directly addresses the same empirical relationship in the same context.\n\n### Mechanism\nThe contribution reasons from the homogeneity finding to the requirement of candidate diversity for any selection strategy. Paper [5] provides a theoretical explanation of why diversified sampling improves best-of-N scaling, explicitly linking diversity to success in selection strategies. Paper [13] and [16] discuss diversity in ensembles but do not reason about homogeneity or its implications for selection strategies. Paper [5] matches the mechanism most closely, as it explicitly reasons about diversity's necessity for best-of-N success.\n\n### Evaluation\nThe evaluation facet involves a qualitative implication: best-of-N requires candidate diversity to succeed, which well-trained models at low temperature do not provide. Paper [5] uses theoretical and empirical methods to study the effect of prompt diversity on best-of-N scaling, including systematic experiments and analysis. Paper [10] (\"Evaluation of Best-of-N Sampling Strategies for Language Model Alignment\") evaluates best-of-N sampling strategies but focuses on reward hacking rather than diversity. Paper [11] (\"CarBoN: Calibrated Best-of-N Sampling Improves Test-time Reasoning\") evaluates best-of-N sampling but emphasizes calibration rather than diversity. Paper [5] matches the evaluation design most closely, as it directly investigates diversity's role in best-of-N scaling.\n\n### Domain\nThe domain is best-of-N sampling and inference-time scaling. Papers [5], [6], [7], [10], and [11] all work within the same general application area of best-of-N sampling and inference-time scaling for large language models. While each paper targets specific sub-problems (e.g., prompt diversity, reward hacking, calibration), the general domain is shared. Therefore, the domain is covered by multiple papers, including [5].\n\n---\n\nVERDICT purpose = 5  \nVERDICT mechanism = 5  \nVERDICT evaluation = 5  \nVERDICT domain = 5  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Draw a general lesson about the applicability of best-of-N approaches — specifically that best-of-N requires candidate diversity to succeed.**\n\nPaper [8] explicitly states: \"the reinforcement learning fine-tuning process may harm the model's exploration ability, as reflected in decreased diversity of generations and a resulting degradation of performance during Best-of-N sampling for large N.\" This directly establishes the same empirical relationship: low diversity → degraded Best-of-N performance. Paper [5] also states it \"theoretically explain[s] why diversified sampling improves Best-of-N scaling.\" Both papers report the same relationship between diversity and Best-of-N success.\n\n**MECHANISM: Reason from a homogeneity finding to the requirement of candidate diversity for any selection strategy.**\n\nPaper [8] reasons from observed decreased diversity in RL-trained models to degraded Best-of-N performance — the same logical primitive: homogeneous outputs → selection strategies fail. Paper [5] similarly reasons from diversity to Best-of-N scaling improvement. Paper [2] reasons that \"for a model to be effectively tunable through temperature adjustments, it must be trained toward coverage,\" connecting model homogeneity to the failure of a selection/diversity mechanism. These all use the same reasoning primitive: lack of diversity in candidates undermines selection-based approaches.\n\n**EVALUATION: Qualitative implication — best-of-N requires candidate diversity, which well-trained models at low temperature do not provide.**\n\nThis is a qualitative/theoretical implication rather than an empirical experiment. However, paper [8] validates the same claim empirically (RL training reduces diversity, harming Best-of-N). Paper [5] provides theoretical and empirical support for the same claim. The evaluation design here is essentially a logical/qualitative argument, which is a standard form of analysis present in multiple prior papers. Papers [8] and [5] use the same design of measuring diversity and correlating with Best-of-N performance.\n\n**DOMAIN: Best-of-N / inference-time scaling (general implication).**\n\nPapers [5], [6], [7], [8], [10], [11] all operate in the Best-of-N / inference-time scaling domain for LLMs. This is clearly covered.\n\nVERDICT purpose = 8\nVERDICT mechanism = 8\nVERDICT evaluation = 8\nVERDICT domain = 5",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

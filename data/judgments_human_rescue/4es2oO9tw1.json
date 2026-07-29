@@ -1,0 +1,289 @@
+{
+ "paper_id": "4es2oO9tw1",
+ "title": "Compute-Constrained Data Selection",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     7,
+     8,
+     14
+    ],
+    "evaluation": [
+     8,
+     14,
+     22
+    ],
+    "domain": [
+     1,
+     17
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to address the practical setting where both the cost of selecting data and the cost of training are budgeted, with the insight that data-selection efficacy scales with its own compute. This specific dual-budgeted perspective is not directly addressed in any prior paper. While several papers (e.g., [1], [8], [15], [27]) discuss budget-constrained data selection or active learning, they focus on either labeling costs, training costs, or annotation costs, but not the interplay between selection compute and training compute. For example, [1] focuses on selecting training data under cost constraints but does not consider the compute cost of the selection process itself. Similarly, [8] and [15] address budgeted active learning but do not explicitly model the trade-off between selection compute and training compute. Therefore, no prior paper fully captures this purpose.\n\n### Mechanism\nThe contribution formalizes data selection as a compute-constrained combinatorial optimization problem with a cost-aware utility function that trades off initial-selection cost against training gain. It also categorizes selection methods (e.g., lexicon/BM25, embedding, perplexity, gradient/LESS) by compute scaling and derives a parametric performance model. While several prior papers address combinatorial optimization ([4], [5], [6], [14], [22]) or cost-aware selection ([1], [8], [15]), none combine these elements into a compute-aware utility function that explicitly trades off selection cost against training gain. For example, [4] discusses Bayesian optimization for combinatorial structures but does not address compute-aware data selection. Similarly, [8] and [15] focus on cost-aware active learning but do not model the compute scaling of selection methods or derive a parametric performance model. Thus, the mechanism is not covered by prior work.\n\n### Evaluation\nThe evaluation consists of a formal framework and a simulation (Figure 1) showing how the compute-optimal method changes with budget. This is a framing contribution without a single quantitative metric. The evaluation design — using a simulation to demonstrate the impact of budget constraints on method selection — is not novel. For example, [14] and [22] use simulations to study budget allocation frameworks, and [8] uses simulations to evaluate budgeted active learning. While the specific simulation setup in this contribution is new, the evaluation design (simulation-based analysis of budget-constrained optimization) is covered by prior work.\n\n### Domain\nThe domain is LLM fine-tuning and data selection. Several prior papers ([1], [7], [8], [15], [27]) address data selection or active learning in machine learning, including settings relevant to LLMs. For example, [7] discusses data selection for partially revealed sources, and [8] addresses budgeted active learning. While this contribution focuses on a specific aspect of LLM fine-tuning, the general domain of data selection in machine learning is well-covered.\n\n---\n\n**VERDICT purpose = NONE**  \n**VERDICT mechanism = NONE**  \n**VERDICT evaluation = 8**  \n**VERDICT domain = 1**  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses the dual budgeting of data selection and training costs with the same empirical relationship.  \nFACET: mechanism | FINAL: COVERED-BY 8 | reason: \"Active learning reduces the labeling cost by actively querying labels for the most valuable data points... These points are selected in such a way that... they provide maximum benefit to the underlying model,\" aligns with compute-constrained combinatorial optimization and cost-aware utility functions."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 17
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Address the under-considered practical setting where both data-selection cost and training cost are budgeted, since data-selection efficacy scales with its own compute**\n\nThe closest candidates are [1] (MIDAS: \"Model-Independent Training Data Selection Under Cost Constraints\") and [8] (Budgeted Batch Mode Active Learning). However, [1] focuses on labeling costs (human annotation costs), not the computational cost of running the selection algorithm itself. [8] similarly addresses labeling/acquisition costs. [17] (AUTOMATA) addresses compute-efficient hyperparameter tuning using data subsets, but the purpose is HPO efficiency, not jointly budgeting selection compute vs. training compute. None of the prior papers specifically address the joint optimization of *algorithmic selection compute* vs. *training compute* as a unified budget problem — the key insight that \"data-selection efficacy scales with its own compute\" and that this creates a tradeoff within a total compute budget is not captured by any prior paper.\n\n**MECHANISM: Formalize data selection as compute-constrained combinatorial optimization with cost-aware utility; categorize selection methods by compute scaling; derive parametric performance model**\n\n[1] proposes cost-constrained training data selection but focuses on annotation/labeling costs, not algorithmic compute costs. [8] uses generalized cost and utility functions for budgeted active learning, which is structurally similar but again targets labeling costs, not selection algorithm compute. [17] uses gradient-based data subset selection for compute efficiency but doesn't formalize the tradeoff between selection compute and training compute as a combinatorial optimization with a parametric model. No prior paper categorizes data selection methods by their compute scaling properties and derives a parametric performance model trading off selection cost against training gain.\n\n**EVALUATION: Formal framework plus simulation (Figure 1) showing compute-optimal method changes with budget; framing contribution with no single quantitative metric**\n\nThis is a conceptual/framing paper with a simulation illustrating the framework. [7] uses scaling laws to predict model performance, which is somewhat related but is a different design. [17] does empirical comparisons of methods at different compute budgets. The evaluation design here is essentially a theoretical/analytical framework with an illustrative simulation — this is a framing contribution. No prior paper uses this specific evaluation design (a simulation showing phase transitions in optimal method selection as a function of total compute budget for LLM data selection). This appears genuinely uncovered as a design.\n\n**DOMAIN: LLM finetuning / data selection**\n\n[17] (AUTOMATA) works on data subset selection for deep neural network training. [7] works on data selection for machine learning model training. [16] covers data valuation in machine learning broadly. These all operate in the ML training data selection area. LLM finetuning is a specific instance of the broader ML training domain, which is clearly covered by multiple prior papers.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 17",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper addresses the specific setting where *both* the cost of running the data-selection method itself and the cost of training are jointly budgeted, and where selection-method efficacy scales with its own compute. Paper [1] (MIDAS) addresses cost constraints on labeling/training data but not on the compute cost of the selection algorithm itself. No quoted phrase from any prior paper captures this dual-budget framing.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper formalizes data selection as a compute-constrained combinatorial optimization with a cost-aware utility function that explicitly trades off selection compute against training gain, nor categorizes NLP data-selection methods (lexicon/BM25, embedding, perplexity, gradient/LESS) by compute scaling to derive a parametric performance model. Paper [8] uses \"generalized cost and utility functions\" in active learning but applies to labeling costs, not selection-algorithm compute, and does not categorize or model NLP selection methods by compute scaling.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper presents a formal framework plus simulation showing that the compute-optimal data-selection method changes with total budget (as in Figure 1). This is a framing/structural contribution with no quantitative metric, and no prior paper contains an equivalent construct even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        7,
+        14
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        14,
+        22
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        17
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to optimize a unified budget that includes both the computational cost of the data selection algorithm itself and the cost of training on the selected data. Prior work on \"cost-sensitive\" or \"budgeted\" learning, such as [1], [8], [10], and [27], defines cost in terms of data labeling or acquisition, not the compute cost of the selection method. Other work on \"budget allocation\" ([14], [22]) focuses on allocating a compute budget to *evaluate* a fixed set of alternatives, not on trading off the selection algorithm's cost against a downstream training cost. Therefore, no prior paper shares the purpose of jointly budgeting for selection-compute and training-compute.\n\n**mechanism**: The mechanism involves formalizing the problem as a compute-constrained combinatorial optimization and using a parametric performance model. The primitive of creating a parametric model to predict model performance based on data characteristics (\"scaling laws\") is present in [7], which aims to \"fit scaling laws that predict model performance at any size and data source composition\". The primitive of framing a selection problem as an optimization under a computing budget is found in [14], which formulates \"the problem as a stochastic integer program\" to solve a \"fixed-budget ranking and selection (R&S) problem\".\n\n**evaluation**: The evaluation design consists of a formal framework and a simulation to demonstrate how the optimal selection method changes as the total compute budget varies. This design—proposing a resource allocation framework and then using simulation to explore its behavior under different parameter settings (like budget)—is a standard evaluation protocol in the field of simulation optimization and budget allocation, as seen in papers like [14] (\"Optimal Computing Budget Allocation\") and [22] (\"A New Budget Allocation Framework\"), which would be evaluated via such computational studies.\n\n**domain**: The contribution operates in the domain of data selection for LLM finetuning. The general application area of \"data selection for machine learning\" is covered by multiple prior papers. For example, [1] introduces a method for \"Model-Independent Training Data Selection\", and [17] proposes a method for \"Gradient Based Data Subset Selection\". Per the instructions, working on a specific instance (LLM finetuning) of an existing general area (data selection) means the domain is covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 7, 14\nVERDICT evaluation = 14, 22\nVERDICT domain = 1, 17",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: After re-review, no prior paper frames the problem as optimizing a total budget that includes both the compute cost of the data selection algorithm itself and the subsequent model training cost. Papers discuss data acquisition/labeling costs or feature costs, but do not model the selection process's own compute cost as a variable that influences selection quality and must be budgeted against the training cost."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     7,
+     20
+    ],
+    "mechanism": [
+     7,
+     20
+    ],
+    "evaluation": [
+     7,
+     10
+    ],
+    "domain": [
+     7,
+     10
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": 7
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**Purpose:**  \nThe contribution aims to empirically quantify the trade-off between model size, tokens, and data-selection compute to guide practitioners on compute allocation. Paper [7] (\"Training Compute-Optimal Large Language Models\") investigates the optimal model size and number of tokens for training under a compute budget, which overlaps with the same objective of understanding trade-offs between compute allocation factors. Paper [12] (\"An Information-Theoretic Analysis of Compute-Optimal Neural Scaling Laws\") also studies compute-optimal trade-offs between model size and training data size, which aligns with the purpose of quantifying trade-offs for compute allocation. Both papers substantively cover the purpose.  \n\n**Mechanism:**  \nThe contribution uses a comprehensive sweep varying finetuning tokens, model sizes, and data-selection compute, fitting power-law Pareto frontiers over FLOP budgets. Paper [7] conducts systematic experiments varying model size and tokens to identify compute-optimal configurations, which involves a similar mechanism of sweeping parameters and analyzing trade-offs. Paper [16] (\"Scaling Laws for Neural Language Models\") also fits power-law scaling relationships over model size, dataset size, and compute, which matches the mechanism of fitting Pareto frontiers over compute budgets. Both papers substantively cover the mechanism.  \n\n**Evaluation:**  \nThe contribution trains over 600 models across multiple sizes, data-selection methods, and downstream tasks to validate findings. Paper [7] trains over 400 models across a range of sizes and tokens to study compute-optimal configurations, using a similar evaluation design of large-scale model training and systematic variation of parameters. Paper [10] (\"When Scaling Meets LLM Finetuning\") conducts systematic experiments varying scaling factors (model size, pretraining data size, finetuning data size, etc.) to study their effects on finetuning performance, which matches the evaluation design of sweeping parameters and analyzing downstream task performance. Both papers substantively cover the evaluation design.  \n\n**Domain:**  \nThe contribution operates in the domain of LLM finetuning and data selection. Paper [7] explicitly addresses LLM training and optimization under compute budgets, which falls within the same domain. Paper [10] also focuses on LLM finetuning and scaling properties, which matches the domain. Paper [20] (\"Scaling Laws for Data Filtering—Data Curation Cannot be Compute Agnostic\") addresses data selection strategies for large-scale training, which overlaps with the domain of data selection for LLM finetuning. All three papers substantively cover the domain.  \n\n**Verdicts:**  \nVERDICT purpose = 7  \nVERDICT mechanism = 7  \nVERDICT evaluation = 7  \nVERDICT domain = 7  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 20
+      },
+      "mechanism": {
+       "covered_by": 20
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 10
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Empirically quantify the trade-off between model size, tokens, and data-selection compute to guide practitioners on compute allocation**\n\nThe key distinction here is that the purpose involves *data-selection compute* as a variable in the trade-off — not just model size and training tokens. Paper [7] (Chinchilla) studies optimal model size vs. training tokens under compute budget, but does not include data-selection compute as a variable. Paper [10] studies scaling factors in LLM finetuning (model size, pretraining data size, finetuning data size, finetuning method) but does not include data-selection compute as a variable. Paper [20] studies scaling laws for data filtering in VLMs and explicitly argues \"data curation cannot be compute agnostic,\" examining the trade-off between data-filtering compute and training compute — this is substantively equivalent to the purpose of quantifying the trade-off involving data-selection compute. Paper [20] says \"making data curation decisions agnostic to the available compute for training can be highly suboptimal\" and studies how filtering compute interacts with training compute budgets. This is the same objective at the problem-class level.\n\n---\n\n**MECHANISM: Comprehensive sweep varying finetuning tokens, model sizes, and data-selection compute; fit power-law Pareto frontiers over FLOP budgets**\n\nPaper [7] trains \"over 400 language models ranging from 70 million to over 16 billion parameters\" varying model size and tokens, fitting scaling laws — same primitive of large-scale sweep + power-law fitting. Paper [16] also fits power-law scaling laws across model size, dataset size, compute. Paper [20] fits scaling laws for data filtering compute vs. training compute, which is the closest match to the specific mechanism here (including data-selection compute as a variable in the sweep + power-law fitting). The mechanism of fitting power-law Pareto frontiers over FLOP budgets combining data-selection and training compute is most directly covered by [20], with [7] and [16] covering the general sweep+power-law primitive.\n\n---\n\n**EVALUATION: Train over 600 models from 7B to 70B (LLaMA-2/3) across 6 data selection methods and 3 downstream tasks (MMLU, BBH)**\n\nPaper [10] conducts \"systematic experiments\" on LLM finetuning scaling across model sizes and finetuning data sizes, evaluating on downstream benchmarks including MMLU and BBH — same benchmark family and evaluation design. Paper [9] evaluates instruction-finetuned models across scales on MMLU and BBH. The evaluation design (multi-scale model training, MMLU/BBH benchmarks, comparing methods across compute regimes) is covered by [10] which explicitly studies finetuning scaling with similar benchmarks and model families.\n\n---\n\n**DOMAIN: LLM finetuning / data selection**\n\nPaper [10] explicitly studies LLM finetuning scaling. Paper [9] studies instruction finetuning of LLMs. Paper [19] studies data selection for deep learning. Paper [5] studies data selection for LLM instruction tuning. The domain of LLM finetuning with data selection is clearly covered by multiple prior papers.\n\n---\n\nVERDICT purpose = 20\nVERDICT mechanism = 20\nVERDICT evaluation = 10\nVERDICT domain = 10",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     4,
+     19
+    ],
+    "mechanism": [
+     17
+    ],
+    "evaluation": [
+     4,
+     16,
+     17
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 19
+      },
+      "mechanism": {
+       "covered_by": 17
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to \"give actionable thresholds for when expensive selection methods pay off.\" Paper [19] (\"Measuring, Quantifying, and Predicting the Cost-Accuracy Tradeoff\") explores cost-accuracy tradeoffs in machine learning, including diminishing returns in accuracy as costs increase. This aligns with the same problem-class level objective of quantifying when additional computational expense yields meaningful benefits. Therefore, the purpose is **covered** by [19].\n\n### Mechanism\nThe contribution's mechanism involves \"fitting parametric models to the empirical runs and extrapolating the compute-optimal ratio between training model size and selection model size.\" Paper [17] (\"Chinchilla Scaling: A replication attempt\") fits parametric loss functions to scaling data to estimate compute-optimal ratios, which is substantively equivalent to the mechanism described here. Similarly, paper [11] (\"Probabilistic Rollouts for Learning Curve Extrapolation Across Hyperparameter Settings\") uses probabilistic models to extrapolate learning curves, which also aligns with the primitive of extrapolating optimal ratios based on empirical data. Thus, the mechanism is **covered** by [17] and [11].\n\n### Evaluation\nThe evaluation design involves break-even analysis and scaling laws to determine compute-optimal ratios and amortized task thresholds. Paper [16] (\"Scaling Laws for Hyperparameter Optimization\") uses scaling laws to analyze hyperparameter optimization, and paper [17] (\"Chinchilla Scaling\") applies scaling laws to compute-optimal ratios. Both employ the same evaluation design family (scaling law analysis and break-even computation). Therefore, the evaluation is **covered** by [16] and [17].\n\n### Domain\nThe contribution operates in the domain of \"LLM finetuning / data selection.\" Paper [1] (\"Superfiltering: Weak-to-Strong Data Filtering for Fast Instruction-Tuning\") explicitly addresses data filtering and selection for LLM finetuning, which is the same general application area. Paper [14] (\"Selection Via Proxy: Efficient Data Selection For Deep Learning\") also focuses on efficient data selection methods for deep learning, which includes LLMs. Thus, the domain is **covered** by [1] and [14].\n\n---\n\nVERDICT purpose = 19  \nVERDICT mechanism = 17  \nVERDICT evaluation = 16  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 17
+      },
+      "evaluation": {
+       "covered_by": 17
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Give actionable thresholds for when expensive selection methods pay off**\n\nThe purpose is to determine compute-optimal break-even points for data selection methods in LLM finetuning — specifically, when does the cost of a selection method become worthwhile? Paper [14] (Selection Via Proxy) addresses computational efficiency of data selection but focuses on using proxies to reduce cost, not on deriving thresholds for when selection pays off. Paper [1] (Superfiltering) asks whether weak models can filter for strong models, touching on cost-efficiency but not deriving actionable compute-optimal thresholds. Paper [18] (Scaling Laws for Value of Individual Data Points) studies scaling behavior for data value but doesn't establish break-even thresholds for selection method costs. No prior paper establishes the same objective: deriving actionable compute-optimal thresholds for when expensive selection methods pay off relative to their cost.\n\n**MECHANISM: Fit parametric models to empirical runs and extrapolate compute-optimal ratios**\n\nThe mechanism is fitting parametric models to empirical scaling data and extrapolating compute-optimal ratios (training model size vs. selection model size). Paper [17] (Chinchilla Scaling replication) explicitly involves \"fitting a parametric loss function\" to data to estimate compute-optimal scaling laws — this is the same primitive. Paper [4] (Protein Language Models) adapts NLP scaling law methodology to find \"optimal ratio between model parameters and training tokens within a fixed compute budget\" — same parametric fitting and extrapolation mechanism. Paper [3] (Rectified Scaling Law) fits scaling curves to predict finetuning performance. These all share the core primitive of fitting parametric models to empirical runs and extrapolating compute-optimal ratios.\n\n**EVALUATION: Perplexity/gradient selection break-even analysis with specific size ratios and task amortization**\n\nThe evaluation design involves: (1) compute-optimal analysis with specific model size ratios, and (2) break-even analysis across tasks for amortized cost. Paper [17] uses parametric fitting to scaling data to derive compute-optimal estimates — same evaluation design of fitting and extrapolating. Paper [4] uses the same compute-optimal ratio evaluation design. The break-even analysis across tasks resembles cost-benefit analysis designs, but the specific evaluation design (compute-optimal finetuning with selection model size ratios) matches [17] and [4] at the design level.\n\n**DOMAIN: LLM finetuning / data selection**\n\nPaper [1] (Superfiltering) operates in LLM instruction tuning with data filtering. Paper [14] (Selection Via Proxy) operates in data selection for deep learning. Paper [3] operates in LLM finetuning. These clearly cover the domain of LLM finetuning and data selection.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 17\nVERDICT evaluation = 17\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper provides actionable thresholds for when expensive selection methods pay off; [14] (Selection Via Proxy) addresses computational efficiency of data selection but focuses on using proxy models to reduce cost, not on threshold conditions that determine when expensive methods are worthwhile. No other paper matches this specific objective even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 17
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: Paper [4] covers this purpose by seeking to establish a similar empirical relationship, specifically finding the \"optimal ratio between model parameters and training tokens within a fixed compute budget,\" which is the same problem class as finding optimal ratios for data selection methods.\nmechanism: Paper [17] uses the same mechanism of fitting a parametric model to empirical data to find an optimum, as it describes \"fitting a parametric loss function to a reconstruction of data from their plots\" to estimate a compute-optimal scaling law.\nevaluation: The evaluation design, a compute-optimality analysis to find an optimal resource allocation ratio, is covered by [4], which \"investigated the optimal ratio between model parameters and training tokens within a fixed compute budget,\" representing the same validation framework.\ndomain: Paper [1] covers this domain as it operates in the same application area of data selection for large language models, specifically \"Data Filtering for Fast Instruction-Tuning\".\n\nVERDICT purpose = 4\nVERDICT mechanism = 17\nVERDICT evaluation = 4\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

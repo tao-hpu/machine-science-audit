@@ -1,0 +1,349 @@
+{
+ "paper_id": "FA0138",
+ "title": "Custom Forward-Backward VJPs for DFA-Guided Diffusion Language Models: An Empirical Study",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     8,
+     13
+    ],
+    "evaluation": [
+     12,
+     16
+    ],
+    "domain": [
+     3
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to accelerate gradient computation of DFA acceptance probability in DFA-guided diffusion, which accounts for 57-59% of each guided step. No prior paper explicitly addresses this specific objective. While [3] discusses DFA-guided diffusion models and their constraints, it does not focus on accelerating gradient computation for DFA acceptance probability. Similarly, [5] explores gradient guidance for diffusion models but does not address the specific computational bottleneck of DFA acceptance probability. Therefore, no prior paper covers this purpose.\n\n### Mechanism\nThe contribution's mechanism involves custom forward-backward vector-Jacobian products (VJPs) for DFA acceptance probability implemented with Triton kernels, adaptive dispatch, and pre-allocated buffers, avoiding autograd tape storage. [10] and [15] discuss forward-backward methods, but they focus on optimization and dynamic programming rather than implementing custom VJPs for DFA acceptance probability. [13] discusses Triton kernels and optimization for GPU performance but does not address DFA acceptance probability or VJP computation. [16] discusses reverse-mode automatic differentiation for GPU kernels but does not describe custom VJPs or Triton-based implementations for DFA acceptance probability. Thus, no prior paper covers this mechanism.\n\n### Evaluation\nThe contribution's evaluation demonstrates numerically identical gradients to baseline autograd (cosine similarity 1.0, relative L2 error 1.7e-5). This evaluation design is a standard numerical comparison of gradient accuracy, which is widely used in differentiable programming and gradient-based methods. For example, [12] and [19] discuss gradient validation methods, including numerical comparisons, in the context of differentiable programming. [16] also validates reverse-mode automatic differentiation by comparing numerical accuracy. Therefore, the evaluation design is covered.\n\n### Domain\nThe contribution operates in the domain of DFA-guided diffusion language models and constrained text generation. [3] explicitly addresses DFA-guided diffusion models and constrained text generation, making this domain covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 12  \nVERDICT domain = 3  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses accelerating gradient computation for DFA acceptance probability in DFA-guided diffusion.  \nFACET: mechanism | FINAL: COVERED-BY 13 | reason: \"Triton...offers a block-based programming API that abstracts the complexities of GPU kernel optimization,\" aligns with custom Triton kernel implementation for forward-backward VJPs."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Accelerate gradient computation of DFA acceptance probability in DFA-guided diffusion (57-59% of each guided step)**\n\nThe purpose is specifically to speed up gradient computation of DFA acceptance probability as a bottleneck in guided diffusion. Paper [3] introduces DFA-guided diffusion for continuous diffusion models and constructs analytic score functions, but its purpose is enabling the guidance method, not accelerating its gradient computation. Paper [5] studies gradient guidance for diffusion models from an optimization perspective, but doesn't target DFA acceptance probability gradients specifically. No prior paper has the purpose of accelerating gradient computation of DFA acceptance probability as a bottleneck in guided diffusion — this is a specific performance engineering objective tied to a specific computational primitive. None of the papers target this exact objective.\n\n**MECHANISM: Custom forward-backward VJPs for DFA acceptance probability with Triton kernels, adaptive dispatch, pre-allocated buffers, avoiding autograd tape storage**\n\nThe mechanism combines: (1) custom VJP/reverse-mode AD bypassing autograd tape, (2) Triton GPU kernels, (3) adaptive dispatch, (4) pre-allocated buffers. Paper [16] (Enzyme) performs reverse-mode AD of GPU kernels, which is related but is about compiler-level AD of existing GPU code, not hand-written custom VJPs. Paper [13] discusses Triton convolutions with shared memory. Paper [22] covers differentiable programming including custom VJPs. Paper [8] (SynJax) implements structured probability distributions with custom gradients in JAX. None combine custom VJPs specifically for DFA acceptance probability with Triton kernels + adaptive dispatch + pre-allocated buffers as a unified mechanism. The closest is [16] (custom gradients for GPU kernels) and [8] (custom gradients for structured/automata computations), but neither matches the full primitive. Paper [8] is the closest — it implements structured probability distributions (including automata-related ones) with custom gradient implementations for hardware accelerators. This is substantively equivalent at the primitive level: custom backward passes for automata-based probability computations on accelerators.\n\n**EVALUATION: Numerically identical gradients to baseline autograd (cosine similarity 1.0, relative L2 error 1.7e-5)**\n\nThis evaluation design — verifying a custom gradient implementation produces numerically identical results to a reference autograd implementation using cosine similarity and relative L2 error — is a standard numerical correctness check. Paper [16] validates Enzyme-generated gradients against reference implementations. Paper [13] validates Triton kernel outputs against reference implementations. This is a standard correctness validation design (compare custom implementation to reference via numerical metrics) that appears broadly in the AD and GPU kernel literature. Paper [16] explicitly validates gradient correctness against reference implementations.\n\n**DOMAIN: DFA-guided diffusion language models / constrained text generation**\n\nPaper [3] works directly in DFA-guided continuous diffusion language models for constrained text generation. Paper [1], [2], [23] work in constrained/grammar-guided language generation. The domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 8\nVERDICT evaluation = 16\nVERDICT domain = 3",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper addresses accelerating gradient computation of DFA acceptance probability specifically in the context of DFA-guided diffusion. Paper [3] is the closest (continuous diffusion + formal syntax + DFA-like constraints) but does not discuss profiling or accelerating the gradient computation of acceptance probability as a bottleneck. Paper [6] approximates acceptance probabilities of automaton-path sets but in a CTMC context with no diffusion guidance or gradient acceleration objective. No other paper contains the same objective even under different terminology."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     12,
+     18
+    ],
+    "evaluation": [
+     18
+    ],
+    "domain": [
+     3
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 18
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to measure the end-to-end speedup of a custom VJP (vector-Jacobian product) approach. None of the prior papers explicitly measure the speedup of a custom VJP approach. Papers [6] and [21] discuss speedups in other contexts (bounded topological speedups and dynamical systems), but these are unrelated to VJP or GPU kernel optimization. Paper [18] measures speedups for LLM fine-tuning frameworks, but this is a different purpose entirely. No prior paper establishes the same empirical relationship between a custom VJP approach and its speedup.\n\n### Mechanism\nThe mechanism involves benchmarking across constraint types and batch sizes against `torch.compile` baselines. Paper [12] introduces a modular benchmarking framework for black-box optimization, but it does not specifically benchmark constraint types or batch sizes against `torch.compile`. Paper [24] discusses personalized benchmarking across tasks and objectives but does not address the specific benchmarking setup described here. Paper [25] explores parameterized micro-benchmarking for auto-tuning but does not involve constraint types or batch sizes. No prior paper uses substantively equivalent benchmarking mechanisms.\n\n### Evaluation\nThe evaluation design involves testing on 4 constraint types and 2 batch sizes, finding limited speedups (1.01–1.23x). Paper [12] introduces a benchmarking framework, but its design focuses on black-box optimization and does not involve constraint types or batch sizes. Paper [24] discusses benchmarking across tasks and objectives but does not use the same evaluation design. Paper [14] critiques speedup metrics but does not propose or use the specific evaluation design described here. No prior paper uses the same evaluation design.\n\n### Domain\nThe domain is GPU kernel optimization for constrained diffusion decoding. Paper [3] discusses automated kernel fusion for GPU applications, which falls within the same general area of GPU kernel optimization. While the specific sub-problem of constrained diffusion decoding is not addressed, the domain is covered because kernel optimization is the broader application area.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 3  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper measures end-to-end speedup of a custom VJP approach under any terminology or framing.  \nFACET: mechanism | FINAL: COVERED-BY 12 | reason: \"Bencher introduces a clean abstraction boundary: each benchmark is isolated in its own virtual Python environment and accessed via a unified, version-agnostic remote procedure call (RPC) interface.\"  \nFACET: evaluation | FINAL: COVERED-BY 18 | reason: \"Chronicals... achieving 3.51x speedup over Unsloth through four synergistic optimizations: (1) fused Triton kernels... (2) Cut Cross-Entropy...\" satisfies evaluation of speedups across constraints and batch sizes.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 18
+      },
+      "evaluation": {
+       "covered_by": 18
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**Purpose: Measure the end-to-end speedup of the custom VJP approach.**\n\nThe purpose is to empirically measure whether a custom VJP (vector-Jacobian product) implementation achieves meaningful speedup over a baseline (torch.compile). Paper [18] measures speedup of a fine-tuning framework (3.51x over Unsloth) using fused Triton kernels. Paper [14] discusses how to accurately summarize speedup metrics. Neither paper shares the same objective of measuring VJP-specific speedup for constrained diffusion decoding. No prior paper establishes the same empirical relationship (custom VJP speedup vs. torch.compile baseline in constrained decoding). The purpose is not covered.\n\n**Mechanism: Benchmarking across constraint types and batch sizes against torch.compile baselines.**\n\nThis is a standard benchmarking design: vary parameters (constraint types, batch sizes), compare against a baseline. Paper [18] benchmarks fused kernels against baselines across configurations. Paper [25] discusses parameterized micro-benchmarking for auto-tuning. Paper [14] discusses speedup measurement methodology. These represent the same generic benchmarking design (vary parameters, measure speedup against baseline), which is a standard protocol appearing in multiple prior papers.\n\n**Evaluation: Evaluated on 4 constraint types x 2 batch sizes, finding limited speedups (1.01-1.23x).**\n\nThe evaluation design is a grid sweep over parameter combinations measuring speedup ratios against a baseline — a standard benchmarking protocol. Paper [18] uses this same design (multiple configurations, speedup ratios). Paper [25] uses parameterized benchmarking across configurations. The design (grid of configurations × speedup metric) is covered. The specific finding (1.01-1.23x) is just the result, not a new evaluation design.\n\n**Domain: GPU kernel optimization for constrained diffusion decoding.**\n\nPaper [3] covers GPU kernel optimization (kernel fusion for GPU). Paper [18] covers GPU kernel optimization for LLM training (fused Triton kernels). The general area of GPU kernel optimization is covered by [3] and [18]. Constrained diffusion decoding is a specific instance within the broader area of GPU kernel optimization for neural network inference/training.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 18\nVERDICT evaluation = 18\nVERDICT domain = 3",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper measures end-to-end speedup specifically of a custom VJP (vector-Jacobian product) approach; [18] measures speedup of fused Triton kernels and [14] discusses speedup metrics generally, but neither shares the same objective of benchmarking a custom VJP implementation's end-to-end performance gain."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     1,
+     3,
+     5
+    ],
+    "evaluation": [
+     3,
+     6,
+     17,
+     21
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        1,
+        3,
+        5
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        6,
+        21
+       ]
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to explain why the custom VJP fails to achieve the targeted speedup. None of the prior papers explicitly address this specific empirical relationship or failure mode. While some papers (e.g., [6], [21]) discuss matrix structure and performance implications, they do not establish or analyze the specific relationship between tokenizer-aligned DFA structure and the failure of sparse optimization in the context of custom VJP speedup. Therefore, no prior paper covers this purpose.\n\n### Mechanism\nThe mechanism involves analyzing tokenizer-aligned DFA structure, specifically edge counts versus state counts. Paper [1] discusses DFA construction for BPE tokenizations, which inherently involves analyzing DFA structure, including states and transitions. Paper [3] also analyzes DFA redundancies and compression, which implicitly involves structural analysis of states and transitions. Paper [5] discusses DFA compression and trade-offs between memory and state transitions, which similarly involves structural analysis. These papers collectively cover the mechanism of analyzing DFA structure, even though they do not focus on tokenizer alignment specifically.\n\n### Evaluation\nThe evaluation identifies the root cause: tokenizer-aligned DFAs have 65K-348K edges despite only 6-68 states, making transition matrices effectively fully dense and invalidating the sparse optimization hypothesis. Paper [6] discusses structured sparse transition matrices and their implications for state-space models, which overlaps with the evaluation design of analyzing matrix sparsity/density and its impact on optimization. Paper [21] evaluates matrix structure and its impact on performance, including layout considerations, which aligns with the evaluation design of analyzing matrix structure and sparsity. These papers cover the evaluation design, even though they do not focus on tokenizer-aligned DFAs specifically.\n\n### Domain\nThe domain is DFA structure analysis for tokenizer-aligned automata. Paper [1] explicitly addresses DFA construction for BPE tokenizations, which is directly within the same domain of tokenizer-aligned automata. Paper [17] discusses finite automata and their application to bigram counts, which is tangentially related but does not focus on tokenizer alignment. Paper [11] establishes neural networks as universal finite-state machines, which is relevant to DFA structure analysis but not specific to tokenizer alignment. Among these, paper [1] most directly covers the domain.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 1, 3, 5  \nVERDICT evaluation = 6, 21  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses the failure of custom VJP to achieve targeted speedup, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**PURPOSE: Explain why the custom VJP fails to achieve the targeted speedup.**\n\nThe purpose is to diagnose/explain a performance failure of a specific optimization (custom VJP for sparse transition matrices in tokenizer-aligned DFAs). I need to find a prior paper that explains why a sparse optimization fails due to density of the underlying structure. Paper [6] discusses structured sparse transition matrices for SSMs and FSA state tracking, touching on compute/memory tradeoffs, but it proposes a solution rather than explaining why a sparse optimization fails. Paper [21] analyzes how matrix structure affects SpMV performance, examining why certain storage formats underperform based on matrix layout — this is thematically related but concerns SpMV formats, not VJP/backpropagation. No prior paper establishes the same empirical relationship: \"custom VJP sparse optimization fails because tokenizer-aligned DFA transition matrices are effectively dense despite few states.\" None of the papers explain why a VJP-based sparse optimization fails for this specific reason.\n\n**MECHANISM: Analysis of tokenizer-aligned DFA structure (edge counts vs state counts).**\n\nThe mechanism is counting edges vs. states in tokenizer-aligned DFAs to determine effective density. Paper [1] constructs BPE tokenization DFAs and analyzes their structure — it directly analyzes DFA structure for tokenizer-aligned (BPE) automata. However, it focuses on construction algorithms, not on edge/state ratio analysis to explain density. Paper [3] analyzes DFA redundancies and compression, examining structural properties. Paper [6] discusses transition matrix density vs. sparsity in SSMs. None specifically perform edge-count vs. state-count analysis on tokenizer-aligned DFAs to assess transition matrix density. This specific analytical primitive (counting edges vs states to assess effective matrix density) doesn't appear in prior work.\n\n**EVALUATION: Root cause finding — 65K-348K edges despite 6-68 states, making matrices fully dense.**\n\nThis is a specific empirical measurement/finding presented as the evaluation. The evaluation design here is essentially a structural analysis/counting experiment on DFA instances. Paper [1] performs algorithmic analysis of BPE tokenization DFAs. Paper [21] examines matrix structure and its effect on SpMV performance using layout classification. The evaluation design (measure edge counts and state counts, compute density ratio) is a basic structural analysis. However, no prior paper uses this specific design to validate a claim about VJP speedup failure. The evaluation design is essentially a counting/measurement protocol applied to DFA instances — this is a generic structural measurement, not a named benchmark or protocol family. The specific claim being validated (sparse VJP fails because matrices are dense) is not validated in any prior paper.\n\n**DOMAIN: DFA structure analysis for tokenizer-aligned automata.**\n\nPaper [1] explicitly constructs and analyzes DFAs for BPE tokenization — this is directly in the domain of DFA structure analysis for tokenizer-aligned automata. Paper [24] and [29] deal with grammar-constrained decoding involving DFAs and tokenizers. The domain of tokenizer-aligned DFA analysis is clearly covered by paper [1].\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explains why a custom VJP fails to achieve a targeted speedup in this context; the closest papers discuss DFA compression or sparse matrix performance but none address VJP optimization failure for tokenizer-aligned DFAs.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper analyzes the edge-count vs. state-count structure of tokenizer-aligned DFAs specifically; paper [1] constructs BPE tokenization DFAs but does not analyze their transition density or edge/state ratio as a structural property.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports the specific empirical finding that tokenizer-aligned DFAs have 65K–348K edges despite only 6–68 states, nor draws the conclusion that this makes transition matrices effectively fully dense and invalidates a sparse optimization hypothesis."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        1,
+        3
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        3,
+        17
+       ]
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "purpose: The contribution's purpose is to establish and explain an empirical relationship: that tokenizer-aligned DFAs have a very high edge-to-state ratio, making their transition matrices effectively dense and invalidating sparse optimization hypotheses. No prior paper reports this specific finding or explains this particular performance failure.\n\nmechanism: The mechanism is analyzing a DFA's structure by comparing its edge and state counts. This analysis design is covered by paper [1], which \"analyze[s] an algorithm for the efficient construction of\" these same DFAs, and paper [3], which performs a \"comprehensive analysis of different redundancies in DFA structure\" for compression.\n\nevaluation: The evaluation design is to quantify the number of states and edges to demonstrate that the transition matrix is dense, invalidating a sparsity assumption. This design is covered by paper [3], which analyzes DFA structure to find redundancies, and paper [17], which analyzes the number of states of a DFA (\"minimum deterministic finite automaton... has at least exponentially many states\").\n\ndomain: The domain is the structural analysis of tokenizer-aligned automata. Paper [1] directly addresses this area by presenting an algorithm for \"Constructing a BPE Tokenization DFA\" and analyzing its construction.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 1, 3\nVERDICT evaluation = 3, 17\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the objective of performing a failure analysis or post-mortem to explain why a specific, custom implementation failed to meet its expected performance goals. Papers that analyze performance do so to characterize general bottlenecks or motivate new designs, which is a different objective."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     10
+    ],
+    "evaluation": [
+     3,
+     11
+    ],
+    "domain": [
+     10,
+     15
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": [
+        3,
+        11
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        10,
+        15
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to guide future work away from gradient-computation optimizations for this problem. This requires a prior paper to explicitly report or establish the same empirical relationship — that gradient-computation optimizations are ineffective or suboptimal for the problem at hand. Paper [10] discusses negative results in computer vision but does not specifically address gradient-computation optimizations. Paper [14] proposes methods to save gradient computations but does not document their ineffectiveness. No prior paper explicitly establishes the same relationship or effect.\n\n#### Mechanism:\nThe mechanism involves documenting the negative result and recommending alternative directions. Paper [10] discusses the value of negative results in computer vision and their importance for guiding future research, which aligns with the mechanism of documenting negative results and suggesting alternative directions. While the specific context differs, the mechanism of documenting negative findings and using them to inform future research is substantively equivalent.\n\n#### Evaluation:\nThe evaluation suggests state-space reduction or approximate inference as more promising alternatives to gradient computation optimizations. Paper [3] discusses approximate inference for stochastic planning, and Paper [11] benchmarks approximate inference methods for neural structured prediction. Both papers evaluate approximate inference methods as alternatives to exact computation, which matches the evaluation design of suggesting alternatives to gradient computation optimizations. The specific alternatives differ, but the evaluation design is substantively equivalent.\n\n#### Domain:\nThe domain is research direction/negative result documentation. Paper [10] explicitly addresses negative results in computer vision, and Paper [15] discusses negative results in neonatal trials. Both papers operate in the general area of documenting negative results to guide future research, which matches the domain of the contribution.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = 10  \nVERDICT evaluation = 3, 11  \nVERDICT domain = 10, 15  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly guides future work away from gradient-computation optimizations for this problem, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 10
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**PURPOSE: Guide future work away from gradient-computation optimizations for this problem.**\n\nThe purpose here is specifically to report a negative result about gradient-computation optimizations and redirect researchers toward alternative approaches. Paper [10] \"Negative results in computer vision: A perspective\" discusses the value of negative results and guiding future work based on them — \"A negative result is when the outcome of an experiment or a model is not what is expected... negative results are results and they carry value.\" Paper [15] \"Negative Results in Neonatal Trials: Clinical Lessons and Future Directions\" also discusses negative results guiding future directions. However, the specific purpose — establishing that gradient-computation optimizations are not the right path for a particular problem — requires the same variables and direction of effect. Papers [10] and [15] discuss the meta-level value of negative results, not the same empirical relationship (gradient optimization being unproductive for a specific problem class). No prior paper establishes this same relationship. NONE.\n\n**MECHANISM: Documenting the negative result and recommending alternative directions.**\n\nThe mechanism is documenting a negative result and recommending alternatives. Paper [10] explicitly discusses this as a practice: \"negative results are results and they carry value\" and advocates for reporting them. Paper [15] similarly documents negative trial results and draws \"Clinical Lessons and Future Directions.\" Both use the same mechanism of documenting negative findings and recommending future directions. This is a standard scientific communication primitive covered by [10] and [15].\n\n**EVALUATION: Suggests state-space reduction or approximate inference may be more promising than gradient computation optimizations.**\n\nThe evaluation design here involves comparing/assessing approximate inference vs. gradient computation approaches. Paper [11] \"Benchmarking Approximate Inference Methods for Neural Structured Prediction\" explicitly benchmarks approximate inference methods against gradient-descent-based approaches: \"One approach is to perform gradient descent with respect to the output structure directly... Another approach... is to train a neural network to perform inference... we compare these two families of inference methods.\" This is the same evaluation design — comparing approximate inference against gradient-based methods. Paper [3] also addresses approximate inference for planning problems. Paper [11] covers this.\n\n**DOMAIN: Research direction / negative result documentation.**\n\nThe domain is the practice of documenting negative results and research directions in computer science/AI. Paper [10] operates in exactly this domain — negative result documentation in computer vision/CS. Papers [1], [2], [4], [5], [6] are all \"directions for research\" papers in AI/CS. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 10\nVERDICT evaluation = 11\nVERDICT domain = 10",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper contains the objective of steering future work away from gradient-computation optimizations for this specific problem. Paper [10] and [15] discuss negative results and future directions generally, but neither targets gradient-computation optimizations as a direction to avoid. Paper [14] saves gradient computations but does not argue against optimizing them. No paper matches the same objective even under different terminology."
+     }
+    }
+   }
+  }
+ ]
+}

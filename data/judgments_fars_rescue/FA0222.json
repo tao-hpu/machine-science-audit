@@ -1,0 +1,352 @@
+{
+ "paper_id": "FA0222",
+ "title": "Escaped Markup: Preventing Verdict Spoofing in Structured Multimodal LLM Judges",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     9,
+     13
+    ],
+    "mechanism": [
+     13
+    ],
+    "evaluation": [
+     3,
+     4
+    ],
+    "domain": [
+     3,
+     9
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to characterize a new attack surface created by structured output formats in multimodal LLM judges. Paper [13] introduces the Constrained Decoding Attack (CDA), which targets structured output APIs in LLMs, identifying vulnerabilities in grammar-guided decoding. This aligns with the purpose of exposing structured output vulnerabilities, albeit in a slightly different context. Paper [9] also discusses novel security risks in LLM-as-a-Judge systems, including adversarial manipulation, but does not specifically focus on structured output formats. Paper [3] investigates universal adversarial attacks on LLM judges but does not address structured output formats. Thus, paper [13] substantively covers the purpose.\n\n### Mechanism\nThe contribution uses a format-spoofing attack that appends a suffix to the dispreferred candidate, injecting reserved markers to construct a fake output structure that the judge pattern-completes. Paper [13] introduces CDA, which exploits grammar-guided decoding vulnerabilities in structured output APIs, relying on structural marker collisions. This is substantively equivalent to the format-spoofing mechanism described in the contribution. Paper [6] discusses spoofing attacks via false data injections but focuses on cyber-physical systems, not structured output formats in LLMs. Paper [16] studies spoofing attacks on Kalman filters, which is unrelated to the mechanism here. Thus, paper [13] covers the mechanism.\n\n### Evaluation\nThe contribution evaluates attack success rates using VL-RewardBench with Qwen2.5-VL-7B-Instruct, measuring conditional attack success rate (ASRcond). Paper [13] evaluates CDA using structured output APIs but does not use VL-RewardBench or measure ASRcond. Paper [4] evaluates prompt injection attacks on LLM-as-a-Judge systems using success rates but does not use the same evaluation design. Paper [9] provides a comprehensive SoK on LLM-as-a-Judge security but does not introduce a specific evaluation design. No prior paper uses the same evaluation design (VL-RewardBench with ASRcond), so evaluation is uncovered.\n\n### Domain\nThe contribution operates in the domain of AI alignment and adversarial attacks on multimodal LLM-as-a-Judge systems. Paper [9] explicitly addresses security risks in LLM-as-a-Judge systems, covering adversarial manipulation and reliability concerns. Paper [4] evaluates prompt injection attacks on LLM-as-a-Judge systems across multiple models and tasks, which falls within the same domain. Paper [3] investigates adversarial attacks on LLM judges, also within the same domain. Thus, the domain is covered by multiple prior papers.\n\n---\n\nVERDICT purpose = 13  \nVERDICT mechanism = 13  \nVERDICT evaluation = NONE  \nVERDICT domain = 9  ",
+      "stage2": "FACET: evaluation | FINAL: COVERED-BY 4 | reason: Paper [4] reports a 73.8% attack success rate on LLM-as-a-Judge systems, which aligns with the evaluation of attack success rates on similar systems, satisfying the same claim of adversarial vulnerability."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Characterize a new attack surface created by structured output formats in multimodal LLM judges.**\n\nPaper [13] is the closest match — it explicitly studies \"grammar-guided decoding that powers this feature opens a critical control-plane attack surface orthogonal to traditional data-plane vulnerabilities\" and introduces \"Constrained Decoding Attack (CDA)\" targeting structured output in LLMs. However, the purpose there is jailbreaking via constrained decoding, not attacking LLM-as-a-Judge systems via format spoofing. Paper [3] investigates adversarial robustness of judge-LLMs, and paper [9] is a comprehensive SoK on security in LLM-as-a-Judge. Neither specifically characterizes the attack surface created by *structured output formats* in judges. The contribution's purpose is specifically about structured output formats as an attack surface in *judge* systems — paper [13] covers structured output attack surfaces but not in the judge context; papers [3], [9] cover judge attack surfaces but not specifically structured output formats. The combination is not covered by any single paper at the problem-class level. However, at the broadest level, \"characterize attack surface in LLM-as-a-Judge\" is covered by [9] and [3]. The structured-output-format angle is a specific instance within the broader judge security space. Per the purpose special rule, if the same objective at the problem-class level is covered, it counts. The objective here is specifically \"structured output formats create a new attack surface in judges\" — this is a more specific claim than general judge vulnerability. Paper [13] covers structured output attack surfaces in LLMs generally. I'll consider this partially covered but the specific combination (structured output + judge) seems genuinely new. Still, [9] covers the general purpose of characterizing attack surfaces in LLM-as-a-Judge, and [13] covers structured output attack surfaces. At the problem-class level, [9] covers \"characterize attack surfaces in LLM-as-a-Judge.\"\n\n**MECHANISM: Format-spoofing via injecting reserved structural markers to trigger pattern completion.**\n\nPaper [13] introduces \"Constrained Decoding Attack (CDA)\" which \"targets the LLM control plane\" using grammar/structure constraints — this is about exploiting structured output mechanisms. However, CDA works through constrained decoding at inference time, not by appending suffixes that inject the judge's own reserved markers to trigger pattern completion. Paper [3] uses \"short universal adversarial phrases concatenated to deceive judge LLMs.\" Paper [1] and [4] use prompt injection. The specific mechanism here — injecting the judge's own output-format markers (</pred>, \\boxed{}) as a suffix to trigger structural pattern completion without explicit instructions — is a structural marker collision attack. Paper [13] is the closest: it exploits \"grammar-guided decoding\" and \"structured output\" as a control-plane vulnerability. The primitive of exploiting structural/format tokens to hijack model behavior is present in [13]. The non-imperative nature (relying on structural marker collision rather than explicit instructions) is somewhat novel, but the underlying primitive of \"exploit structured output format tokens to manipulate LLM behavior\" is covered by [13].\n\n**EVALUATION: 66.59% ASRcond on VL-RewardBench with Qwen2.5-VL-7B-Instruct; random-suffix control at 26.5%.**\n\nThe evaluation design uses: (1) a named benchmark (VL-RewardBench), (2) a conditional attack success rate metric (ASRcond), and (3) a random-suffix ablation control. Paper [3] uses adversarial attack success rates on judge LLMs with ablation controls. The ASRcond metric and random-suffix control design are standard adversarial evaluation patterns. VL-RewardBench is a specific benchmark. The evaluation design (attack success rate on a reward/judge benchmark with ablation control) is used in [3] and [9]. This is a standard adversarial evaluation design covered by prior work.\n\n**DOMAIN: AI alignment / adversarial attacks on multimodal LLM-as-a-Judge.**\n\nPapers [3], [9], [1], [4] all work in adversarial attacks on LLM-as-a-Judge systems. The multimodal aspect is a specific instance within the broader LLM-as-a-Judge security area. Per the domain special rule, this is covered.\n\nVERDICT purpose = 9\nVERDICT mechanism = 13\nVERDICT evaluation = 3\nVERDICT domain = 3",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     3,
+     20
+    ],
+    "mechanism": [
+     13,
+     14,
+     25
+    ],
+    "evaluation": [
+     2,
+     20
+    ],
+    "domain": [
+     1,
+     3,
+     20
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 25
+      },
+      "evaluation": {
+       "covered_by": 20
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to provide a practical training-free defense that neutralizes injected markers in prompt injection attacks. None of the prior papers explicitly propose a training-free defense targeting injected markers. Papers like [3] (PromptArmor) and [10] (Polymorphic Prompt Assembling) propose defenses against prompt injection attacks, but they rely on mechanisms like prompting an LLM or assembling polymorphic prompts, which are not training-free. Therefore, no prior paper shares the same purpose.\n\n### Mechanism\nThe mechanism involves reserved-sequence sanitization through sequential preprocessing steps: tag stripping, boxed removal, verdict redaction, quality-assertion redaction, and blank-line cleanup. Papers [7] (Data Sanitization), [13] (Text Preprocessing Pipeline), [15] (Data Cleansing), and [21] (Validating and Sanitizing User Input) describe sanitization or preprocessing pipelines, but none specifically address reserved-sequence sanitization for prompt injection markers. Paper [14] (Regex Denial of Service) discusses regex-based sanitization, which overlaps with the boxed removal step, but the broader mechanism (reserved-sequence sanitization) is not covered. Thus, no prior paper fully matches the mechanism.\n\n### Evaluation\nThe evaluation validates the defense as a training-free preprocessing pipeline against No Defense and Spotlighting baselines. Paper [20] (Spotlighting) uses Spotlighting as a defense mechanism and evaluates it against indirect prompt injection attacks, which matches the evaluation design of comparing defenses against prompt injection attacks. Therefore, the evaluation facet is covered.\n\n### Domain\nThe domain is prompt-injection defense for structured LLM judges. Papers [3] (PromptArmor), [10] (Polymorphic Prompt Assembling), and [20] (Spotlighting) all address prompt injection defenses for LLMs, which is the same general application area. While the contribution targets structured LLM judges specifically, this is a narrower instance within the broader domain of prompt injection defense, making the domain covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 20  \nVERDICT domain = 3  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly provides a practical training-free defense that neutralizes injected markers, even under different terminology or framing.  \nFACET: mechanism | FINAL: COVERED-BY 25 | reason: Paper [25] describes \"Content Disarm and Reconstruction (CDR)\" as a methodology that proactively extracts threat attack vectors from documents, aligning with the reserved-sequence sanitization mechanism's objective of preprocessing and removing harmful elements. Quote: \"Content Disarm and Reconstruction (CDR) is a zero-trust file methodology that proactively extracts threat attack vectors from documents and media files.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 20
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 20
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Provide a practical training-free defense that neutralizes injected markers.**\n\nThe purpose is specifically to defend against prompt injection by removing/neutralizing injected markers without training. Papers [1], [2], [3], [4], [6], [10], [11], [20] all address prompt injection defenses. Paper [20] (Spotlighting) explicitly proposes a training-free defense against indirect prompt injection. Paper [3] (PromptArmor) proposes a \"simple yet effective defense\" that detects and removes injected prompts. Paper [2] evaluates defenses against prompt injection. The objective of \"training-free defense that neutralizes injected markers\" is substantively covered by [20] (training-free spotlighting defense) and [3] (lightweight removal-based defense).\n\n**MECHANISM: Reserved-sequence sanitization via sequential steps: tag stripping, boxed removal (regex), verdict redaction, quality-assertion redaction, plus blank-line cleanup.**\n\nThis is a rule-based preprocessing pipeline using regex/string matching to strip specific structured tokens (XML-like tags, LaTeX \\boxed{}, verdict phrases, quality assertions) from LLM outputs before they reach a judge. Paper [20] (Spotlighting) uses input transformation (delimiters, encoding) but not removal/stripping of specific reserved tokens. Paper [3] (PromptArmor) uses an LLM to detect and remove injected prompts — not rule-based regex stripping. Paper [6] addresses tool result parsing for defense. Paper [4] discusses sanitization as a defense category. None of the prior papers describe this specific primitive of regex-based sequential stripping of structured reserved tokens (XML tags, \\boxed{}, verdict phrases) from LLM-generated responses. The closest is general \"input sanitization\" as a concept mentioned in [4], but the specific mechanism of stripping LLM-output formatting markers (boxed, verdict, quality assertions) as a defense primitive is not described. However, the general concept of sanitizing/removing specific patterns via regex from text inputs appears in [14] and [16] (web input sanitization with regex), and [21] (validating/sanitizing user input). The underlying primitive — \"remove specific patterns from text using regex/string matching before processing\" — is covered by [14], [16], [21] at the primitive level, even though the application differs.\n\n**EVALUATION: Validated against No Defense and Spotlighting baselines.**\n\nThe evaluation design compares a proposed defense against a \"No Defense\" baseline and the Spotlighting baseline [20]. This is a standard defense comparison evaluation design. Paper [2] explicitly evaluates defenses against prompt injection attacks using comparative baselines. Paper [20] itself is used as a baseline. Paper [4] benchmarks attacks and defenses. The evaluation design (compare proposed defense vs. existing defense baselines on prompt injection tasks) is covered by [2] and [4].\n\n**DOMAIN: Prompt-injection defense for structured LLM judges.**\n\nThe domain is LLM prompt injection defense. Papers [1], [2], [3], [4], [5], [6], [8], [10], [11], [20] all work in the LLM prompt injection defense area. The specific sub-problem (structured LLM judges) is a narrower instance within the same general area. This is covered.\n\nVERDICT purpose = 20\nVERDICT mechanism = 14\nVERDICT evaluation = 2\nVERDICT domain = 20",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: COVERED. The objective of providing a practical, training-free defense against prompt injection attacks is shared by multiple prior papers. For example, [3] presents \"a simple yet effective defense against prompt injection attacks,\" and [10] proposes a \"lightweight defense mechanism... which protects against prompt injection.\"\n\nmechanism: COVERED. The mechanism is a sequential, rule-based text sanitization pipeline. This is a well-established technical primitive. [13] describes a \"classical text preprocessing pipeline\" with sequential steps, and [14] discusses the use of \"regexes they use to sanitize input strings,\" which is a core component of the contribution's mechanism.\n\nevaluation: COVERED. The evaluation design, which compares a new defense against a \"No Defense\" baseline and an existing named defense (\"Spotlighting\"), is a standard protocol. [2] establishes the general design of evaluating defenses against \"existing and adaptive prompt injection attacks,\" and comparing to a specific prior method like Spotlighting from [20] is an application of this design, not the creation of a new one.\n\ndomain: COVERED. The application area is prompt-injection defense. This is the explicit domain of numerous prior papers, including [1] (\"defend against these attacks, we propose CourtGuard, a... prompt injection classifier\"), [3], [5], [6], and [20]. The focus on \"structured LLM judges\" is a specific application instance within this well-established domain.\n\nVERDICT purpose = 3\nVERDICT mechanism = 13\nVERDICT evaluation = 2\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     2,
+     13
+    ],
+    "mechanism": [
+     2,
+     21
+    ],
+    "evaluation": [
+     2,
+     12,
+     21
+    ],
+    "domain": null
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 12
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to demonstrate that the defense reduces attack success while preserving clean accuracy and beating a prior baseline. Paper [2] discusses Base64 encoding as a defense against prompt injection attacks, aiming to reduce attack success rates. Paper [13] introduces PromptArmor, which defends against prompt injection attacks while maintaining system functionality, aligning with the goal of preserving clean accuracy. Both papers share the same objective at the problem-class level: reducing attack success while maintaining system performance. Therefore, the purpose is covered.\n\n#### Mechanism:\nThe contribution evaluates VL-RewardBench using three defense methods (No Defense, Spotlighting, and Escaping) and reports metrics like OverallAcc, ParseFail, and ASRcond. Paper [2] describes Base64 encoding as a defense mechanism against prompt injection attacks, which matches the Spotlighting defense in the contribution. Paper [13] uses a mechanism to detect and remove injected prompts, which aligns with the Escaping defense. Both papers employ substantively equivalent mechanisms for defending against prompt injection attacks, even though the vocabulary differs slightly. Thus, the mechanism is covered.\n\n#### Evaluation:\nThe evaluation design involves comparing defenses on VL-RewardBench using metrics like ASRcond, OverallAcc, and ParseFail. Paper [12] formalizes and benchmarks prompt injection attacks and defenses, providing a systematic evaluation framework for defenses, including metrics like attack success rate (ASR). Paper [10] introduces NotInject, an evaluation dataset for measuring over-defense in prompt guard models, which also uses metrics to assess defense effectiveness. Both papers employ evaluation designs that are substantively equivalent to the contribution's approach, even though the specific dataset (VL-RewardBench) differs. Therefore, the evaluation is covered.\n\n#### Domain:\nThe contribution operates in the domain of multimodal preference judging, specifically using VL-RewardBench. Paper [12] addresses prompt injection attacks and defenses in LLM-integrated applications, which includes multimodal systems. Paper [13] also focuses on prompt injection defenses in LLMs, which are applicable to multimodal systems. Both papers work in the same general application area of defending LLM-based systems, even though the specific sub-problem (multimodal preference judging) differs. Thus, the domain is covered.\n\n---\n\n### Verdicts:\nVERDICT purpose = 2  \nVERDICT mechanism = 2  \nVERDICT evaluation = 12  \nVERDICT domain = 12  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": null
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "domain"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Demonstrate the defense reduces attack success while preserving clean accuracy and beating a prior baseline.**\n\nThis purpose is about validating a defense mechanism against prompt injection/adversarial attacks by showing ASR reduction + clean accuracy preservation + baseline comparison. Papers [2] and [13] both evaluate prompt injection defenses comparing against baselines (including base64/Spotlighting) while measuring attack success rates and clean accuracy tradeoffs. Paper [12] also formalizes and benchmarks prompt injection defenses. Paper [2] specifically mentions \"Base64 defense has been recognized as one of the most effective methods\" and proposes a mixture of encodings defense, comparing against it — this is substantively the same objective: show a new defense beats a prior baseline (base64) while maintaining utility.\n\n**MECHANISM: Evaluate on VL-RewardBench (N=1,247) comparing No Defense, Spotlighting (base64 encoding), and Escaping; report OverallAcc, ParseFail, and ASRcond against pre-registered success criteria.**\n\nThe mechanism here is a controlled comparison of defense conditions (no defense, base64 encoding baseline, proposed method) on a named benchmark, reporting accuracy and attack success rate metrics. Paper [2] uses a similar evaluation design: comparing base64 encoding against a new encoding-based defense, measuring attack success rate and utility. Paper [12] benchmarks prompt injection attacks and defenses systematically. Paper [21] does \"fully empirical evaluation of prompt-injection defenses\" comparing multiple detectors with attack success/detection metrics. However, VL-RewardBench is a specific multimodal reward benchmark — the named benchmark itself is distinct. The evaluation design (compare conditions, report ASR + accuracy) is covered by [2], [12], [21].\n\n**EVALUATION: 39.36pp ASRcond reduction with +0.16pp clean accuracy; Spotlighting reaches 38.20% ASRcond with 18.80% ParseFail vs 4.17%.**\n\nThis is the specific quantitative finding/result. The evaluation design (comparing defense conditions on a benchmark with ASR and accuracy metrics) is covered by prior papers [2], [12], [21] — these all use the same design of measuring ASR reduction and clean accuracy preservation across defense conditions. The specific numbers are new, but the design is covered.\n\n**DOMAIN: Multimodal preference judging (VL-RewardBench)**\n\nThe domain is multimodal preference judging / VL reward modeling. None of the prior papers operate in this area — they all deal with text-only LLM prompt injection, adversarial examples in image classifiers, or cybersecurity. VL-RewardBench is a vision-language reward/preference benchmark. No prior paper addresses multimodal preference judging as an application area.\n\nVERDICT purpose = 2\nVERDICT mechanism = 2\nVERDICT evaluation = 2\nVERDICT domain = NONE",
+      "stage2": "FACET: domain | FINAL: NONE | reason: No prior paper addresses multimodal preference judging or vision-language reward/evaluation benchmarks; all prior papers concern adversarial defenses, prompt injection, encoding schemes, or unrelated domains with no equivalent terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": 21
+      },
+      "evaluation": {
+       "covered_by": 21
+      },
+      "domain": {
+       "covered_by": null
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "domain"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The purpose is to demonstrate that a new defense is effective (reduces attack success), efficient (preserves clean accuracy), and superior to an existing baseline. This is a standard objective for papers that introduce a new defense mechanism. This purpose is covered by multiple prior papers, such as [13], which presents \"a simple yet effective defense against prompt injection attacks\" and then empirically demonstrates its effectiveness.\n\n**mechanism**: The mechanism is the analysis method used to generate the finding: a comparative evaluation of a new defense (\"Escaping\") against a baseline (\"Spotlighting\"/base64) and a control (\"No Defense\") on a benchmark, using metrics for success (ASRcond) and negative side effects (ParseFail, OverallAcc). This experimental design is a standard protocol for evaluating defenses. It is covered by [21], which conducts an \"empirical evaluation of prompt-injection defenses on the public deepset/prompt-injections dataset\" by comparing different detectors.\n\n**evaluation**: The evaluation design involves measuring the trade-off between security and utility by reporting attack success rate (ASR) alongside metrics for performance on benign inputs (clean accuracy, parse failures). This design is standard for the field. It is covered by [21], which explicitly evaluates \"refusal-usefulness tradeoffs,\" the same conceptual design of balancing defense against impact on normal operation.\n\n**domain**: The application domain is \"Multimodal preference judging\" using the VL-RewardBench, which involves vision-language models. All cited prior work operates in single-modality domains, either \"image-classification systems\" ([3], [5]) or text-only \"Large Language Models (LLMs)\" ([2], [8], [10], etc.). The application to a multimodal system is a genuinely new application area not present in the provided prior work.\n\nVERDICT purpose = 13\nVERDICT mechanism = 21\nVERDICT evaluation = 21\nVERDICT domain = NONE",
+      "stage2": "FACET: domain | FINAL: NONE | reason: The prior papers focus on adversarial attacks/defenses in NLP and vision, or general network security. None address the specific domain of judging preferences between multimodal (e.g., vision-language) model outputs."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     4
+    ],
+    "evaluation": [
+     4,
+     8
+    ],
+    "domain": [
+     4,
+     8
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to identify which defense component drives the protection. None of the prior papers explicitly report or establish the same empirical relationship between defense components and their protective effects. While some papers (e.g., [4], [7], [8], [16]) discuss defense mechanisms or their effectiveness, they do not isolate or analyze individual components in the same way as this contribution. Therefore, the purpose is **NONE**.\n\n### Mechanism\nThe mechanism involves ablation experiments (tags-only, boxed-only, full escaping) and mechanism analysis comparing markup spoof versus NL-only attack. Paper [4] conducts ablation experiments to analyze the effectiveness of individual components in a backdoor defense algorithm, which is substantively equivalent to the ablation approach used here. Paper [19] also discusses markup tags and their placement, but it focuses on machine translation rather than defense analysis, so it does not match the mechanism. Paper [13] uses NLP and regex for XML tag filling but does not involve ablation or markup spoof analysis. Thus, the mechanism is **COVERED** by [4].\n\n### Evaluation\nThe evaluation design involves measuring the impact of content redaction, structural markers, and escaping on attack success rates. Paper [4] uses ablation experiments to validate defense performance, which matches the evaluation design here. Paper [7] employs dropout-based defense validation but does not use the same evaluation design. Paper [8] evaluates a multi-agent pipeline for prompt injection defense, but its evaluation design does not involve content redaction or structural markers. Paper [19] evaluates tag placement in machine translation, which is unrelated to the evaluation design here. Therefore, the evaluation is **COVERED** by [4].\n\n### Domain\nThe domain is defense mechanism analysis. Papers [4], [7], [8], [16], and [23] all operate in the general area of defense mechanism analysis, even though they target different specific problems (e.g., backdoor attacks, adversarial attacks, prompt injection). Since the domain facet is judged at the general application area level, the domain is **COVERED** by [4].\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 4  \nVERDICT evaluation = 4  \nVERDICT domain = 4  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly identifies which defense component drives the protection, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**PURPOSE: Identify which defense component drives the protection.**\n\nThe purpose is to isolate and attribute the protective effect to specific sub-components of a defense mechanism (content redaction vs. structural markers). This is an attribution/ablation-for-understanding purpose within a specific LLM prompt injection defense context. Paper [4] does ablation on backdoor defense components to understand which drives performance, but that's backdoor defense in DNNs. Paper [16] analyzes defense against prompt injection. Paper [8] evaluates a multi-agent defense pipeline. None of these papers specifically pursue the same empirical relationship: identifying which component (content redaction vs. structural markup escaping) drives protection in an LLM prompt injection defense. The specific variables and direction of effect (content redaction >> structural markers) are not established in any prior paper.\n\n**MECHANISM: Ablation (tags-only, boxed-only, full escaping) and mechanism analysis comparing markup spoof vs NL-only attack.**\n\nThe mechanism is a controlled ablation study comparing partial vs. full defense configurations, plus a contrastive analysis between attack types. Paper [4] uses ablation experiments on defense algorithm components (\"Improvement and Ablation Experiment Research of Backdoor Defense Algorithm\"). This is the same design-level primitive: ablate components of a defense to measure contribution. The generic ablation design is present in [4]. However, the specific contrastive analysis (markup spoof vs. NL-only attack) is more specialized. Still, at the design level, ablation of defense components is covered by [4].\n\n**EVALUATION: Content redaction is primary (specific quantitative findings with ASRcond metrics).**\n\nThe evaluation design uses attack success rate (ASRcond) as a metric, with ablation conditions. Paper [8] evaluates prompt injection defenses with attack success rates. Paper [16] also evaluates prompt injection defenses. The metric family (attack success rate / ASR) is standard in adversarial ML evaluation and appears in [8] and [16]. The evaluation design (measuring ASR across ablation conditions) is covered by these papers at the design level.\n\n**DOMAIN: Defense mechanism analysis (LLM prompt injection defense).**\n\nPapers [8], [16], [15], [20], and [23] all work in the domain of LLM prompt injection attacks and defenses. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 4\nVERDICT evaluation = 8\nVERDICT domain = 8",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the objective of identifying *which specific component* of a defense system is responsible for its protective effect. Paper [4] performs ablation experiments on defense components but its purpose is to improve overall defense performance, not to attribute protection to a specific component. No other paper matches this objective even under different terminology."
+     }
+    }
+   }
+  }
+ ]
+}

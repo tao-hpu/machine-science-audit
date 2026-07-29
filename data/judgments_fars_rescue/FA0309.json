@@ -1,0 +1,290 @@
+{
+ "paper_id": "FA0309",
+ "title": "Anisotropic Noise Fingerprints Reveal Concept Choice in Concept-Aware Embedding Privacy",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     12
+    ],
+    "mechanism": [
+     8,
+     14
+    ],
+    "evaluation": null,
+    "domain": [
+     11,
+     12,
+     15
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 12
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 15
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to show that concept-aware anisotropic noise leaks which privacy concept was selected under multi-release access. No prior paper explicitly establishes this relationship or investigates the privacy leakage of concept-aware anisotropic noise under multi-release access. While [12] discusses privacy risks for anisotropic Langevin dynamics, it does not address multi-release access or concept-aware leakage. Similarly, [16] explores attack-aware noise calibration for differential privacy but does not focus on concept-aware anisotropic noise or multi-release access. None of the prior papers substantively match this purpose.\n\n### Mechanism\nThe mechanism involves a variance fingerprint attack: observing multiple sanitized releases of the same document, differencing them to cancel the embedding and expose noise, computing a per-dimension variance profile from squared differences, and matching it to normalized concept covariance templates via minimum Euclidean distance. [14] discusses statistical log differencing, which involves differencing logs to model their differences, but it does not compute variance profiles or match them to concept covariance templates. [25] addresses covariance estimation in image classification but does not involve differencing multiple releases or matching to templates. No prior paper implements a substantively equivalent mechanism.\n\n### Evaluation\nThe evaluation uses SPARSE-style sanitization (GTR-T5-Base, K=5 concepts, N=10 releases) to achieve 100% concept-identification accuracy vs 18.9% for isotropic noise. [12] evaluates privacy risks for anisotropic Langevin dynamics but does not use SPARSE-style sanitization or multi-release setups. [16] evaluates attack-aware noise calibration but does not involve concept identification or SPARSE-style sanitization. No prior paper uses the same evaluation design, making this facet uncovered.\n\n### Domain\nThe domain is embedding privacy/differential privacy for embeddings (RAG, vector databases). [15] and [23] address differential privacy mechanisms, and [10] evaluates differential privacy in federated learning, all within the general area of embedding privacy. While none of these papers target the specific sub-problem of concept-aware anisotropic noise leakage under multi-release access, they operate in the same general application area. Thus, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 15  ",
+      "stage2": "1. **FACET: purpose | FINAL: COVERED-BY 12 | reason: Paper [12] discusses privacy risks for anisotropic noise in Langevin dynamics, including the relationship between noise structure and privacy leakage, which aligns with the empirical relationship described in the facet. Quote: \"The privacy preserving properties of Langevin dynamics with additive isotropic noise have been extensively studied. However, the isotropic noise assumption is very restrictive... popular algorithms such as stochastic gradient descent (and their continuous time limits) appear to possess anisotropic noise properties.\"\n\n2. **FACET: mechanism | FINAL: COVERED-BY 14 | reason: Paper [14] describes statistical log differencing, which involves computing differences between multiple logs to extract statistical profiles, conceptually matching the described mechanism. Quote: \"We present statistical log differencing, which accounts for frequencies of behaviors found in the logs... snKDiff, for differencing of many logs at once, both presenting their results over a statistical model.\"\n\n3. **FACET: evaluation | FINAL: NONE | reason: No prior paper explicitly evaluates concept-identification accuracy under SPARSE-style sanitization or compares isotropic vs anisotropic noise in the same context."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 12
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Show that concept-aware anisotropic noise leaks which privacy concept was selected under multi-release access.**\n\nThe purpose is to demonstrate a specific privacy vulnerability: that anisotropic noise in embedding sanitization reveals which concept was used for privacy protection, under multiple releases. Paper [12] studies \"privacy risk for anisotropic Langevin dynamics\" and explicitly addresses privacy properties of anisotropic noise, noting \"the isotropic noise assumption is very restrictive\" and studying privacy risks. However, its purpose is to bound privacy risk of anisotropic noise in learning algorithms, not to show that concept selection leaks through noise fingerprinting. Paper [18] addresses multi-release privacy. Paper [20] addresses auxiliary information attacks on privacy. None of these papers pursue the same objective: demonstrating that the *identity of the selected privacy concept* leaks through the anisotropic noise signature under multi-release access. This is a specific vulnerability demonstration not covered.\n\n**MECHANISM: Variance fingerprint attack — observe multiple releases, difference them to cancel embedding, compute per-dimension variance profile from squared differences, match to concept covariance templates via minimum Euclidean distance.**\n\nThe core primitives are: (1) differencing multiple noisy releases to cancel signal and expose noise structure, (2) computing variance profiles from squared differences, (3) matching to covariance templates via Euclidean distance. Paper [24] covers noise cancellation via adaptive filtering but in a signal processing context. Paper [13] uses EM-based side-channel attacks with profiled models. Paper [8] uses template attacks with Gaussian noise models in side-channel contexts. Paper [5] uses quadruplet networks for template attacks. None of these combine the specific primitive of: differencing sanitized text embeddings across releases to isolate noise covariance structure, then matching that structure to concept covariance templates. The closest conceptually is template attacks in side-channel analysis (papers [8], [13], [22]), which profile noise/leakage and match to templates — but the specific mechanism of differencing multiple releases to cancel the embedding signal and expose anisotropic noise fingerprints is not present. Paper [14] does \"statistical log differencing\" across multiple system logs, but for behavioral differences, not noise structure extraction. The combination is not covered.\n\n**EVALUATION: SPARSE-style sanitization, GTR-T5-Base, K=5 concepts, N=10 releases, 100% accuracy vs 18.9% baseline.**\n\nThe evaluation design involves: running a specific embedding sanitization system (SPARSE), measuring concept-identification accuracy across multiple releases, comparing against a chance baseline. This is a custom attack evaluation protocol on a specific embedding privacy system. No prior paper uses this evaluation design — it's a newly constructed protocol for a newly defined attack. The closest would be membership inference attack evaluations (paper [10]) or DP evaluation frameworks, but none evaluate concept-identification accuracy under multi-release embedding sanitization. This appears to be a genuinely new evaluation design.\n\n**DOMAIN: Embedding privacy / differential privacy for embeddings (RAG, vector databases).**\n\nThe domain is differential privacy applied to text embeddings, specifically for RAG/vector database contexts. Papers [1], [2], [10], [11], [12], [15], [16], [19] all work in differential privacy. However, the specific sub-area of DP for *text embeddings* in RAG/vector databases is a relatively new area. That said, the general domain of \"differential privacy\" is clearly covered by many papers ([1], [2], [10], [11], [12], etc.). The domain facet should be judged at the area level (differential privacy / embedding privacy), not the specific sub-problem. Papers [1], [2], [10], [11], [12] all work in differential privacy broadly.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 12",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper examines concept-aware anisotropic noise as a channel that leaks which privacy concept was selected under multi-release access; [12] studies anisotropic Langevin dynamics privacy risk but addresses whether the mechanism itself is private, not whether the noise structure reveals a concept-selection secret to an attacker.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes differencing multiple sanitized releases to cancel embeddings, computing per-dimension variance profiles from squared differences, and matching to concept covariance templates via minimum Euclidean distance; the closest works ([13] EM-based side-channel, [8] subspace template attack) operate on cryptographic side-channel traces with entirely different leakage models and matching procedures, and no quoted phrase covers this pipeline.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports a concept-identification accuracy experiment on SPARSE-style sanitization (GTR-T5-Base, K=5 concepts, N=10 releases) achieving 100% vs. ~18.9% for isotropic noise; none of the prior papers evaluate this specific setting or claim."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 12
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 11
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: Paper [12] investigates the \"Privacy Risk for anisotropic Langevin dynamics,\" noting that the common isotropic noise assumption is restrictive and that anisotropic noise in learning algorithms is a potential privacy risk. The contribution's purpose to \"Show that concept-aware anisotropic noise leaks which privacy concept was selected\" is a specific demonstration of the general problem class—privacy risk from anisotropic noise—identified in [12].\n\n**mechanism**: The mechanism is a form of template attack, a well-known primitive from the side-channel attack literature, described in papers like [8] (\"Subspace Template Attack\"). This involves profiling a system to create statistical templates (here, covariance matrices) and then matching new observations to find the best fit; the use of differencing to isolate the noise signal is also a standard analysis technique.\n\n**evaluation**: The evaluation design, which involves implementing an attack, measuring its identification accuracy, and comparing it to a baseline, is a standard protocol for validating classification-style attacks. This design is used in prior work like [10] to \"evaluate the effectiveness\" of privacy methods against membership inference attacks and is not a new evaluation framework.\n\n**domain**: The domain of \"Embedding privacy / differential privacy for embeddings\" falls within the general application area of privacy for machine learning. Prior papers such as [11] (\"Fine-Tuning with Differential Privacy\") and [10] (\"Differential Privacy in Federated Learning\") operate in this same general area, making the contribution's domain a specific application within a covered area.\n\nVERDICT purpose = 12\nVERDICT mechanism = 8\nVERDICT evaluation = 10\nVERDICT domain = 11",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     2,
+     4
+    ],
+    "evaluation": [
+     13,
+     14
+    ],
+    "domain": [
+     12
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 12
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to evaluate covariance smoothing as a mitigation strategy and demonstrate its failure. None of the prior papers explicitly evaluate covariance smoothing as a defense mechanism and show its failure. While several papers (e.g., [12], [13], [14], [15], [23]) discuss defenses against adversarial attacks, none specifically address the failure of covariance smoothing as a mitigation strategy. Papers like [5], [6], [8], and [11] focus on covariance matrix estimation techniques but do not evaluate their effectiveness as a defense mechanism or demonstrate failure in adversarial contexts.\n\n#### Mechanism:\nThe mechanism involves mixing concept-specific covariance with identity (Sigma_smoothed = lambda*I + (1-lambda)*Sigma_Ck), trace-normalized, and sweeping lambda. Papers [2], [4], [6], [8], and [11] discuss various shrinkage methods for covariance matrices, including linear shrinkage, convex combinations, and regularization techniques. For example, [6] discusses Ledoit-Wolf linear shrinkage, and [8] employs shrinkage estimation combining empirical covariance with a model. These methods are substantively equivalent to the described mechanism, as they involve mixing covariance matrices with identity matrices or other regularization targets.\n\n#### Evaluation:\nThe evaluation design involves measuring attack success rates and utility invariance under varying lambda values. Papers [13], [14], [23], and [24] use similar evaluation designs for adversarial robustness or defense effectiveness, employing metrics like attack success rates and utility preservation. For example, [14] evaluates defenses against prompt injection attacks using attack success rates, and [23] measures certified adversarial robustness under randomized smoothing. These designs are substantively equivalent to the described evaluation setup, even though the specific benchmarks and objects differ.\n\n#### Domain:\nThe domain is defense evaluation for concept-aware sanitization. Papers [12], [13], [14], [23], and [24] operate in the general area of adversarial defense evaluation, which includes evaluating defenses against attacks on machine learning models. For example, [12] focuses on robust covariance estimation for backdoor defenses, and [23] evaluates randomized smoothing as a defense against adversarial perturbations. These papers address the same general application area, even if the specific sub-problems or datasets differ.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = 2  \nVERDICT evaluation = 14  \nVERDICT domain = 12  ",
+      "stage2": "1. **FACET: purpose | FINAL: NONE | reason:** No prior paper explicitly evaluates covariance smoothing as a mitigation and demonstrates its failure. No equivalent objective or empirical relationship was found under different terminology, framing, or domain vocabulary."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 12
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Evaluate covariance smoothing as a mitigation and show it fails.**\n\nThe purpose is specifically to evaluate a defense (covariance smoothing) against a concept-aware sanitization attack and demonstrate its failure. Paper [12] (SPECTRE) defends against backdoor attacks using robust covariance estimation — it uses covariance in a defense context but doesn't evaluate covariance smoothing as a mitigation that fails. Paper [14] critically evaluates defenses against prompt injection attacks, showing they fail — similar \"defense evaluation showing failure\" purpose but in a different domain. No prior paper specifically evaluates covariance smoothing as a mitigation for concept-aware sanitization and shows it fails. The closest is [14] which evaluates defenses and shows failure, but the specific relationship (covariance smoothing → fails against concept-aware attack) is not covered by any prior paper.\n\n**MECHANISM: Mix concept-specific covariance with identity (lambda*I + (1-lambda)*Sigma_Ck), trace-normalized, sweep lambda.**\n\nThis is a linear shrinkage toward the identity matrix — a well-established covariance regularization technique. Papers [2], [4], [6], [7], [8], [11], [25] all describe linear shrinkage estimators that convexly combine an empirical covariance with a structured target (often identity or diagonal). Paper [4] explicitly describes \"convexly combining a low-bias/high-variance empirical estimate with a biased regularization estimator\" — this is exactly the lambda*I + (1-lambda)*Sigma form. Paper [6] (Ledoit-Wolf) and [11] also describe this primitive. The mechanism is clearly covered.\n\n**EVALUATION: Attack stays at 100% for lambda <= 0.95, drops to 63.3% at lambda=0.99; STS12 utility invariant.**\n\nThe evaluation design involves sweeping a hyperparameter (lambda) and measuring attack success rate alongside a utility metric. Paper [13] evaluates test-time smoothing defenses with controlled experiments, measuring non-monotonic relations between defense parameters and adversarial robustness. Paper [26] sweeps regularization hyperparameters and measures attack/defense performance. The design of \"sweep a defense parameter, measure attack success rate + utility\" is a standard sensitivity/sweep analysis used in [13] and [26]. This evaluation design (parameter sweep + attack success rate + utility metric) appears in prior work.\n\n**DOMAIN: Defense evaluation for concept-aware sanitization.**\n\nThe domain is ML security/adversarial ML, specifically defense evaluation. Papers [12], [13], [14], [16], [17], [18], [23], [26], [27] all work in adversarial ML defense evaluation. Paper [12] specifically works with covariance-based defenses in ML security. Paper [14] evaluates defenses in LLM security. This is clearly within the existing application area of adversarial ML defense evaluation.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 4\nVERDICT evaluation = 13\nVERDICT domain = 12",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper evaluates covariance smoothing specifically as a mitigation strategy and demonstrates that it fails. Papers [1]-[11],[20],[25] treat covariance estimation/smoothing as a goal to improve, not as a defense to be tested and shown ineffective. Papers [13]-[19],[23]-[24],[26]-[29] evaluate other defenses (randomized smoothing, adversarial training, etc.) but none apply or test covariance smoothing as a mitigation. No paper contains the same objective—testing covariance smoothing as a defense and showing its failure—even under different terminology."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     15
+    ],
+    "mechanism": [
+     6,
+     11,
+     18
+    ],
+    "evaluation": [
+     6,
+     7,
+     11,
+     18
+    ],
+    "domain": [
+     1,
+     13
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to confirm the leakage mechanism and bound its scope. This involves identifying and characterizing the specific mechanism of privacy leakage and determining its limitations. Paper [1] discusses quantifying membership privacy via information leakage, which aligns with the goal of understanding and bounding privacy leakage mechanisms. Paper [11] also quantifies privacy leakage in LLMs, focusing on membership inference and memorization assessment, which similarly aims to confirm and bound leakage mechanisms. Both papers address the same problem-class level objective of understanding and bounding privacy leakage mechanisms.\n\n### Mechanism\nThe contribution uses three specific mechanisms: (1) random permutation of covariance diagonals to destroy dimension-concept alignment, (2) an MLP classifier attack without template knowledge, and (3) token-presence AUC measurement across conditions. Paper [6] discusses random permutation tests for experimental data, which is substantively equivalent to the random permutation of covariance diagonals used here. Paper [11] employs an MLP-based membership inference attack, which aligns with the MLP classifier attack mechanism described in the contribution. However, no prior paper explicitly uses token-presence AUC measurement across conditions, making this aspect of the mechanism novel.\n\n### Evaluation\nThe evaluation design involves demonstrating that random anisotropy drops accuracy to 3.3%, showing alignment is critical; that the MLP classifier reaches 100%/95.9% accuracy without templates; and that token-level privacy is preserved (AUC ~0.52 vs 0.87 clean), indicating leakage is metadata-based rather than content-based. Paper [6] uses random permutation tests to analyze experimental data, which aligns with the evaluation design of testing the impact of random permutations. Paper [11] evaluates privacy leakage using AUC metrics, which matches the evaluation design of using AUC to measure leakage. These prior works cover the evaluation design.\n\n### Domain\nThe domain of the contribution is privacy leakage mechanism and scope characterization. Paper [1] addresses membership privacy and information leakage in machine learning models, which falls within the same general area of privacy leakage mechanisms. Paper [11] also focuses on privacy leakage in LLMs, specifically through membership inference and memorization assessment, which is a closely related subdomain. Both papers operate in the same general application area of privacy leakage characterization.\n\n---\n\nVERDICT purpose = 1  \nVERDICT mechanism = 6  \nVERDICT evaluation = 6  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 13
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Confirm the leakage mechanism and bound its scope.**\n\nThe purpose is to characterize *how* a specific privacy leakage works (via dimension-concept alignment in embeddings) and determine what is leaked (metadata vs. content). Papers [1], [7], [11] quantify privacy leakage, but they focus on membership inference or graph embeddings — not on characterizing the mechanism of leakage through structural alignment properties of embeddings. Paper [13] addresses embedding inversion attacks and concept-aware privacy, touching on dimension-concept alignment, but its purpose is defense, not mechanism characterization. Paper [2] studies leakage from model explanations. None of these papers share the same purpose of confirming that covariance/anisotropy structure encodes concept metadata and bounding whether token content is leaked — this is a specific empirical relationship (alignment → leakage, not content) not established in prior work.\n\n**MECHANISM: Random permutation of covariance diagonals, MLP classifier attack without template knowledge, and token-presence AUC measurement.**\n\nThe permutation of covariance diagonals to destroy dimension-concept alignment is a specific ablation primitive. Papers [6], [8], [10], [22] use permutation tests, but these permute data/residuals for statistical inference, not covariance diagonals to test structural alignment. Paper [13] (SPARSE) identifies privacy-sensitive dimensions and uses differentiable masking — related to dimension-concept alignment but not the same permutation-of-diagonals mechanism. The MLP classifier attack without template knowledge is a standard classifier-based attack design. Paper [7] uses inference attacks on graph embeddings. Paper [11] uses token-level membership inference. The AUC measurement for token presence appears in [11] (\"token-level\" membership inference). The combination — permuting covariance diagonals specifically + templateless MLP + token AUC — is not found as a unified mechanism, but the AUC-based token-level measurement is present in [11].\n\n**EVALUATION: Random anisotropy drops accuracy to 3.3%; MLP reaches 100%/95.9%; token AUC ~0.52 vs 0.87.**\n\nThe evaluation design uses accuracy metrics on classifier attacks and AUC for token-level privacy. Paper [11] uses token-level AUC for membership/privacy measurement (\"token-level\" InfoRMIA). Paper [7] uses inference attack accuracy metrics. The specific design of comparing a permuted-diagonal condition vs. intact condition to measure accuracy drop is a controlled ablation — generic shape. The AUC ~0.52 vs. 0.87 comparison design (near-chance vs. above-chance) as a privacy metric appears conceptually in [11] and [1]. However, the specific evaluation design of permuting covariance structure and measuring classifier accuracy as a diagnostic is not matched by any prior paper's named benchmark or protocol family. The token-presence AUC design is closest to [11].\n\n**DOMAIN: Privacy leakage mechanism and scope characterization in text embeddings.**\n\nMultiple prior papers work in the domain of privacy leakage in machine learning embeddings/models: [1], [2], [7], [11], [13], [15], [23], [24], [25], [26], [27]. Paper [13] specifically addresses text embedding privacy. Paper [11] addresses LLM privacy leakage. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 11\nVERDICT domain = 13",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the same objective of confirming a leakage mechanism and bounding its scope via controlled ablation; the closest papers (e.g., [2], [7], [11]) quantify leakage magnitude or propose attacks/defenses but do not aim to isolate and bound a specific mechanism's contribution through systematic experimental confirmation.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper combines (1) random permutation of covariance diagonals to destroy dimension-concept alignment, (2) an MLP classifier attack without template knowledge, and (3) token-presence AUC measurement across conditions. Paper [6]/[8]/[10]/[22] use permutation tests but in entirely different contexts (feature importance, statistical inference); [13] addresses concept-aware privacy but uses differentiable masking, not diagonal permutation; none describe this specific three-part experimental mechanism."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 15
+      },
+      "mechanism": {
+       "covered_by": [
+        11,
+        18
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        7,
+        18
+       ]
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to confirm a specific leakage mechanism (dimension-concept alignment causing metadata leakage) and bound its scope (metadata, not content). This is a finding about a specific empirical relationship. No prior paper is described as establishing this same relationship between embedding geometry, the type of information leaked, and the mechanism of leakage.\n\n**mechanism**: The mechanism consists of three parts: (1) random permutation to destroy a property, (2) a classifier-based attack, and (3) AUC measurement. The primitive of randomizing or permuting a feature to measure its importance is described in [18] (\"To ablate a feature, we replace its value with another possible value randomly\"). The use of a classifier for a membership or attribute inference attack and measuring its performance with metrics like AUC is a standard primitive in the privacy attack literature, exemplified by [11] which focuses on token-level attacks.\n\n**evaluation**: The evaluation design combines an ablation study (destroying alignment and measuring accuracy drop), a standard attack evaluation (running an MLP attack and measuring its success), and a comparative analysis (comparing token-level AUC across conditions). The design of an ablation study is covered by [18] (\"Randomized Ablation Feature Importance\"). The design of running an inference attack and quantifying its success is a standard protocol used in papers like [7] (\"quantify the privacy leakage in graph embeddings through three inference attacks\").\n\n**domain**: The contribution's domain is the characterization of privacy leakage mechanisms in machine learning models. This general application area is explicitly addressed by numerous prior papers. For example, [1] works on \"Quantifying Membership Privacy via Information Leakage\" in machine learning models, establishing coverage of the general domain.\n\nVERDICT purpose = NONE\nVERDICT mechanism = [11], [18]\nVERDICT evaluation = [7], [18]\nVERDICT domain = [1]",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY [15] | reason: This paper's objective is to apply membership inference attacks to a new context (preference data), confirm that this leads to a new type of leakage (\"fidelity leakages\"), and determine the factors that affect it. This directly matches the facet's objective. Quote: \"We first provide experimental results... that confirm the feasibility of such attacks and allow us to put forward their influencing parameters.\""
+     }
+    }
+   }
+  }
+ ]
+}

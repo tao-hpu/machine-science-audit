@@ -1,0 +1,303 @@
+{
+ "paper_id": "DOHsYZrrny",
+ "title": "HiLoRA: High-frequency-augmented Low-Rank Adaptation",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     8
+    ],
+    "mechanism": [
+     11,
+     16
+    ],
+    "evaluation": [
+     6,
+     8
+    ],
+    "domain": [
+     6,
+     8
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to mitigate catastrophic forgetting in LoRA-based parameter-efficient fine-tuning (PEFT) by balancing learning new tasks with retaining pre-trained knowledge. Papers [1], [2], [3], [4], [5], [8], [9], and [10] all address catastrophic forgetting in PEFT or related fine-tuning methods. For example, [1] explicitly studies catastrophic forgetting in LoRA, while [8] proposes CURLoRA to mitigate forgetting during continual fine-tuning. These papers share the same high-level objective of addressing catastrophic forgetting in PEFT methods, making the purpose covered.\n\n### Mechanism\nThe mechanism introduces HiLoRA, which injects learnable high-frequency components into the pre-trained model using parameterized singular value decomposition (SVD). It constrains the singular values of augmented components to a small upper bound (hyperparameter σ̄) and includes orthogonal regularization (coefficient γ). Papers [11], [16], [18], [20], and [27] discuss singular value decomposition (SVD) or spectral methods in PEFT, but none propose the specific mechanism of constraining high-frequency singular values to mitigate catastrophic forgetting. For example, [11] uses SVD for parameter-efficient fine-tuning but does not focus on high-frequency components or catastrophic forgetting. Similarly, [16] incorporates spectral information but does not use constrained singular values or orthogonal regularization. Thus, the mechanism is uncovered.\n\n### Evaluation\nThe evaluation uses SQuADv2.0 with ablation studies on the number of high-frequency components and performance under different singular value constraints (e.g., σ̄=σ^(3) quantile). Papers [6], [7], [8], [9], [11], and [14] all use similar evaluation designs for PEFT methods, including ablation studies and performance metrics like EM/F1 on standard benchmarks such as SQuAD. For example, [6] evaluates dynamic rank distribution in LoRA using ablation studies, and [8] evaluates CURLoRA on continual learning tasks with similar metrics. The evaluation design is therefore covered.\n\n### Domain\nThe domain is parameter-efficient fine-tuning (PEFT) of large language models (LLMs), specifically LoRA-based methods. Papers [6], [7], [8], [9], [11], [12], [14], and [15] all operate in the same domain of PEFT for LLMs. For example, [7] extends LoRA to multi-scale approximations for fine-tuning LLMs, and [8] addresses catastrophic forgetting in LLM fine-tuning with CURLoRA. The domain is covered.\n\n---\n\nVERDICT purpose = 1  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 6  \nVERDICT domain = 6  ",
+      "stage2": "FACET: mechanism | FINAL: COVERED-BY 11 | reason: Paper [11] explicitly mentions \"inject learnable matrices \\(\\Delta W\\)\" structured via \"low-rank approximations\" and \"scaling vectors,\" which aligns with the parameterized SVD and singular value constraints described in the facet."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose: Mitigate catastrophic forgetting in LoRA parameter-efficient fine-tuning, balancing new task learning with pretrained knowledge retention\n\nPapers [1], [8], [9], [10] all address catastrophic forgetting specifically in LoRA/PEFT contexts. Paper [8] (CURLoRA) explicitly states \"mitigating catastrophic forgetting during continual learning and reducing the number of trainable parameters\" in LoRA fine-tuning. Paper [1] studies \"catastrophic forgetting in LoRA.\" Paper [9] studies \"forgetting when fine-tuning large language models\" with LoRA. Paper [10] addresses \"overcoming catastrophic forgetting\" in PEFT. The purpose is clearly covered.\n\n## Mechanism: HiLoRA — inject learnable high-frequency components via parameterized SVD, constrain augmented singular values to small upper bound (quantile of singular value distribution), orthogonal regularization term, to minimize perturbation to pretrained weights\n\nPaper [16] (Spectral Adapter) uses SVD of pretrained weight matrices for PEFT, studying \"additive tuning and orthogonal rotation of the top singular vectors.\" Paper [11] (SVFT) uses singular vectors for PEFT. Paper [7] (LoRA²) uses orthogonal projection theory with multi-scale low-rank approximations. Paper [15] (FouRA) learns projections in Fourier/frequency domain for LoRA adaptation. Paper [18] uses orthogonal fine-tuning with Givens rotations. However, the specific combination of: (1) injecting *high-frequency* SVD components (augmenting beyond existing singular vectors), (2) constraining augmented singular values via a quantile-based upper bound, and (3) orthogonal regularization to preserve pretrained weights — this specific primitive of \"augment with high-frequency SVD components and bound their singular values by a quantile threshold\" is not found in any prior paper. Paper [15] (FouRA) works in Fourier frequency domain but for image diversity, not SVD-based high-frequency components. Paper [16] works with spectral/SVD space but focuses on top singular vectors (low-frequency), not injecting high-frequency augmented components with quantile-bounded singular values. No prior paper covers this specific mechanism.\n\n## Evaluation: Up to 12 high-frequency components; SQuADv2.0 ablation with σ̄=σ^(3) quantile showing best EM/F1\n\nSQuADv2.0 is a standard NLP benchmark used widely. EM/F1 metrics are standard for QA tasks. Ablation studies over hyperparameters (here σ̄ quantile choices) are standard experimental designs used across many prior papers including [6], [7], [8], [11], [16]. The evaluation design (ablation on a standard QA benchmark with standard metrics) is covered by prior work's use of the same benchmark family and metric semantics.\n\n## Domain: Large language model parameter-efficient fine-tuning (PEFT/LoRA)\n\nPapers [1], [6], [7], [8], [9], [10], [11], [12], [14], [16] all operate in the LLM PEFT/LoRA domain explicitly. This is clearly covered.\n\nVERDICT purpose = 8\nVERDICT mechanism = NONE\nVERDICT evaluation = 8\nVERDICT domain = 8",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper proposes injecting learnable high-frequency components into pretrained weights via parameterized SVD with singular value upper-bound constraints (quantile-based σ̄) plus orthogonal regularization (γ) to keep updates in the high-frequency domain. [15] FouRA works in Fourier/frequency space but for diffusion model diversity, not SVD-based singular value bounding. [16] Spectral Adapter uses SVD for spectral fine-tuning but does not constrain augmented singular values to a quantile-based upper bound or explicitly target high-frequency components. [11] SVFT uses singular vectors but without high-frequency injection or singular value upper-bound constraints. No paper combines all these specific elements under any alternative terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": 16
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: COVERED. The objective of mitigating catastrophic forgetting in the context of parameter-efficient fine-tuning (PEFT) is explicitly addressed by prior work. For example, paper [8] introduces \"CURLoRA\" to \"mitigat[e] catastrophic forgetting during continual learning\" with LoRA, and paper [10] applies \"Bayesian learning techniques to PEFT to prevent catastrophic forgetting\".\n\n**mechanism**: COVERED. The core technical primitive is representing the model update via its Singular Value Decomposition (SVD) and constraining its components. Paper [16] proposes \"Spectral Adapter,\" which involves \"additive tuning... of the top singular vectors\" via SVD. Additionally, paper [20] proposes \"Singular Value Bounding\" as a general method to regularize network training, which is equivalent to constraining singular values.\n\n**evaluation**: COVERED. The evaluation design, which involves measuring performance on a standard benchmark (SQuADv2.0) with standard metrics (EM/F1) and performing hyperparameter ablations, is a standard protocol in the field. This design is used by numerous prior papers, such as [6], [7], and [16], to validate their own PEFT methods.\n\n**domain**: COVERED. The application area of \"Parameter-efficient fine-tuning (PEFT/LoRA) for large language models\" is the central domain for a majority of the cited papers. For instance, papers [6], [7], [8], [11], and [14] all explicitly focus on improving or analyzing LoRA and other PEFT methods for large models.\n\nVERDICT purpose = 8\nVERDICT mechanism = 16\nVERDICT evaluation = 6\nVERDICT domain = 6",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     13
+    ],
+    "mechanism": [
+     1,
+     8,
+     22
+    ],
+    "evaluation": [
+     13,
+     16
+    ],
+    "domain": [
+     5,
+     10,
+     13
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to explain the cause of catastrophic forgetting in LoRA fine-tuning and provide a basis for high-frequency augmentation methods. Paper [13] explicitly studies catastrophic forgetting in LoRA using a mean-field self-attention model, characterizing regimes of forgetting and phase transitions. Paper [16] quantifies forgetting in LoRA fine-tuning, identifying scaling laws and an inverse linear relationship between fine-tuning performance and forgetting. Both papers establish relationships between LoRA fine-tuning and catastrophic forgetting, covering the purpose.\n\n### Mechanism\nThe contribution uses theoretical analysis (Proposition 3.1) and spectral analysis to show that implicit regularization increases the largest singular value (low-frequency components) while decreasing smaller singular values, directly correlating with pretraining task performance degradation. Papers [1], [2], [6], [8], and [22] study implicit regularization and spectral dynamics in gradient descent, showing biases toward low-rank solutions and changes in singular values during optimization. Paper [19] discusses spectral bias in neural networks, focusing on low-frequency components. Paper [20] incorporates spectral information into fine-tuning, leveraging singular value decomposition (SVD). These papers collectively cover the mechanism's implicit regularization and spectral analysis aspects.\n\n### Evaluation\nThe contribution evaluates LoRA fine-tuning using pretraining task accuracy and loss metrics, showing catastrophic forgetting through singular value changes and performance degradation. Paper [13] uses a mean-field self-attention model to evaluate forgetting in LoRA fine-tuning, analyzing task accuracy and loss metrics. Paper [16] quantifies forgetting in LoRA fine-tuning using scaling laws and performance metrics. Paper [20] evaluates spectral adaptation mechanisms using singular value decomposition and pretraining task metrics. These papers reuse similar evaluation designs, covering the evaluation facet.\n\n### Domain\nThe contribution focuses on analyzing the mechanism of LoRA fine-tuning, which falls under the broader domain of parameter-efficient fine-tuning methods for large models. Papers [5], [7], [10], [11], [12], [13], [14], [15], [16], [17], and [20] all work within the domain of LoRA fine-tuning or parameter-efficient fine-tuning methods, covering the domain facet.\n\n---\n\nVERDICT purpose = 13  \nVERDICT mechanism = 1  \nVERDICT evaluation = 13  \nVERDICT domain = 5  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 13
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Explaining the cause of catastrophic forgetting in LoRA to justify high-frequency augmentation methods**\n\nPaper [13] studies catastrophic forgetting in LoRA via mean-field attention dynamics, characterizing regimes of forgetting vs. retention. Paper [16] quantifies forgetting when fine-tuning LLMs with LoRA and identifies inverse relationships between fine-tuning performance and forgetting. However, neither paper's purpose is specifically to explain forgetting via implicit regularization's effect on singular values (spectral analysis) to justify frequency-based augmentation. Paper [13] is the closest — it explicitly studies \"catastrophic forgetting in LoRA\" as its purpose — but its mechanism and framing differ. At the problem-class level, the purpose \"explain LoRA catastrophic forgetting\" is shared with [13] and [16]. The specific sub-purpose of \"providing basis for high-frequency augmentation\" is a downstream motivation, but the core objective (explaining LoRA catastrophic forgetting) is covered by [13].\n\n**MECHANISM: Theoretical proposition + spectral analysis showing implicit regularization causes maximum singular values to grow (low-frequency components) and small singular values to shrink, correlating with pretraining task degradation**\n\nPapers [1],[2],[3],[4],[6],[8],[18],[22] all study implicit regularization via spectral/singular value analysis in matrix factorization settings. Specifically, [8] and [22] show gradient descent in deep matrix factorization implicitly biases toward low-rank solutions by amplifying large singular values and suppressing small ones. Paper [9] explicitly studies singular value selection under implicit regularization. However, none of these papers apply this spectral analysis mechanism specifically to LoRA fine-tuning to explain catastrophic forgetting of pretraining tasks. Paper [13] uses mean-field PDE dynamics rather than spectral singular value analysis. The specific primitive — \"implicit regularization in LoRA causes max singular value growth corresponding to low-frequency components, explaining catastrophic forgetting\" — combines the spectral IR analysis from [8]/[22] with the LoRA forgetting context. The underlying primitive (implicit regularization → singular value amplification/suppression via spectral analysis) IS present in [8] and [22], which explicitly show \"recovery rate of ground-truth eigenvectors is proportional to the magnitude of the corresponding eigenvalues\" and implicit bias toward low-rank via singular value dynamics.\n\n**EVALUATION: Figure 1(a) tracking max singular value vs. pretraining accuracy on STS-B/RoBERTa; Figure 4 comparing LoRA variants on pretraining task accuracy/loss**\n\nThe evaluation design involves: (1) tracking singular value evolution during fine-tuning alongside pretraining task performance, and (2) comparing LoRA variants on pretraining task retention metrics. Paper [13] evaluates catastrophic forgetting in LoRA but uses a different framework (mean-field toy model). Paper [16] measures forgetting in LoRA via scaling laws. Paper [20] uses spectral analysis in PEFT evaluation. None of the prior papers use the specific design of plotting singular value trajectories against pretraining task accuracy as a paired diagnostic, nor do they compare LoRA variants specifically on pretraining task retention with the BookCorpus/STS-B setup. This evaluation design — correlating singular value dynamics with pretraining task degradation as a diagnostic — appears genuinely new as a protocol.\n\n**DOMAIN: LoRA fine-tuning mechanism analysis**\n\nMultiple papers work in this exact domain: [13] (LoRA catastrophic forgetting analysis), [16] (forgetting in LoRA fine-tuning), [10] (LoRA matrix asymmetry analysis), [17] (LoRA optimization analysis), [5] (LoRA computational limits). This domain is clearly covered.\n\nVERDICT purpose = 13\nVERDICT mechanism = 8\nVERDICT evaluation = NONE\nVERDICT domain = 13",
+      "stage2": "FACET: evaluation | FINAL: NONE | reason: No prior paper measures the specific empirical phenomena described — maximum singular value rise during STS-B fine-tuning of RoBERTa-base alongside reverse degradation of BookCorpus pretraining task accuracy, nor the abrupt drop of pretraining task accuracy from ~0.6 to <0.1 with ~5× loss increase under LoRA/variants versus HiLoRA's stability. Paper [16] studies forgetting scaling laws and [13] studies catastrophic forgetting in LoRA via mean-field dynamics, but neither reports these specific quantitative measurements (singular value trajectories paired with pretraining accuracy collapse) under the same experimental framing. No quoted phrase from any prior paper captures this same empirical relationship."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": 22
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": 10
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: COVERED. Paper [13] shares the same objective, which is to understand and explain the cause of catastrophic forgetting specifically in LoRA, as stated in its title \"Understanding Catastrophic Forgetting In LoRA via Mean-Field Attention Dynamics\".\n\n**mechanism**: COVERED. The mechanism is using spectral analysis (tracking singular values) to explain the dynamics of gradient-based optimization. Paper [22] uses a substantively equivalent analysis design, providing an \"explicit analysis of the dynamics of vanilla gradient descent for deep matrix factorization\" where the \"recovery rate of ground-truth eigenvectors is proportional to the magnitude of the corresponding eigenvalues\".\n\n**evaluation**: COVERED. The evaluation design involves measuring performance on the original pre-training task after fine-tuning on a downstream task to quantify forgetting. Paper [16] uses the same design to \"quantify the problem of forgetting when fine-tuning pre-trained large language models (LLMs) on a downstream task.\"\n\n**domain**: COVERED. The domain is the analysis of the LoRA fine-tuning mechanism. Paper [10] operates in the same domain, as it aims to \"investigate the different roles of LoRA matrices during fine-tuning\" and \"characterizes... asymmetry in the importance of low-rank adapter matrices.\"\n\nVERDICT purpose = 13\nVERDICT mechanism = 22\nVERDICT evaluation = 16\nVERDICT domain = 10",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     7,
+     12
+    ],
+    "mechanism": [
+     5,
+     7,
+     12
+    ],
+    "evaluation": [
+     5
+    ],
+    "domain": [
+     5
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to empirically validate that HiLoRA outperforms LoRA and its variants in downstream task performance and retention of pretraining knowledge. None of the prior papers explicitly establish this specific empirical relationship between HiLoRA and LoRA/AdaLoRA/PiSSA/MiLoRA in terms of both downstream task performance and pretraining knowledge retention. While several papers (e.g., [1], [5], [7], [9], [10], [12], [19]) discuss LoRA and its variants, none report or establish the same empirical relationship between HiLoRA and LoRA variants.\n\n#### Mechanism:\nThe contribution's mechanism involves comparing HiLoRA against LoRA, AdaLoRA, PiSSA, and MiLoRA on NLU (GLUE) and QA (SQuAD), performing forgetting analysis, and conducting augmented component ablation studies. Prior papers such as [1], [5], [7], [9], [10], and [12] discuss LoRA and its variants, and some (e.g., [7], [12]) address catastrophic forgetting or related analyses. However, none of these papers combine forgetting analysis with augmented component ablation specifically for HiLoRA versus LoRA variants on NLU and QA tasks. Thus, the mechanism is not covered.\n\n#### Evaluation:\nThe evaluation design involves using GLUE (RoBERTa-base, 4 seeds) and SQuAD v1.1/v2.0 (DeBERTaV3-base, r∈{2,4,6,12}) benchmarks, reporting metrics such as average best scores, and conducting ablation studies (e.g., Table 4). Prior papers ([1], [5], [7], [9], [10], [12], [19]) use similar evaluation designs, including GLUE and SQuAD benchmarks, multi-seed comparisons, and ablation studies. For example, [5] and [10] use GLUE and SQuAD benchmarks for LoRA evaluation, and [12] conducts forgetting analysis with similar statistical frameworks. Therefore, the evaluation design is covered.\n\n#### Domain:\nThe contribution operates in the domain of natural language understanding (NLU) and extractive question answering (QA). Prior papers ([1], [5], [7], [9], [10], [12], [19]) also address NLU and QA tasks, including GLUE and SQuAD benchmarks. For example, [5] applies LoRA to NLU tasks, and [12] studies forgetting in LLM fine-tuning for downstream tasks, including QA. Thus, the domain is covered.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 5  \nVERDICT domain = 5  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly validates HiLoRA's superiority over LoRA and its variants in both downstream task performance and pretraining knowledge retention.  \nFACET: mechanism | FINAL: COVERED-BY 7 | reason: \"mitigating catastrophic forgetting during continual learning\" and \"incremental component ablation\" in CURLoRA align with the described mechanism."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 12
+      },
+      "mechanism": {
+       "covered_by": 5
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: 实证验证 HiLoRA 在下游任务性能与预训练知识保留上均优于 LoRA 及其变体**\n\nThe purpose is to empirically demonstrate that a specific LoRA variant (HiLoRA) outperforms LoRA and its variants on both downstream task performance AND pretraining knowledge retention simultaneously. Paper [12] studies \"forgetting when fine-tuning pre-trained large language models\" and finds \"a strong inverse linear relationship between the fine-tuning performance and the amount of forgetting when fine-tuning LLMs with LoRA\" — this establishes the same empirical relationship (downstream performance vs. forgetting tradeoff in LoRA variants). Paper [7] (CURLoRA) addresses \"mitigating catastrophic forgetting during continual learning\" with LoRA variants and validates on downstream tasks. However, the specific purpose of showing a *new* method (HiLoRA) dominates on *both* axes simultaneously is closest to [12]'s framing of the joint relationship, and [7]'s validation setup. Paper [29] also empirically evaluates forgetting in LLMs during fine-tuning. The purpose of jointly validating downstream performance AND pretraining retention for a LoRA variant is covered by [12] and [7].\n\n**MECHANISM: GLUE/SQuAD comparison against LoRA/AdaLoRA/PiSSA/MiLoRA baselines + forgetting analysis + augmented component ablation**\n\nThe mechanism here is the analysis method: multi-baseline comparison on standard NLU/QA benchmarks plus forgetting analysis plus ablation. Paper [12] uses scaling laws and forgetting analysis comparing LoRA variants. Paper [5] (original LoRA) uses GLUE/SQuAD comparisons against baselines. Paper [9] (Delta-LoRA) compares against LoRA/AdaLoRA on NLU tasks. Paper [17] (SVFT) compares PEFT methods including LoRA variants on standard benchmarks with ablations. The design of \"compare LoRA variants on GLUE/SQuAD + forgetting analysis + ablation\" is a standard protocol appearing across multiple papers.\n\n**EVALUATION: GLUE (RoBERTa-base, 4 seeds), SQuAD v1.1/v2.0 (DeBERTaV3-base), ablation on MRPC with pretraining task accuracy**\n\nThe evaluation design uses GLUE benchmark and SQuAD — these are named benchmark families used extensively in prior work. Paper [5] (LoRA) evaluates on GLUE and SQuAD. Paper [9] (Delta-LoRA) evaluates on GLUE with RoBERTa. Paper [17] (SVFT) uses GLUE benchmarks for PEFT comparison. The forgetting/pretraining-task accuracy measurement appears in [12] and [29]. The evaluation design (GLUE + SQuAD + multi-seed + ablation) is fully covered by prior work.\n\n**DOMAIN: NLU / 抽取式问答**\n\nNLU and extractive QA are the application areas. Paper [5] covers NLU/QA explicitly. Papers [9], [17], [12], [29] all work in NLU/QA with transformer models. This domain is thoroughly covered.\n\nVERDICT purpose = 12\nVERDICT mechanism = 5\nVERDICT evaluation = 5\nVERDICT domain = 5",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: The contribution's purpose is to empirically demonstrate that a new LoRA variant (HiLoRA) improves both downstream performance and retention of pre-trained knowledge (i.e., mitigates forgetting). This objective is substantively equivalent to that of paper [7], which introduces CURLoRA to \"address... mitigating catastrophic forgetting during continual learning\" in LLMs. Both papers aim to establish the same relationship: a new LoRA-based method can successfully reduce catastrophic forgetting.\n\nmechanism: The analysis method involves comparing the proposed method against other LoRA variants on standard benchmarks (GLUE, SQuAD), conducting a \"forgetting analysis\" by measuring performance on the pre-training task, and performing ablations. This combination of analytical techniques is not new. Comparing a new PEFT method against baselines on standard benchmarks is a common protocol (e.g., in [4], [9]). The specific \"forgetting analysis\" protocol is the central mechanism of papers like [12] and [29], which \"study and quantify the problem of forgetting when fine-tuning... with LoRA.\"\n\nevaluation: The evaluation design uses the GLUE and SQuAD benchmark families and measures catastrophic forgetting by evaluating performance on the original pre-training task. Using standard benchmark families like GLUE for evaluating LoRA variants is established by the original LoRA paper [5]. The protocol of measuring forgetting by testing on an upstream or pre-training task is the core evaluation design in studies dedicated to the topic, such as [12] which quantifies \"the amount of forgetting when fine-tuning LLMs with LoRA.\"\n\ndomain: The contribution operates in the domain of Natural Language Understanding (NLU) and extractive Question Answering (QA) by fine-tuning large language models. This is the primary and original application area for LoRA, as established in paper [5] which focuses on the \"paradigm of natural language processing\" and evaluates on NLU/NLG tasks. Numerous other cited papers also operate in this same general domain.\n\nVERDICT purpose = [7]\nVERDICT mechanism = [12]\nVERDICT evaluation = [5]\nVERDICT domain = [5]",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

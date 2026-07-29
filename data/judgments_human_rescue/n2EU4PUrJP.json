@@ -1,0 +1,297 @@
+{
+ "paper_id": "n2EU4PUrJP",
+ "title": "Soup to go: mitigating forgetting during continual learning with model averaging",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     9
+    ],
+    "mechanism": [
+     9,
+     12
+    ],
+    "evaluation": [
+     9
+    ],
+    "domain": [
+     9
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to mitigate catastrophic forgetting in continual learning for pre-trained LLMs during sequential instruction fine-tuning, without relying on memory buffers, data generation, or storing multiple parameter copies. Papers [5], [7], [13], [15], [16], [21], [25], [27], and [29] all address catastrophic forgetting in continual learning, but they rely on rehearsal buffers, data generation, or parameter protection strategies. Paper [9] (MagMax) specifically uses model merging to address catastrophic forgetting in continual learning for LLMs, which aligns closely with the contribution's purpose. Therefore, the purpose is **covered** by [9].\n\n### Mechanism\nThe mechanism involves Sequential Fine-tuning with Averaging (SFA), where the current model is averaged with a prior task's checkpoint during training, using the checkpoint as a proxy for prior data. Papers [8], [10], [12], [19], and [20] discuss weight averaging techniques, but they focus on generalization or training acceleration rather than continual learning. Paper [9] (MagMax) uses model merging for continual learning but employs maximum magnitude weight selection rather than checkpoint averaging. Paper [12] (Revisiting Checkpoint Averaging) specifically discusses checkpoint averaging, but it is applied to neural machine translation rather than continual learning. Despite the domain difference, the mechanism of checkpoint averaging is substantively equivalent. Therefore, the mechanism is **covered** by [12].\n\n### Evaluation\nThe evaluation involves sequential fine-tuning across Math, Law, and Code domains using Pythia-2.8B and Llama-2-7B, assessing performance retention across multiple diverse domains. Papers [9], [11], [14], [18], [24], and [28] evaluate continual learning or instruction tuning in LLMs across diverse domains, using similar evaluation designs (e.g., sequential fine-tuning, cross-domain performance retention). Paper [9] (MagMax) specifically evaluates continual learning across multiple domains, which matches the evaluation design. Therefore, the evaluation is **covered** by [9].\n\n### Domain\nThe domain is continual learning for LLMs, specifically addressing catastrophic forgetting during sequential instruction fine-tuning. Papers [5], [9], [11], [13], [15], [16], [18], [25], [29], and [30] all operate in the domain of continual learning for LLMs or related models. Paper [9] (MagMax) explicitly addresses continual learning for LLMs using model merging, which matches the domain. Therefore, the domain is **covered** by [9].\n\n---\n\nVERDICT purpose = 9  \nVERDICT mechanism = 12  \nVERDICT evaluation = 9  \nVERDICT domain = 9  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 9
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": 9
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## PURPOSE\n\nThe purpose is: mitigate catastrophic forgetting in continual learning of LLMs (sequential instruction tuning) WITHOUT replay buffers, data generation, or storing multiple parameter snapshots per step.\n\nPaper [9] (MagMax) explicitly states: \"a continual learning approach...which utilizes model merging to enable large pre-trained models to continuously learn from new data without forgetting previously acquired knowledge.\" This directly matches the purpose of avoiding forgetting in sequential fine-tuning without replay buffers.\n\nPaper [11] (Continual Instruction Tuning for Large Multimodal Models) addresses continual learning for instruction tuning of large models sequentially, targeting catastrophic forgetting.\n\nPaper [3] (LM-Cocktail) addresses \"performance degeneration on general tasks\" after fine-tuning, using model merging to stay resilient — closely related purpose.\n\nPaper [9] is the strongest match: same objective (continual learning via model merging, no replay buffer, sequential tasks).\n\n## MECHANISM\n\nThe mechanism is: during new task training, periodically average (merge weights of) the currently-training model with the previous task's checkpoint, then continue training on the new task — using the prior checkpoint as a proxy for old knowledge without data replay.\n\nPaper [9] (MagMax) \"combines sequential fine-tuning with a maximum magnitude weight selection for effective knowledge integration across tasks\" — sequential fine-tuning + merging with prior checkpoints. This is very close but uses magnitude-based selection rather than simple averaging.\n\nPaper [3] (LM-Cocktail) merges fine-tuned models with base/peer models to preserve general performance — model merging as a mechanism for continual learning, but done post-hoc rather than during training.\n\nPaper [12] (Checkpoint Averaging for NMT) averages checkpoints during/after training, but for performance boosting, not continual learning.\n\nPaper [20] (Model Soups) averages weights of fine-tuned models to improve accuracy — same weight-averaging primitive.\n\nPaper [8] (SWAP) averages weights of multiple models during training to improve generalization — weight averaging during training.\n\nThe SFA mechanism specifically interleaves training with merging against a prior checkpoint as a continual learning strategy. Paper [9] is the closest: sequential fine-tuning combined with model merging (weight selection/averaging) across tasks using prior checkpoints. The primitive — \"merge current model with prior task checkpoint during/after sequential fine-tuning to prevent forgetting\" — is substantively equivalent even if the merging operator differs (average vs. max magnitude).\n\n## EVALUATION\n\nThe evaluation design: sequential fine-tuning on Pythia-2.8B and Llama-2-7B across Math/Law/Code domains in order; measuring multi-domain performance retention across 2-3 tasks.\n\nPaper [9] (MagMax) evaluates continual learning on large pre-trained models sequentially across multiple tasks/domains, measuring retention of prior task performance — same evaluation design (sequential task fine-tuning, measure forgetting across tasks on LLMs).\n\nPaper [11] evaluates continual instruction tuning on large multimodal models across sequential vision-language tasks, measuring forgetting — same design family.\n\nPaper [18] evaluates continual pre-training on domain-specific LLMs (financial domain) — same general design.\n\nThe evaluation design (sequential fine-tuning of LLMs across domains, measuring multi-task retention) is covered by [9] and [11].\n\n## DOMAIN\n\nThe domain is: LLM continual learning / model merging.\n\nPaper [9] operates in continual learning with large pre-trained models using model merging — exact domain match.\nPaper [3] operates in LLM model merging for continual fine-tuning — exact domain match.\nPaper [11] operates in continual instruction tuning for large multimodal models — same area.\nPaper [2] surveys model merging in LLMs — same domain.\n\nVERDICT purpose = 9\nVERDICT mechanism = 9\nVERDICT evaluation = 9\nVERDICT domain = 9",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     6,
+     32
+    ],
+    "mechanism": [
+     6,
+     32
+    ],
+    "evaluation": [
+     6,
+     28
+    ],
+    "domain": [
+     6
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": 6
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to explain why SFA (Spectral Feature Alignment) is effective and establish a theoretical connection between model merging and classical continual learning methods. Paper [27] provides a general theoretical analysis of forgetting in linear regression models, which aligns with the goal of understanding mechanisms behind continual learning. Paper [6] explicitly analyzes continual learning with L2 regularization, which is closely related to the theoretical connection being established here. Both papers address the same problem-class level objective of understanding continual learning mechanisms and mitigating forgetting. Therefore, the purpose is **covered**.\n\n### Mechanism\nThe contribution's mechanism involves analyzing and proving that SFA can be understood as an approximation of classical continual learning algorithms, specifically by applying an L2 penalty between the current model and past task checkpoints. Paper [6] describes an $\\ell_2$-regularized continual learning algorithm that penalizes deviation from previous task parameters, which is substantively equivalent to the described mechanism. Paper [28] also discusses quadratic penalties in Elastic Weight Consolidation (EWC), which is conceptually similar to the L2 penalty described here. Both papers use the same underlying primitive of regularization-based continual learning mechanisms. Therefore, the mechanism is **covered**.\n\n### Evaluation\nThe contribution uses qualitative/theoretical analysis to provide an intuitive explanation of how model merging mitigates forgetting, without introducing independent quantitative metrics. Paper [6] employs theoretical analysis to validate continual learning mechanisms, which matches the evaluation design here. Paper [27] also uses theoretical analysis to understand forgetting in continual learning, which aligns with the qualitative/theoretical validation approach. Since the evaluation design (theoretical analysis) is reused, the evaluation is **covered**.\n\n### Domain\nThe contribution operates in the domain of LLM continual learning and theoretical analysis. Papers [6], [27], and [8] all address continual learning in general, which includes the theoretical analysis of mechanisms to mitigate forgetting. While the specific focus on LLMs may differ, the broader application area of continual learning is shared. Therefore, the domain is **covered**.\n\n---\n\nVERDICT purpose = 6  \nVERDICT mechanism = 6  \nVERDICT evaluation = 6  \nVERDICT domain = 6  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 32
+      },
+      "mechanism": {
+       "covered_by": 32
+      },
+      "evaluation": {
+       "covered_by": 28
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Explaining why a model merging method works by connecting it theoretically to classical continual learning (specifically L2 penalty / regularization-based CL)**\n\nPaper [22] proposes weight averaging for ASR to overcome catastrophic forgetting but does not theoretically explain the connection to L2 regularization. Paper [23] studies weight ensembling in CL but focuses on empirical performance. Paper [32] shows iterate averaging is asymptotically equivalent to ridge regression (L2 regularization) — this is very close: it establishes a theoretical bridge between averaging/merging and L2 regularization. Paper [6] analyzes L2-regularized CL algorithms theoretically. The specific purpose here is \"explain why SFA (a model merging method) works by showing it approximates L2-penalized CL.\" Paper [32] establishes that iterate averaging ≈ ridge regression (L2), which is essentially the same theoretical bridge between averaging and L2 penalty. This covers the purpose at the problem-class level.\n\n**MECHANISM: Proving that model merging ≈ L2 penalty between current model and past checkpoint, bridging merging and regularization-based CL**\n\nPaper [32] explicitly proves \"weighted average of iterates has the same regularizing effect, and indeed is asymptotically equivalent, to ridge regression\" — this is the same primitive: showing that a weight-averaging/merging operation is equivalent to imposing an L2 penalty. Paper [22] uses weight averaging empirically without this theoretical derivation. Paper [23] mentions weight ensembling but doesn't prove L2 equivalence. Paper [32] is the strongest match for the mechanism.\n\n**EVALUATION: Qualitative/theoretical analysis providing intuitive explanation without independent quantitative metrics**\n\nThis is a purely theoretical/qualitative analysis — no benchmark, no metric, no experimental protocol. Among prior papers, [6], [27], [28], [32] all provide theoretical analyses without independent quantitative benchmarks for their theoretical claims. Paper [32] provides theoretical proofs with finite-sample bounds but no separate benchmark evaluation for the equivalence claim itself. Paper [28] is a theoretical note with derivations only. These match the design of \"theoretical/qualitative analysis without independent quantitative evaluation.\"\n\n**DOMAIN: LLM continual learning / theoretical analysis**\n\nPapers [8], [23], [22], [6], [27] all work in continual learning with theoretical analysis components. The domain of \"continual learning + theoretical analysis\" is well covered. Paper [6] specifically does theoretical analysis of regularization-based CL. The LLM aspect is a specific instance within the broader CL domain.\n\nVERDICT purpose = 32\nVERDICT mechanism = 32\nVERDICT evaluation = 28\nVERDICT domain = 6",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     4,
+     5,
+     8,
+     10,
+     19
+    ],
+    "mechanism": [
+     1,
+     2,
+     5,
+     6,
+     8,
+     10,
+     17,
+     24
+    ],
+    "evaluation": [
+     1,
+     2,
+     5,
+     6,
+     8,
+     10,
+     17,
+     24
+    ],
+    "domain": [
+     1,
+     4,
+     5,
+     6,
+     8,
+     10,
+     17,
+     19,
+     24
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        4,
+        5,
+        8,
+        10
+       ]
+      },
+      "mechanism": {
+       "covered_by": [
+        5,
+        6,
+        8,
+        10,
+        17,
+        24
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        5,
+        6,
+        8,
+        10,
+        17,
+        24
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        4,
+        5,
+        6,
+        8,
+        10,
+        17,
+        24
+       ]
+      },
+      "single_paper_covers_all": 5
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to evaluate the relative performance of SFA against data buffering (rehearsal), classical penalty methods (e.g., L2, Elastic Weight Consolidation), and other merging techniques (e.g., Task Arithmetic, TIES Merging). Paper [4] discusses continual learning algorithms that prevent catastrophic forgetting by regularizing parameters across tasks, which aligns with the comparative evaluation of methods like EWC. Paper [5] explicitly evaluates rehearsal-based methods for continual learning, which matches the purpose of comparing SFA to rehearsal. Paper [8] and [10] both discuss Task Arithmetic and TIES Merging, focusing on their effectiveness in merging models and task performance, which aligns with the comparative evaluation of merging techniques. Thus, the purpose is covered by [4], [5], [8], and [10].\n\n### Mechanism\nThe contribution mechanism involves comparing SFA across tasks, domains, and models against rehearsal (data buffer), L2 regularization, Elastic Weight Consolidation, Task Arithmetic, and TIES Merging. Paper [5] describes rehearsal-based methods and their effectiveness in mitigating catastrophic forgetting, which matches the mechanism of comparing SFA to rehearsal. Paper [6] and [24] discuss Elastic Weight Consolidation, which matches the mechanism of comparing SFA to EWC. Paper [8], [10], and [17] describe Task Arithmetic and TIES Merging, which matches the mechanism of comparing SFA to these merging techniques. Thus, the mechanism is covered by [5], [6], [8], [10], [17], and [24].\n\n### Evaluation\nThe evaluation design involves demonstrating that SFA achieves comparable results to rehearsal without storing old data, outperforms L2/EWC and Task Arithmetic/TIES, and preserves Math performance in a Math-then-Law setup where Task Arithmetic and TIES fail. Paper [5] evaluates rehearsal methods for continual learning, which matches the evaluation design of comparing SFA to rehearsal. Paper [6] and [24] evaluate EWC, which matches the evaluation design of comparing SFA to EWC. Paper [8], [10], and [17] evaluate Task Arithmetic and TIES Merging, which matches the evaluation design of comparing SFA to these merging techniques. The Math-then-Law setup is a specific instance of continual learning evaluation, but the design of comparing task performance across sequential tasks is covered by these prior papers. Thus, the evaluation is covered by [5], [6], [8], [10], [17], and [24].\n\n### Domain\nThe domain of the contribution is continual learning for large language models (LLMs). Paper [4] discusses continual learning algorithms for sequential task learning, which matches the general domain of continual learning. Paper [5] evaluates rehearsal-based methods for continual learning, which also matches the domain. Paper [6] and [24] discuss Elastic Weight Consolidation in continual learning, which matches the domain. Paper [8], [10], and [17] discuss merging techniques in continual learning, which also matches the domain. While the specific focus on LLMs is newer, the general domain of continual learning is well-covered by these prior papers. Thus, the domain is covered by [4], [5], [6], [8], [10], [17], and [24].\n\n---\n\nVERDICT purpose = 4, 5, 8, 10  \nVERDICT mechanism = 5, 6, 8, 10, 17, 24  \nVERDICT evaluation = 5, 6, 8, 10, 17, 24  \nVERDICT domain = 4, 5, 6, 8, 10, 17, 24  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: 验证 SFA 相对数据缓冲、经典惩罚法与其他合并技术的相对表现**\n\nThe purpose is to empirically validate a specific method (SFA) against rehearsal, L2, EWC, Task Arithmetic, and TIES Merging in a continual learning setting for LLMs. This is a comparative empirical validation of a new method against baselines. No prior paper establishes the same empirical relationship — specifically, none compare SFA (or an equivalent sparse freezing approach) against this exact combination of baselines. Papers like [1], [2], [3] do meta-analyses or empirical evaluations of continual learning methods, but they don't report the relationship \"SFA ≈ rehearsal > EWC/L2 > Task Arithmetic/TIES.\" The purpose here is to demonstrate a specific new method's relative standing — no prior paper reports this same relationship with these same variables. This is NONE.\n\n**MECHANISM: 跨任务/领域/模型对比 SFA 与 rehearsal、L2、EWC、Task Arithmetic、TIES Merging**\n\nThe mechanism is a cross-task/domain/model comparative analysis design. Papers [1] and [2] explicitly conduct meta-analyses and empirical evaluations comparing multiple continual learning methods including rehearsal and EWC-style regularization. Paper [19] (MagMax) compares model merging with continual learning baselines. Paper [8] (TIES-Merging) and [18] (Task Arithmetic) compare merging methods against baselines. The design of \"compare method X against rehearsal, regularization (EWC/L2), and merging baselines across tasks\" is a standard comparative protocol appearing in [1], [2], [19]. This is COVERED by [1], [2], [19].\n\n**EVALUATION: SFA 达到与 rehearsal 相当的结果而无需存旧数据，并优于 L2/EWC 及 Task Arithmetic/TIES**\n\nThe evaluation design involves comparing methods on sequential task benchmarks using standard accuracy metrics, with specific findings about relative ordering. This evaluation design — benchmarking continual learning methods against rehearsal and regularization baselines on sequential tasks — is used in [1], [2], [3], [19]. Paper [19] specifically uses model merging in a continual learning evaluation comparing against rehearsal and other baselines. The design (sequential tasks, accuracy metrics, comparison table of methods) is standard and covered. COVERED by [1], [2], [19].\n\n**DOMAIN: LLM 持续学习 / 实证对比**\n\nThe domain is continual learning applied to LLMs. While most prior papers address continual learning in neural networks generally (not specifically LLMs), the general application area of \"continual learning\" is extensively covered by [1], [2], [3], [4], [5], [6], [9], [16], [19], [28], [29], etc. The LLM-specific aspect is a narrower instance within the broader continual learning area. Per the domain special rule, this is COVERED by the continual learning papers, e.g., [1], [2], [19].\n\nVERDICT purpose = NONE\nVERDICT mechanism = 1\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the same objective of benchmarking SFA specifically against data buffering, classical penalty methods, and other merging techniques as competing continual learning approaches — [19] (MagMax) compares model merging for continual learning but does not evaluate SFA nor frame the comparison in those exact terms, and no other paper contains a quoted phrase establishing this same comparative objective."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 19
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 19
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "purpose: The purpose is to establish the specific empirical relationship between SFA's performance and that of other continual learning methods (rehearsal, regularization, merging). Per the special rule for \"finding\" contributions, this is only covered if a prior paper establishes the *same* relationship. Since SFA is the new method being evaluated, no prior paper could have included it as a variable in a comparison, so this specific relationship has not been previously established.\nmechanism: The mechanism is a comparative empirical study, benchmarking a new continual learning method (SFA) against a suite of established baselines from different categories (rehearsal, regularization, model merging). This is a standard analysis protocol in the field. For example, [2] conducts an \"empirical evaluation\" of various continual learning methods, which is the same methodological design.\nevaluation: The evaluation design is a standard continual learning benchmark protocol, involving a sequence of tasks (e.g., Math-then-Law) and measuring performance on both old and new tasks to quantify catastrophic forgetting. This evaluation design is foundational to the field and is used in nearly all empirical CL papers, such as [2] which performs an \"empirical evaluation\" of CL methods, and [15] which \"investigates continual learning of two segmentation tasks\".\ndomain: The domain is continual learning for large language models (LLMs). This falls into the general application area of \"Continual Learning,\" which is explicitly addressed by numerous prior papers ([1], [2], [3], [4], [5], etc.). Specifically, [19] addresses \"continual learning\" for \"large pre-trained models,\" which is substantively the same domain.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 2\nVERDICT evaluation = 2\nVERDICT domain = 19",
+      "stage2": "FACET: purpose: 验证 SFA 相对数据缓冲、经典惩罚法与其他合并技术的相对表现 | FINAL: COVERED-BY [19] | reason: Paper [19] introduces MagMax, a model merging approach for continual learning, and explicitly frames its contribution as a comparison against both traditional CL methods and other merging techniques. This is the same objective. QUOTE: \"Distinct from traditional continual learning methods that aim to reduce forgetting during task training, MagMax combines sequential fine-tuning with a maximum magnitude weight selection for effective knowledge integration across tasks. Our initial contribution is an extensive examination of existing model merging techniques in the context of continual learning, revealing their limitations.\""
+     }
+    }
+   }
+  }
+ ]
+}

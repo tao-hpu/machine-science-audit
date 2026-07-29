@@ -1,0 +1,317 @@
+{
+ "paper_id": "FA0290",
+ "title": "Auditing HNSW Index Leakage: Recovering Embedding Geometry from Graph Topology",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     4,
+     6
+    ],
+    "evaluation": [
+     6,
+     11
+    ],
+    "domain": [
+     1,
+     24
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe purpose is to show that HNSW index topology leaks geometric information beyond the explicit adjacency lists. None of the prior papers explicitly establish or report this specific relationship between HNSW topology and geometric leakage. While papers like [4], [6], [13], and [14] discuss privacy risks or reconstruction attacks on graph structures, they do not address the specific leakage mechanism tied to HNSW adjacency lists or embedding geometry. Thus, the purpose is **not covered**.\n\n#### Mechanism:\nThe mechanism involves framing the leaked layer-0 HNSW adjacency graph as an attack surface, reconstructing approximate embedding geometry, and comparing recovered kNN against raw adjacency lists. Papers like [4], [6], [11], and [13] discuss graph reconstruction or privacy leakage via adjacency or embedding structures, but none systematically study HNSW-specific adjacency graph leakage or its use for reconstructing embedding geometry. The mechanism is **not covered**.\n\n#### Evaluation:\nThe evaluation uses MSMARCO-10K (768-d) to compare kNN recovery against adjacency-only baselines and sanity-checks with ER random graphs. Papers like [11] and [6] use graph reconstruction precision metrics or adjacency-based comparisons, which align with the evaluation design here. Although the specific dataset and object differ, the evaluation design (reconstruction precision comparison and sanity checks) is **covered**.\n\n#### Domain:\nThe domain is vector database/RAG security, specifically focusing on approximate nearest neighbor index privacy. Papers like [1], [3], [5], [9], and [24] address ANN search privacy or security in vector databases and RAG systems, which is the same general application area. The domain is **covered**.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 6  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly demonstrates HNSW index topology leaking geometric information beyond adjacency lists, even under different terminology or framing.  \n\nFACET: mechanism | FINAL: COVERED-BY 4 | reason: \"an adversary observing the result of a private protocol for the computation of the number of common neighbors between all pairs of vertices, can reconstruct the graph\" aligns with reconstructing approximate embedding geometry and comparing recovered kNN against adjacency lists."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Show that HNSW index topology leaks geometric information beyond the explicit adjacency lists.**\n\nThe purpose is specifically about demonstrating that the HNSW graph structure (its topology/adjacency) leaks information about the underlying embedding geometry — framing this as a privacy/security finding about ANN indexes. Paper [1] addresses ANN search privacy but focuses on LSH-based methods and secure query protocols, not on HNSW topology leakage. Papers [3], [5], [9] address secure nearest neighbor search over encrypted data — they assume the data is encrypted and focus on query protocols, not on what the index structure itself leaks. Paper [29] investigates sentence embedding inversion (recovering text from embeddings), which is about embedding leakage but not HNSW topology leakage. No prior paper establishes the same empirical relationship: that HNSW adjacency graph topology leaks geometric/embedding information beyond what's explicit in the adjacency lists.\n\n**MECHANISM: Systematic study framing leaked layer-0 HNSW adjacency graph as attack surface, reconstructing approximate embedding geometry and comparing recovered kNN against raw adjacency lists.**\n\nThe mechanism involves treating the HNSW graph structure as an attack surface and using it to reconstruct embedding geometry. Paper [6] proposes graph reconstruction attacks (GRA) to recover adjacency matrices from graph representations — similar in spirit (invert structure to recover information) but operates on GNN representations, not HNSW indexes. Paper [4] reconstructs graphs from partial adjacency/neighborhood data using cryptographic protocol outputs. Paper [29] inverts sentence embeddings to recover text. None of these specifically frame HNSW layer-0 adjacency as an attack surface for geometry reconstruction. The closest is [6] (graph reconstruction from representations) and [4] (graph reconstruction from partial neighborhood data), but neither targets HNSW or ANN index topology as the attack surface. The specific primitive of \"use ANN index graph structure to reconstruct embedding geometry\" is not covered.\n\n**EVALUATION: MSMARCO-10K (768-d) kNN recovery vs. adjacency-only baseline; ER random graph sanity check yielding near-chance recall.**\n\nThe evaluation design involves: (1) a named benchmark (MSMARCO), (2) kNN recall metric, (3) comparison against a baseline (raw adjacency lists), and (4) a sanity check with random graphs (Erdős–Rényi). The kNN recall metric and benchmark-based evaluation appear in ANN search papers generally. Paper [1] evaluates ANN query accuracy. Paper [24] evaluates HNSW performance. However, the specific evaluation design — using kNN recall to measure geometry reconstruction quality from an index structure, with an ER random graph as a sanity check — is not found in prior papers. The ER sanity check as a control condition for confirming metric structure exploitation is a specific protocol design not seen elsewhere. However, kNN recall as a metric is standard in ANN literature, and ablation/baseline comparison is generic. The MSMARCO benchmark is a named benchmark family used in retrieval. The evaluation design (kNN recall on a named retrieval benchmark with baseline comparison) is a standard ANN evaluation design, but the specific framing as a security/reconstruction evaluation with ER sanity check is novel in design. I'll consider this carefully — the generic shape (compare method vs. baseline on a named benchmark using recall) is covered by ANN papers, but the specific design of measuring reconstruction quality from index topology with a random-graph control is not explicitly present. Given the special rule that generic experimental moves don't establish coverage unless validating the same claim, I lean toward NONE.\n\n**DOMAIN: Vector database / RAG security (approximate nearest neighbor index privacy)**\n\nPaper [1] explicitly addresses ANN search security in the context of LLMs/RAG systems: \"approximate nearest neighbor (ANN) search, a core operation in LLMs, faces inherent trade-offs between efficiency and security.\" This is the same application area. Papers [3], [5], [9] also address secure ANN search. The domain of ANN index/vector database security is covered by [1].\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper examines HNSW index topology as a source of geometric/embedding information leakage. The closest papers address GNN topology inference [13,14], network tomography [31,33], or embedding inversion [29], but none frame the HNSW graph structure itself as leaking embedding geometry — a distinct objective not found under any alternative terminology in the prior works.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper frames the layer-0 HNSW adjacency graph as an attack surface, nor reconstructs approximate embedding geometry from it, nor compares recovered kNN against raw adjacency lists. Graph reconstruction papers [4,6,7,23,28] operate on social/abstract graphs, not ANN index structures. Embedding inversion [29] works from embedding vectors, not index topology. No equivalent framing exists under different terminology.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports experiments on MSMARCO-10K (768-d) recovering kNN from HNSW structure, nor uses an Erdős–Rényi random graph sanity check to confirm that metric structure (rather than mere graph connectivity) drives the attack. The specific experimental design — including the 269x recall gap between HNSW and ER baselines — is not present in any prior work under any alternative framing."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        4,
+        6
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        6,
+        11
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        24
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**PURPOSE**: The contribution's purpose is to show that the topology of an HNSW index leaks geometric information about the underlying embeddings. This is a finding about a specific empirical relationship (`HNSW topology -> embedding geometry`). No prior paper appears to establish this exact relationship with these specific variables; prior work demonstrates information leakage from other types of graph structures (e.g., minimum distance graphs of codes [12], GNN model outputs [13], or from common neighbor counts [4]), but not from the HNSW index structure itself.\n\n**MECHANISM**: The mechanism is a reconstruction attack that uses the HNSW adjacency graph to infer the approximate kNN graph, thereby recovering latent geometric information. This is an instance of a well-known class of \"graph reconstruction attacks\" or \"inversion attacks\" used to measure information leakage. For example, [4] proposes a method to \"reconstruct the original graph\" from partial neighborhood data, and [6] proposes a \"graph reconstruction attack (GRA)\" to recover a graph's adjacency matrix from its representations to measure privacy leakage.\n\n**EVALUATION**: The evaluation design consists of applying the reconstruction attack, measuring its success with kNN recall on a standard benchmark, comparing it to a simple baseline (adjacency-only), and using a random graph as a sanity check. This overall design—reconstructing a structure and measuring the fidelity of the reconstruction against a ground truth using standard metrics and baselines—is a standard protocol for this type of analysis. For instance, [11] proposes a \"reconstruction procedure\" and assesses \"reconstruction precision using a... metric,\" and [6] measures success by minimizing \"the reconstruction loss.\"\n\n**DOMAIN**: The contribution is situated in the domain of vector database security, specifically the privacy of approximate nearest neighbor (ANN) indices used in applications like Retrieval-Augmented Generation (RAG). This general application area is not new. Prior work such as [1] explicitly addresses \"Secure Approximate k-Nearest Neighbor Query for Large Language Models,\" and [24] works on improving HNSW performance for \"RAG (Retrieval-Augmented Generation)\" systems, establishing the domain.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 4, 6\nVERDICT evaluation = 6, 11\nVERDICT domain = 1, 24",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the objective of demonstrating that an HNSW graph's topology leaks geometric information about the underlying vectors. Prior work focuses on reconstructing the graph structure itself from partial information (e.g., [4], [6]), inverting embedding vectors to recover data (e.g., [19], [29]), or protecting/inferring network topology in other domains (e.g., [13], [33]), not on this specific information leakage channel."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     7
+    ],
+    "mechanism": null,
+    "evaluation": [
+     26
+    ],
+    "domain": [
+     13,
+     22
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 26
+      },
+      "domain": {
+       "covered_by": 13
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to recover faithful metric distances from small-world graphs despite hub-induced shortcut distortion. Paper [7] discusses the issue of shortcut edges in ISOMAP graphs, which destroy the approximation ability of shortest-path distances to geodesic distances. This aligns with the same problem-class level objective of addressing distortion caused by hub-induced shortcuts. Therefore, the purpose is **covered** by paper [7].\n\n### Mechanism\nThe mechanism involves degree-penalized geodesic embedding, where edge weights are adjusted based on the log-degree average of endpoints to penalize paths through high-degree hubs, followed by landmark Dijkstra shortest paths and landmark MDS with out-of-sample triangulation. Paper [7] mentions the problem of shortcut edges in ISOMAP graphs but does not propose a degree-penalized weighting scheme or a similar mechanism. Paper [22] discusses geodesic distance approximation in ISOMAP but does not employ degree-based penalties. None of the prior papers describe a substantively equivalent mechanism combining degree-penalized weighting, landmark Dijkstra paths, and landmark MDS triangulation. Therefore, the mechanism is **uncovered**.\n\n### Evaluation\nThe evaluation achieves Recall@10 of 0.4164 on MSMARCO-10K, with relative improvements over adjacency-only and unweighted geodesic baselines. Paper [26] evaluates manifold-aware distance metrics for dense passage retrieval, which involves Recall@k metrics on DPR benchmarks. This matches the evaluation design at the benchmark family and metric semantics level (Recall@k for embedding-based retrieval). Although the specific benchmark instance differs, the evaluation design is **covered** by paper [26].\n\n### Domain\nThe domain is graph-based embedding reconstruction/ordinal embedding. Paper [13] discusses Isomap in distance geometry, which is a graph-based embedding reconstruction method. Paper [22] also addresses manifold learning techniques for nonlinear dimension reduction, which falls under the same general application area. Therefore, the domain is **covered** by papers [13] and [22].\n\n---\n\nVERDICT purpose = 7  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 26  \nVERDICT domain = 13  ",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper explicitly describes or quotes the mechanism of degree-penalized geodesic embedding with the specific weighting formula, landmark Dijkstra shortest paths, and landmark MDS with out-of-sample triangulation."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 26
+      },
+      "domain": {
+       "covered_by": 22
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## PURPOSE: Recover faithful metric distances from small-world graphs despite hub-induced shortcut distortion.\n\nThe purpose is specifically about correcting hub-induced shortcut distortion in graphs to recover faithful metric distances. Paper [7] discusses shortcut edges in ISOMAP that \"destroy the approximation ability of the involved shortest-path distances to the corresponding geodesic distances\" — this is about shortcut edges but in the context of manifold learning neighborhood graphs, not small-world hub distortion. Paper [22] \"Rehabilitating Isomap\" addresses recovering Euclidean representation of geodesic structure, but focuses on manifold learning correctness, not hub-induced shortcuts. Paper [26] addresses manifold-aware distance metrics for dense passage retrieval, but the purpose is improving retrieval, not correcting hub distortion. Paper [19] addresses \"recovering a notion of true distance between the nodes\" from graphs/similarity matrices — this is close but focuses on matrix factorization + nonlinear DR, not hub correction. None of these specifically target hub-induced shortcut distortion in small-world graphs as the core problem being solved.\n\n## MECHANISM: Degree-penalized geodesic embedding — weight edges by 1 + alpha*(log-degree average of endpoints), run landmark Dijkstra, apply landmark MDS with out-of-sample triangulation.\n\nThis combines several components: (1) degree-based edge reweighting to penalize hubs, (2) landmark Dijkstra shortest paths, (3) landmark MDS with out-of-sample triangulation. Paper [28] \"FastMap, MetricMap, and Landmark MDS are all Nystrom Algorithms\" covers landmark MDS. Paper [30] \"Landmark MDS ensemble\" covers landmark MDS. Paper [11] covers out-of-sample dimensionality reduction with landmarks. Paper [23] covers landmark MDS (QLMDS). Paper [33] covers out-of-sample MDS. The landmark MDS + out-of-sample triangulation components are covered. However, the degree-penalized edge weighting (1 + alpha * log-degree average) as a mechanism to penalize hub shortcuts is the distinctive primitive. Paper [25] studies weighted paths in scale-free networks with hub nodes but doesn't use degree-penalized weighting to correct distortion. Paper [27] studies betweenness centrality scaling but doesn't use degree penalties for embedding. No prior paper uses degree-based edge reweighting as a primitive to penalize hub shortcuts in geodesic embedding. The landmark MDS + Dijkstra components are covered by [28, 30, 11], but the degree-penalization primitive appears absent.\n\n## EVALUATION: Recall@10 on MSMARCO-10K with relative improvement comparisons across seeds.\n\nThe evaluation uses Recall@K as a metric on MSMARCO, a standard information retrieval benchmark. Papers [26], [29], [31] all work with dense passage retrieval and use retrieval metrics (Recall@K or similar) on MSMARCO or similar benchmarks. Paper [26] explicitly uses \"DPR benchmarks\" with distance metrics. Paper [29] and [31] use passage retrieval accuracy metrics. The evaluation design (Recall@K on MSMARCO-style benchmarks) is covered by these papers.\n\n## DOMAIN: Graph-based embedding reconstruction / ordinal embedding.\n\nThe domain involves graph-based embedding and distance reconstruction. Papers [19], [22], [13] work in graph/manifold embedding. Paper [22] works on \"Euclidean Representation of Geodesic Structure\" from graphs. Paper [19] works on \"recovering true distance between nodes\" from graphs. Paper [13] works on \"distance geometry\" with Isomap. These all operate in the graph-based embedding area. The specific sub-problem of ordinal embedding from small-world graphs is a narrower instance of this existing area.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 26\nVERDICT domain = 22",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper targets recovery of faithful metric distances specifically from small-world graphs by counteracting hub-induced shortcut distortion. Paper [22] rehabilitates Isomap for geodesic structure and paper [7] addresses shortcut edges in manifold learning, but neither frames the objective as correcting hub-degree-driven metric distortion in small-world graphs. No quoted phrase from any prior paper matches this same objective.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes degree-penalized edge weighting (1 + alpha * log-degree average of endpoints) combined with landmark Dijkstra and landmark MDS with out-of-sample triangulation as a unified pipeline. Paper [28] covers landmark MDS/Nystrom relationships, paper [30] covers landmark MDS ensembles, and paper [10] covers hierarchical landmark charting, but none introduce degree-based edge penalty weights to suppress hub shortcuts. No quoted phrase from any prior paper contains this combined mechanism."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 26
+      },
+      "domain": {
+       "covered_by": 13
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "**purpose**: Paper [7] identifies the substantively equivalent objective, which is to address how \"shortcut edges can be introduced into the neighborhood graph and destroy the approximation ability of the involved shortest-path distances to the corresponding geodesic distances greatly.\" This is the same problem as recovering faithful distances despite \"hub-induced shortcut distortion.\"\n\n**mechanism**: The mechanism's constituent parts—landmark-based shortest paths and landmark MDS with out-of-sample extension—are well-known techniques present in papers like [11], [23], and [30]. However, the core technical primitive, which is the specific edge re-weighting formula \"weight each edge by 1 + alpha * (log-degree average of endpoints) to penalize paths through high-degree hubs,\" is not described or used in any of the prior papers.\n\n**evaluation**: The evaluation design consists of measuring Recall@k on a standard passage retrieval benchmark (MSMARCO). This is a standard evaluation protocol for the dense retrieval domain, as seen in papers like [26] which proposes \"Manifold-aware Distance Metrics for Dense Passage Retrieval\" and would be validated using the same family of benchmarks and metrics.\n\n**domain**: The domain of \"Graph-based embedding reconstruction\" is covered by numerous prior papers. For example, [13] defines the problem as \"finding a realization of a given weighted graph in a Euclidean space of given dimension,\" which is a perfect description of this application area.\n\nVERDICT purpose = 7\nVERDICT mechanism = NONE\nVERDICT evaluation = 26\nVERDICT domain = 13",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: The core of the mechanism is re-weighting graph edges using a formula based on the degrees of the connected nodes (`1 + alpha * (log-degree average of endpoints)`) before computing shortest paths for an embedding. While the subsequent steps (landmark Dijkstra, MDS, out-of-sample triangulation) are standard techniques discussed in papers like [11], [23], and [28], none of the provided papers propose modifying the edge weights based on node degrees to penalize hubs in this manner for a shortest-path-based embedding. The re-weighting is the key novel step, and it is not present in the prior art."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     22
+    ],
+    "mechanism": [
+     1,
+     22
+    ],
+    "evaluation": [
+     1,
+     22
+    ],
+    "domain": [
+     1,
+     20,
+     21
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 22
+      },
+      "evaluation": {
+       "covered_by": 22
+      },
+      "domain": {
+       "covered_by": 20
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to characterize when topology leakage is most concerning across data dimensionality. None of the prior papers explicitly report or establish the same empirical relationship between topology leakage and data dimensionality. While some papers (e.g., [20], [23]) discuss topology privacy risks or membership inference in graph neural networks, they do not address the specific relationship between dimensionality and topology leakage severity. Similarly, papers like [22] and [13] discuss high-dimensional data vulnerabilities or embedding dimensionality but do not establish the same relationship.\n\n**VERDICT purpose = NONE**\n\n---\n\n### Mechanism\nThe contribution compares attack effectiveness on high-dimensional text embeddings (768-d MSMARCO) versus low-dimensional image descriptors (128-d SIFT10K). Papers such as [22] and [13] discuss vulnerabilities or embedding techniques in high-dimensional spaces, but they do not perform a direct comparison of attack effectiveness across different dimensionalities. Papers like [20] and [23] focus on topology inference attacks but do not analyze dimensionality as a variable. No prior paper uses the same mechanism of cross-dimensional attack comparison.\n\n**VERDICT mechanism = NONE**\n\n---\n\n### Evaluation\nThe evaluation design involves measuring attack performance improvement over adjacency-only baselines and comparing results across high-dimensional (MSMARCO-10K) and low-dimensional (SIFT10K) embeddings. Papers such as [22], [20], and [23] use similar evaluation designs, including adjacency-based baselines and performance metrics for privacy attacks. For example, [22] evaluates nearest neighbor vulnerabilities in high-dimensional spaces, and [20] measures topology inference risks in graph neural networks. These prior works use comparable evaluation designs, even though the specific datasets and dimensionality settings differ.\n\n**VERDICT evaluation = 22**\n\n---\n\n### Domain\nThe contribution operates in the domain of embedding privacy, specifically analyzing dimension-dependent attack vulnerabilities. Papers such as [20], [23], and [22] address privacy risks in embeddings or graph neural networks, which fall within the same general application area of embedding privacy. Although the specific focus on dimensionality is narrower, the domain itself is covered by prior work.\n\n**VERDICT domain = 20**  \n\n---\n\n### Final Verdicts\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 22  \nVERDICT domain = 20  ",
+      "stage2": "1. **FACET: purpose** | **FINAL: NONE** | reason: No prior paper explicitly characterizes when topology leakage is most concerning across data dimensionality, even under different terminology or framing.  \n2. **FACET: mechanism** | **FINAL: COVERED-BY 22** | reason: Paper [22] discusses the vulnerability of nearest neighbor search in high intrinsic dimensionality, which aligns with comparing attack effectiveness across high- and low-dimensional embeddings. Quote: \"The higher the intrinsic dimensionality, the more vulnerable the nearest neighbors search becomes to perturbations.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 22
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 21
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Characterize when topology leakage is most concerning across data dimensionality.**\n\nThe purpose is to establish an empirical relationship between embedding dimensionality and the severity of topology/privacy leakage attacks. Paper [22] investigates \"the vulnerability of the nearest neighbors search\" and explicitly ties vulnerability to \"intrinsic dimensionality\" — \"The higher the intrinsic dimensio[nality]...\" This directly characterizes when nearest-neighbor/retrieval attacks are most concerning as a function of dimensionality. Paper [20] studies topology privacy risks in GNNs comprehensively but does not focus on dimensionality as the characterizing variable. No other paper establishes the same relationship (dimensionality → attack severity for topology/embedding leakage). Paper [22] is the closest match — it characterizes vulnerability of nearest neighbor search as a function of intrinsic dimensionality, which is substantively the same empirical relationship being reported here.\n\n**MECHANISM: Compare attack effectiveness on high-dimensional text embeddings (768-d MSMARCO) versus low-dimensional image descriptors (128-d SIFT10K).**\n\nThe mechanism is a cross-dimensional comparative analysis of attack effectiveness using two specific benchmark datasets (MSMARCO at 768-d, SIFT10K at 128-d). Paper [22] derives statistical distributions of perturbation vulnerability as a function of intrinsic dimensionality, but uses a theoretical/analytical approach rather than empirical comparison across named benchmark datasets. No prior paper appears to use this specific comparative experimental design (high-dim text embeddings vs. low-dim image descriptors in an attack context). The generic shape of \"compare two settings\" is not sufficient — no prior paper uses this named benchmark pair or equivalent protocol for this purpose.\n\n**EVALUATION: Attack improves over adjacency-only by 28% on MSMARCO-10K (768-d) but underperforms on SIFT10K (128-d), identifying high-dimensional RAG embeddings as the primary concern.**\n\nThe evaluation design involves comparing an attack's performance against a baseline across two named benchmark datasets (MSMARCO, SIFT10K) with percentage improvement metrics. Paper [21] uses RAG-specific leakage metrics (Leakage@k, Amplification) on similar RAG pipelines. Paper [22] analyzes vulnerability statistically across dimensionality settings. However, the specific evaluation design — using MSMARCO and SIFT10K as named benchmark instances to measure attack delta over a baseline — does not appear in any prior paper. MSMARCO and SIFT10K are named benchmarks, but their use in this attack-comparison context is not found in prior work. This appears to be a genuinely new evaluation protocol for this specific claim.\n\n**DOMAIN: Embedding privacy (dimension-dependent attack analysis).**\n\nThe domain is embedding privacy, specifically in the context of RAG/vector search systems. Paper [21] explicitly addresses \"Hybrid RAG pipelines\" and vector-retrieved privacy leakage. Paper [22] addresses vulnerability of nearest neighbor search (a core RAG primitive). Paper [16] addresses embedding inversion attacks in NLP. Paper [25] addresses secure nearest neighbor search. The general area of embedding privacy and vector search privacy is well-covered by multiple prior papers.\n\nVERDICT purpose = 22\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 21",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper compares attack effectiveness specifically between high-dimensional text embeddings (768-d MSMARCO) and low-dimensional image descriptors (128-d SIFT10K) in an adversarial retrieval context. Paper [22] discusses vulnerability of nearest neighbor search as a function of intrinsic dimensionality, but does not compare these two specific dataset types or embedding regimes in an attack effectiveness study. No equivalent comparison exists under any alternative terminology.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports the specific empirical finding that an attack improves over adjacency-only by 28% on MSMARCO-10K (768-d) while underperforming on SIFT10K (128-d, 0.2684 vs 0.3475), nor any equivalent quantitative claim identifying high-dimensional RAG embeddings as the primary concern relative to low-dimensional image descriptors. Paper [22] discusses dimensionality and vulnerability in general terms but contains no such named benchmark comparison or quantitative result matching this claim."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 22
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe contribution's purpose is to establish an empirical relationship: that topology leakage/attack success is more concerning in high-dimensional data. Paper [22] investigates the same relationship, stating that for nearest neighbor search, vulnerability is driven by intrinsic dimensionality: \"The higher the intrinsic dimension...\". This establishes the same conceptual relationship between dimensionality and vulnerability, covering the purpose.\n\n**MECHANISM**\nThe mechanism is a comparative analysis of attack effectiveness on two datasets chosen to have different dimensionalities (high vs. low). This is a standard experimental design of comparing a procedure's outcome across different settings. Paper [1] uses the same design by evaluating its proposed attack across \"three real-world network datasets\" and comparing the performance, thereby covering the mechanism at the design level.\n\n**EVALUATION**\nThe evaluation design is to run an attack on datasets with different properties (here, dimensionality) and compare the resulting success metrics to draw a conclusion. This comparative evaluation protocol is standard in the field. Paper [1] uses this same design by running its attack on multiple datasets and reporting the \"classification accuracy of the targeted node\" to compare effectiveness, which is substantively the same evaluation design.\n\n**DOMAIN**\nThe contribution operates in the domain of \"embedding privacy\" and analyzes attacks. This general application area is well-established. Paper [1] is squarely in this domain, as it presents \"Adversarial Attacks on Node Embeddings\".\n\nVERDICT purpose = 22\nVERDICT mechanism = 1\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

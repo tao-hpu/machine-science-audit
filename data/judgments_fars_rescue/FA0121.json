@@ -1,0 +1,316 @@
+{
+ "paper_id": "FA0121",
+ "title": "Counterfactual Gate Supervision Does Not Fix Gating Credit Assignment in Engram-Style Conditional Memory",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     8,
+     28
+    ],
+    "mechanism": null,
+    "evaluation": [
+     2,
+     6,
+     21,
+     28
+    ],
+    "domain": [
+     9,
+     15,
+     16
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": [
+        2,
+        6,
+        21,
+        28
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        9,
+        15,
+        16
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to address the gating credit-assignment pathology (hot/cold flip mis-calibration) in Engram-style conditional memory. This specific objective of fixing mis-calibration in conditional memory gating is not directly addressed by any prior paper. While papers like [8], [12], [13], and [14] discuss credit assignment in reinforcement learning, they focus on temporal or causal credit assignment rather than the specific calibration issue in conditional memory gating. Similarly, [9] and [15] discuss conditional computation and gating mechanisms but do not target the specific pathology described here.\n\n#### Mechanism:\nThe mechanism, Counterfactual Gate Supervision (CGS), computes per-token counterfactual loss differences under forced gate settings and uses this signal to supervise gate activations via an auxiliary loss. Papers [6], [14], and [7] discuss counterfactual reasoning and supervision, but none compute counterfactual loss differences specifically for gate activations in conditional memory. [6] uses counterfactual examples and gradient supervision for generalization, [14] applies counterfactuals to credit assignment in reinforcement learning, and [7] uses counterfactual reasoning in causal reinforcement learning. None of these mechanisms match the specific primitive of using counterfactual loss differences for gate supervision.\n\n#### Evaluation:\nThe evaluation design involves showing the proposed method's ineffectiveness, which is a standard experimental move. Papers like [2], [6], [21], and [28] use auxiliary loss validation setups, and [14] employs counterfactual reasoning in evaluation. These prior works demonstrate similar evaluation designs (e.g., auxiliary loss validation, ablation studies, or counterfactual-based validation). The specific object of evaluation (Engram-style conditional memory gating) is new, but the evaluation design itself is covered.\n\n#### Domain:\nThe domain is memory-augmented transformers and conditional n-gram memory gating. Papers [9], [15], and [16] work in related areas, such as conditional computation, memory gating, and modifying memories in transformer models. While the specific instance of Engram-style conditional memory gating is new, the general application area of memory-augmented transformers and conditional computation is covered.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = [2], [6], [21], [28]  \nVERDICT domain = [9], [15], [16]  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 8 | reason: Paper [8] explicitly addresses the gating credit-assignment pathology in reinforcement learning, which aligns with the described objective of fixing the hot/cold flip mis-calibration in Engram-style conditional memory. Quote: \"Adequately assigning credit to actions for future outcomes based on their contributions is a long-standing open challenge in Reinforcement Learning.\"\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes a mechanism equivalent to Counterfactual Gate Supervision (CGS) with periodic per-token counterfactual loss differences and auxiliary loss supervision, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 16
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Fix gating credit-assignment pathology (hot/cold flip mis-calibration) in conditional memory gating**\n\nThe purpose is specifically to fix a credit-assignment problem in conditional memory gating — where gates are mis-calibrated because the gradient signal doesn't correctly reflect whether memory access helps or hurts. Papers [8], [12], [13], [14] address credit assignment in RL contexts, but the purpose there is assigning credit to actions for future rewards, not fixing gate calibration in a memory-augmented transformer. Paper [9] uses conditional gating for continual learning but doesn't address credit-assignment pathology in gating. None of the prior papers pursue the objective of fixing hot/cold flip mis-calibration in conditional memory gates specifically. The closest thematic neighbors (RL credit assignment) are in a different problem class — they don't address the same gap (gate mis-calibration in memory-augmented LMs).\n\n**MECHANISM: Counterfactual Gate Supervision — compute delta-loss under forced gate settings, use as auxiliary supervision signal**\n\nThe mechanism involves: (1) forcing gate values to 0 and 1 counterfactually, (2) computing loss differences, (3) using that delta-loss as an auxiliary supervision signal for gates. Paper [14] \"Counterfactual Credit Assignment in Model-Free RL\" uses counterfactual reasoning to measure action influence on rewards — but the primitive is conditioning value functions on future events, not forcing binary switches and computing loss deltas. Paper [6] \"Learning What Makes a Difference from Counterfactual Examples and Gradient Supervision\" uses counterfactual pairs plus gradient supervision as an auxiliary objective — this is thematically close (counterfactual + auxiliary loss), but the mechanism is about spurious correlation via input pairs, not forced gate toggling with delta-loss. Paper [2] uses gradient similarity to weight auxiliary losses adaptively. Paper [20]/[22] use auxiliary losses for MoE routing. None of the papers implement the specific primitive of \"force a binary gate to 0 vs 1, compute loss difference, supervise the gate with that delta-loss signal.\" This combination is not covered.\n\n**EVALUATION: Method proposed but shown ineffective**\n\nThe evaluation design here is essentially a negative result / ablation showing a proposed method fails. This is a generic experimental shape (propose method, measure, find it doesn't work). The special rule says generic experimental moves don't establish coverage unless they validate the same claim. No prior paper uses this specific evaluation design to validate the same claim. However, the evaluation design itself (ablation/comparison showing a method underperforms) is a generic shape. Since no prior paper uses a named benchmark family, metric, or protocol that matches, and the \"shown ineffective\" framing is a generic experimental shape rather than a named design, this is NONE.\n\n**DOMAIN: Memory-augmented transformers / conditional n-gram memory gating**\n\nPaper [16] \"Modifying Memories in Transformer Models\" works in memory-augmented transformers. Paper [3] covers transformer networks generally. Paper [9] uses conditional gating in neural networks. The domain of memory-augmented transformers is covered by [16], and conditional gating in neural networks by [9]. Together, the general application area of memory-augmented transformers with conditional gating is addressed.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 16",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper targets the specific pathology of hot/cold flip mis-calibration in Engram-style conditional memory gating; the closest papers (e.g., [9] on conditional gating, [15] on MoE gating) address gating in different contexts without addressing this credit-assignment miscalibration objective.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper computes per-token counterfactual loss differences under forced gate settings (delta-loss = loss(alpha=0) - loss(alpha=1)) and uses this as an auxiliary supervision signal for gate activations; [14] uses counterfactual credit assignment in RL and [6] uses counterfactual gradient supervision but neither applies forced gate-state loss differencing to supervise memory gate activations in a transformer.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports proposing and then demonstrating the ineffectiveness of a counterfactual gate supervision method in the specific context of Engram-style conditional memory; this negative result finding is unique to the contribution under review."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 28
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 15
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to fix a credit assignment pathology for a gating mechanism, ensuring the gate activates when the component it controls is helpful. This is substantively equivalent to the purpose of [28], which aims to \"ensure the router's decisions align well with the experts' capabilities\" in a Mixture-of-Experts model, a different instance of a gated architecture.\n\n**mechanism**: The mechanism computes a counterfactual loss difference by forcing a gate on and off (`loss(alpha=0) - loss(alpha=1)`) and uses this difference as a supervisory signal in an auxiliary loss. This is an application of the primitive in [6], which proposes to \"use pairs of minimally-different examples that lead to different outcomes\" to create a supervisory signal for the model. Both mechanisms generate a supervisory signal from a difference in outcome under a counterfactual perturbation.\n\n**evaluation**: The method was shown to be ineffective, which implies an evaluation design where a model with the proposed method is compared against a baseline on a standard benchmark. This A/B comparison design is a standard validation protocol in machine learning and is used in prior work like [2], which validates its proposed method by showing it \"outperforms baselines on a variety of tasks\".\n\n**domain**: The work is in the domain of memory-augmented or conditional/gated transformers. This is a well-established research area, covered by prior work such as [15] on \"The Sparsely-Gated Mixture-of-Experts Layer\", which is a canonical example of conditional computation in large neural networks.\n\nVERDICT purpose = 28\nVERDICT mechanism = 6\nVERDICT evaluation = 2\nVERDICT domain = 15",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": [
+     4
+    ],
+    "domain": [
+     6,
+     17
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 17
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Per-Facet Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to test whether Confidence-Gated Sampling (CGS) improves gate credit assignment. This involves evaluating the relationship between CGS and its impact on oracle-AUC and the persistence of the hot/cold flip pathology. None of the prior papers explicitly test this relationship or establish the same empirical effect. Papers like [5], [9], [13], [18], and [20] discuss credit assignment broadly, but they do not test CGS or its specific impact on gate calibration metrics like oracle-AUC or the hot/cold flip pathology. Thus, no prior paper establishes the same empirical relationship.\n\n#### Mechanism:\nThe mechanism involves controlled experiments measuring oracle-AUC of gate calibration across all Engram layers and checking the persistence of the hot/cold flip pathology. Papers [4], [12], and [17] use oracle-AUC or calibration-related metrics in their experimental setups, but none of them measure oracle-AUC specifically for gate calibration across Engram layers or investigate the hot/cold flip pathology. While [17] discusses calibration broadly, it does not use the same experimental mechanism or focus on gate credit assignment. Therefore, no prior paper employs substantively equivalent experimental mechanisms.\n\n#### Evaluation:\nThe evaluation design involves measuring oracle-AUC degradation and persistence of the hot/cold flip pathology. Papers [4], [12], and [17] use oracle-AUC as a metric, which matches the evaluation design at the metric level. Although the specific object of evaluation (gate calibration across Engram layers) differs, the use of oracle-AUC as a validation metric is substantively equivalent. Thus, the evaluation design is covered.\n\n#### Domain:\nThe domain is gate-calibration evaluation, specifically using oracle-AUC. Papers [17] and [22] address calibration in neural networks, which overlaps with the general area of calibration evaluation. While the specific focus on gate calibration across Engram layers is new, the broader domain of calibration evaluation is covered by prior work. Therefore, the domain is covered.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 4  \nVERDICT domain = 17  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly tests whether CGS improves gate credit assignment, even under different terminology or framing.  \nFACET: mechanism | FINAL: NONE | reason: No prior paper describes controlled experiments measuring oracle-AUC of gate calibration across all Engram layers or persistence of the hot/cold flip pathology."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**PURPOSE: Test whether CGS (Confidence-Gated training/Straight-through) actually improves gate credit assignment.**\n\nThe purpose is to empirically verify whether a specific training method (CGS) improves gate calibration quality, specifically checking if it resolves a \"hot/cold flip pathology.\" This is a targeted diagnostic/verification study about gate credit assignment in a neural network context. Paper [6] is about Confidence-Gated Training (CGT) for early-exit networks and discusses gradient interference, but its purpose is to *propose* CGT as a solution, not to test whether it improves gate credit assignment. Papers [5], [8], [9], [13], [18], [20] address credit assignment in reinforcement learning — different problem class entirely. No prior paper establishes the same empirical relationship: \"does CGS improve gate credit assignment (oracle-AUC) and resolve hot/cold flip pathology?\" None of the papers test this specific relationship.\n\n**MECHANISM: Controlled experiments measuring oracle-AUC of gate calibration across all Engram layers and checking persistence of the hot/cold flip pathology.**\n\nThe mechanism is a controlled ablation measuring oracle-AUC across layers to check a specific pathology. Paper [4] discusses exploiting an oracle that reports AUC scores, but in the context of ML contests, not gate calibration. Paper [17] and [22] measure calibration of neural networks using standard metrics, but not oracle-AUC of gates across layers. The \"hot/cold flip pathology\" check is a specific diagnostic protocol not found in any prior paper. As a finding-type contribution, the mechanism (analysis design) should be judged at design level — controlled ablation with AUC measurement appears generically in prior work, but no paper uses this specific protocol for gate calibration.\n\n**EVALUATION: Negative result showing CGS degrades oracle-AUC (0.549 to 0.528) and fails to resolve hot/cold flip pathology.**\n\nPer the special rule, evaluation design coverage requires the same benchmark family, metric semantics, or validation framework. Oracle-AUC as a metric for gate calibration evaluation is not found in any prior paper. Paper [4] uses AUC in a contest-exploitation context, not as a gate calibration metric. Paper [17] uses ECE and reliability diagrams for neural network calibration. The specific evaluation design — measuring oracle-AUC across Engram layers to assess gate calibration quality — does not appear in any prior paper.\n\n**DOMAIN: Gate-calibration evaluation (oracle-AUC).**\n\nThe domain is gate calibration in neural networks (specifically Engram layers). Paper [6] works on early-exit neural networks with gating mechanisms. Paper [17] and [22] work on neural network calibration. Paper [11] involves gate oxide capacitor calibration (hardware, not neural networks). The closest is [6] which involves confidence-gated training and neural network gates, placing it in the same general application area of neural network gate/calibration evaluation.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 6",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper tests whether a specific gated training method (CGS) improves gate credit assignment; [6] proposes CGT for early-exit efficiency but does not test whether it improves credit assignment quality, and no other paper shares this objective even under different terminology.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper conducts controlled experiments measuring oracle-AUC of gate calibration across named model layers while checking persistence of a hot/cold flip pathology; this specific experimental design appears nowhere in the prior papers under any framing.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports a negative result showing CGS/CGT degrades oracle-AUC across all layers of a specific model (Engram) from 0.549 to 0.528 and fails to resolve a hot/cold flip pathology; [6] reports positive CGT results and no paper contains this specific negative finding or equivalent claim."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: NONE. No prior paper has the specific purpose of empirically testing whether CGS improves gate credit assignment. The prior work either discusses the general problem of credit assignment ([5], [9], [18]), proposes related methods ([6], [19]), or analyzes related models ([25], [31]), but none report on this specific empirical test.\n\n**mechanism**: 4. The core analysis method is measuring the performance of a component using an oracle that reports AUC scores. Paper [4] explicitly describes this design: \"contestants can submit candidate solutions and receive from an oracle... the accuracy of their guesses... One of the most commonly used accuracy metrics... is the Area Under the Receiver Operating Characteristics Curve (AUC).\"\n\n**evaluation**: 4. The evaluation design is the use of an oracle to provide AUC scores as a performance metric. This evaluation protocol is substantively equivalent to the one described in paper [4], \"Exploiting an Oracle That Reports AUC Scores in Machine Learning Contests,\" making the design covered.\n\n**domain**: 6. The application area is the training and evaluation of gated neural network components. Paper [6] operates in the same domain with its work on \"Confidence-gated training for efficient early-exit neural networks,\" as do other papers on Mixture-of-Experts which also use gates ([24], [29], [31]).\n\nVERDICT purpose = NONE\nVERDICT mechanism = 4\nVERDICT evaluation = 4\nVERDICT domain = 6",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the specific objective of testing whether a proposed method improves credit assignment for the gating/routing mechanism in Mixture-of-Experts models. Papers on MoE focus on different objectives like load balancing [24] or representation collapse [31]. Papers on credit assignment are in other domains like RL [5, 13] or are general [18]. Papers on related techniques like STE [21] have the general purpose of improving the tool, not the specific application to MoE gate credit assignment."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     6,
+     8
+    ],
+    "mechanism": [
+     3
+    ],
+    "evaluation": [
+     3,
+     12
+    ],
+    "domain": [
+     1,
+     12
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution's purpose is to determine whether CGS's validation-loss gain reflects better supervision or a confound. This is a specific empirical relationship between the validation-loss improvement and the source of the gain (supervision vs. computation). None of the prior papers explicitly report or establish this same relationship. Papers like [6], [8], [15], and [21] discuss confounding effects or hidden confounders, but they do not address the specific empirical relationship between auxiliary supervision and validation-loss gain in the context of iso-compute control. Therefore, no prior paper covers this purpose.\n\n#### Mechanism:\nThe mechanism involves iso-compute control that matches the extra forward-pass computation of CGS without the supervision signal. Paper [3] introduces AutoAblation, a framework for ablation studies, which includes declarative definitions and parallel execution of ablation experiments. Paper [7] discusses utilizing LLMs for ablation studies, which also involves isolating contributions of components. Both papers describe ablation setups that could encompass iso-compute control as a design principle, making the mechanism covered.\n\n#### Evaluation:\nThe evaluation design compares CGS's validation-loss improvement against an iso-compute baseline, showing that the improvement is fully attributable to extra computation rather than supervision. Paper [3] introduces AutoAblation, which provides a framework for ablation studies to isolate contributions of components, and paper [7] discusses ablation studies for ML/DL systems. Both papers use ablation-based evaluation designs, which match the contribution's evaluation design. Therefore, the evaluation is covered.\n\n#### Domain:\nThe domain is iso-compute ablation and auxiliary supervision analysis. Papers [1], [2], [19], and [23] address auxiliary losses or auxiliary supervision in various contexts, which fall within the same general application area. Paper [3] and [7] also address ablation studies, which are relevant to the domain. Thus, the domain is covered.\n\n---\n\n### Verdicts:\nVERDICT purpose = NONE  \nVERDICT mechanism = 3  \nVERDICT evaluation = 3  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 6 | reason: VIGOR+ explicitly addresses confounding validation by iteratively refining confounders, quoting: \"Hidden confounding remains a fundamental challenge in causal inference from observational data... we propose VIGOR+, a novel framework that closes the loop between LLM-based confounder generation and validation.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 12
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Determine whether CGS's apparent validation-loss gain reflects better supervision or a confound.**\n\nThe purpose is to isolate whether a performance improvement is due to the claimed mechanism (supervision signal) or a confound (extra computation). Paper [12] \"On the Importance of Strong Baselines in Bayesian Deep Learning\" explicitly investigates whether apparent gains in approximate inference techniques are real or artifacts of experimental confounds (models not trained to convergence). Paper [21] \"Confounding and control\" discusses identifying and controlling for confounding factors. However, the specific relationship being tested — whether auxiliary supervision gains are attributable to extra forward-pass compute rather than the supervision signal itself — is not established by any prior paper. Paper [12] is closest but addresses a different confound (convergence) in a different setting. None of the papers establish the same empirical relationship (extra compute from forward passes explains auxiliary supervision gains).\n\n**MECHANISM: Iso-compute control that matches the extra forward-pass computation of CGS without the supervision signal.**\n\nThis is a controlled ablation where compute is held constant to isolate the effect of the supervision signal. Paper [12] uses strong baselines to control for experimental confounds. Paper [3] and [7] discuss ablation frameworks. However, the specific primitive of \"iso-compute baseline that strips the supervision signal but preserves the computational overhead\" is a specific controlled experiment design. Paper [12] comes closest in spirit — it argues for matching computational/training conditions to isolate true gains — but doesn't specifically implement an iso-compute forward-pass control. No prior paper describes this exact primitive.\n\n**EVALUATION: CGS's modest validation loss improvement is fully attributable to extra computation.**\n\nThe evaluation design uses validation loss as a metric and ablation/substitution to attribute gains. Paper [12] uses the same evaluation design logic: compare methods under matched conditions using standard metrics (RMSE/log-likelihood on benchmarks) to show that apparent gains disappear under fair comparison. This is substantively the same evaluation design — controlled comparison with matched baselines to attribute performance differences. The specific benchmark differs but the design (matched-condition comparison with standard loss metrics) is covered.\n\n**DOMAIN: Iso-compute ablation / auxiliary supervision analysis.**\n\nThe domain is auxiliary supervision / training dynamics analysis in deep learning. Papers [1], [2], [4], [17], [19] all work in auxiliary loss/supervision for deep learning. Paper [12] works in empirical validation methodology for deep learning. This is clearly within the existing area of auxiliary supervision analysis in deep learning.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 12\nVERDICT domain = 12",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper asks whether a specific method's validation-loss improvement reflects better supervision versus a confound; the closest papers address confounding in causal/observational settings or ablation frameworks, none of which examine this empirical question about CGS or any analogous auxiliary-supervision gain.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes an iso-compute control that matches extra forward-pass computation without the supervision signal; compute-matched baselines of this specific form do not appear in any of the listed works under any alternative terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to determine if an apparent performance gain from an auxiliary loss method is due to the intended mechanism (better supervision) or a confound (extra computation). This objective of disentangling a claimed effect from a potential experimental confound is covered by [8], which investigates whether a model's performance is biased by a confounder (\"the development cycle and number of developers\"). It is also covered by the methodological purpose of [12], which argues for using strong baselines to check for \"experimental flaws\" that create illusory gains, which is exactly the investigation this contribution performs.\n\n**mechanism**: The mechanism is an \"iso-compute control,\" which is a carefully designed ablation study that isolates the effect of a supervision signal by creating a baseline with matched computational cost but without the signal itself. The underlying primitive—using an ablation study to determine the \"relative contribution of different architectural and regularization components\"—is explicitly described as the mechanism's purpose in [3]. Therefore, the general mechanism of a targeted ablation study is covered.\n\n**evaluation**: The evaluation design is a comparative experiment measuring standard performance metrics (e.g., validation loss) across three conditions: the target method, a standard baseline, and a controlled (ablated) baseline. This is the standard design of an ablation study, a validation framework whose purpose is to \"provide insights into the individual contribution of different building blocks\" [7]. As such, the evaluation design is covered by papers that formalize ablation studies, such as [3] and [7].\n\n**domain**: The contribution is an analysis of methods involving auxiliary supervision and the potential for confounding in their evaluation. This general application area is covered by prior work on auxiliary losses, such as [1] (\"Reweighing auxiliary losses in supervised learning\") and [19] (\"Self-Supervised Generalisation with Meta Auxiliary Learning\").\n\nVERDICT purpose = 8\nVERDICT mechanism = 3\nVERDICT evaluation = 3\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

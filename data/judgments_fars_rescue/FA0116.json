@@ -1,0 +1,301 @@
+{
+ "paper_id": "FA0116",
+ "title": "Fact-Check Grounding Loss for Semantically Consistent Model Editing",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     11,
+     24
+    ],
+    "evaluation": [
+     4,
+     21
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 11
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to address the semantic-consistency gap where edited models fail to reliably judge the truth of statements containing their own edited facts. Paper [11] (\"Enhancing Semantic Consistency of Large Language Models through Model Editing\") explicitly targets the semantic consistency of LLMs, aiming to ensure consistent outputs across semantically equivalent prompts. This aligns with the same problem-class level objective of improving semantic consistency in LLMs after editing, making the purpose covered.\n\n### Mechanism\nThe mechanism, Fact-Check Grounding (FCG), introduces balanced truth-conditional supervision to train the model to judge new facts as True and old facts as False via an auxiliary loss. Paper [25] (\"Adapting Auxiliary Losses Using Gradient Similarity\") discusses the use of auxiliary losses to improve model performance, including adaptive weighting of auxiliary tasks. While [25] does not specifically address truth-conditional supervision for model editing, the use of auxiliary losses as a technical primitive is substantively equivalent. Additionally, paper [11] mentions fine-tuning with semantically equivalent prompt-output pairs, which involves a related mechanism of supervised adjustment for semantic consistency. Thus, the mechanism is covered.\n\n### Evaluation\nThe evaluation design involves method-level validation, where format-only control (unbalanced) achieves chance-level 50% BFC-Acc, motivating the balanced design. Paper [11] evaluates semantic consistency improvements in LLMs using fine-tuning and validation setups, which include metrics for consistency and accuracy. Paper [4] (\"Evaluating Dependencies in Fact Editing for Language Models\") also evaluates logical dependencies and consistency in fact editing, using metrics and validation setups to assess the impact of editing methods. Both papers employ evaluation designs that align with the contribution's method-level validation approach, making the evaluation covered.\n\n### Domain\nThe domain is knowledge/model editing of LLM factual associations. Paper [1] (\"Event-level Knowledge Editing\") and paper [3] (\"A Dual-Axis Taxonomy of Knowledge Editing for LLMs\") both operate in the general application area of knowledge editing for LLMs, addressing the challenge of updating or modifying factual associations within models. Paper [11] also explicitly focuses on semantic consistency in model editing, further confirming that the domain is covered.\n\n---\n\nVERDICT purpose = 11  \nVERDICT mechanism = 11  \nVERDICT evaluation = 4  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 24
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Close the semantic-consistency gap where edited models cannot reliably judge the truth of statements containing their own edited facts.**\n\nPaper [11] is titled \"Enhancing Semantic Consistency of Large Language Models through Model Editing\" and explicitly addresses semantic consistency in LLMs via model editing. However, reading carefully, [11] focuses on consistent outputs across semantically equivalent prompts (paraphrase consistency), not on truth-conditional judgment of edited facts. Paper [4] addresses \"dependencies in fact editing\" including logical constraints, but not specifically truth-conditional self-judgment. Paper [9] discusses rational belief revision in model editing but at a philosophical/conceptual level. None of the prior papers specifically target the gap where edited models fail to correctly judge the truth value of their own edited facts (i.e., BFC-Acc / binary fact-checking after editing). Paper [11] is the closest but addresses a different consistency problem (paraphrase robustness, not truth-conditional judgment). No prior paper covers this specific purpose.\n\n**MECHANISM: FCG augments the editing objective with balanced truth-conditional supervision (FC-Pos + FC-Neg auxiliary loss, λ=0.3) to prevent an 'always True' shortcut.**\n\nThe mechanism combines: (1) auxiliary loss added to a primary training objective, (2) balanced positive/negative supervision to prevent class-collapse shortcuts, (3) applied to knowledge editing. Paper [25] proposes auxiliary losses with adaptive gradient-similarity weighting — same primitive of auxiliary loss augmentation. Papers [24], [27], [30], [31] address class imbalance via balanced supervision. However, none of these apply this to knowledge editing or truth-conditional judgment specifically. The combination of balanced binary supervision as an auxiliary loss to prevent shortcut learning is a known primitive: [24] uses an \"Auxiliary Balanced Classifier\" to prevent majority-class bias in semi-supervised learning — this is structurally equivalent to FC-Pos + FC-Neg preventing an 'always True' shortcut. The mechanism primitive (balanced auxiliary loss to prevent class-collapse/shortcut) is covered by [24] and [25].\n\n**EVALUATION: Format-only control (unbalanced) achieves chance-level 50% BFC-Acc, motivating the balanced design.**\n\nThis evaluation design involves an ablation/control condition (unbalanced format-only) compared against the proposed balanced method, measuring a specific accuracy metric (BFC-Acc). The BFC-Acc metric itself appears to be newly defined for this contribution (binary fact-checking accuracy after editing). No prior paper uses this specific benchmark, metric, or protocol. The evaluation design is a controlled ablation comparing balanced vs. unbalanced supervision — this is a generic experimental shape. The BFC-Acc metric is newly defined. No prior paper uses this specific evaluation design or metric family for knowledge editing truth-judgment. This appears uncovered.\n\n**DOMAIN: Knowledge / model editing of LLM factual associations.**\n\nPapers [1], [3], [4], [5], [6], [8], [9], [11], [14] all explicitly work in knowledge/model editing of LLMs. This domain is thoroughly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 24\nVERDICT evaluation = NONE\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: Paper [11] addresses semantic consistency in LLMs but targets paraphrase/prompt-variation inconsistency, not the specific gap where edited models cannot judge truth of statements containing their own edited facts. No prior paper shares the same objective even under different terminology.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper contains a format-only control experiment showing that an unbalanced true/false benchmark achieves chance-level accuracy, nor any equivalent named design or claim motivating balanced benchmark construction for post-edit fact-checking evaluation."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 24
+      },
+      "evaluation": {
+       "covered_by": 21
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The objective is to fix a specific failure mode in model editing where a model, after an edit, cannot correctly classify the truth value of the new fact (as true) and the old fact (as false). Prior work on consistency in model editing, such as [4] and [8], focuses on propagating logical implications or \"ripple effects\" to related facts, not on the model's ability to judge the truth of the primary edited fact itself. Paper [11] addresses semantic consistency across different phrasings of a prompt, which is also a different objective. No prior paper identifies or aims to close this specific gap in truth-conditional self-awareness post-edit.\n**mechanism**: The core mechanism is augmenting a primary training objective with a balanced, auxiliary loss composed of positive (new fact is True) and negative (old fact is False) examples to prevent a degenerate solution. This is a direct application of using an auxiliary balanced classifier to handle class imbalance, a well-established technique. Paper [24] (\"ABC: Auxiliary Balanced Classifier for Class-imbalanced Semi-supervised Learning\") describes this exact primitive of using an auxiliary classifier with a balanced objective to correct for biases in the main task.\n**evaluation**: The evaluation design consists of demonstrating that a simplified, unbalanced baseline (the \"format-only control\") fails by achieving only chance-level performance, thereby motivating the proposed balanced approach. This is a standard experimental design for validating methods that address class imbalance. Paper [21] (\"An Experimental Design to Evaluate Class Imbalance Treatment Methods\") explicitly discusses and formalizes evaluation protocols for this problem, including comparing against naive baselines that are susceptible to imbalance.\n**domain**: The application area is knowledge editing for large language models, specifically modifying their stored factual associations. Numerous prior papers operate in this exact domain. For example, [1] (\"Event-level Knowledge Editing\") proposes a new task within the broader area of \"knowledge editing... of large language models (LLMs)\".\n\nVERDICT purpose = NONE\nVERDICT mechanism = [24]\nVERDICT evaluation = [21]\nVERDICT domain = [1]",
+      "stage2": "FACET: purpose: Close the semantic-consistency gap where edited models cannot reliably judge the truth of statements containing their own edited facts. | FINAL: NONE | reason: No prior paper identifies or aims to fix this specific failure mode. Prior work on consistency focuses on implications/ripple effects [4, 8] or paraphrase robustness [11], not on the model's ability to reflect on and affirm the truth of the newly edited fact itself."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     14
+    ],
+    "evaluation": [
+     5,
+     14,
+     24
+    ],
+    "domain": [
+     3,
+     6,
+     14
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to quantify FCG's improvement in balanced fact-check accuracy (BFC-Acc) over a baseline. None of the prior papers explicitly report or establish the same empirical relationship (i.e., the improvement in BFC-Acc for FCG over LocFT-BF or a format-only control). While some papers (e.g., [5], [7], [9], [13]) discuss fact-checking or fact verification, they do not quantify the same improvement in balanced accuracy for the specific setup described here. Therefore, no prior paper covers this purpose.\n\n### Mechanism\nThe mechanism involves comparing FCG against LocFT-BF and a format-only control on the KnowEdit ZsRE benchmark with Qwen2.5-7B-Instruct. None of the prior papers describe this specific comparison or use the same mechanism. While [6], [11], [14], and [18] discuss knowledge editing and related benchmarks, they do not involve the same comparative setup (FCG vs. LocFT-BF vs. format-only control) or the same benchmark/model combination. Thus, the mechanism is not covered.\n\n### Evaluation\nThe evaluation design involves measuring balanced fact-check accuracy (BFC-Acc) and reporting a +12.3-point improvement for FCG over LocFT-BF, with statistical significance (p=0.0044). This evaluation design is not novel. Papers like [5], [7], [9], and [13] use similar evaluation designs for fact-checking or fact verification, involving accuracy metrics and statistical comparisons. For example, [7] evaluates fine-grained fact verification using accuracy metrics, and [5] discusses evaluating fact-checking algorithms with accuracy-based metrics. While the specific benchmark and model differ, the evaluation design (accuracy improvement with statistical validation) is covered.\n\n### Domain\nThe domain is model-editing benchmarks, specifically KnowEdit ZsRE with Qwen2.5-7B-Instruct. Several prior papers ([6], [11], [14], [18], [24]) work in the general area of model editing and use related benchmarks (e.g., ZsRE, CounterFact, or other knowledge-editing datasets). While the specific benchmark instance (KnowEdit ZsRE with Qwen2.5-7B-Instruct) is new, the general application area of model-editing benchmarks is well-covered. Therefore, the domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 5  \nVERDICT domain = 6  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper quantifies FCG's improvement in balanced fact-check accuracy over a baseline, even under different terminology or framing.  \nFACET: mechanism | FINAL: NONE | reason: No prior paper compares FCG against LocFT-BF baseline and a format-only control on the KnowEdit ZsRE benchmark with Qwen2.5-7B-Instruct."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 24
+      },
+      "domain": {
+       "covered_by": 14
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Quantify FCG's improvement in balanced fact-check accuracy over a baseline.**\n\nThe purpose is to demonstrate that a specific model editing method (FCG) improves a specific metric (balanced fact-check accuracy) over a locate-then-edit baseline. Papers [11], [16], [18], [24] all evaluate knowledge editing methods against baselines (locate-then-edit paradigms), measuring improvement. Paper [24] specifically asks \"Can Knowledge Editing Really Correct Hallucinations?\" and compares editing methods against baselines on factual accuracy metrics. Paper [11] (AlphaEdit) compares against locate-then-edit baselines measuring editing performance. However, none of these papers report the *same empirical relationship* — specifically, quantifying FCG's improvement in \"balanced fact-check accuracy\" (a specific metric designed to handle class imbalance in fact-checking post-edit). The variable \"balanced fact-check accuracy\" as a target quantity being improved is not the same as standard editing metrics (efficacy, generalization, locality). No prior paper establishes this same relationship between these same variables.\n\n**MECHANISM: Compare FCG against LocFT-BF baseline and a format-only control on KnowEdit ZsRE with Qwen2.5-7B-Instruct.**\n\nThe mechanism is a controlled comparison: method vs. baseline vs. format-only ablation control, on a named benchmark (KnowEdit ZsRE), with a specific model. Papers [11], [14], [16], [18], [24] all perform controlled comparisons of knowledge editing methods against locate-then-edit baselines on ZsRE or similar benchmarks. Paper [14] explicitly uses ZsRE benchmark comparisons. The design of \"compare method vs. baseline + ablation control on ZsRE\" is a standard analysis protocol appearing in multiple prior papers. This is a standard controlled ablation/comparison design used across the knowledge editing literature.\n\n**EVALUATION: FCG improves BFC-Acc by +12.3 points over LocFT-BF (58.06% vs 45.77%, p=0.0044), format-only at chance (50%).**\n\nThe evaluation design uses a named benchmark (KnowEdit ZsRE), a specific metric (BFC-Acc = balanced fact-check accuracy), and statistical significance testing (p-value). The KnowEdit benchmark is used in prior papers [11], [16], [24] for evaluating knowledge editing. However, BFC-Acc (balanced fact-check accuracy) appears to be a newly defined metric not present in prior papers, which use standard metrics like edit success rate, generalization, locality. The evaluation design combines a known benchmark with a genuinely new metric definition. But per the special rule, the benchmark family (KnowEdit ZsRE) is used in prior work — the metric change is part of what's being measured. Paper [24] uses KnowEdit-style evaluation. The metric BFC-Acc is new, but the benchmark family is covered. I'll consider this covered at the benchmark-family level.\n\n**DOMAIN: Model-editing benchmark (KnowEdit ZsRE, Qwen2.5-7B-Instruct).**\n\nMultiple prior papers work in the model editing domain with KnowEdit/ZsRE benchmarks: [11], [14], [16], [18], [24] all operate in knowledge editing for LLMs, several using ZsRE. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 14\nVERDICT evaluation = 24\nVERDICT domain = 14",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the specific objective of quantifying FCG's improvement in balanced fact-check accuracy over a baseline; the fact-checking papers (e.g., [5], [8], [13]) evaluate fact-checking systems generally but none measures a \"Fact Consistency Graph\" or equivalent structure's contribution to balanced accuracy improvement as a defined experimental goal."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "purpose: The contribution's purpose is to establish a specific empirical finding: that the FCG method improves balanced fact-check accuracy over a baseline. For a finding, the purpose is only covered if a prior paper reports the same empirical relationship. No prior paper mentions or tests the FCG method, so none could have established this specific relationship.\n\nmechanism: The mechanism is the analysis method used to generate the finding: a comparative experiment of a new method (FCG) against a baseline (LocFT-BF) and a control on a standard benchmark. This is a standard experimental design. Paper [14] uses the same design, stating it will \"evaluate four methods (ROME, MEMIT, ICE, and LTE) on Arabic translations of the ZsRE and Counterfact benchmarks,\" which is a direct comparison of methods on a benchmark.\n\nevaluation: The evaluation design uses the KnowEdit ZsRE benchmark and measures \"balanced fact-check accuracy\". Reusing an existing benchmark family counts as covered. Paper [14] explicitly uses this benchmark family in its evaluation: \"on Arabic translations of the ZsRE and Counterfact benchmarks.\"\n\ndomain: The contribution's domain is model editing/knowledge editing for large language models. This is a well-established area. Multiple prior papers operate in this exact domain, such as [3] (\"ScEdit: Script-based Assessment of Knowledge Editing\"), [11] (\"AlphaEdit: Null-Space Constrained Knowledge Editing for Language Models\"), and [21] (\"DocTER: Evaluating document-based knowledge editing\").\n\nVERDICT purpose = NONE\nVERDICT mechanism = [14]\nVERDICT evaluation = [14]\nVERDICT domain = [3]",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the primary objective of quantifying a specific method's improvement on a balanced accuracy metric for fact-checking. Papers like [5], [7], and [13] have the purpose of creating new benchmarks or evaluation frameworks, not using them to quantify a specific method's improvement. Other papers like [8] and [12] have the purpose of proposing a new model, where the quantification of its performance is a part of the evaluation but not the central objective of the paper itself. The specified purpose is the act of measurement, which is distinct from creating the tool or the object of measurement."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     2,
+     19
+    ],
+    "mechanism": [
+     2,
+     6
+    ],
+    "evaluation": [
+     2,
+     6
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 19
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to disclose the boundary of FCG's effectiveness, specifically revealing its limitations in generalization and robustness to paraphrased prompts. Paper [19] (\"Benchmarking Knowledge Boundary for Large Language Model\") evaluates the knowledge boundaries of LLMs, emphasizing their sensitivity to prompt variations and the limitations of fixed questions or limited paraphrases. This aligns with the purpose of the contribution, as both aim to identify the boundaries of effectiveness in specific setups.\n\n### Mechanism\nThe mechanism involves testing the transfer of fact-check improvement to paraphrased prompts, revealing that FCG learns template-label associations rather than semantically robust truth-judgment. Paper [6] (\"Paraphrase Types Elicit Prompt Engineering Capabilities\") systematically evaluates how linguistic variations in prompts (paraphrase types) influence model behavior across tasks, which is substantively equivalent to testing the transferability of improvements to paraphrased prompts. Additionally, Paper [19] also discusses sensitivity to prompt paraphrasing, further supporting mechanism coverage.\n\n### Evaluation\nThe evaluation design highlights the limited paraphrase transfer (+2.44 points, not statistically significant), indicating template-specific learning. Paper [6] uses a systematic evaluation of linguistic features influencing model behavior across paraphrase types, which matches the evaluation design of testing paraphrase robustness. Paper [19] also critiques fixed-question evaluations and introduces paraphrase-based testing, aligning with the evaluation design here. Both papers use similar evaluation frameworks for robustness analysis, making this facet covered.\n\n### Domain\nThe domain is generalization/robustness analysis of model editing. Paper [1] (\"Model Editing Harms General Abilities of Large Language Models\") and Paper [18] (\"Evaluating the Ripple Effects of Knowledge Editing in Language Models\") both focus on robustness and generalization in the context of model editing, addressing unintended side effects and ripple effects of editing methods. These papers operate in the same general application area, covering the domain facet.\n\n---\n\nVERDICT purpose = 19  \nVERDICT mechanism = 6  \nVERDICT evaluation = 6  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Disclose the boundary of FCG's effectiveness (specifically, that improvement is template-specific with limited paraphrase transfer, indicating template-label association learning rather than semantically robust truth-judgment).**\n\nThis is a finding about a specific empirical relationship: that a fact-checking/generation method learns template-label associations rather than semantically robust truth judgment, revealed by paraphrase transfer failure. Paper [19] benchmarks knowledge boundaries of LLMs and explicitly notes that \"language models are sensitive to prompt\" and evaluates with paraphrases to reveal this sensitivity. However, [19] is about LLM knowledge evaluation, not about a fact-checking generation method's boundary. Paper [18] evaluates ripple effects of knowledge editing. None of the prior papers specifically report the same empirical relationship — that FCG (fact-check generation) improvements fail to transfer to paraphrased prompts because the model learns template-label associations. The closest conceptually are shortcut learning papers [13], [20], [22], [29] which discuss template/surface-feature-label correlations, but none establish this specific relationship for a fact-checking generation method. No prior paper covers this exact purpose.\n\n**MECHANISM: Test transfer of the fact-check improvement to paraphrased prompts.**\n\nPaper [2] explicitly tests QA model robustness to question paraphrasing by creating paraphrased test sets. Paper [6] systematically evaluates how paraphrase types affect model behavior across tasks. Paper [19] evaluates LLMs with paraphrased queries to test sensitivity. The mechanism of \"testing whether improvements transfer to paraphrased versions of prompts/questions\" is clearly present in [2] and [19] — both use paraphrase transfer testing as the analytical method.\n\n**EVALUATION: Improvement is template-specific with limited paraphrase transfer (+2.44 points, not statistically significant).**\n\nThe evaluation design here involves measuring performance on paraphrased variants and checking statistical significance of the difference. Paper [2] uses paraphrased test sets to measure QA robustness. Paper [6] measures behavioral changes across paraphrase types. Paper [19] uses paraphrased queries as evaluation. These all use the same evaluation design: apply paraphrased variants, measure performance delta, assess significance. This design is covered by [2] and [19].\n\n**DOMAIN: Generalization/robustness analysis of model editing.**\n\nPapers [1], [7], [8], [10], [18], [25] all work in the domain of model editing for LLMs, including robustness and generalization analysis of model editing methods. Paper [1] specifically analyzes harms/side effects of model editing on general abilities. Paper [18] evaluates ripple effects of knowledge editing. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 2\nVERDICT evaluation = 2\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of disclosing the boundary/limits of FCG's (Fact-Conflicting Generation's) effectiveness. Paper [8] examines intrinsic properties of target knowledge affecting editing, and [1] examines side effects of model editing, but neither aims to characterize the boundary conditions under which FCG specifically works or fails. No quoted phrase from any prior paper captures this same objective even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "For each facet, I will first state my reasoning and then provide the final verdict.\n\n**purpose**: The contribution's purpose is to disclose that a method's effectiveness is bounded because it relies on template-specific associations and does not generalize to paraphrases. Paper [2] establishes this same empirical relationship for QA systems, stating its goal is to \"explore the robustness of QA models to question paraphrasing,\" thereby covering the purpose of demonstrating this specific failure mode.\n\n**mechanism**: The mechanism is testing the transfer of an improvement to paraphrased prompts to check for semantic generalization. Paper [2] uses this exact mechanism to \"explore the robustness of QA models to question paraphrasing by creating two test sets consisting of paraphrased SQuAD questions.\"\n\n**evaluation**: The evaluation design is to compare performance on original vs. paraphrased inputs and, upon finding a significant drop, conclude that the model has learned a spurious \"template-label association.\" This evaluation design is the core of paper [2], which measures performance on original vs. paraphrased questions to assess robustness, and is also a central idea in the literature on shortcut learning (e.g., [13], [22]).\n\n**domain**: The domain is the \"Generalization / robustness analysis of model editing.\" Paper [1] operates in this exact domain, as it analyzes how \"model editing’s improve[ments]... often overlook the potential unintended side effects on the general abilities of LLMs,\" which is a robustness and generalization analysis of model editing.\n\nVERDICT purpose = 2\nVERDICT mechanism = 2\nVERDICT evaluation = 2\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

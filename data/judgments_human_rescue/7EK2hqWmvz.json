@@ -1,0 +1,153 @@
+{
+ "paper_id": "7EK2hqWmvz",
+ "title": "RAEE: A Robust Retrieval-Augmented Early Exit Framework for Efficient Inference",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     7,
+     13
+    ],
+    "mechanism": [
+     15
+    ],
+    "evaluation": [
+     1,
+     2
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 15
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to accelerate LLM inference via early exit without the training overhead of classifier-based early-exit frameworks, which require costly classifier training and only achieve comparable performance at best. Paper [7] introduces a modular approach to accelerate LLM inference by adding early exit heads trained in a self-supervised manner, which also aims to reduce training overhead. However, [7] still involves training additional early exit heads, which is explicitly avoided in the contribution. Other papers, such as [1], [2], [3], [4], [5], [6], [9], and [10], also aim to accelerate LLM inference via early exit, but they rely on classifier-based early-exit mechanisms or training strategies, which differ from the contribution's purpose of avoiding such training overhead. No prior paper explicitly shares the same purpose of achieving early exit without classifier training.\n\n### Mechanism\nThe mechanism models early exit as a distribution-prediction problem, using a retrieval database built with approximate nearest-neighbor indexing (FAISS) to predict the exit layer via distance-weighted voting. Papers [15], [16], [17], [18], [24], and [27] describe k-nearest neighbor (KNN) or weighted KNN methods, which are substantively equivalent to the retrieval-based mechanism described in the contribution. For example, [15] uses KNN with distance-weighted voting for flood prediction, and [24] introduces a local weighted mean-based KNN classifier. These mechanisms are equivalent to the contribution's use of FAISS-based retrieval and distance-weighted voting, as they share the same underlying primitive of using KNN with weighted voting for prediction.\n\n### Evaluation\nThe evaluation involves eight GLUE downstream tasks with various LLM backbones, reporting metrics such as zero-shot performance and inference latency. Papers [1], [2], [3], [4], [7], [9], and [10] evaluate early-exit methods on GLUE tasks or similar benchmarks, using comparable metrics such as accuracy and latency. For example, [7] evaluates early exit on Pythia models using confidence thresholds, and [1] evaluates early-exit LLMs on GLUE tasks. While the specific backbones and metrics may differ, the evaluation design — using standard benchmarks like GLUE and measuring performance and efficiency — is covered by these prior works.\n\n### Domain\nThe domain of the contribution is efficient LLM inference with early exit. Papers [1], [2], [3], [4], [5], [6], [7], [9], and [10] all operate in the same general application area of efficient LLM inference and early exit. For example, [1] and [7] explicitly focus on accelerating LLM inference via early exit, and [10] addresses large-scale training and inference of early-exit LLMs. While the specific methods and sub-problems may differ, the domain is clearly covered by these prior works.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 15  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 7 | reason: Paper [7] describes a self-supervised early exit mechanism for LLMs that avoids the training overhead of classifier-based frameworks, aligning with the same objective of accelerating LLM inference without costly classifier training. Quoted phrase: \"Each head is trained in a self-supervised manner to mimic the main model's predictions, allowing computation to stop early when a calibrated confidence threshold is reached.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": 15
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## PURPOSE\n\nThe contribution's purpose is to accelerate LLM inference via early exit **without** the training overhead of classifier-based early-exit frameworks — specifically, achieving comparable or better performance without costly classifier training.\n\nPapers [1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [25] all address accelerating inference via early exit, but they all involve training classifiers or additional parameters. Paper [13] (\"Unsupervised Early Exit in DNNs with Multiple Exits\") is the closest — it proposes unsupervised early exit without labeled data, aiming to avoid training overhead. However, the contribution's specific purpose is eliminating **classifier training entirely** by using retrieval instead. Paper [25] (EE-Tuning) reduces training cost but still requires parameter tuning. Paper [13] avoids supervised training but uses a different framing. The purpose of \"early exit without any classifier training overhead, achieving better-than-comparable performance\" is most closely matched by [13], which explicitly targets unsupervised early exit to avoid training costs. Paper [5] also proposes a \"predictive exit\" to avoid passive layer-by-layer checking, but still requires a prediction engine trained separately. The core objective — eliminate classifier training overhead for early exit — is substantively covered by [13].\n\n## MECHANISM\n\nThe contribution's mechanism: model early exit as a distribution-prediction problem using a **retrieval database** (FAISS approximate nearest-neighbor indexing) storing exit information (layer indexes + correct-prediction probabilities), then at inference retrieve top-k similar items and use **distance-weighted voting** to predict the exit layer — no parameter updates required.\n\nPaper [11] (DE3-BERT) uses prototypical networks and distance-based information from sample populations to determine exit decisions — it leverages \"global information offered by sample population\" and distance-enhanced exiting. This is related but uses prototypical networks, not a retrieval database with ANN indexing.\n\nPaper [5] (\"Predictive Exit\") uses a \"low-cost prediction engine\" to predict exit layers, which is conceptually similar to predicting exit layer rather than deciding at each layer. However, it still trains a prediction engine.\n\nPapers [15], [16], [17], [18], [24], [27], [28] cover KNN and distance-weighted voting as general ML primitives. Paper [15] uses KNN with inverse distance weighted interpolation for prediction — this is the same primitive as distance-weighted voting with nearest neighbors. Paper [24] presents distance-weighted KNN classification. Paper [27] covers distance-weighted KNN variants.\n\nThe combination of FAISS-based retrieval database + distance-weighted voting for exit-layer prediction is novel as a combination, but the distance-weighted KNN voting primitive is covered by [15], [24], [27]. The retrieval-database approach for early exit prediction (no parameter updates) is not directly covered — [11] uses prototypical networks (trained), [5] trains a predictor. The specific mechanism of building a FAISS retrieval database of exit information and using distance-weighted KNN voting to predict exit layers without any training is not substantively covered. The KNN+distance-weighting primitive exists ([15],[24],[27]), but applying it as a retrieval database for exit-layer prediction in LLMs is not present. However, per the instructions, cross-domain equivalence counts. The mechanism primitive is \"retrieve nearest neighbors, use distance-weighted voting to predict a value\" — this IS covered by [15], [24], [27], [28].\n\nBut the full mechanism also includes the FAISS ANN indexing for building the retrieval database. Paper [19] (MAPLE-Edge) uses a latency predictor for edge devices with a database approach, but it's about NAS latency prediction. The retrieval-database construction aspect isn't directly covered.\n\nThe core primitive — distance-weighted KNN voting for prediction — is covered by [15], [24], [27]. The application to exit-layer prediction is the novel part, but per instructions, cross-domain equivalence counts for mechanism.\n\n## EVALUATION\n\nThe contribution evaluates on **GLUE benchmark** tasks with RoBERTa-Large, T5-Large, Llama-3-8B, Gemma-7B backbones, measuring zero-shot performance and inference latency.\n\nPapers [2], [3], [4], [8], [20], [25] all evaluate on GLUE tasks for early exit methods. Paper [2] explicitly evaluates on GLUE with BERT variants. Paper [25] evaluates LLMs on standard benchmarks. The GLUE evaluation design is well-established and covered by multiple prior papers ([2], [3], [8], [20]).\n\n## DOMAIN\n\nThe domain is efficient LLM inference / early exit for transformer-based language models. This is directly covered by virtually all of papers [1]-[13], [20], [25].\n\nVERDICT purpose = 13\nVERDICT mechanism = 15\nVERDICT evaluation = 2\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     2
+    ],
+    "mechanism": [
+     2,
+     3
+    ],
+    "evaluation": [
+     2,
+     3
+    ],
+    "domain": [
+     1,
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": 2
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to empirically demonstrate that retrieval-guided early exit accelerates inference while retaining (or improving) accuracy. Paper [2] explicitly addresses retrieval-augmented early exit frameworks for efficient inference, aiming to optimize computational overhead while maintaining performance. Paper [6] also discusses accelerating inference in large language models using early exit heads trained to mimic the main model's predictions, which aligns with the goal of improving efficiency without sacrificing accuracy. Both papers substantively share the same objective at the problem-class level.\n\n### Mechanism\nThe contribution's mechanism involves a comprehensive comparison against pretrained, training-free, and semi-training early-exit baselines, plus ablations on database composition and exit-layer analysis. Paper [2] describes RAEE, a retrieval-augmented early exit framework, which includes ablations and comparisons to existing early-exit methods, making it substantively equivalent. Paper [6] also evaluates early exit heads and confidence metrics, including entropy-based separation, which overlaps with the ablation and comparison approach described in the contribution. Both papers use similar mechanisms for validating early exit strategies.\n\n### Evaluation\nThe evaluation facet involves demonstrating consistent performance improvements over SOTA early-exit frameworks across eight tasks and conducting ablations to isolate the contribution of specific components. Paper [2] evaluates RAEE against existing early-exit methods across multiple tasks, using ablations to analyze the impact of retrieval augmentation and intermediate layer predictions. Paper [6] evaluates early exit heads across tasks and confidence metrics, including ablations to assess the reliability of entropy-based confidence thresholds. Both papers reuse standard evaluation designs (e.g., task-based comparisons, ablations) and metrics, making the evaluation design covered.\n\n### Domain\nThe domain of the contribution is efficient LLM inference. Papers [2], [5], [6], and [10] all operate in the same general application area of efficient inference for large language models, including early-exit strategies. While specific datasets or sub-problems may differ, the domain remains substantively equivalent across these papers.\n\n---\n\nVERDICT purpose = 2  \nVERDICT mechanism = 2  \nVERDICT evaluation = 2  \nVERDICT domain = 2  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Empirically demonstrate that retrieval-guided early exit accelerates inference while retaining (or improving) accuracy.**\n\nThe purpose is specifically to show that *retrieval-guided* early exit works — i.e., using a retrieval database (including examples the backbone fails on but intermediate layers predict correctly) to guide exit decisions. Paper [2] is literally the RAEE paper itself, so it covers this. Paper [15] (DE3-BERT) uses prototypical networks / global sample population information to guide early exit decisions, which is thematically related but not the same relationship (retrieval from a database including failure cases). No prior paper establishes the same empirical relationship: that retrieval of nearest-neighbor exit information (including backbone-failure cases) accelerates inference while retaining accuracy. However, paper [2] IS the RAEE paper — the contribution being audited IS paper [2]. Setting that aside, no other prior paper demonstrates retrieval-guided early exit with this specific database composition insight.\n\n**MECHANISM: Comprehensive comparison against pretrained, training-free, and semi-training early-exit baselines plus ablations on database composition and exit-layer analysis.**\n\nThe mechanism here is a multi-baseline comparison framework plus ablation on database composition. Papers [1], [3], [4], [7], [13], [14], [16] all perform comparisons against multiple early-exit baselines and ablation studies. This is a standard evaluation/comparison design used across the early-exit literature. Paper [1] explicitly compares against multiple baselines and performs ablations. This is a generic experimental design (multi-baseline comparison + ablation), which is standard across the field.\n\n**EVALUATION: RAEE consistently improves over SOTA across eight tasks; ablation showing gains from including backbone-failure examples.**\n\nThe evaluation design uses standard NLU benchmarks (GLUE-family tasks) with accuracy/efficiency metrics, which is used in papers [3], [7], [14], [15], and others. The specific ablation on database composition (w/o failure cases) is a substitution/swap experiment — a generic experimental shape. However, the claim is about a specific ablation validating a specific mechanism (database composition with failure cases). The benchmark family (multi-task NLU evaluation) is covered by papers [3], [7], [14]. The ablation design shape is generic but the specific claim validation is new. Under the special rule, the evaluation DESIGN (multi-task NLU benchmarks + ablation) is covered by prior work like [3] and [7].\n\n**DOMAIN: Efficient LLM inference.**\n\nMultiple prior papers work in efficient LLM/PLM inference via early exit: [1], [3], [5], [6], [7], [10], [14], [15], etc. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 3\nVERDICT evaluation = 3\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 2 | reason: RAEE explicitly states \"RAEE, a robust Retrieval-Augmented Early Exit Framework for Efficient Inference\" and demonstrates empirically that retrieval-guided early exit accelerates inference while retaining accuracy — this is the same objective, not merely the same topic."
+     }
+    }
+   }
+  }
+ ]
+}

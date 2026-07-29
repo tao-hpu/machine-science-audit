@@ -1,0 +1,416 @@
+{
+ "paper_id": "FA0058",
+ "title": "Chunked Budget Allocation Prevents Non-Monotonic Regressions in World-Model Verification",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     10,
+     17
+    ],
+    "mechanism": [
+     17,
+     19
+    ],
+    "evaluation": null,
+    "domain": [
+     7
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 10
+      },
+      "mechanism": {
+       "covered_by": 19
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution identifies why increasing verification budget can paradoxically reduce agent task success in sequential verify-and-retry workflows. No prior paper explicitly establishes this relationship. While [19] discusses false negatives in verification and their impact on reinforcement learning, it does not address the paradoxical reduction in task success due to increased verification budgets. Similarly, [22] explores retry patterns and their impact on application performance but does not connect retries to verification budget increases or task success reduction. Therefore, no prior paper reports or establishes the same empirical relationship.\n\n### Mechanism\nThe contribution names and characterizes trajectory drift, where the agent re-browses after a verification rejection and frequently selects a worse product than originally found. [3] discusses retries in voice search queries, identifying user behavior when adapting to system failures, but does not characterize trajectory drift or its specific impact on task success. [19] highlights false negatives in verification but does not describe the mechanism of trajectory drift or its consequences. [10] addresses verification-aware planning but focuses on multi-agent collaboration challenges rather than trajectory drift. None of the prior papers substantively match the described mechanism.\n\n### Evaluation\nThe contribution evaluates trajectory drift, showing it accounts for 60.5% of failures when agents re-browse after verification rejection. [8] discusses evaluating web agent trajectories but focuses on rule-based and human evaluation methods rather than quantifying trajectory drift. [15] introduces a benchmark for evaluating safety and trustworthiness in web agents but does not measure trajectory drift or its contribution to failures. [19] evaluates false negatives in verification but does not quantify their impact on trajectory drift. No prior paper uses the same evaluation design to measure this specific phenomenon.\n\n### Domain\nThe contribution operates in the domain of web agents and world-model verification. [7], [8], [15], and [19] all address web agents and verification-related challenges, establishing this as a known application area. While the specific sub-problem of trajectory drift is new, the general domain of web agents and verification is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = 7  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 10 | reason: VeriMAP discusses how increasing verification budget can lead to execution failures due to misalignments, indirectly addressing the paradoxical reduction in task success. Quote: \"Execution failures frequently arise not from flawed reasoning alone, but from subtle misalignments in task interpretation, output format, or inter-agent handoffs.\"\n\nFACET: mechanism | FINAL: COVERED-BY 19 | reason: TinyV analyzes false negatives in verification and their impact on agent behavior, aligning with trajectory drift where agents re-browse and select worse products. Quote: \"False negatives...where verifiers wrongly reject correct model outputs...lead to degraded agent performance and suboptimal decision-making.\"\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper quantifies trajectory drift as accounting for 60.5% of failures or provides an equivalent empirical claim."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Identifies why increasing verification budget can paradoxically reduce agent task success in sequential verify-and-retry.**\n\nThe purpose is to explain a counterintuitive degradation phenomenon: more verification → worse outcomes. Paper [5] (\"Agentic Uncertainty Reveals Agentic Overconfidence\") touches on counterintuitive agent behavior (pre-execution assessment outperforms post-execution), but the specific objective — explaining why *more verification budget hurts* in sequential retry — is not addressed. Paper [9] notes cost-efficiency issues with agents but doesn't target this paradox. Paper [19] (TinyV) studies false negatives in verifiers hurting RL, but the purpose is improving RL training, not explaining retry-induced degradation. No prior paper pursues the same objective of explaining why increased verification budget paradoxically reduces success in sequential verify-and-retry loops.\n\n**MECHANISM: Names and characterizes \"trajectory drift\" — verifier false negatives cause re-browsing, which frequently yields a worse product selection.**\n\nPaper [17] (\"Contextual Drag\") characterizes a related phenomenon: failed attempts in context bias subsequent generations toward similar errors, causing performance drops in iterative self-refinement. This is structurally similar — a retry/re-attempt mechanism leads to worse outcomes due to accumulated context effects. However, the specific primitive here is different: trajectory drift is about re-browsing selecting a *worse item* due to world-state re-exploration, not about context biasing generation. Paper [19] discusses false negatives in verifiers causing incorrect rejections of correct outputs, which is part of the mechanism, but doesn't address the re-browsing/worse-selection dynamic. Paper [28] (\"LLMs Cannot Self-Correct\") shows self-correction can degrade performance, which is thematically related but the mechanism (self-correction without oracle feedback) differs from verify-and-retry with false negatives causing re-exploration. No prior paper captures the specific primitive of \"false-negative rejection → re-exploration → worse item selection.\"\n\n**EVALUATION: Trajectory drift accounts for 60.5% of failures when agents re-browse after verification rejection.**\n\nThis is a failure-mode breakdown/attribution analysis — categorizing failures by type and computing percentages. This is a standard analysis design (per-category failure attribution). Paper [8] (AgentRewardBench) evaluates web agent trajectory evaluation methods. Paper [9] does systematic analysis of agent benchmarks. However, the specific evaluation design here — attributing a percentage of failures to a named failure mode in a verify-and-retry protocol — is a standard controlled breakdown/attribution analysis. Such designs appear broadly in prior work (e.g., [9] does systematic failure analysis). But none of the prior papers use this specific protocol (verify-and-retry failure attribution). The evaluation design itself (failure mode attribution with percentages) is a generic experimental shape, not a named benchmark or protocol family. No prior paper uses this specific evaluation design for this claim.\n\n**DOMAIN: Web agents / world-model verification.**\n\nPaper [7] (\"AI Web Agents in Practice\") explicitly covers web agents. Paper [8] (AgentRewardBench) covers web agent trajectory evaluation. Paper [15] (ST-WebAgentBench) covers web agents with safety/trustworthiness evaluation. These clearly establish web agents as a covered domain.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 7",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper identifies why increasing verification budget paradoxically reduces agent task success in sequential verify-and-retry loops. Paper [5] touches on overconfidence and [9] on cost-controlled evaluation, but neither examines the paradox of more verification budget causing worse outcomes in a retry setting. No equivalent framing found under any terminology.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper names or characterizes \"trajectory drift\" as the phenomenon where a world-model false-negative rejection causes an agent to re-browse and select a worse product. Paper [17] (\"contextual drag\") describes errors in context biasing subsequent LLM generations, but it applies to reasoning tasks with failed attempts in context, not to a shopping agent re-browsing after verification rejection and selecting a worse product. The specific mechanism of re-browsing leading to product quality degradation is not found under any terminology.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports a quantified finding that trajectory drift (or any analogous re-browsing degradation phenomenon) accounts for 60.5% of failures in a verify-and-retry web agent setting. No paper provides this specific empirical measurement or a named equivalent claim."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 17
+      },
+      "mechanism": {
+       "covered_by": 17
+      },
+      "evaluation": {
+       "covered_by": 19
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: COVERED by [17], which identifies \"contextual drag\" where \"the presence of failed attempts in the context biases subsequent generations toward structurally similar errors,\" establishing the same core relationship that a retry after a failure can lead to a worse outcome.\n\n**mechanism**: COVERED by [17], which to establish \"contextual drag\" must use the same analysis design: comparing the performance of a model's generation on a task with and without the context of a prior failed attempt, which is substantively equivalent to comparing an agent's original attempt to its retry attempt.\n\n**evaluation**: COVERED by [19], which uses the same evaluation design of quantitative failure analysis by reporting that \"over 38% of model-generated responses\" are a specific error type (false negatives), just as the contribution quantifies the percentage of failures due to \"trajectory drift.\"\n\n**domain**: COVERED by [7], which is a survey of the \"AI Web Agents\" field, and also by [8] and [15] which are explicitly about evaluating and benchmarking \"Web Agents.\"\n\nVERDICT purpose = 17\nVERDICT mechanism = 17\nVERDICT evaluation = 19\nVERDICT domain = 7",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     7,
+     11
+    ],
+    "mechanism": [
+     8,
+     30,
+     32
+    ],
+    "evaluation": [
+     11,
+     32
+    ],
+    "domain": [
+     7,
+     32
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to prevent non-monotonic regressions by restructuring how a fixed verification budget is spent. None of the prior papers explicitly address this objective. While some papers discuss budget allocation (e.g., [7], [8], [12], [28]), their purposes differ. For example, [7] focuses on optimal rollout allocation for test-time policy optimization, and [8] introduces variance-informed predictive allocation for reinforcement learning. Neither explicitly targets preventing non-monotonic regressions. Similarly, [12] optimizes sample compute allocation for LLM inference, but its purpose is efficiency, not regression prevention. Thus, no prior paper shares the same purpose.\n\n### Mechanism\nThe mechanism involves chunked budget allocation, where a fixed budget \\( B \\) is divided into \\( M \\) cycles, with \\( K = B/M \\) parallel rollouts per cycle. This mechanism is not explicitly covered by any prior paper. Papers like [7], [8], and [12] discuss adaptive or optimal allocation of budgets, but their mechanisms differ. For instance, [7] uses Bayesian sequential probability models, [8] employs variance-informed strategies, and [12] formulates allocation as a learning problem. None of these papers describe the specific mechanism of chunked budget allocation with parallel rollouts per cycle. Therefore, the mechanism is novel.\n\n### Evaluation\nThe evaluation uses WebShop to compare chunked verification (M = 1) against sequential verify-and-retry (M = 10), showing a 25x improvement at the same budget. This evaluation design is covered by [11], which compares parallel and sequential strategies for scaling test-time compute in LLM reasoning. Both evaluations involve comparing parallel and sequential strategies under matched budgets, even though the specific benchmarks differ (WebShop vs. reasoning benchmarks). Thus, the evaluation design is not novel.\n\n### Domain\nThe domain is agent verification budget allocation, specifically in the WebShop environment. Papers like [7], [8], and [12] operate in similar domains involving budget allocation for agent or model verification tasks. For example, [7] and [8] address rollout allocation in reinforcement learning, and [12] focuses on sample compute allocation for LLM inference. While the specific instance (WebShop) is new, the general domain of agent verification budget allocation is covered. Therefore, the domain is not novel.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 11  \nVERDICT domain = 7  ",
+      "stage2": "- **FACET: purpose** | **FINAL: COVERED-BY 7** | reason: OptPO (2025-12-02) explicitly addresses \"adaptive allocation of inference budgets\" to optimize test-time policy performance, which aligns with the objective of preventing non-monotonic regressions by restructuring budget usage. Quote: \"We propose Optimal Rollout Allocation... adaptively allocates inference budgets to minimize computational redundancy and improve performance.\"\n\n- **FACET: mechanism** | **FINAL: COVERED-BY 8** | reason: VIP (2026-02-02) introduces a \"Variance-Informed Predictive allocation strategy\" that divides a fixed rollout budget into chunks based on variance, which conceptually matches the chunked budget allocation mechanism described. Quote: \"VIP... allocates a given rollout budget to the prompts based on their variance, instead of spreading it uniformly across all prompts.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 32
+      },
+      "evaluation": {
+       "covered_by": 32
+      },
+      "domain": {
+       "covered_by": 32
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Prevents non-monotonic regressions by restructuring how a fixed verification budget is spent.**\n\nThe purpose is specifically about preventing non-monotonic regressions (where more verification attempts hurt performance) by restructuring budget allocation for agent verification. Paper [32] explores test-time scaling for LLM agents including parallel sampling and sequential revision strategies, and discusses verifiers. Paper [7] (OptPO) addresses fixed-budget majority voting inefficiency and adaptive budget allocation. Paper [8] (VIP) addresses fixed rollout budgets in RL. However, none of these specifically target the problem of *non-monotonic regression* caused by sequential verify-and-retry cycles — the specific gap being closed (performance degrading with more sequential verification cycles) is not addressed by any prior paper. The closest is [32] which discusses verifiers and merging methods for agents, but doesn't address non-monotonic regression prevention as its objective.\n\n**MECHANISM: Chunked budget allocation — allocate B across M cycles with K=B/M parallel rollouts per cycle.**\n\nThis is essentially a parallelism-vs-sequentiality tradeoff in budget allocation: instead of many sequential small batches, use fewer cycles with more parallel samples per cycle. Paper [32] explicitly explores \"parallel sampling algorithms\" vs \"sequential revision strategies\" for LLM agents and discusses combining them. Paper [7] (OptPO) allocates inference budgets adaptively across rollouts. Paper [11] directly compares parallel vs sequential scaling at matched compute budgets. Paper [26] (PSE) uses parallel execution of multiple action branches for GUI agents. The primitive of \"trade sequential cycles for parallel rollouts within a fixed budget\" is most directly addressed by [32] which explores this exact tradeoff space for agents, and [11] which compares parallel vs sequential at matched compute. The specific chunking formulation (M cycles × K=B/M parallel rollouts) is a parameterization of the parallel-vs-sequential tradeoff that [32] and [11] both explore.\n\n**EVALUATION: WebShop benchmark, task success rate, comparing chunked vs sequential verification at same budget.**\n\nThe evaluation uses WebShop as a benchmark for LLM agents. Paper [32] explicitly studies test-time scaling for LLM agents and evaluates on agent benchmarks (likely including WebShop or similar). The evaluation design — comparing parallel vs sequential strategies on an agent benchmark using task success rate — matches the design in [32]. The specific numbers (21.50% vs 0.86%) are new, but the design (agent benchmark + task success metric + parallel vs sequential comparison) is covered by [32].\n\n**DOMAIN: Agent verification budget allocation (WebShop).**\n\nThe domain is LLM agent task completion with budget allocation. Paper [32] explicitly works on \"LLM Agents\" with test-time compute scaling. Paper [26] works on GUI agents. This is clearly covered by [32].\n\nVERDICT purpose = NONE\nVERDICT mechanism = 32\nVERDICT evaluation = 32\nVERDICT domain = 32",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper describes the objective of preventing non-monotonic regressions by restructuring how a fixed verification budget is spent. Papers [7] and [8] address adaptive rollout/budget allocation for LLM training/inference but focus on efficiency and reward estimation accuracy, not on preventing non-monotonic performance regressions as a specific goal. No equivalent framing exists under any alternative terminology in the prior works."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 11
+      },
+      "mechanism": {
+       "covered_by": 30
+      },
+      "evaluation": {
+       "covered_by": 11
+      },
+      "domain": {
+       "covered_by": 32
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The objective is to improve performance for a fixed computational budget by changing the structure of how that budget is spent, specifically from a sequential process to a parallel one. This is covered by [11], which explicitly frames its purpose as investigating this trade-off: \"at equal token budget and compute, is it better to run multiple independent chains in parallel, or to run fewer chains that iteratively refine through sequential steps?\".\n\n**mechanism**: The core mechanism is to allocate a budget B to K=B/M parallel rollouts, which for M=1 is equivalent to best-of-K sampling. This is a well-established primitive, described in multiple papers, including [30] which analyzes \"best-of-$n$ sampling, where $n$ samples are drawn from a reference policy, ranked based on a reward function, and the highest ranking one is selected.\"\n\n**evaluation**: The evaluation design consists of a direct comparison between a parallel sampling strategy and a sequential refinement strategy at a fixed computational budget, measuring task success on a benchmark. This exact evaluation design is used in [11], which conducts a \"comprehensive evaluation\" to determine if \"sequential scaling... outperforms the dominant parallel approach\" when compared \"at equal token budget and compute\".\n\n**domain**: The application area is allocating computational budgets for language agents at test time. This general area is covered by [32], which explicitly states its focus is \"Scaling Test-time Compute for LLM Agents\" and conducts a \"systematic exploration of applying test-time scaling methods to language agents\".\n\nVERDICT purpose = 11\nVERDICT mechanism = 30\nVERDICT evaluation = 11\nVERDICT domain = 32",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     6,
+     12
+    ],
+    "mechanism": [
+     13
+    ],
+    "evaluation": [
+     6,
+     13
+    ],
+    "domain": [
+     2,
+     16
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 12
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**Purpose:**  \nThe contribution's purpose is to show that sophisticated aggregation does not help when the world model is poorly calibrated. Paper [12] establishes an impossibility theorem for learned confidence calibration under binary supervision, which aligns with the idea that poor calibration undermines aggregation methods. Paper [19] reveals that existing LLMs are not self-consistent even for simple tasks, which indirectly supports the notion that poor calibration can lead to aggregation failure. Both papers address the same empirical relationship between calibration quality and aggregation effectiveness.  \n\n**Mechanism:**  \nThe contribution compares consensus aggregation across parallel rollouts against single-rollout acceptance. Paper [13] evaluates parallel rollouts versus sequential refinement for reasoning tasks, which is substantively equivalent to comparing aggregation methods across multiple rollouts. Paper [30] introduces ranked voting-based self-consistency for LLMs, which involves aggregating reasoning paths, similar to consensus aggregation. Both papers use substantively equivalent mechanisms for comparing aggregation strategies.  \n\n**Evaluation:**  \nThe contribution evaluates consensus aggregation in the context of a poorly calibrated world model, where predictions degenerate due to high failure rates. Paper [13] uses a similar evaluation design, comparing parallel rollouts against sequential refinement under matched compute budgets, which is equivalent to the consensus aggregation evaluation design. Paper [30] also evaluates self-consistency methods using majority voting, which is a comparable evaluation design.  \n\n**Domain:**  \nThe contribution operates in the domain of world-model calibration analysis. Paper [2] focuses on calibrating large language models, which is a substantively equivalent domain as both deal with model calibration. Paper [4] introduces variable-based calibration for machine learning classifiers, which also falls under the broader domain of calibration analysis.  \n\n**Verdict Lines:**  \nVERDICT purpose = 12  \nVERDICT mechanism = 13  \nVERDICT evaluation = 13  \nVERDICT domain = 2  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Shows that sophisticated aggregation does not help when the world model is poorly calibrated.**\n\nThe purpose is to demonstrate that aggregation methods fail when the underlying model is miscalibrated — specifically that poor calibration renders aggregation useless. Paper [2] calibrates LLMs using sample consistency but doesn't show aggregation fails under miscalibration. Paper [8] shows self-consistency boosts calibration for math reasoning but doesn't show aggregation fails when miscalibrated. Paper [13] compares parallel vs. sequential scaling but focuses on which is better, not on why aggregation fails due to miscalibration. Paper [12] proves impossibility of calibration under binary supervision but doesn't address aggregation failure. None of the prior papers establish the specific empirical relationship: \"aggregation is useless when the world model is poorly calibrated (predicts failure for nearly all cases).\" This is a specific finding about the interaction between calibration quality and aggregation utility.\n\n**MECHANISM: Compares consensus aggregation across parallel rollouts against single-rollout acceptance.**\n\nPaper [13] explicitly compares \"multiple independent chains in parallel\" (parallel self-consistency) against sequential approaches, which is structurally similar to comparing consensus across parallel rollouts vs. single-rollout. Paper [28] compares self-consistency (multiple samples, majority vote) against single-path approaches. Paper [30] also compares voting-based self-consistency methods. The core primitive — comparing consensus/majority-vote across parallel samples against a single-sample baseline — is present in [13] and [28].\n\n**EVALUATION: Consensus provides no benefit because the world model predicts failure (p-hat = 0) for 98.4% of cycles, causing consensus to degenerate.**\n\nThe evaluation design involves measuring the distribution of predicted probabilities from a world model and showing degenerate behavior (near-zero predictions dominating). This is a specific diagnostic/statistical analysis of model output distributions. Paper [12] examines calibration empirically across methods. Paper [2] evaluates consistency distributions. However, the specific design of measuring p-hat distribution collapse causing aggregation degeneracy doesn't match any prior evaluation design — this is a novel diagnostic protocol showing degeneration via probability mass concentration. No prior paper uses this specific evaluation design (measuring world-model prediction collapse causing aggregation failure).\n\n**DOMAIN: World-model calibration analysis.**\n\nThe domain is analysis of world-model calibration (in the context of planning/reasoning systems using learned world models). Papers [2], [8], [10], [11], [12] all work in LLM calibration. Paper [3] works on process-model calibration. The general area of \"calibration analysis of predictive models\" is covered by multiple papers, particularly [2], [8], [12]. The specific sub-area of \"world model calibration\" in planning contexts is a narrower instance of model calibration analysis, which is covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 13\nVERDICT evaluation = NONE\nVERDICT domain = 2",
+      "stage2": "I'll carefully re-examine each facet against all prior papers.\n\n**Purpose: Shows that sophisticated aggregation does not help when the world model is poorly calibrated.**\n\nScanning all papers for the idea that aggregation methods fail/provide no benefit specifically because of poor calibration of the underlying model:\n\n- Paper [2] (Calibrating LLMs with Sample Consistency): focuses on deriving confidence from consistency, not on showing aggregation fails due to poor calibration.\n- Paper [8] (Self-Consistency Boosts Calibration): shows self-consistency *improves* calibration, opposite direction.\n- Paper [28] (Confidence Improves Self-Consistency): shows weighted voting helps; doesn't argue aggregation fails due to poor world model calibration.\n- Paper [13] (Sequential Edge): compares parallel vs sequential scaling, doesn't argue aggregation fails due to calibration.\n- Paper [12] (Impossibility theorem): proves impossibility of simultaneous calibration and diversity under binary supervision — this is about learning constraints, not about aggregation failing due to a poorly calibrated world model.\n- No paper states the same objective: that sophisticated aggregation is futile when the world model is poorly calibrated.\n\n**Evaluation: Consensus provides no benefit because the world model predicts failure (p-hat = 0) for 98.4% of cycles, causing consensus to degenerate.**\n\nThis is a specific empirical finding with a specific statistic (98.4%) and a specific mechanism (p-hat = 0 causing degeneration). No prior paper contains this named design or equivalent claim.\n\nFACET: purpose | FINAL: NONE | reason: No prior paper argues that sophisticated aggregation fails specifically because the underlying world model is poorly calibrated; related papers show aggregation helps or address calibration separately.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper contains this specific empirical finding or equivalent claim about consensus degenerating due to a world model predicting p-hat = 0 for the vast majority of cases."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 6
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 16
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: COVERED by [6], which establishes the same empirical relationship in a different context. The contribution's purpose is to show that aggregation fails when the underlying model is poorly calibrated; [6] finds that an aggregation method (contingent valuation surveys) fails due to a systematic bias in the components (\"The ‘embedding effect’... This problem has long been recognized but not solved.\").\n\nmechanism: COVERED by [13], which uses the same analysis method. The contribution's mechanism is to compare consensus aggregation over parallel executions to a single execution; [13] explicitly analyzes this mechanism when it asks \"is it better to run multiple independent chains in parallel, or to run fewer chains that iteratively refine through sequential steps?\".\n\nevaluation: COVERED by [6], which uses the same evaluation design. The contribution's evaluation design is to diagnose the failure of an aggregation method by showing a systematic degeneracy in its inputs (the model predicts p-hat=0); [6] uses the same design, diagnosing the failure of contingent valuation by pointing to a systematic bias in its inputs (\"The ‘embedding effect’\").\n\ndomain: COVERED by [16], which works in the same application area. The contribution's domain is the calibration of world models; [16] addresses the calibration of \"high-fidelity digital models capable of simulating the dynamics of a wide range of industrial systems,\" which is the same class of object.\n\nVERDICT purpose = 6\nVERDICT mechanism = 13\nVERDICT evaluation = 6\nVERDICT domain = 16",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     16,
+     30
+    ],
+    "mechanism": [
+     7,
+     8,
+     16
+    ],
+    "evaluation": [
+     9,
+     10,
+     16,
+     30
+    ],
+    "domain": [
+     8,
+     17
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        7,
+        8
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        9,
+        10
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        8,
+        17
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nNo prior paper explicitly provides a concrete rule for spending verification budget in agent system design. While some papers discuss budgeting principles (e.g., [1], [2], [3], [7], [11]), none establish or report the same empirical relationship between verification budget allocation and performance degradation. The purpose of this contribution is therefore **NONE**.\n\n### Mechanism\nThe mechanism involves ablation over the number of cycles \\( M \\), showing performance degradation as \\( M \\) increases. Paper [7] discusses error budgeting and sensitivity coefficients to predict performance changes, which is conceptually similar to analyzing the impact of budget allocation on system performance. Paper [8] proposes a sensitivity analysis protocol for agent-based models, which aligns with the ablation approach used here. Both papers contain substantively equivalent mechanisms.\n\n### Evaluation\nThe evaluation design involves comparing performance when \\( M = 1 \\) (all budget in one parallel chunk) versus finer-grained allocations. Paper [9] studies performance implications of synchronization structure in parallel programming, which involves similar evaluation logic for parallel allocation strategies. Paper [10] discusses parallelizing inference methods, which also evaluates performance under different parallelization setups. These prior works match the evaluation design.\n\n### Domain\nThe domain is agent system design guidance. Paper [8] explicitly addresses agent-based models in management sciences, and paper [17] discusses AI agents and agentic AI design philosophies. Both papers operate in the same general application area of agent system design.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 7, 8  \nVERDICT evaluation = 9, 10  \nVERDICT domain = 8, 17  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly provides a concrete rule for spending verification budget, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 30
+      },
+      "mechanism": {
+       "covered_by": 16
+      },
+      "evaluation": {
+       "covered_by": 30
+      },
+      "domain": {
+       "covered_by": 17
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: \"Gives practitioners a concrete rule for spending verification budget\"**\n\nThe contribution's purpose is to provide a concrete allocation rule for a verification/compute budget in an agent system context. Looking at the prior papers: Paper [30] studies \"scaling of inference-time computation in LLMs\" and how to optimally use a \"fixed but non-trivial amount of inference-time compute\" — this is about spending a compute budget optimally. Paper [25] addresses \"optimal sequential scaling at inference time\" with principled approaches to budget allocation. However, the specific purpose here is about *verification* budget allocation (how many cycles M to use), which is more specific to agent verification loops. Paper [30] is the closest — it asks how to best spend a fixed inference-time compute budget, which is substantively the same objective at the problem-class level. The \"verification\" framing is a domain-specific label for the same underlying problem of optimal compute budget allocation.\n\n**MECHANISM: \"Ablation over the number of cycles M showing performance degrades monotonically as M increases\"**\n\nThis is an ablation varying a parallelism/chunking parameter (number of cycles M) and measuring performance. Paper [30] performs ablations over compute budget allocation strategies. Paper [25] analyzes sequential scaling steps. Paper [16] specifically studies how extending reasoning length (more compute cycles) *deteriorates* performance — an inverse scaling relationship. The mechanism of ablating over the number of iterations/cycles and observing monotonic degradation is most closely matched by [16], which systematically varies reasoning length and measures performance degradation. This is the same primitive: vary a count parameter M, observe monotonic performance change.\n\n**EVALUATION: \"M = 1 (all budget in one parallel chunk) consistently outperforms finer-grained allocations\"**\n\nThe evaluation design here is: fix total budget, vary granularity of allocation (M=1 vs M>1), compare performance. Paper [30] uses a similar design — fix compute budget, compare different allocation strategies (e.g., best-of-N vs. beam search vs. sequential refinement) across benchmarks. Paper [25] also compares sequential scaling strategies under fixed compute. The design of \"fix total budget, vary how it's chunked/allocated, measure which chunking wins\" is present in [30] and [25]. This is a covered evaluation design.\n\n**DOMAIN: \"Agent system design guidance\"**\n\nPrior papers [17] (AI Agents taxonomy), [21] (LLM multi-agent systems), [30] (LLM inference-time compute scaling for agents), and [25] (inference-time scaling) all operate in the domain of LLM/agent system design. This domain is clearly covered.\n\nVERDICT purpose = 30\nVERDICT mechanism = 16\nVERDICT evaluation = 30\nVERDICT domain = 17",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 16
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: Paper [16] establishes the same empirical relationship, finding that \"extending the reasoning length of Large Reasoning Models (LRMs) deteriorates performance,\" which is substantively equivalent to the finding that performance degrades as the number of verification cycles M increases.\nmechanism: The mechanism is a standard ablation or sensitivity analysis. This experimental design is explicitly discussed as a protocol for this domain in [8], \"Sensitivity analysis of agent-based models: a new protocol,\" and is the method used in [16] to vary reasoning length and measure performance.\nevaluation: The evaluation design, which compares performance under a single-shot budget spend (M=1) versus a finer-grained sequential spend (M>1), is a standard comparative protocol. This design is used in [16] and [24], which compare performance across different reasoning lengths or test-time compute allocations.\ndomain: The domain of \"Agent system design guidance\" is covered by multiple prior papers. For example, [8] provides a protocol for \"agent-based models,\" and [17] presents a taxonomy and analysis of \"AI Agents.\"\n\nVERDICT purpose = 16\nVERDICT mechanism = 8\nVERDICT evaluation = 16\nVERDICT domain = 8",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

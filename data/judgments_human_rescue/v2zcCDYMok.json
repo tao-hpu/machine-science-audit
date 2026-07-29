@@ -1,0 +1,194 @@
+{
+ "paper_id": "v2zcCDYMok",
+ "title": "PostCast: Generalizable Postprocessing for Precipitation Nowcasting via Unsupervised Blurriness Modeling",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     4
+    ],
+    "mechanism": [
+     7,
+     22
+    ],
+    "evaluation": [
+     4
+    ],
+    "domain": [
+     1,
+     4
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to eliminate the increasing blurriness of deep precipitation nowcasting predictions without relying on cumbersome, non-generalizable two-stage training on (blurry prediction, ground truth) pairs, as required by prior deterministic-probabilistic coupling methods. Paper [4] explicitly identifies the issue of blurry predictions in precipitation nowcasting and addresses it using a residual diffusion framework, which aligns with the same high-level objective of reducing blurriness in nowcasting predictions. While the specific mechanism differs, the purpose of addressing blurriness in precipitation nowcasting predictions is substantively equivalent. \n\n**VERDICT purpose = 4**\n\n---\n\n### Mechanism\nThe contribution reframes blurriness as a blur kernel \\( K_{S,T,M} \\) convolved with the true prediction and solves the blur inverse problem by guiding a pre-trained unconditional DDPM with the blurry prediction via a distance metric at each reverse step. This mechanism combines kernel-based deblurring with diffusion models. Paper [7] introduces a kernel estimation strategy for blind deconvolution, which is conceptually similar to the blur kernel estimation in this contribution. Additionally, papers [22] and [23] use pre-trained diffusion models as priors for solving inverse problems, including deblurring, which aligns with the use of a pre-trained DDPM in this contribution. Together, these papers cover the mechanism at the level of the underlying primitives.\n\n**VERDICT mechanism = 7**\n\n---\n\n### Evaluation\nThe evaluation involves extensive experiments on seven precipitation radar datasets, measuring CSI, POD, and HSS for extreme precipitation across multiple backbones (RNN, CNN, Transformer) and comparing against supervised and unsupervised baselines. Papers [4], [5], and [18] evaluate precipitation nowcasting models using similar metrics (e.g., CSI, POD, HSS) and compare against similar baselines (e.g., DiffCast, DGMR). While the specific datasets and backbones differ, the evaluation design — using standard precipitation nowcasting metrics and comparing against supervised and unsupervised baselines — is substantively equivalent.\n\n**VERDICT evaluation = 4**\n\n---\n\n### Domain\nThe domain is precipitation nowcasting, a subfield of spatiotemporal weather forecasting. Papers [1], [2], [4], [5], [6], [8], [12], [13], [14], [15], [16], and [18] all operate in the same general application area of precipitation nowcasting or radar-based weather forecasting. While the specific datasets or sub-problems may differ, the domain is clearly covered.\n\n**VERDICT domain = 1**",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 22
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Eliminate increasing blurriness in deep precipitation nowcasting predictions without cumbersome two-stage training on (blurry prediction, ground truth) pairs.**\n\nThe purpose is specifically about fixing blurriness in deep learning nowcasting predictions without supervised pair training. Paper [4] (DiffCast) explicitly addresses blurry predictions in precipitation nowcasting: \"their predictions suffer from the blurry, high-value echoe[s]\" and proposes a solution. Paper [12] also addresses \"excessive prediction smoothing\" in deep learning nowcasting. However, both [4] and [12] use supervised/trained approaches rather than explicitly targeting the elimination of two-stage pair training. Paper [4] is the closest — it explicitly identifies blurry predictions in nowcasting as the problem and proposes a diffusion-based fix, but it uses the two-stage coupling approach that this contribution aims to replace. The purpose of *eliminating blurriness without supervised pair training* is partially covered by [4] (same blurriness problem) but the \"without cumbersome two-stage training\" aspect is a refinement. At the problem-class level, [4] covers \"eliminate blurriness in precipitation nowcasting\" — the mechanism difference (supervised vs. unsupervised) belongs to the mechanism facet, not purpose. So purpose is COVERED by [4].\n\n---\n\n**MECHANISM: Reframe blurriness as a blur kernel convolved with true prediction; deblur by guiding a pre-trained unconditional DDPM with the blurry prediction via a distance metric at each reverse step (solving blur inverse without supervised pair training).**\n\nThis mechanism has two key primitives:\n1. Modeling blurriness as a convolution (blur kernel formulation) and solving the inverse problem.\n2. Using a pre-trained unconditional diffusion model guided by a degraded observation at each reverse diffusion step (zero-shot/training-free inverse problem solving with DDPM).\n\nFor primitive 2: Papers [22] (DDNM) and [23] (DPS) are highly relevant. Paper [22] proposes \"Zero-Shot Image Restoration Using Denoising Diffusion Null-Space Model\" — uses a pre-trained off-the-shelf diffusion model without extra training, guiding reverse steps for linear IR problems including deblurring. Paper [23] (DPS) extends \"diffusion solvers to efficiently handle general noisy (non)linear inverse problems via approximation of the posterior sampling\" — guiding each reverse step with a likelihood term. Both use a pre-trained unconditional DDPM guided by a distance/likelihood metric at each reverse step to solve inverse problems. Paper [21] also uses latent diffusion for inverse problems with on-the-fly optimization during reverse diffusion. Paper [25] uses GAN priors for linear inverse problems similarly.\n\nThe core mechanism — guiding pre-trained unconditional DDPM reverse steps with a degraded observation distance metric to solve a blur inverse problem — is substantively equivalent to [22] and [23]. The application to precipitation nowcasting blurriness (treating it as a blur kernel) is a domain/purpose change, not a mechanism change.\n\n---\n\n**EVALUATION: 7 precipitation radar datasets; CSI/POD/HSS metrics; multiple backbone architectures (RNN/CNN/Transformer); comparison against GAN/diffusion baselines and unsupervised DGP.**\n\nCSI/POD/HSS are standard precipitation nowcasting metrics used in [4], [14], [18]. Multiple backbone comparisons appear in [4] and [18]. Comparison against DiffCast, DGMR, PreDiff-style baselines appears in [4], [14], [18]. The evaluation design (standard nowcasting metrics on radar datasets, comparing deep learning baselines) is well-established in the nowcasting literature. Paper [4] uses CSI/POD/HSS on precipitation datasets with multiple baselines. Paper [18] similarly evaluates on radar datasets with probabilistic metrics. The evaluation design is COVERED by [4] and [18].\n\n---\n\n**DOMAIN: Precipitation nowcasting / spatiotemporal weather forecasting.**\n\nPapers [1], [2], [4], [5], [6], [12], [14], [18] all work in precipitation nowcasting / spatiotemporal weather forecasting. This domain is clearly covered.\n\n---\n\nVERDICT purpose = 4\nVERDICT mechanism = 22\nVERDICT evaluation = 4\nVERDICT domain = 4",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     15
+    ],
+    "mechanism": [
+     5,
+     9,
+     17
+    ],
+    "evaluation": [
+     1,
+     7,
+     15
+    ],
+    "domain": [
+     1,
+     3,
+     4,
+     6,
+     7
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": [
+        5,
+        17
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        1,
+        7,
+        15
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        3,
+        4,
+        6,
+        7
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to make deblurring generalize to arbitrary, unknown blur modes across datasets, deterministic models, and lead times. This objective is not explicitly covered by any prior paper. While several papers address deblurring (e.g., [2], [5], [9], [10], [12], [15], [19]), their focus is on specific tasks like blind deblurring, super-resolution, or domain-specific deblurring, rather than generalizing to arbitrary blur modes across datasets and lead times. For example, [15] discusses domain generalization for diffusion-based deblurring but does not explicitly target arbitrary blur modes or lead times. Similarly, [9] and [10] focus on kernel estimation for blind deblurring but do not address generalization across datasets or lead times.\n\n### Mechanism\nThe mechanism involves a zero-shot blur kernel estimation method (randomly initialized 9x9 kernel dynamically optimized per reverse step by gradients of the distance metric) and an auto-scale gradient guidance strategy that adaptively derives the guidance scale from an empirical formula. Paper [5] describes a randomly initialized zero-shot method for blind super-resolution, which includes kernel estimation, making it substantively equivalent to the zero-shot kernel estimation aspect of the mechanism. Additionally, [17] discusses gradient guidance for diffusion models, which aligns with the auto-scale gradient guidance strategy in the contribution. Together, these papers cover the mechanism.\n\n### Evaluation\nThe evaluation design involves testing zero-shot generalization to lead times (30/60/90 min) and out-of-distribution (OOD) tests on specific datasets (e.g., SEVIR, HKO7, SCWDS CAP30/CR, MeteoNet). Papers [1], [7], and [15] evaluate precipitation nowcasting or deblurring using diffusion models, with metrics like CSI and tests on various datasets. While the specific datasets and lead times differ, the evaluation design (zero-shot generalization and OOD testing) is substantively equivalent to prior work. For example, [7] evaluates diffusion-based precipitation nowcasting with OOD tests, and [15] evaluates domain generalization for deblurring.\n\n### Domain\nThe domain is precipitation nowcasting using diffusion guidance. Papers [1], [3], [4], [6], and [7] all address precipitation nowcasting, including diffusion-based approaches ([1], [7]). While the specific datasets and methods vary, the general application area of precipitation nowcasting is well-covered by prior work.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 5, 17  \nVERDICT evaluation = 1, 7, 15  \nVERDICT domain = 1, 3, 4, 6, 7  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly addresses generalizing deblurring to arbitrary, unknown blur modes across datasets, deterministic models, and lead times under the same objective."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 15
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n---\n\n**PURPOSE: Make deblurring generalize to arbitrary, unknown blur modes across datasets, deterministic models, and lead times.**\n\nPaper [15] \"Image Deblurring with Domain Generalizable Diffusion Models\" directly addresses the problem of making deblurring generalize to out-of-domain blur conditions: \"their robustness in restoring images is unclear when presented with out-of-domain images.\" Paper [19] \"Multiscale Structure Guided Diffusion for Image Deblurring\" similarly addresses out-of-domain generalization for deblurring. However, these are in the image deblurring domain, not precipitation nowcasting. The contribution's purpose is specifically about generalizing across *lead times* and *datasets* in precipitation nowcasting, treating the temporal blurring of radar predictions as a blur kernel problem. No prior paper pursues the objective of generalizing blur correction across unknown blur modes in precipitation nowcasting. Papers [15] and [19] cover the general purpose of domain-generalizable deblurring, which is substantively equivalent at the problem-class level — the host domain (images vs. radar) is a domain-facet difference, not a purpose-facet difference.\n\nPaper [15] states it addresses \"robustness in restoring images... when presented with out-of-domain images\" and proposes domain-generalizable deblurring. This is the same objective: generalize deblurring to unknown/arbitrary blur modes. COVERED by [15] (and [19]).\n\n---\n\n**MECHANISM: Zero-shot blur kernel estimation (randomly initialized 9×9 kernel, dynamically optimized per reverse step via gradients of distance metric) + auto-scale gradient guidance (adaptively derived from empirical formula).**\n\nPaper [5] \"RZSR Randomly Initialized Zero-Shot Method for Blind Super-Resolution\" uses a randomly initialized zero-shot strategy for blind super-resolution with unknown blur kernels: \"RZSR is a zero-shot training method and it allows the network to extract low-resolution image f...\" — this involves random initialization for kernel-related estimation. Paper [2] \"Find The Way Back: Invertible Kernel Estimator For Blind Image Super-Resolution\" addresses zero-shot blind super-resolution with kernel estimation without pre-training. Paper [9] \"Kernel Diffusion: An Alternate Approach to Blind Deconvolution\" uses kernel estimation strategy with a diffusion-based non-blind solver, employing gradient-based optimization. Paper [8] \"Structured Kernel Estimation for Photon-Limited Deconvolution\" uses \"gradient-based backpropagation method to estimate\" blur kernels dynamically.\n\nThe specific combination of: (1) randomly initialized kernel optimized per reverse diffusion step via gradients, AND (2) auto-scale guidance derived from an empirical formula — this combination is not found in any single prior paper. Paper [5] has random initialization for zero-shot SR but not per-step kernel optimization in a diffusion reverse process. Paper [9] has kernel estimation within diffusion but uses a different framework. Paper [17] \"Gradient Guidance for Diffusion Models\" studies gradient guidance but not adaptive scale from empirical formula for blur kernels. The auto-scale gradient guidance strategy derived from an empirical formula appears absent. However, the core primitive of \"randomly initialized kernel optimized via gradients\" is present in [5] and [8]. The per-reverse-step dynamic optimization is closer to [9]. No paper combines both sub-mechanisms. NONE fully covers the combined mechanism.\n\n---\n\n**EVALUATION: Zero-shot generalization tested on SEVIR/HKO7 with CSI at multiple lead times, OOD tests on SCWDS/MeteoNet, backbone-agnostic CSI gains.**\n\nPapers [1] and [7] evaluate precipitation nowcasting using CSI metrics on radar datasets. Paper [1] uses probabilistic diffusion for nowcasting with standard nowcasting benchmarks. The evaluation design (CSI metric on nowcasting benchmarks at multiple lead times) is a standard nowcasting evaluation protocol used across papers [1], [3], [4], [6], [7]. CSI at lead times 30/60/90 min on HKO7/SEVIR is a well-established evaluation design in nowcasting literature. The OOD generalization testing design is also used in [15]/[19] for image deblurring. COVERED by [1] and [7] for the CSI/lead-time design.\n\n---\n\n**DOMAIN: Precipitation nowcasting / diffusion guidance.**\n\nPapers [1], [3], [4], [6], [7] all work in precipitation nowcasting. Papers [12], [15], [19], [20], [21] work in diffusion-based image restoration/guidance. The combination of precipitation nowcasting with diffusion guidance is covered by [1] and [7]. COVERED by [1].\n\n---\n\nVERDICT purpose = 15\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes a zero-shot randomly initialized 9×9 blur kernel dynamically optimized per reverse diffusion step via distance-metric gradients combined with an auto-scale guidance strategy deriving the guidance scale from an empirical formula. Paper [5] (RZSR) uses randomly initialized zero-shot SR but not a per-step kernel optimization within a diffusion reverse process. Paper [9] (Kernel Diffusion) uses kernel estimation with a diffusion-based non-blind solver but does not optimize a randomly initialized kernel per reverse step via distance-metric gradients. Paper [8] uses gradient-based backpropagation for blur estimation but in a photon-limited deconvolution context without diffusion reverse steps or auto-scale guidance. No paper combines all these specific mechanical elements even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 15
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 15
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**PURPOSE**\nPaper [15] is explicitly about \"Image Deblurring with Domain Generalizable Diffusion Models\" and aims to improve robustness \"when presented with out-of-domain images,\" which is substantively equivalent to making deblurring generalize to arbitrary, unknown blur modes.\n\n**MECHANISM**\nThe mechanism combines two existing primitives: (1) estimating a blur kernel within a diffusion process, which is covered by [9]'s \"kernel estimation strategy with a non-blind solver... employed by a diffusion model\", and (2) adaptive gradient guidance, a concept explored in papers like [17] which studies the \"algorithmic design\" of guided diffusion.\n\n**EVALUATION**\nThe evaluation design is a zero-shot generalization test on out-of-domain data. This design is necessarily used by any paper claiming domain generalization, such as [15] (\"Image Deblurring with Domain Generalizable Diffusion Models\"), and is therefore covered.\n\n**DOMAIN**\nThe application area of \"Precipitation nowcasting\" is explicitly addressed by multiple prior papers, including [1] (\"Reliable precipitation nowcasting using probabilistic diffusion models\").\n\nVERDICT purpose = 15\nVERDICT mechanism = 9\nVERDICT evaluation = 15\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

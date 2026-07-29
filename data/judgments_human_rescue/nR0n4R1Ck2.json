@@ -1,0 +1,247 @@
+{
+ "paper_id": "nR0n4R1Ck2",
+ "title": "SubTrack your Grad: Gradient Subspace Tracking for Memory-Efficient LLM Training and Fine-Tuning",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1
+    ],
+    "mechanism": [
+     10,
+     15
+    ],
+    "evaluation": [
+     1
+    ],
+    "domain": [
+     1,
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to reduce wall-time and computational cost in memory-efficient LLM training/fine-tuning, specifically avoiding the expensive periodic SVD used by GaLore. Papers [1] and [2] explicitly address the same objective of reducing memory and computational overhead in LLM training by projecting gradients into a low-rank subspace. Both papers highlight the computational inefficiency of periodic SVD updates, which aligns with the stated purpose of this contribution. For example, [1] states: \"GaLore relies on time-consuming Singular Value Decomposition (SVD) operations to identify the subspace, and the frequent subspace updates lead to significant training time overhead.\" This matches the problem-class level objective of reducing wall-time and computational cost in memory-efficient LLM training.\n\n### Mechanism\nThe mechanism involves dynamically updating the gradient's compact subspace via rank-1 updates along Grassmannian-manifold geodesics, leveraging estimation error and the orthogonal complement instead of periodic SVD. Papers [10], [15], and [17] describe Grassmannian rank-one update methods for subspace tracking, which are substantively equivalent to the mechanism here. For example, [10] introduces GROUSE: \"an incremental algorithm for identifying a subspace of ℝn from a sequence of vectors in this subspace, where only a subset of components of each vector is revealed at each iteration,\" and [15] elaborates on GROUSE's use of rank-one updates constrained to the Grassmannian manifold. Similarly, [17] discusses adaptive stochastic gradient descent on the Grassmannian for robust low-rank subspace recovery, which involves rank-one updates constrained to the manifold. These methods align with the underlying primitive of dynamically updating subspaces via Grassmannian geodesics.\n\n### Evaluation\nThe evaluation design measures wall-time reduction and memory efficiency during LLM training/fine-tuning, using benchmarks like GLUE and SuperGLUE. Papers [1], [2], and [18] use similar evaluation designs. For example, [1] and [2] evaluate memory-efficient LLM training methods using wall-time and memory metrics, while [18] introduces SuperGLUE as a benchmark for general-purpose language understanding systems. The use of GLUE/SuperGLUE benchmarks and wall-time/memory metrics is a standard evaluation design in this domain, making the evaluation facet covered.\n\n### Domain\nThe domain is memory-efficient LLM training and fine-tuning. Papers [1], [2], [4], [6], [7], [8], [9], and [16] all operate in this application area. For example, [2] states: \"Training Large Language Models (LLMs) presents significant memory challenges,\" and [4] discusses \"low-memory LLM training with structured sparse gradients.\" These papers address memory-efficient optimization techniques for LLM training/fine-tuning, which is the same general application area as this contribution.\n\n---\n\nVERDICT purpose = 1  \nVERDICT mechanism = 10  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 15
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\n\nThe contribution's purpose is to reduce wall-time and computational cost of memory-efficient LLM training/fine-tuning by avoiding the expensive periodic SVD that GaLore uses.\n\nPaper [1] (Q-GaLore) explicitly states: \"GaLore relies on time-consuming Singular Value Decomposition (SVD) operations to identify the subspace, and the frequent subspace updates lead to significant training time overhead\" — this is exactly the same problem being addressed. Paper [2] (GaLore) introduces the baseline but doesn't address SVD cost. Paper [4] (GRASS) also addresses computational overhead of projection-based methods. Paper [1] is the closest match, directly targeting the SVD overhead in GaLore for memory-efficient LLM training.\n\n## Mechanism\n\nThe contribution uses rank-1 updates along Grassmannian-manifold geodesics to dynamically update the gradient subspace, avoiding periodic SVD. Papers [10], [11], [13], [15], [17], [25], [26] all describe Grassmannian rank-one update subspace estimation (GROUSE) — incremental gradient descent on the Grassmannian manifold for subspace tracking via rank-1 updates. Paper [15] explicitly describes \"GROUSE... incremental gradient descent on the Grassmannian manifold of subspaces\" with rank-one updates. Paper [14] describes \"geometric subspace updates\" via Riemannian optimization on the Grassmannian. Paper [12] describes \"subspace tracking algorithms which utilize the Grassmann manifold\" with dynamical models. The core primitive — rank-1 geodesic updates on the Grassmannian to track a subspace without full SVD — is well-established in papers [10], [13], [15]. However, the specific application of this to gradient subspace tracking in LLM training, using estimation error and orthogonal complement, is a combination. The underlying primitive (Grassmannian rank-1 geodesic updates for subspace tracking) is clearly covered by [15] and [10].\n\n## Evaluation\n\nThe contribution evaluates on GLUE and SuperGLUE benchmarks, measuring wall-time reduction and memory efficiency. Paper [18] introduces SuperGLUE. Papers [1] and [2] evaluate LLM training/fine-tuning methods with wall-time and memory metrics. The evaluation design — benchmarking on GLUE/SuperGLUE with wall-time and memory measurements for LLM fine-tuning — is the same design used in [1] and [2], which also compare against GaLore with similar metrics. This is a standard benchmark family (GLUE/SuperGLUE) with the same metric semantics (wall-time, memory overhead).\n\n## Domain\n\nThe domain is memory-efficient LLM training and fine-tuning. Papers [1], [2], [3], [4], [6], [7], [8], [9], [16] all operate in this exact domain. Paper [2] is the canonical reference for memory-efficient LLM training via gradient projection.\n\nVERDICT purpose = 1\nVERDICT mechanism = 15\nVERDICT evaluation = 1\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     1
+    ],
+    "mechanism": [
+     1,
+     15
+    ],
+    "evaluation": [
+     1
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 15
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to demonstrate that SubTrack-Grad achieves a favorable accuracy/efficiency trade-off, showing that the speedup does not sacrifice task performance. Papers [1], [6], and [9] all address similar objectives of balancing memory efficiency and task performance in LLM training. For example, [1] states, \"reducing trainable parameters and optimizer states without compromising performance,\" and [6] mentions, \"reduces memory usage without compromising performance.\" These papers establish the same problem-class level objective of optimizing efficiency while maintaining accuracy.\n\n### Mechanism\nThe mechanism involves an empirical comparison of SubTrack-Grad against GaLore on GLUE/SuperGLUE fine-tuning and pre-training, measuring downstream performance alongside runtime and memory. Papers [15], [16], [17], and [20] describe subspace tracking algorithms that use gradient-based methods for efficient optimization, which aligns with the underlying primitive of gradient-based subspace tracking used in SubTrack-Grad. For example, [15] discusses \"gradient-based adaptive algorithms for subspace tracking,\" and [16] describes \"incremental gradient descent on the Grassmannian manifold of subspaces.\" These mechanisms are substantively equivalent to the gradient-based subspace tracking primitive in SubTrack-Grad.\n\n### Evaluation\nThe evaluation design measures performance comparable to or better than GaLore with significant runtime reduction and minimal memory overhead. Papers [1], [6], and [9] use similar evaluation designs, comparing memory-efficient methods against baselines like full-rank training or other low-rank approaches, with metrics for runtime, memory usage, and task performance. For instance, [6] evaluates \"runtime reduction and performance parity with GaLore,\" and [9] measures \"memory reduction and comparable task accuracy.\" These evaluation setups match the design-level equivalence rule.\n\n### Domain\nThe domain is memory-efficient LLM training and fine-tuning. Papers [1], [6], [7], and [9] all operate in this application area, addressing memory-efficient methods for training and fine-tuning large language models. For example, [1] focuses on \"memory-efficient LLM training,\" and [9] discusses \"efficient fine-tuning methods integrating weights and gradient low-rank adaptation.\" These papers clearly cover the same general application area.\n\n---\n\nVERDICT purpose = 1  \nVERDICT mechanism = 15  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": 1
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Show the practical accuracy/efficiency trade-off is favorable (speedup without sacrificing task performance)**\n\nPaper [1] (GaLore) explicitly demonstrates memory-efficient LLM training while maintaining performance comparable to full-rank training — it shows the trade-off between memory/efficiency and task performance is favorable. Paper [6] (Q-GaLore) similarly demonstrates that its method reduces memory and time overhead while maintaining performance. Both papers pursue the same objective: showing that a memory-efficient training method does not sacrifice task performance. This is the same problem-class objective.\n\n**MECHANISM: Empirical comparison against GaLore on GLUE/SuperGLUE fine-tuning and pre-training, measuring downstream performance alongside runtime and memory**\n\nPaper [1] (GaLore) uses GLUE/SuperGLUE benchmarks for fine-tuning evaluation and pre-training benchmarks, measuring downstream performance alongside memory usage — this is the same evaluation design applied to the same benchmark family. Paper [6] (Q-GaLore) also compares against GaLore using similar benchmarks measuring performance, runtime, and memory. The mechanism here is an empirical comparison protocol using these specific benchmark families.\n\n**EVALUATION: Performance comparable to or better than GaLore with significant runtime reduction and minimal memory overhead**\n\nPaper [1] uses GLUE/SuperGLUE as the benchmark family for fine-tuning evaluation. Paper [6] explicitly compares against GaLore measuring runtime, memory, and downstream task performance on the same benchmark families. The evaluation design (GLUE/SuperGLUE + runtime/memory metrics, compared against GaLore as baseline) is present in these prior papers.\n\n**DOMAIN: Memory-efficient LLM training and fine-tuning**\n\nPapers [1], [2], [3], [4], [6], [7], [8], [9] all operate in the domain of memory-efficient LLM training and fine-tuning. This is clearly covered.\n\nVERDICT purpose = 1\nVERDICT mechanism = 1\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     4
+    ],
+    "mechanism": [
+     4,
+     9
+    ],
+    "evaluation": [
+     4,
+     9
+    ],
+    "domain": [
+     4,
+     9
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 9
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to explain why subspace tracking helps optimization and provide theoretical grounding. None of the prior papers explicitly establish or report the same empirical relationship between subspace tracking and optimization benefits, nor do they provide a theoretical explanation for this relationship. While many papers discuss subspace tracking in various contexts (e.g., [1], [2], [5], [9]), and some address optimization theory ([7], [19], [26]), none explicitly connect subspace tracking to optimization benefits in the same way.\n\n### Mechanism\nThe mechanism involves analyzing how tracking the gradient subspace reduces abrupt changes in updates (accelerating convergence) and proving that the method matches GaLore's convergence guarantees while allowing more frequent subspace updates via prior knowledge and orthogonal-space errors. Paper [9] (GaLore) provides a convergence guarantee for gradient low-rank projection in memory-efficient LLM training, which aligns with the convergence guarantee aspect of the mechanism. Paper [4] also provides convergence guarantees for subspace-based methods in LLM training. However, neither explicitly analyzes the reduction of abrupt changes in updates as a mechanism for faster convergence, nor do they incorporate prior knowledge and orthogonal-space errors in the same way. Thus, the mechanism is **partially covered** but not fully equivalent.\n\n### Evaluation\nThe evaluation facet involves qualitative/theoretical analysis: proving convergence-guarantee alignment with GaLore and arguing reduced abrupt subspace shifts as the mechanism for faster convergence. Paper [9] (GaLore) uses a similar evaluation design, proving convergence guarantees for gradient low-rank projection methods. Paper [4] also provides theoretical convergence guarantees for subspace-based methods. Both use similar evaluation designs (analytical proofs of convergence guarantees), even though the specific claims differ. Therefore, the evaluation design is **covered**.\n\n### Domain\nThe domain is optimization theory for LLM training. Papers [9] and [4] both address optimization methods for LLM training, specifically focusing on memory-efficient techniques. While the specific sub-problems or methods differ, the general application area (optimization theory for LLM training) is the same. Thus, the domain is **covered**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 9  \nVERDICT domain = 9  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 4 | reason: Paper [4] explicitly provides theoretical grounding for subspace tracking in optimization, stating: \"We provide the *first* convergence guarantee for arbitrary update rules of projection matrix,\" which aligns with the purpose facet's requirement of explaining why subspace tracking helps optimization with theoretical grounding.\n\nFACET: mechanism | FINAL: COVERED-BY 9 | reason: Paper [9] discusses GaLore's convergence guarantees and the role of gradient low-rank projection, stating: \"GaLore reduces memory usage by projecting weight gradients into a low-rank subspace without compromising performance,\" which matches the mechanism facet's requirement of analyzing gradient subspace tracking's impact on convergence and its relation to GaLore."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Explain why subspace tracking helps optimization and give theoretical grounding.**\n\nThe purpose is to provide theoretical explanation/grounding for *why* subspace tracking benefits LLM optimization — specifically explaining the mechanism (reduced abrupt changes) and proving convergence guarantees. Paper [4] (Memory-Efficient LLM Training with Online Subspace Descent) explicitly states it provides \"the first convergence guarantee for arbitrary update rules of projection matrix\" for memory-efficient LLM training. Paper [9] (GaLore) introduces gradient low-rank projection but the contribution aims to explain *why* it works and extend its theoretical guarantees. Paper [4] covers the purpose of providing convergence guarantees for subspace-based LLM training, which is substantively equivalent to \"give theoretical grounding\" for subspace tracking in optimization. The specific angle of \"explaining why subspace tracking helps\" (reduced abrupt changes) is partially novel, but the overarching purpose of theoretical grounding for subspace-based LLM optimization is covered by [4].\n\n**MECHANISM: Analysis showing tracking gradient subspace reduces abrupt update changes + proof matching GaLore's convergence guarantees + more frequent updates via prior knowledge and orthogonal-space errors.**\n\nPaper [4] provides convergence guarantees for arbitrary projection matrix update rules, which overlaps with proving convergence for subspace tracking methods. Paper [9] (GaLore) establishes the original convergence guarantees this contribution claims to match. The specific mechanism of analyzing \"abrupt changes in updates\" as the explanation for acceleration, plus the specific proof technique involving \"prior knowledge and orthogonal-space errors\" to permit more frequent updates, is not directly present in any prior paper. Paper [4] covers convergence guarantees but not the specific primitive of \"reduced abrupt subspace shifts as the mechanism for faster convergence\" nor the specific proof structure involving orthogonal-space errors enabling more frequent updates. No prior paper contains this specific analytical primitive.\n\n**EVALUATION: Qualitative/theoretical — convergence-guarantee alignment proven analytically; reduced abrupt subspace shifts argued as mechanism.**\n\nThe evaluation design here is purely theoretical/analytical: convergence proofs and analytical arguments. Paper [4] uses the same evaluation design — analytical convergence proofs for subspace-based LLM training methods. Paper [9] also uses analytical convergence proofs. This is the same evaluation design (formal convergence analysis), just applied to a different specific method/claim.\n\n**DOMAIN: Optimization theory for LLM training.**\n\nPapers [4], [9], [16], [17], [18] all operate in the domain of optimization for LLM training. Paper [4] specifically addresses optimization theory for LLM training with subspace methods. This domain is clearly covered.\n\nVERDICT purpose = 4\nVERDICT mechanism = NONE\nVERDICT evaluation = 4\nVERDICT domain = 4",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper contains the specific mechanistic claim that tracking the gradient subspace reduces abrupt update changes to accelerate convergence, nor a proof that a method matches GaLore's convergence guarantees while permitting more frequent subspace updates via prior knowledge and orthogonal-space errors. Paper [4] provides convergence guarantees for arbitrary projection matrix update rules but does not analyze abrupt update changes or the specific mechanism of using prior subspace knowledge to enable more frequent updates. No quoted passage from any prior paper captures this combined mechanistic and theoretical contribution."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": 4
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**PURPOSE**: The contribution's purpose is to explain *why* subspace tracking helps optimization and to provide theoretical grounding. This objective of providing theoretical analysis and guarantees for subspace optimization methods is covered by prior work. For example, [4] has the purpose to \"provide the \\emph{first} convergence guarantee for arbitrary update rules of projection matrix\" in the same domain, which is a substantively equivalent objective of providing theoretical grounding for this class of methods.\n\n**MECHANISM**: The mechanism is a theoretical analysis and a mathematical proof of convergence properties. This technical primitive—using formal proof to establish convergence guarantees for an optimization algorithm—is standard in the field and not novel. Paper [4] uses the same mechanism to provide its \"convergence guarantee,\" and many others like [11], [23], and [33] also use formal proofs to analyze convergence of related low-rank or subspace methods.\n\n**EVALUATION**: The evaluation design is purely theoretical, consisting of an analytical proof of convergence guarantees and a supporting theoretical argument. This evaluation design is covered by prior work that also uses formal mathematical proof as the method of validation. For instance, [4] validates its claims by providing a \"convergence guarantee,\" and [11] uses the same design when it \"provides a proof of global convergence.\"\n\n**DOMAIN**: The application area is \"Optimization theory for LLM training.\" This domain is explicitly covered by several prior papers. Specifically, [4] (\"Memory-Efficient LLM Training with Online Subspace Descent\"), [9] (\"GaLore: Memory-Efficient LLM Training\"), and [18] (\"Q-GaLore\") all operate in the same application area of memory-efficient optimization for large language models.\n\nVERDICT purpose = 4\nVERDICT mechanism = 4\nVERDICT evaluation = 4\nVERDICT domain = 4",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

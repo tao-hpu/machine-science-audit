@@ -1,0 +1,275 @@
+{
+ "paper_id": "FA0016",
+ "title": "Query-Conditioned Marginals for OT-Based Context Compression: An Empirical Investigation",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     3,
+     7
+    ],
+    "mechanism": [
+     8,
+     9
+    ],
+    "evaluation": [
+     4,
+     9
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to make optimal-transport (OT) context compression query-aware, ensuring that capacity is not wasted on task-irrelevant tokens. This specific objective — introducing query-awareness into OT-based context compression — is not directly addressed in any prior paper. While several papers discuss context compression (e.g., [1], [2], [4], [6]), none explicitly aim to optimize OT-based compression by incorporating query relevance into the sender marginals. For example, [6] introduces KVzip, which is query-agnostic, and [4] focuses on extractive compression but does not modify OT marginals based on query relevance. Therefore, no prior paper shares this purpose.\n\n### Mechanism\nThe mechanism, QCap-OT, modifies the OT sender marginals in Sinkhorn-based ComprExIT using query-anchor similarity, requiring no retraining or additional parameters. This mechanism is a novel adaptation of the Sinkhorn algorithm. While several papers use Sinkhorn-based OT (e.g., [9], [10], [12], [13], [17], [25]), none implement a query-aware reweighting of sender marginals. For instance, [9] introduces importance sparsification for Sinkhorn but does not involve query relevance, and [17] applies OT to partial domain adaptation without query-specific adjustments. Thus, no prior paper implements a substantively equivalent mechanism.\n\n### Evaluation\nThe evaluation design involves comparing QCap-OT to vanilla ComprExIT, showing statistical indistinguishability (F1 delta approximately 0, p > 0.05). This evaluation design — comparing a modified OT-based method to its vanilla counterpart using statistical tests — is covered by prior work. For example, [9] evaluates Spar-Sink by comparing it to standard Sinkhorn, and [17] evaluates MOT by comparing it to baseline OT methods. The specific benchmark or dataset differs, but the evaluation design (comparison to a baseline OT method with statistical validation) is equivalent.\n\n### Domain\nThe domain is LLM context compression. This domain is covered by prior papers such as [1], [2], [4], and [6], which all address context compression for LLMs. While the specific sub-problem (query-aware OT-based compression) is new, the general application area of LLM context compression is not.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 9  \nVERDICT domain = 1  ",
+      "stage2": "1. **FACET: purpose** | **FINAL: NONE** | reason: No prior paper explicitly addresses query-aware optimal-transport context compression to avoid wasting capacity on task-irrelevant tokens.  \n2. **FACET: mechanism** | **FINAL: COVERED-BY 9** | reason: \"Importance sparsification...to efficiently approximate entropy-regularized OT and UOT solutions\" aligns with reweighting OT marginals, satisfying the mechanism's standard."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Make optimal-transport context compression query-aware so capacity is not wasted on task-irrelevant tokens.**\n\nPaper [3] (SharedLLM) explicitly mentions \"query-aware information retrieval\" in the context of context compression for LLMs. Paper [4] (AdaComp) focuses on retaining \"query-relevant sentences\" in context compression. Paper [7] (Quest) pursues query-aware sparsity for efficient long-context LLM inference — the objective is making token selection/compression query-aware to avoid wasting capacity on irrelevant tokens. These all share the same problem-class objective: make context compression/token selection query-aware to avoid wasting capacity on irrelevant content. Paper [7] is the closest match: \"query-aware sparsity\" for LLM inference where \"a small portion of critical tokens will dominate the attention outcomes.\"\n\n**MECHANISM: Reweighting OT sender marginals in Sinkhorn-based compression according to query-anchor similarity, inference-only, no retraining.**\n\nThe mechanism has two components: (1) Sinkhorn/OT-based compression with marginal reweighting, and (2) query-similarity-based reweighting at inference time without retraining. Paper [19] (MOTOR) uses optimal transport for retrieval reranking based on query relevance in a multimodal setting. Paper [17] (MOT) uses masked OT where transport plan weights are modified based on relevance signals. Paper [8] uses attention-guided OT where attention scores reweight the OT problem. None of these specifically reweight Sinkhorn *sender marginals* based on query-anchor similarity for LLM context compression. The specific primitive of modifying marginal distributions in Sinkhorn to inject query relevance is not clearly present. Paper [8] is closest (\"Attention-Guided Optimal Transport\" where attention reweights OT), but it's in domain adaptation, not context compression. The underlying primitive — reweighting OT marginals by a relevance/attention signal — does appear in [8] and [17]. Paper [8] uses attention scores to guide OT, which is substantively equivalent to using query-anchor similarity to reweight OT marginals.\n\n**EVALUATION: Statistical indistinguishability from baseline (F1 delta ≈ 0, p > 0.05) across metrics.**\n\nThe evaluation design here is a null-result statistical significance test comparing a proposed method to a baseline using standard NLP metrics (F1) with p-value reporting. This is a standard statistical comparison framework used broadly. However, the specific claim being validated — that the method is *statistically indistinguishable* from a baseline — is an unusual evaluation design where the goal is to show no significant difference. Looking through the papers, none explicitly use this \"equivalence testing\" or \"null result\" statistical framework as their primary evaluation design. Standard significance testing appears in many papers, but the specific design of demonstrating statistical equivalence (p > 0.05 as a positive result) is not clearly present in any prior paper listed.\n\n**DOMAIN: LLM context compression.**\n\nPapers [1], [2], [3], [4], [5], [6] all work in LLM context compression. This is clearly covered.\n\nVERDICT purpose = 7\nVERDICT mechanism = 8\nVERDICT evaluation = NONE\nVERDICT domain = 1",
+      "stage2": "FACET: evaluation | FINAL: NONE | reason: No prior paper reports a statistical equivalence test (F1 delta ≈ 0, p > 0.05) between a query-conditioned optimal transport compression variant and a baseline compression method; none of the listed papers contain any such named design or equivalent empirical claim even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: Paper [3] covers this purpose by proposing an approach grounded in the \"design philosophy of multi-grained context compression and query-aware information retrieval,\" which is the same objective of making context reduction sensitive to the query. Paper [4] also shares this purpose, aiming to \"retain the most query-relevant sentences\" during context compression.\n\n**mechanism**: Paper [8] contains a substantively equivalent mechanism with its \"Attention-Guided Optimal Transport\". This is the same primitive of using an external, task-relevant signal (attention scores in [8], query-anchor similarity in the contribution) to modify or reweight an optimal transport computation.\n\n**evaluation**: The evaluation design, a statistical comparison of a proposed method against a baseline on standard metrics, is not new. For example, paper [4] evaluates its context compression method by comparing its \"accuracy and efficiency\" against existing methods, which is the same comparative performance analysis design.\n\n**domain**: This domain is covered by multiple prior papers. For instance, paper [1] explicitly works on a \"Context Compressor for Large Language Models,\" and paper [2] focuses on \"Context Compression via Explicit Information Transmission.\"\n\nVERDICT purpose = 3\nVERDICT mechanism = 8\nVERDICT evaluation = 4\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     19,
+     24
+    ],
+    "evaluation": [
+     19,
+     24
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 19
+      },
+      "evaluation": {
+       "covered_by": 19
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to rigorously test whether query-conditioned reweighting improves OT-based compression. None of the prior papers explicitly report or establish the same empirical relationship between query-conditioned reweighting and OT-based compression. While several papers discuss query-focused summarization (e.g., [5], [20]) or relevance weighting (e.g., [6], [8]), they do not test the specific effect of query-conditioned reweighting on OT-based compression. Papers like [12] and [13] involve optimal transport (OT) in different contexts, but they do not address the same purpose of testing query-conditioned reweighting for compression.\n\n### Mechanism\nThe mechanism involves an empirical comparison of QCap-OT against vanilla ComprExIT with statistical significance testing. Statistical significance testing is a widely used analysis protocol in NLP and other fields, as evidenced by papers such as [10], [11], [19], [24]. For example, [19] discusses recommended statistical significance tests for NLP tasks, and [24] provides a guide to testing statistical significance in NLP. These papers establish the equivalence of the statistical significance testing mechanism, even though they do not apply it to the specific comparison of QCap-OT and ComprExIT.\n\n### Evaluation\nThe evaluation design involves measuring whether QCap-OT improves over ComprExIT, with F1 delta approximately 0 and p > 0.05 indicating a negative result. Statistical significance testing as an evaluation design is covered by papers such as [10], [11], [19], [24], which discuss its application in NLP and other domains. For example, [19] and [24] provide guidance on statistical significance testing for NLP tasks, and [10] discusses sample size planning with statistical significance considerations. These papers demonstrate the reuse of the evaluation design, even though the specific objects (QCap-OT and ComprExIT) differ.\n\n### Domain\nThe domain is extractive question answering with compressed contexts. Papers such as [1], [5], [20] address query-focused summarization or retrieval-augmented generation in question answering, which falls within the same general application area. For example, [1] introduces EXIT for enhancing retrieval-augmented generation in QA, and [20] introduces a dataset for query-focused summarization. While the specific sub-problem of compression in extractive QA may differ, the general domain of extractive QA is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 19  \nVERDICT evaluation = 19  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly tests query-conditioned reweighting for OT-based compression, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 24
+      },
+      "evaluation": {
+       "covered_by": 24
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Rigorously test whether query-conditioned reweighting improves OT-based compression.**\n\nThe purpose is to empirically validate (or refute) whether a specific enhancement (query-conditioned reweighting) improves a specific compression method (OT-based). This is a negative-result validation of a specific architectural choice within extractive compression for RAG/QA. Paper [1] (EXIT) introduces extractive context compression for RAG/QA and evaluates compression variants, but its purpose is to introduce and demonstrate a new method, not to test whether query-conditioning improves OT-based compression. No prior paper establishes the same empirical relationship (query-conditioned reweighting × OT compression → no improvement). The closest thematic papers ([1], [12]) don't share this specific purpose.\n\n**MECHANISM: Empirical comparison of QCap-OT against vanilla ComprExIT with statistical significance testing.**\n\nThe mechanism is a controlled ablation/comparison with statistical significance testing in NLP. Papers [24] and [19] explicitly cover statistical significance testing in NLP experimental comparisons — [24] is \"The Hitchhiker's Guide to Testing Statistical Significance in Natural Language Processing\" and [19] is \"Recommended Statistical Significance Tests for NLP Tasks.\" Both describe the design of comparing two NLP systems with significance tests, which is exactly the mechanism used here.\n\n**EVALUATION: QCap-OT does not improve over ComprExIT (F1 delta ≈ 0, p > 0.05); a negative result.**\n\nThe evaluation design uses F1 as a metric with statistical significance testing (p-value) to compare two NLP systems — a standard NLP evaluation design. Papers [24] and [19] cover this evaluation design (significance testing on NLP metrics like F1). The specific benchmark/object differs, but the design (metric + significance test) is covered.\n\n**DOMAIN: Extractive question answering with compressed contexts.**\n\nPaper [1] (EXIT) works directly in extractive context compression for question answering in RAG systems — the same application area. Paper [2] also addresses question answering with summarization techniques. The domain is clearly covered by [1].\n\nVERDICT purpose = NONE\nVERDICT mechanism = 24\nVERDICT evaluation = 24\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper shares the same objective of rigorously testing whether query-conditioned reweighting specifically improves OT-based compression; the closest papers (e.g., [12] MOTOR uses OT for retrieval reranking, [1] EXIT does query-aware extractive compression) do not combine query-conditioned reweighting with OT-based compression as an object of empirical investigation, and no quoted phrase from any paper captures this same objective."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1
+    ],
+    "mechanism": [
+     2,
+     6
+    ],
+    "evaluation": [
+     6,
+     14
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to alert the community to a reproducibility problem in context compression research. While several prior papers address reproducibility issues in NLP or other fields, none specifically highlight reproducibility problems in context compression research. For example, [1] discusses general reproducibility and generalizability issues in NLP, [2] emphasizes the importance of software quality in reproducibility, and [6] reports failed replications in a different context. However, none of these papers specifically focus on context compression research or identify reproducibility problems in that area. Therefore, the purpose is **not covered**.\n\n### Mechanism\nThe mechanism involves a documented re-implementation of ComprExIT with extensive debugging against published results. This is a standard approach in reproducibility studies, and similar methodologies are described in prior work. For instance, [2] documents debugging and fixing bugs in widely used implementations, and [6] describes failed replications involving re-implementations of prior work. While the specific target (ComprExIT) differs, the underlying mechanism of re-implementation and debugging is equivalent. Thus, the mechanism is **covered**.\n\n### Evaluation\nThe evaluation involves comparing the re-implementation's performance (2.47% F1 on SQuAD) to the published results (68.08% F1), revealing a significant gap. This evaluation design — comparing re-implementation results to published benchmarks — is standard in reproducibility studies. For example, [6] and [14] both involve comparing re-implementation results to published benchmarks to assess reproducibility. While the specific benchmark (SQuAD) and model (ComprExIT) differ, the evaluation design is equivalent. Thus, the evaluation is **covered**.\n\n### Domain\nThe domain is reproducibility in NLP research. Several prior papers, such as [1], [2], [3], and [6], address reproducibility issues in NLP research. While the specific focus on context compression is new, the broader domain of reproducibility in NLP is well-covered. Thus, the domain is **covered**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 2  \nVERDICT evaluation = 6  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly alerts the community to a reproducibility problem in context compression research, even under different terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Alert the community to a reproducibility problem in context compression research.**\n\nThe purpose is to report a specific reproducibility failure — demonstrating that a published result cannot be reproduced. Papers [1], [2], [4], [6], [12], [13], [14] all pursue the same objective: alerting the community to reproducibility/replication failures in NLP or related computational research. Paper [2] is particularly close: \"we identify and fix three bugs in widely used implementations\" and addresses reproducibility failures in NLP. Paper [1] explicitly addresses \"lack of repeatability\" in NLP. Paper [4] is a \"reproducibility study\" in IR/NLP. The purpose of flagging a reproducibility problem in NLP research is clearly covered.\n\n**MECHANISM: Documented re-implementation of ComprExIT with extensive debugging against published results.**\n\nThe mechanism is re-implementing a specific system from scratch, debugging it, and comparing results to published numbers. Paper [2] describes exactly this: \"we identify and fix three bugs in widely used implementations\" through re-implementation and debugging. Paper [1] also performs reproduction studies with re-implementation. Paper [4] conducts a reproducibility study involving re-implementation. Paper [12] explicitly re-implements and compares results. This is a standard re-implementation-and-comparison mechanism, covered by multiple papers.\n\n**EVALUATION: Re-implementation achieves 2.47% F1 on SQuAD vs. published 68.08% F1 (~65-point gap).**\n\nThe evaluation design is: run a re-implemented system on a named benchmark (SQuAD), report F1, and compare to published F1 numbers to quantify the reproducibility gap. Paper [14] explicitly reproduces a QA model on SQuAD 2.0 using F1 as the metric. Paper [4] uses the same evaluation design (re-implementation + metric comparison on a named benchmark). Paper [12] compares reproduced results against original study results using the same metric. The design of \"measure F1 on a named benchmark and compare to published results\" is covered.\n\n**DOMAIN: Reproducibility in NLP research.**\n\nPapers [1], [2], [4], [5], [12], [13], [14] all operate in the domain of reproducibility in NLP research. This is clearly covered.\n\nVERDICT purpose = 1\nVERDICT mechanism = 2\nVERDICT evaluation = 14\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 6
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: COVERED. Multiple prior papers share the same objective of alerting the community to a reproducibility problem by conducting and reporting on a replication study. For example, [1] presents \"Three reproduction studies for Target Dependent Sentiment Analysis\" and [14] is a study to \"Reproduce Simple QANet on SQuAD 2.0\".\n\n**mechanism**: COVERED. The mechanism is a documented re-implementation of a prior published work to check its results, which is the standard mechanism for any replication or reproduction study. This is seen in [6] (\"Two Failed Replications\") and [12] which aimed to \"replicate and evaluate the experiment presented in\" a prior paper.\n\n**evaluation**: COVERED. The evaluation design, which consists of comparing a re-implementation's performance on a standard benchmark against the published result, is used in prior work. Paper [14] sets out to \"Reproduce Simple QANet on SQuAD 2.0\", which necessitates the same evaluation design of comparing performance on the SQuAD benchmark.\n\n**domain**: COVERED. The general application area is \"reproducibility in NLP research\". This is explicitly the domain of several prior papers, including [1] (\"Bringing replication and reproduction together with generalisability in NLP\") and [2] (\"The Importance of Software Quality in NLP\").\n\nVERDICT purpose = 1\nVERDICT mechanism = 6\nVERDICT evaluation = 14\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

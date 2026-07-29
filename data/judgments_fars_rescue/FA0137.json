@@ -1,0 +1,401 @@
+{
+ "paper_id": "FA0137",
+ "title": "GaugeFix-LRM: Function-Preserving Q/K Gauge Fixing for Learnable Multipliers in Language Model Training",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     16
+    ],
+    "mechanism": null,
+    "evaluation": [
+     1,
+     2
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 16
+      },
+      "mechanism": {
+       "covered_by": 16
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe stated purpose is to control Q/K gauge symmetry drift in learnable multipliers without shrinking multiplier magnitudes as weight decay does. Paper [16] discusses gauge redundancy in positively homogeneous neural networks and introduces gauge-adapted coordinates to address scale imbalances, which aligns with the goal of controlling gauge symmetry drift. While [16] does not explicitly address Q/K multipliers, the underlying purpose of managing gauge symmetry drift is substantively equivalent.\n\n### Mechanism\nThe mechanism, GaugeFix-LRM, involves an explicit gauge-fixing projection that balances Q/K scales while preserving the attention function exactly. Paper [16] introduces a soft gauge-fixing functional inspired by field theory to address scale redundancy in neural networks, which is conceptually equivalent to the gauge-fixing projection described here. Additionally, paper [9] discusses gauge fixing for sequence-function relationships, which involves removing gauge freedoms to make model parameters interpretable. Both [16] and [9] employ gauge-fixing primitives, making the mechanism covered.\n\n### Evaluation\nThe evaluation uses GPT-2 124M trained on OpenWebText. Papers [1], [17], and [22] evaluate GPT-2 models on similar datasets, such as OpenWebText or other web-based corpora, using standard pretraining setups. The evaluation design (training a GPT-2 model on a web corpus) is therefore covered.\n\n### Domain\nThe domain is language model training with attention gauge symmetry and learnable multipliers. Paper [1] explicitly addresses learnable multipliers in language model training, and papers [4] and [16] discuss gauge symmetry in the context of attention mechanisms and neural networks. These papers collectively cover the domain.\n\n---\n\nVERDICT purpose = 16  \nVERDICT mechanism = 16  \nVERDICT evaluation = 1  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 16
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Control Q/K gauge symmetry drift in Learnable Multipliers without shrinking multiplier magnitudes as weight decay does.**\n\nPaper [1] introduces learnable multipliers and discusses weight decay's role in controlling scale, noting WD-noise equilibrium as harmful. The purpose of [1] is to free scale via learnable multipliers, not specifically to fix gauge symmetry drift between Q/K multipliers while preserving the attention function. Paper [16] introduces \"soft gauge fixing\" for positively homogeneous networks to handle scale redundancy/gauge freedom, but targets ReLU-type networks, not Q/K attention multipliers specifically. The purpose of controlling Q/K gauge symmetry drift specifically (the ratio sQ/sK) as distinct from general scale balancing is not explicitly covered — [1] identifies the problem space but its purpose is introducing learnable multipliers, not fixing their gauge drift. However, [16]'s purpose is explicitly \"remove gauge redundancy without shrinking weights\" via orbit-selection, which is substantively equivalent at the problem-class level: fix gauge freedom without weight decay shrinkage. This matches the contribution's purpose closely enough.\n\n**MECHANISM: Explicit function-preserving gauge-fixing projection (gauge factor g=sqrt(sQ/sK), rescaling rQ←rQ/g, rK←rK*g) that balances Q/K scales while preserving the attention function exactly.**\n\nPaper [16] introduces \"gauge-adapted coordinates\" and a \"soft orbit-selection (norm-balancing) functional acting only on redundant scale directions\" inspired by gauge fixing in field theory — but this is a soft regularization, not a hard projection. The contribution's mechanism is a hard, explicit, function-preserving projection (exact rescaling that preserves QK^T). Paper [9] and [6] discuss gauge fixing for sequence-function relationships in biology, removing parameter degrees of freedom without changing predictions — this is conceptually similar (function-preserving reparametrization), but in a completely different domain and not applied to attention Q/K multipliers. Paper [13] proposes symmetry-invariant optimization via reparametrization of weights to handle scale symmetry. The specific primitive — compute g=sqrt(sQ/sK), divide one, multiply the other, exactly preserving QK^T — is a hard projection onto a gauge slice. Paper [16] is the closest with its gauge-fixing interpretation for neural networks, but uses soft regularization rather than hard projection. No prior paper applies this exact hard function-preserving Q/K rebalancing projection mechanism.\n\n**EVALUATION: GPT-2 124M trained on OpenWebText.**\n\nPaper [1] trains language models and evaluates on standard LM benchmarks. The evaluation design (training a ~100M parameter GPT-2 class model on OpenWebText and measuring perplexity/loss) is a standard LM pretraining evaluation design used in [1] and implicitly in many LM papers. Paper [1] explicitly mentions GPT-2 scale experiments. This is a standard benchmark/evaluation design (GPT-2 124M on OpenWebText is a named, well-known evaluation setup in the LM community), covered by [1].\n\n**DOMAIN: Language model training / attention gauge symmetry with learnable multipliers.**\n\nPaper [1] explicitly covers language model training with learnable multipliers. The domain is directly covered.\n\nVERDICT purpose = 16\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes an explicit function-preserving gauge-fixing projection applied to Q/K multipliers in attention layers using the specific rescaling g=sqrt(sQ/sK) with rQ←rQ/g, rK←rK*g. Paper [16] introduces soft norm-balancing for homogeneous networks but applies a penalty functional rather than an exact closed-form projection, and does not address Q/K attention scales. Paper [1] introduces learnable multipliers with weight decay but has no gauge-fixing projection. No other paper contains an equivalent mechanism even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 16
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "Here is the step-by-step reasoning for each facet, followed by the final verdicts.\n\n**purpose:** The contribution's purpose is to control gauge symmetry drift for Learnable Multipliers, specifically to balance the scales of Q/K without the magnitude-shrinking effect of weight decay. This is substantively equivalent to the purpose of paper [16], which aims to address \"gauge redundancy\" in neural networks by introducing a \"soft orbit-selection (norm-balancing) functional acting only on redundant scale-imbalance directions,\" which similarly seeks to correct scale imbalances along symmetric directions without penalizing the overall norm.\n\n**mechanism:** The contribution's mechanism is an explicit, function-preserving projection that rescales Q and K multipliers (`rQ<-rQ/g`, `rK<-rK*g`) using a specific analytical factor (`g=sqrt(sQ/sK)`). No prior paper abstract describes this specific mathematical primitive. While several papers discuss the general concept of \"gauge fixing\" ([3], [6], [9]) or \"symmetry-invariant optimization\" ([13]), they do not specify this direct projection mechanism; for instance, [16] suggests a \"soft... functional,\" which implies a loss term rather than a direct parameter projection.\n\n**evaluation:** The evaluation design consists of training a standard transformer language model (GPT-2 124M) on a large-scale standard web text corpus (OpenWebText). This is a canonical evaluation protocol for foundational language model research. This design is used or referenced in prior work, for example in paper [2] which analyzes \"GPT-2 Attention Patterns\" and paper [4] which analyzes a \"production-grade GPT-2 model,\" both of which rely on this standard model and training paradigm.\n\n**domain:** The contribution operates in the domain of language model training, focusing on the attention mechanism's gauge symmetry when using learnable multipliers. This domain is directly covered by paper [1], which introduces \"Learnable Multipliers\" for \"Language Model Matrix Layers.\" Other papers, such as [2] and [4], also work in the domain of analyzing the attention mechanism of GPT-2.\n\nVERDICT purpose = 16\nVERDICT mechanism = NONE\nVERDICT evaluation = 2\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: The mechanism is an explicit, function-preserving projection to balance Q/K scales (`g=sqrt(sQ/sK)`, `rQ<-rQ/g`, `rK<-rK*g`), replacing weight decay. Prior work identifies scale invariance as a gauge freedom ([16], [12], [13]) but proposes different solutions, such as soft regularizers ([16], \"soft orbit-selection... functional\"), new regularizers ([12]), or modified optimizers ([13]). None describe this specific hard-projection mechanism for balancing two interacting parameter groups (Q and K) while exactly preserving the function."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     10,
+     12
+    ],
+    "evaluation": [
+     10,
+     12
+    ],
+    "domain": [
+     16
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": null
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "domain"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to demonstrate that gauge fixing eliminates Q/K scale drift. No prior paper explicitly establishes this empirical relationship between gauge fixing and Q/K scale drift elimination. Papers [1], [2], [10], and [11] discuss gauge fixing in various contexts, but none report or demonstrate the same relationship. For example, [1] explores gauge-fixing conditions for lattice gauge theory, [2] introduces smeared gauge fixing for lattice Landau gauge, and [10] applies soft gauge fixing to neural networks for scale redundancy, but none empirically link gauge fixing to Q/K scale drift elimination. Thus, the purpose is **uncovered**.\n\n### Mechanism\nThe mechanism is an explicit gauge-fixing projection that balances Q/K scales after each optimizer step. Paper [10] introduces a soft gauge-fixing functional for neural networks, which balances scale redundancy by adapting coordinates to separate invariant and scale-imbalance directions. This is substantively equivalent to the contribution's mechanism, as both involve gauge fixing to balance scales. The vocabulary differs (e.g., \"soft orbit-selection\" vs. \"explicit projection\"), but the underlying primitive — balancing scales via gauge fixing — is the same. Therefore, the mechanism is **covered**.\n\n### Evaluation\nThe evaluation achieves perfect drift control (0.000 vs. 0.052 baseline), completely eliminating Q/K scale ratio divergence. Paper [10] evaluates its gauge-fixing method by measuring scale imbalance reduction in neural networks, which is substantively equivalent to the contribution's evaluation design. Both use metrics to validate the effectiveness of gauge fixing in controlling scale-related issues, even though the specific objects of evaluation differ (Q/K scales vs. neural network scales). Thus, the evaluation design is **covered**.\n\n### Domain\nThe domain is Q/K scale drift control in bfloat16 training. No prior paper explicitly addresses Q/K scale drift control in bfloat16 training. Papers [10], [12], and [16] discuss scale-related issues in neural networks, such as weight rescaling ([12]) and query-key normalization ([16]), but none target Q/K scale drift control in bfloat16 training specifically. This application area is **uncovered**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 10  \nVERDICT evaluation = 10  \nVERDICT domain = NONE  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper demonstrates the empirical relationship that gauge fixing eliminates Q/K scale drift.  \nFACET: domain | FINAL: NONE | reason: No prior paper addresses Q/K scale drift control specifically in bfloat16 training.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 16
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Demonstrate that gauge fixing eliminates Q/K scale drift.**\n\nThe purpose is specifically to show that a gauge-fixing projection eliminates Q/K scale ratio divergence in transformer attention training. Paper [10] (\"Scale redundancy and soft gauge fixing in positively homogeneous neural networks\") explicitly interprets neuron-wise rescaling symmetry as a gauge redundancy and introduces gauge-fixing to address scale imbalance in neural networks. Paper [16] (\"Query-Key Normalization for Transformers\") addresses Q/K scale issues in transformers. However, neither paper specifically targets demonstrating that gauge fixing *eliminates Q/K scale drift* as a measurable phenomenon — [10] is about general neural network scale redundancy, not Q/K drift specifically, and [16] uses normalization rather than gauge fixing. No prior paper establishes the same empirical relationship: gauge fixing → elimination of Q/K scale drift. This appears uncovered.\n\n**MECHANISM: Explicit gauge-fixing projection that balances Q/K scales after each optimizer step.**\n\nPaper [10] introduces \"gauge-adapted coordinates that separate invariant and scale-imbalance directions\" and a \"soft orbit-selection (norm-balancing) functional acting only on redundant scal[es]\" — this is substantively equivalent to a gauge-fixing projection that balances scales. Paper [4] (\"Weight-balancing fixes and flows for deep learning\") also addresses weight balancing in deep learning. Paper [10] is the closest match as it explicitly frames scale balancing as gauge fixing in neural networks.\n\n**EVALUATION: Achieves perfect drift control (0.000 vs 0.052 baseline), completely eliminating Q/K scale ratio divergence.**\n\nThe evaluation design is a controlled ablation comparing a method vs. baseline on a scalar metric (scale ratio divergence). This is a generic controlled comparison/ablation design. However, the specific metric (Q/K scale ratio divergence measured numerically) and the specific protocol of measuring drift elimination are not found in any prior paper. No prior paper uses this named benchmark, metric family, or protocol. This is a newly defined metric/protocol for measuring Q/K scale drift elimination — NONE.\n\n**DOMAIN: Q/K scale drift control in bfloat16 training.**\n\nPaper [16] works in transformer attention (Q/K normalization), which is the same general application area. Paper [10] works in neural network training with scale symmetry. The domain of transformer training with Q/K scale management is covered by [16].\n\nVERDICT purpose = NONE\nVERDICT mechanism = 10\nVERDICT evaluation = NONE\nVERDICT domain = 16",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: Paper [10] discusses scale redundancy and norm-balancing in neural networks as a gauge redundancy, but its purpose is orbit selection/norm-balancing for optimization, not demonstrating that gauge fixing eliminates Q/K scale drift specifically. Paper [16] addresses Q/K normalization but frames it as preventing softmax saturation, not as gauge fixing eliminating scale drift. No paper contains the same objective of demonstrating gauge fixing as the mechanism that eliminates Q/K scale drift.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports a quantitative measurement of Q/K scale ratio divergence (or equivalent metric) showing perfect drift elimination (0.000 vs 0.052 or analogous numerical result). Paper [16] evaluates QKNorm on translation quality but does not measure scale drift numerically. Paper [7] measures drift correction but in a completely different domain (data streams, not attention mechanisms). No paper contains this specific empirical claim or equivalent numerical finding."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 12
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 12
+      },
+      "domain": {
+       "covered_by": 16
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe contribution's purpose is to demonstrate that a specific mechanism (gauge fixing) eliminates a specific problem (Q/K scale drift). This is covered by paper [12], which pursues the same objective at the problem-class level: it \"introduces the novel concept of weight rescaling\" to address the problem that \"during training, weights often diverge from their initial scale\" and demonstrates its effectiveness. This is the same purpose of demonstrating that a scale-control mechanism can eliminate parameter scale drift during training.\n\n**MECHANISM**\nThe contribution's mechanism is an \"explicit gauge-fixing projection that balances Q/K scales after each optimizer step.\" This is substantively equivalent to the mechanism in paper [12], which introduces \"weight rescaling, which enforces weights to remain within their initial regime throughout the training process.\" Both are post-update projections or rescaling operations applied periodically during training to enforce a scale constraint on model parameters.\n\n**EVALUATION**\nThe contribution's evaluation design consists of measuring a metric for parameter scale drift (the Q/K scale ratio) with and without the proposed intervention to show its elimination. This evaluation design is covered by paper [12], which, to support its claim that \"weight rescaling\" prevents weights from diverging from their \"initial regime,\" must necessarily employ the same design of measuring weight scales over time with and without the intervention.\n\n**DOMAIN**\nThe contribution's domain is \"Q/K scale drift control in bfloat16 training.\" This general application area of controlling parameter scales in attention mechanisms is covered by paper [16], which introduces \"Query-Key Normalization for Transformers.\" Both operate in the domain of stabilizing the attention mechanism's components (Q/K matrices) during training.\n\nVERDICT purpose = 12\nVERDICT mechanism = 12\nVERDICT evaluation = 12\nVERDICT domain = 16",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     8
+    ],
+    "evaluation": [
+     2,
+     7,
+     8,
+     13
+    ],
+    "domain": [
+     1,
+     3,
+     8
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": [
+        7,
+        13
+       ]
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to explain why pure gauge-fixing can introduce training instability. This requires a prior paper to explicitly report or establish the same empirical relationship between gauge-fixing and training instability. Paper [13] discusses gauge fixing in the context of neural networks with positively homogeneous activations and introduces a soft gauge-fixing mechanism to address scale redundancy. However, it does not explicitly establish or report the relationship between pure gauge-fixing and training instability. Paper [10] discusses gauge fixing in the context of field theory and mentions ambiguities in gauge-fixing prescriptions, but it does not address training instability in neural networks. No other paper explicitly addresses this purpose. Therefore, **no prior paper covers this purpose**.\n\n### Mechanism\nThe mechanism involves an analysis that decomposes weight decay's role on Q/K multipliers. Paper [8] studies the influence of weight decay on parameter matrices in attention layers, including key-query and value-projection matrices, which are directly relevant to Q/K multipliers. Paper [7] investigates how weight decay affects the update behavior of individual neurons, including angular updates, which could relate to the decomposition of weight decay's effects. However, neither paper explicitly decomposes weight decay's role specifically on Q/K multipliers. Therefore, **no prior paper covers this mechanism**.\n\n### Evaluation\nThe evaluation design involves discovering that weight decay serves a dual purpose (symmetry control and magnitude regularization) and that pure gauge-fixing introduces late-training instability in 2 of 3 seeds. Paper [13] evaluates the role of gauge fixing in neural networks with positively homogeneous activations, focusing on symmetry control and scale redundancy, which aligns with the evaluation design of this contribution. Paper [7] also evaluates weight decay's role in balancing learning dynamics, which is conceptually similar to symmetry control. However, no prior paper evaluates the specific instability introduced by pure gauge-fixing. Nonetheless, the evaluation design (symmetry control and regularization effects) is **covered by prior work**.\n\n### Domain\nThe domain of the contribution is weight decay/regularization analysis. Papers [1], [2], [3], [4], [5], [6], [7], [8], and [9] all address weight decay and regularization in neural networks, which is the same general application area. Therefore, **the domain is covered by prior work**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 7, 13  \nVERDICT domain = 1  ",
+      "stage2": "1. **FACET: purpose** | **FINAL: COVERED-BY 13** | reason: Paper [13] explicitly discusses how gauge fixing in positively homogeneous neural networks can introduce instability due to reparametrization symmetry, which aligns with the objective of explaining training instability caused by pure gauge-fixing. Quote: *\"Inspired by gauge fixing in field theory, we introduce a soft orbit-selection (norm-balancing) functional acting only on redundant scale directions, which can stabilize training.\"*\n\n2. **FACET: mechanism** | **FINAL: COVERED-BY 8** | reason: Paper [8] provides an analysis of weight decay's role in attention layers, including its effect on key-query (Q/K) multipliers. Quote: *\"We study the influence of weight decay as well as $L2$-regularization when training neural network models in which parameter matrices interact multiplicatively. This combination is of particular interest as this parametrization is common in attention layers, the workhorse of transformers.\"*"
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this finding contribution against the prior papers.\n\n**PURPOSE: Explain why pure gauge-fixing can introduce training instability.**\n\nThe purpose is specifically to explain *why* a pure gauge-fixing approach (GaugeFix) causes training instability — identifying weight decay's dual role as the mechanism behind this instability. Paper [13] introduces \"soft gauge fixing\" for neural networks and discusses scale redundancy, but its purpose is to *introduce* the method, not to explain instability from pure gauge-fixing. Paper [21] discusses stability of Q/K weights and training instability in transformers, but focuses on QK norm solutions rather than explaining gauge-fixing instability. No prior paper specifically investigates why pure gauge-fixing (without weight decay) causes late-training instability by decomposing weight decay's dual role. The closest is [13] which introduces soft gauge fixing but doesn't analyze instability from pure gauge-fixing as a finding.\n\n**MECHANISM: Analysis decomposing weight decay's role on Q/K multipliers.**\n\nPaper [8] explicitly studies \"the influence of weight decay as well as L2-regularization when training neural network models in which parameter matrices interact multiplicatively\" and specifically analyzes \"key-query, as well as value-projection parameter matrices\" in attention layers — this is substantively equivalent to decomposing weight decay's role on Q/K multipliers. Paper [13] also analyzes weight decay's role in controlling scale redundancy via gauge-adapted coordinates. Paper [8] is the strongest match.\n\n**EVALUATION: Discovers weight decay serves dual purpose; pure GaugeFix introduces late-training instability in 2 of 3 seeds.**\n\nThe evaluation design involves multi-seed training runs with instability observation — a standard multi-seed comparison protocol. Paper [8] uses empirical analysis of weight decay effects on attention layers. Paper [13] likely includes empirical validation of their soft gauge fixing. The specific finding (2 of 3 seeds showing instability) uses a standard multi-seed experimental design that appears broadly in prior work. However, the specific evaluation design of \"run multiple seeds, observe late-training instability, attribute to missing weight decay component\" is a controlled ablation/multi-seed comparison — a generic experimental shape. No prior paper uses this specific protocol to validate this specific claim about gauge-fixing instability. But per the rules, multi-seed comparison is a standard design. Paper [8] uses empirical validation of weight decay effects on Q/K matrices with similar experimental design.\n\n**DOMAIN: Weight decay / regularization analysis.**\n\nPapers [1], [2], [3], [4], [5], [6], [7], [8], [9], [11], [13], [19] all work in the domain of weight decay and regularization analysis in neural networks. This is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 8\nVERDICT evaluation = 8\nVERDICT domain = 8",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explains why pure gauge-fixing (orbit-selection without norm penalization) introduces training instability. Paper [13] introduces soft gauge fixing precisely to avoid instability, but does not explain why hard/pure gauge-fixing causes it. Paper [21] discusses attention logit instability but not gauge-fixing. No other paper addresses this specific causal claim even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "PURPOSE: The contribution's purpose is to explain a specific failure mode: why using only the gauge-fixing component of weight decay, without its magnitude-regularizing component, can lead to training instability. No prior paper shares this objective; they analyze the positive effects of weight decay ([3], [7], [8]), propose modifications to it ([2], [4]), or propose alternative methods to control training stability ([21]), but none identify or explain this particular negative side-effect of \"pure gauge-fixing\".\n\nMECHANISM: The mechanism is an analysis that decomposes weight decay's effect on multiplicatively interacting matrices, specifically the query and key (Q/K) multipliers in attention layers. This analytical approach is covered by [8], which explicitly sets out to \"study the influence of weight decay ... when training neural network models in which parameter matrices interact multiplicatively,\" specifically citing \"key-query\" matrices as the primary example.\n\nEVALUATION: The evaluation design involves isolating a component of an existing technique (weight decay), creating a new variant with only that component (\"pure GaugeFix\"), and empirically comparing the training dynamics of the variant against the original across multiple seeds to demonstrate an effect. This design is covered by [2] and [4], which \"propose a simple way to resolve this issue by decoupling weight decay and the optimization steps\" and then \"provide empirical evidence that our proposed modification\" works as intended by comparing the new and old methods.\n\nDOMAIN: The contribution's domain is the analysis of weight decay and regularization in neural networks. This is a well-established area of research covered by numerous prior papers. For example, [3] states its purpose is to \"empirically investigate weight decay for three optimization algorithms ... and a variety of network architectures.\"\n\nVERDICT purpose = NONE\nVERDICT mechanism = [8]\nVERDICT evaluation = [2]\nVERDICT domain = [3]",
+      "stage2": "FACET: purpose: Explain why pure gauge-fixing can introduce training instability. | FINAL: NONE | reason: Prior work identifies gauge symmetries in NNs and proposes fixes (e.g., soft regularizers [13], Riemannian gradients [17], specific normalizations [21]), or discusses issues with gauge-fixing in physics (e.g., Gribov ambiguity [10]). However, no paper has the explicit purpose of explaining why a \"pure\" or \"hard\" gauge-fixing procedure (like a projection) would itself cause training instability in the machine learning context."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     9,
+     27
+    ],
+    "evaluation": [
+     10
+    ],
+    "domain": [
+     10
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 9
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 10
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to find the optimal application frequency for GaugeFix. None of the prior papers explicitly address this specific empirical relationship — the effect of varying GaugeFix application frequency on validation loss. While several papers discuss gauge fixing methods ([1], [4], [5], [6], [7], [9], [11], [13], [18]), none establish or report the same relationship between application frequency and validation loss. Therefore, the purpose is **NONE**.\n\n### Mechanism\nThe mechanism involves applying the gauge-fixing projection every 100 steps rather than every step. Papers such as [6], [7], [9], and [13] discuss gauge fixing techniques, including iterative or modified gauge fixing methods, but none describe or analyze the specific mechanism of varying the frequency of gauge-fixing projection during training. The mechanism is **NONE**.\n\n### Evaluation\nThe evaluation design compares validation loss across different GaugeFix application frequencies and a weight decay baseline. This design — comparing validation loss across training configurations — is a standard experimental setup in hyperparameter tuning and optimization studies. Papers such as [2], [10], [19], [27], and [28] use similar evaluation designs to compare training configurations or optimization strategies. For example, [10] evaluates weight rescaling strategies during training, and [19] compares projected gradient descent methods. Thus, the evaluation is **COVERED**.\n\n### Domain\nThe domain is training schedule/hyperparameter tuning. This is a well-established application area, with numerous prior papers addressing related topics. Papers such as [2], [10], [19], [27], and [28] operate in the same general domain of training schedules and hyperparameter optimization. Therefore, the domain is **COVERED**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 10  \nVERDICT domain = 10  ",
+      "stage2": "1. **FACET: purpose** | **FINAL: NONE** | reason: No prior paper explicitly addresses finding the optimal application frequency for GaugeFix or an equivalent objective under different terminology, framing, or domain vocabulary.  \n2. **FACET: mechanism** | **FINAL: COVERED-BY 9** | reason: \"The resulting gauge transformation is simultaneously applied to the original links. Following this preconditioning, the links are gauge fixed again as usual.\" This describes a mechanism involving periodic application of gauge fixing, conceptually aligning with applying the gauge-fixing projection every 100 steps rather than every step."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 10
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**PURPOSE: Find the optimal application frequency for GaugeFix.**\n\nThe purpose is to determine how often a gauge-fixing projection should be applied during neural network training (every step vs. every N steps). This is essentially a hyperparameter/schedule optimization question specific to a training regularization technique. Paper [10] (\"Weight Rescaling\") applies weight rescaling during training and implicitly addresses how to apply such corrections, but doesn't specifically investigate application frequency as the primary objective. No prior paper specifically pursues \"find the optimal frequency of applying a projection/correction operation during training\" as its stated purpose. The closest is [10] which applies weight rescaling throughout training, but doesn't study frequency as a variable.\n\n**MECHANISM: Applying the gauge-fixing projection every 100 steps rather than every step.**\n\nThe mechanism is periodic/intermittent application of a projection operation during training (every 100 steps). Paper [10] applies weight rescaling continuously during training but doesn't vary frequency. No prior paper describes the specific primitive of \"apply a structural projection periodically (every N steps) rather than every step during neural network training.\" The physics gauge-fixing papers [1,4,5,6,7,9,11,13,18] are about lattice QCD gauge fixing, not training schedules.\n\n**EVALUATION: Best validation loss comparison across application frequencies.**\n\nThe evaluation design is a standard ablation/comparison using validation loss as a metric across different hyperparameter settings (application frequency). This is a generic experimental design — comparing validation loss across configurations — that appears broadly in deep learning papers including [10] which compares validation/test performance across weight rescaling variants. This is a standard benchmark-metric evaluation design covered by [10].\n\n**DOMAIN: Training schedule / hyperparameter tuning for neural network training.**\n\nPaper [10] explicitly operates in the domain of neural network training schedules and weight statistics during training. This is the same general application area.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 10\nVERDICT domain = 10",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper addresses finding an optimal application frequency for a gauge-fixing projection operation in neural network training; the lattice QCD papers discuss gauge-fixing algorithms but never frame the question as optimizing how often to apply a correction step during gradient-based learning.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper describes applying a gauge-fixing projection periodically (e.g., every 100 steps) during neural network training rather than at every step; the closest papers either apply gauge fixing continuously or discuss lattice QCD algorithms with no connection to training frequency scheduling."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 27
+      },
+      "mechanism": {
+       "covered_by": 27
+      },
+      "evaluation": {
+       "covered_by": 10
+      },
+      "domain": {
+       "covered_by": 10
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to find the optimal frequency for applying an operation (GaugeFix) during training. This is covered by [27], which analyzes the entire \"spectrum between reactive and stable updates\" by varying the update frequency `k` in its proposed `k-lazyGD` algorithm, which is the same general objective of understanding the effect of application frequency.\n\n**mechanism**: The contribution's mechanism is applying a projection operation periodically (every 100 steps) instead of at every step. This is a specific instance of the general primitive of sparse/periodic application of an operation during an iterative process. This is covered by [27], which introduces \"\\textsc{$k$-lazyGD}, an online learning algorithm that bridges the gap between greedy Online Gradient Descent (OGD, for $k{=}1$) and lazy GD/dual-averaging (for $k{=}T$)\", which is precisely the mechanism of applying an update every `k` steps.\n\n**evaluation**: The evaluation design consists of comparing the proposed method (periodic application) against two baselines (per-step application and a standard training baseline) using a standard metric (validation loss). This is a common comparative experimental design. This design is covered by [10], which \"demonstrated that weight rescaling can significantly improve the performance of various deep learning models\" by necessarily comparing its proposed training modification against a baseline without it on standard metrics.\n\n**domain**: The contribution's domain is hyperparameter tuning and the design of training schedules for machine learning models. This is covered by [10], which introduces \"weight rescaling\", a novel concept of enforcing \"weights to remain within their initial regime throughout the training process\", which is also a modification of the training process to improve performance.\n\nVERDICT purpose = 27\nVERDICT mechanism = 27\nVERDICT evaluation = 10\nVERDICT domain = 10",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

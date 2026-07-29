@@ -1,0 +1,282 @@
+{
+ "paper_id": "FA0292",
+ "title": "Tiny-LR Proxy SFT for Dataset Ranking: An Empirical Investigation",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     1
+    ],
+    "mechanism": [
+     1,
+     7
+    ],
+    "evaluation": [
+     1,
+     6
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 7
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to test whether the tiny-learning-rate proxy hypothesis (from pretraining data curation) transfers to SFT dataset ranking. Paper [1] explicitly addresses the reliability of small proxy models for data curation decisions, including the transferability of conclusions from small-scale experiments to full-scale training. Paper [7] also investigates the use of small proxy models to predict large-model reasoning performance, specifically addressing emergent behaviors at larger scales. Both papers share the same problem-class objective: understanding the transferability of proxy-based conclusions across scales. Therefore, the purpose is **covered**.\n\n### Mechanism\nThe mechanism involves a rigorous test comparing Standard-LR Proxy (5e-5) vs Tiny-LR Proxy (1e-5) on 12 math SFT datasets using Qwen2.5-1.5B as proxy and Qwen2.5-7B as target, measuring ranking agreement via Pairwise Direction Accuracy and Spearman correlation. Paper [1] discusses issues in proxy-model experimental protocols but does not test learning-rate proxies or ranking agreement metrics. Paper [7] introduces rBridge for proxy-based reasoning prediction but does not use learning-rate proxies or Spearman correlation. No prior paper rigorously tests the specific mechanism of comparing learning-rate proxies for ranking agreement. Therefore, the mechanism is **uncovered**.\n\n### Evaluation\nThe evaluation design measures ranking agreement via Pairwise Direction Accuracy and Spearman correlation. Paper [6] introduces methods for computing and testing Spearman correlation significance, and Paper [9] provides foundational methods for Spearman rank-order correlation analysis. Both papers establish the evaluation design (Spearman correlation testing) as standard practice. Therefore, the evaluation is **covered**.\n\n### Domain\nThe domain is SFT data selection and proxy-based dataset valuation for math instruction tuning. Paper [1] addresses proxy-based data curation for pretraining, and Paper [7] applies proxy models to reasoning performance prediction, both within the broader area of proxy-based dataset valuation. While neither focuses specifically on math instruction tuning, the domain area of proxy-based dataset valuation is **covered**.\n\n---\n\nVERDICT purpose = 1  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 6  \nVERDICT domain = 1  ",
+      "stage2": "FACET: mechanism | FINAL: COVERED-BY 7 | reason: Paper [7] introduces rBridge, which rigorously tests small proxy models ($\\leq$1B) against larger models (>7B) for reasoning tasks, aligning with the empirical relationship of ranking agreement via Pairwise Direction Accuracy and Spearman correlation. Quoted phrase: \"small proxies ($\\leq$1B) can effectively predict large-model reasoning by aligning more closely with (1) the performance ranking fidelity...\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": 1
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Test whether the tiny-learning-rate proxy hypothesis (from pretraining data curation) transfers to SFT dataset ranking.**\n\nPaper [1] is the closest match — it explicitly investigates \"whether and when conclusions drawn from small-scale experiments reliably transfer to full-scale model training\" and uncovers issues with \"the standard experimental protocol for data recipe assessment: the use of identical small-scale model training configurations.\" This directly addresses the same objective: testing whether a proxy-model practice (specifically involving learning rate configurations) transfers across scales. The contribution's purpose is essentially a targeted replication/extension test of the hypothesis introduced in [1], applied to SFT rather than pretraining. Paper [10] also asks \"how does choice of data affect large-scale models\" and studies proxy model reliability across scale. However, [1] is the most substantively equivalent — it specifically tests the tiny-LR proxy hypothesis in the pretraining context, and this contribution tests whether that same hypothesis transfers to SFT. The purpose is covered by [1].\n\n**MECHANISM: Comparing Standard-LR vs Tiny-LR proxy on 12 math SFT datasets using a small proxy model and large target model, measuring ranking agreement via PDA and Spearman correlation.**\n\nPaper [1] introduces the tiny-LR proxy concept and uses proxy-vs-target ranking comparison as its core mechanism. Paper [10] also uses small-to-large generalization experiments comparing proxy and target model behaviors. The specific protocol of comparing two learning rate configurations on a proxy model and measuring ranking agreement via correlation metrics is essentially the same experimental primitive as [1] — same controlled comparison design (vary one hyperparameter, measure rank correlation between proxy and target). Spearman correlation as a ranking agreement metric appears in [6], [9], [15], [19]. The combined mechanism (proxy comparison + Spearman/PDA ranking agreement) is most directly covered by [1], which uses the same primitive of comparing proxy configurations against target outcomes.\n\n**EVALUATION: Hypothesis refuted — Tiny-LR achieves random-level PDA=0.500 vs Standard-LR PDA=0.712, measured via Pairwise Direction Accuracy and Spearman correlation.**\n\nThe evaluation design uses Spearman rank correlation and pairwise direction accuracy to measure ranking agreement between proxy and target models across datasets. Paper [1] uses the same evaluation design framework — measuring ranking agreement between proxy-model outcomes and full-scale outcomes using correlation-based metrics. Paper [8] uses rank correlation prediction as its core evaluation design. The evaluation design (rank correlation between proxy and target rankings across multiple datasets) is covered by [1]. Spearman correlation as a statistical tool is covered by [6], [9]. The specific design of comparing proxy-to-target ranking fidelity via correlation metrics is the same design used in [1].\n\n**DOMAIN: SFT data selection / proxy-based dataset valuation (math instruction tuning).**\n\nPaper [1] operates in pretraining data curation using proxy models — the same general application area of proxy-based dataset/data-recipe valuation for LLM training. Paper [7] addresses predicting LLM reasoning performance with small proxy models, specifically for reasoning capabilities. Paper [10] studies data influence across scale for LLM training. The domain of \"proxy-based dataset valuation for LLM training\" is covered by [1], [7], and [10]. The SFT-specific math instruction tuning is a narrower instance within the broader area of LLM training data selection, which is covered.\n\nVERDICT purpose = 1\nVERDICT mechanism = 1\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     13
+    ],
+    "mechanism": [
+     10,
+     13
+    ],
+    "evaluation": [
+     13,
+     21
+    ],
+    "domain": [
+     1,
+     13
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": 10
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose:\nThe contribution's purpose is to establish that standard-learning-rate proxy SFT provides reliable, actionable ranking signal. Paper [13] (\"Can Small Training Runs Reliably Guide Data Curation? Rethinking Proxy-Model Practice\") directly addresses the reliability of proxy models for data curation decisions in full-scale training runs, which aligns with the purpose of assessing the reliability of proxies for actionable ranking. The empirical relationship between proxy reliability and actionable outcomes is central to both works. Therefore, the purpose is **covered** by [13].\n\n### Mechanism:\nThe mechanism involves evaluating Standard-LR Proxy against a Training-Free NLL baseline and Target Ground Truth across GSM8K and MATH-500. Paper [10] (\"Selection Via Proxy: Efficient Data Selection For Deep Learning\") uses proxy-based methods for efficient data selection, which is conceptually equivalent to using proxies for ranking datasets. Additionally, [13] discusses proxy models for data recipe assessment, which involves evaluating proxies against ground truth outcomes. Both papers employ proxy-based evaluation mechanisms, making the mechanism **covered** by [10] and [13].\n\n### Evaluation:\nThe evaluation design involves comparing PDA scores and statistical significance between Standard-LR Proxy and NLL baseline, as well as identifying the top-1 dataset. Paper [21] (\"Improving Statistical Significance in Human Evaluation of Automatic Metrics via Soft Pairwise Accuracy\") introduces statistical significance testing for ranking metrics, which aligns with the statistical comparison framework used in this contribution. Additionally, [13] evaluates proxy reliability using multi-seed comparisons and dataset rankings, which matches the evaluation design. Therefore, the evaluation is **covered** by [13] and [21].\n\n### Domain:\nThe domain is proxy-based SFT dataset ranking. Paper [1] (\"Influence-Preserving Proxies for Gradient-Based Data Selection in LLM Fine-tuning\") addresses proxy-based methods for selecting training data in supervised fine-tuning, which falls within the same general application area of dataset ranking for SFT. Similarly, [13] discusses proxy models for data curation decisions in full-scale training runs, which also pertains to dataset ranking in SFT. Therefore, the domain is **covered** by [1] and [13].\n\n---\n\nVERDICT purpose = 13  \nVERDICT mechanism = 10  \nVERDICT evaluation = 13  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 21
+      },
+      "domain": {
+       "covered_by": 13
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Establish that standard-learning-rate proxy SFT provides reliable, actionable ranking signal.**\n\nThe purpose is to validate that a cheap proxy (standard-LR SFT run) can reliably rank SFT datasets — i.e., that small/proxy training runs give trustworthy signals for data curation decisions. Paper [13] directly addresses this: \"Can Small Training Runs Reliably Guide Data Curation? Rethinking Proxy-Model Practice\" — it investigates \"whether and when conclusions drawn from small-scale experiments reliably transfer to full-scale model training.\" This is substantively equivalent: both ask whether proxy training runs produce reliable ranking/curation signals. Paper [10] also touches on proxy reliability for data selection but is less directly focused on the ranking-signal reliability question.\n\n**MECHANISM: Evaluate Standard-LR Proxy against a Training-Free NLL baseline and Target Ground Truth across GSM8K and MATH-500.**\n\nThe mechanism is: compare a proxy training run against a training-free baseline (NLL) and a ground-truth full fine-tune, measuring ranking agreement (PDA with confidence intervals and p-values) across math benchmarks. Paper [13] uses a similar design — comparing proxy model conclusions against full-scale training outcomes. Paper [1] compares proxy-based data selection methods against baselines for SFT. However, the specific primitive of comparing a \"standard-LR proxy\" vs. a \"training-free NLL baseline\" vs. \"full LoRA fine-tune\" as a three-way ranking comparison with PDA/CI/p-value statistics is not clearly present in any prior paper. Paper [21] introduces Pairwise Accuracy (PA) with statistical significance for metric comparison, which is related to the PDA metric design. The closest is [13], which compares proxy runs to full-scale runs, but the specific three-way comparison mechanism (proxy vs. training-free vs. ground truth) is not explicitly described.\n\n**EVALUATION: Standard-LR Proxy reaches PDA=0.712 (95% CI [0.606, 0.818]) and correctly identifies top-1 dataset; NLL baseline PDA=0.636 not significant.**\n\nThe evaluation design uses Pairwise Dataset Accuracy (PDA) with confidence intervals and significance testing to compare ranking methods. Paper [21] proposes Soft Pairwise Accuracy (SPA) building on Pairwise Accuracy (PA) with statistical significance for comparing metrics — this is the same evaluation design family (pairwise accuracy + statistical significance testing for ranking comparison). The specific named metric \"PDA\" with CI and p-values follows the same design logic as PA/SPA in [21]. Additionally, [13] uses benchmark evaluation to assess proxy reliability. The evaluation design (pairwise accuracy with statistical significance) is covered by [21].\n\n**DOMAIN: Proxy-based SFT dataset ranking.**\n\nThe domain is SFT dataset selection/ranking using proxy models for LLM fine-tuning. Paper [13] works in exactly this area: \"Data teams at frontier AI companies routinely train small proxy models to make critical decisions about pretraining data recipes.\" Paper [1] covers \"gradient-based data selection in LLM fine-tuning\" with proxy models. Paper [10] covers proxy-based data selection for deep learning. This domain is clearly covered.\n\nVERDICT purpose = 13\nVERDICT mechanism = NONE\nVERDICT evaluation = 21\nVERDICT domain = 13",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper evaluates a Standard-LR Proxy against a Training-Free NLL baseline and a Target Ground Truth (Qwen2.5-7B full LoRA fine-tune) across GSM8K and MATH-500. None of the 30 papers contain this specific empirical comparison structure, even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 21
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to establish the reliability of a specific proxy method (standard-LR SFT) for providing a dataset ranking signal. This is a specific instance of the general question investigated in [13], which asks \"whether and when conclusions drawn from small-scale experiments reliably transfer to full-scale model training\" for the purpose of \"data recipe assessment.\" Both share the same objective at the problem-class level: assessing the reliability of proxy models for data curation decisions.\n\n**mechanism**: The mechanism is a comparative evaluation of a small-scale proxy experiment against a large-scale ground truth experiment to validate the proxy's signal. This experimental design is described in [13] as the \"standard experimental protocol for data recipe assessment,\" which that paper sets out to analyze. Therefore, the analysis method itself is not new but is an application of an existing protocol.\n\n**evaluation**: The evaluation design uses \"Pairwise Dataset Accuracy (PDA)\" to measure ranking quality. This is an instance of the Pairwise Accuracy (PA) family of metrics, which is an established design for evaluating rankings. Paper [21] explicitly discusses and builds upon this existing design, proposing a \"Soft Pairwise Accuracy (SPA), a new meta-metric that builds on Pairwise Accuracy (PA).\"\n\n**domain**: The application area is using proxy models to rank datasets for supervised fine-tuning (SFT). This is covered by [1], which addresses \"Gradient-Based Data Selection in LLM Fine-tuning\" using proxies, a substantively equivalent application area, as ranking is a primary method for data selection.\n\nVERDICT purpose = 13\nVERDICT mechanism = 13\nVERDICT evaluation = 21\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": null,
+    "evaluation": [
+     14,
+     23
+    ],
+    "domain": [
+     1,
+     2,
+     3,
+     5
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        2,
+        3,
+        5
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "### Facet Reasoning:\n\n**Purpose:**  \nThe contribution aims to characterize when reduced learning rates preserve versus corrupt ranking signal. None of the prior papers explicitly report or establish the same empirical relationship between learning rates and ranking signal preservation/corruption. While some papers (e.g., [6], [22], [30]) discuss learning rates or optimization dynamics, they do not address ranking signal preservation or corruption as a function of learning rate changes. This specific relationship is not covered.  \n\n**Mechanism:**  \nThe mechanism involves per-benchmark analysis separating MATH-500 (content-based math_verify scoring) from GSM8K (exact-match scoring), plus response-length error analysis. Papers like [12] and [14] conduct content comparisons or proxy-based analyses, but they do not use the same mechanism of separating benchmarks by scoring type or analyzing response-length errors. No prior paper employs this exact mechanism.  \n\n**Evaluation:**  \nThe evaluation design uses PDA, Spearman correlation, and verbose CoT dataset rankings to trace failure modes. Papers like [23] and [16] discuss rank correlation metrics, and [12] uses score concordance studies, but none of these papers employ the same evaluation design combining PDA, Spearman correlation, and verbose CoT dataset rankings. The evaluation design is uncovered.  \n\n**Domain:**  \nThe domain is learning-rate effects on ranking transfer. Papers like [1], [2], [3], and [5] address ranking transfer or learning-to-rank in various contexts, including transfer learning and optimization. While the specific instance of learning-rate effects is new, the general application area of ranking transfer is covered by these prior works.  \n\n---\n\n### Verdicts:  \nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = [1, 2, 3, 5]  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly characterizes when reduced learning rates preserve versus corrupt ranking signal under any terminology or framing.  \n\nFACET: mechanism | FINAL: NONE | reason: No prior paper separates MATH-500 (content-based math_verify scoring) from GSM8K (exact-match scoring) or performs response-length error analysis.  \n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports PDA=0.818 (Spearman 0.846, p<0.001) on MATH-500 or traces GSM8K failure to verbose CoT datasets ranked top-2 by Tiny-LR but 8th/10th by target.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 14
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**PURPOSE: Characterize when reduced learning rates preserve versus corrupt ranking signal.**\n\nThis purpose is about understanding the conditions under which a specific hyperparameter (learning rate) affects the fidelity of a proxy/surrogate ranking signal relative to a target. I need to find a paper that establishes the same empirical relationship — same variables (learning rate → ranking quality) and direction. None of the prior papers address learning rate effects on ranking transfer fidelity. Papers [3], [13], [26], [29] deal with ranking/proxy quality for NAS but don't examine learning rate as the variable. Paper [4] examines adaptive transfer rates in RL but \"transfer rate\" there means knowledge transfer rate, not learning rate, and the relationship studied is different. No prior paper characterizes when reduced learning rates preserve vs. corrupt ranking signal.\n\n**MECHANISM: Per-benchmark analysis separating MATH-500 (content-based scoring) from GSM8K (exact-match scoring), plus response-length error analysis.**\n\nThe mechanism is a per-benchmark breakdown separating benchmarks by scoring methodology, combined with response-length error analysis to trace failure modes. This is a controlled ablation/analysis design. Papers like [14] (EMQ) do per-proxy correlation analysis across benchmarks. Paper [13] (NAS-Bench-360) does per-task breakdown. However, the specific combination of separating benchmarks by scoring type AND doing response-length error analysis as a diagnostic is not found in prior work. The generic shape (per-benchmark breakdown) appears in [13], [14], [26], but the specific diagnostic logic (scoring-type separation + length analysis) is not covered.\n\n**EVALUATION: Tiny-LR achieves PDA=0.818 (Spearman 0.846, p<0.001) on MATH-500 but random 0.515 on GSM8K; failure traced to verbose CoT datasets.**\n\nThe evaluation design uses Spearman rank correlation with p-values as the metric, applied to benchmark-level ranking. Spearman correlation as an evaluation metric appears in [23] (definition), [21] (covariate-adjusted Spearman), and is used in NAS proxy evaluation papers like [14], [26], [29]. The design of using Spearman correlation to validate ranking quality of a proxy is standard in the NAS/proxy literature (e.g., [14] explicitly builds a benchmark correlating proxies with accuracy using Spearman). This evaluation design (Spearman rank correlation to validate proxy ranking fidelity) is covered by [14] and [26].\n\n**DOMAIN: Learning-rate effects on ranking transfer.**\n\nThe domain is the application area of learning-rate effects on ranking/proxy transfer, situated within LLM evaluation or model selection. The prior papers touch on transfer learning ([1], [2], [3], [4]), ranking ([5], [8], [10]), and NAS proxy evaluation ([13], [14], [26], [29]). The specific area of learning-rate effects on LLM benchmark ranking is not addressed by any prior paper. The closest domain is proxy-based model ranking/NAS ([13], [14], [26], [29]), but learning-rate manipulation as the mechanism of proxy creation is absent. However, the broader domain of \"ranking transfer / proxy ranking fidelity\" is covered by [3], [14], [26].\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 14\nVERDICT domain = 3",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper examines when reduced learning rates preserve versus corrupt ranking signal; the closest papers address transfer learning rates or data dropout for ranking, but none frame the objective as characterizing the preservation/corruption of ranking signal under learning rate reduction.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper performs per-benchmark analysis separating MATH-500 (content-based math_verify scoring) from GSM8K (exact-match scoring) with response-length error analysis; none of the listed papers involve LLM math benchmark evaluation or scoring-method decomposition of this kind."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 12
+      },
+      "evaluation": {
+       "covered_by": 23
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "purpose: No prior paper investigates the relationship between learning rates and the preservation or corruption of a ranking signal; the objective of characterizing this specific empirical effect is absent from the prior work. The closest papers, such as [22] on optimization with fast learning rates, focus on optimizing a final function value, not the quality of a ranking.\n\nmechanism: The analysis method, which involves a per-benchmark comparison to isolate the effect of different scoring mechanisms (content-based vs. exact-match), is substantively equivalent to prior work. For example, [12] performs a \"Content Comparison of IELTS Academic and TOEFL iBT® Tests\" to go \"Beyond Score Correlations,\" which is the same design of comparing benchmarks based on their internal properties to explain performance differences.\n\nevaluation: The evaluation design, which uses Spearman's rank correlation to measure the agreement between a predicted and target ranking, is covered by prior work. Paper [23] is a foundational work defining \"Spearman’s rank correlation coefficient,\" and its use as a metric is a standard design.\n\ndomain: The general application area of combining ranking with transfer learning is covered by prior work. Paper [1] explicitly addresses \"transfer learning in ranking,\" establishing the domain even though it does not investigate learning rate effects within it.\n\nVERDICT purpose = NONE\nVERDICT mechanism = [12]\nVERDICT evaluation = [23]\nVERDICT domain = [1]",
+      "stage2": "FACET: purpose: Characterize when reduced learning rates preserve versus corrupt ranking signal. | FINAL: NONE | reason: No prior paper has the objective of analyzing the conditions under which learning rate reduction affects a ranking signal. Papers discuss learning rates [4, 22] or ranking [1, 3, 5], but none has the purpose of characterizing the interaction between the two concepts in this specific way."
+     }
+    }
+   }
+  }
+ ]
+}

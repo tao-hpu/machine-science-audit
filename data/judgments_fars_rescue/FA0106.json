@@ -1,0 +1,311 @@
+{
+ "paper_id": "FA0106",
+ "title": "TraceBound: Evaluating Trace-Bounded Context for Token-Efficient Coding Agents",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     7
+    ],
+    "mechanism": [
+     8,
+     16
+    ],
+    "evaluation": [
+     7,
+     19,
+     20
+    ],
+    "domain": [
+     2,
+     4,
+     7
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 20
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to test whether restricting agent file access to execution-trace-derived allowlists reduces token consumption. No prior paper explicitly tests this relationship or investigates token consumption reduction through file access restrictions. Papers like [8] and [14] discuss privilege escalation and least privilege principles but do not empirically test the relationship between file access restrictions and token consumption. Therefore, no prior paper establishes the same empirical relationship.\n\n### Mechanism\nThe mechanism, TraceBound, computes per-task file allowlists from failing-test execution traces (pytest coverage, depth-2 import closure, interface and auxiliary files) and gates agent file reads with hard denial of out-of-allowlist reads. Paper [6] introduces PIEtrace, which traces and virtualizes program execution, generating a stand-alone trace program. While PIEtrace involves execution traces, it does not compute allowlists or enforce file access restrictions based on them. Paper [9] discusses execution trace obfuscation but focuses on obfuscation strategies rather than allowlist generation or access control. Paper [8] introduces a mandatory access control framework for LLM agents but does not use execution traces to derive allowlists. Thus, no prior paper implements a substantively equivalent mechanism.\n\n### Evaluation\nThe evaluation uses FeatureBench Lite (30 feature development tasks) with OpenHands and measures token consumption changes. Paper [20] introduces LongCodeBench, which evaluates coding LLMs at 1M context windows, and paper [23] introduces LoCoBench-Agent, an interactive benchmark for LLM agents in long-context software engineering. Both benchmarks focus on coding agents and long-context tasks, similar to FeatureBench Lite. While the specific benchmark instance differs, the evaluation design — benchmarking coding agents on task performance — is substantively equivalent. Therefore, the evaluation facet is covered.\n\n### Domain\nThe domain is LLM coding agents. Papers [4], [7], [19], [20], and [23] all address LLM coding agents, covering various aspects such as task performance, context compression, repository-level context files, and long-context evaluation. Although the specific sub-problem differs, the general application area of LLM coding agents is well-covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 20  \nVERDICT domain = 4  ",
+      "stage2": "- **FACET: purpose** | **FINAL: NONE** | reason: No prior paper explicitly tests whether restricting agent file access to execution-trace-derived allowlists reduces token consumption. No equivalent objective found under different terminology, framing, or domain vocabulary.  \n- **FACET: mechanism** | **FINAL: COVERED-BY 8** | reason: Paper [8] describes a \"Mandatory Access Control Framework\" for LLM-based agents to mitigate privilege escalation by restricting actions to the least privilege required. QUOTE: \"We propose a formal model of LLM agent systems and identify novel privilege escalation scenarios, introducing a mandatory access control framework to gate agent actions.\" This aligns with the mechanism of gating file reads based on allowlists derived from execution traces."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 7
+      },
+      "domain": {
+       "covered_by": 7
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Test whether restricting agent file access to execution-trace-derived allowlists reduces token consumption.**\n\nThe purpose is specifically about reducing token consumption in LLM coding agents by restricting file access via execution-trace-derived allowlists. Paper [7] (SWE-Pruner) addresses reducing long interaction contexts/API costs for coding agents. However, its purpose is context pruning/compression, not file-access restriction via execution traces. Paper [19] evaluates whether repository-level context files help coding agents, which is related but targets task completion, not token reduction via access control. No prior paper specifically targets \"reduce token consumption by gating file access via execution-trace-derived allowlists\" — the closest is [7] which targets context reduction but through a different mechanism (compression, not access gating). The purpose at the problem-class level is \"reduce token consumption in coding agents\" — paper [7] covers this objective.\n\n**MECHANISM: TraceBound — inference-time framework computing per-task file allowlists from failing-test execution traces (pytest coverage, depth-2 import closure, interface/auxiliary files) and gating agent file reads with hard denial.**\n\nThis combines: (1) execution trace analysis to derive file sets, (2) access control/allowlisting, and (3) applying this at inference time to gate LLM agent reads. Paper [7] (SWE-Pruner) does context pruning for coding agents but uses PPL-based compression, not trace-derived allowlists with hard denial. Papers [8] and [18] implement least-privilege/mandatory access control for LLM agents, but not derived from execution traces. Paper [14] discusses least privilege in software systems. None of the prior papers combine execution-trace-derived allowlist computation with hard-denial gating specifically for LLM agent file reads. The specific primitive of \"compute allowlist from pytest coverage + import closure, then hard-deny out-of-allowlist reads to an LLM agent\" is not present in any prior paper.\n\n**EVALUATION: Evaluated on FeatureBench Lite (30 feature development tasks) with OpenHands; measures median input tokens.**\n\nFeatureBench Lite appears to be a specific benchmark. Papers [7], [19], [22] evaluate coding agents on benchmarks like SWE-bench. Paper [7] measures token counts/API costs for coding agents. The evaluation design (measuring token consumption on a coding agent benchmark) is a standard design used in [7]. FeatureBench Lite is not a named benchmark appearing in prior papers — it appears to be newly constructed. However, the evaluation design of measuring token counts on a coding agent benchmark is covered by [7]. The metric (token consumption) and benchmark family (coding agent tasks) appear in [7].\n\n**DOMAIN: LLM coding agents.**\n\nMultiple prior papers operate in the LLM coding agents domain: [7] (SWE-Pruner for coding agents), [19] (coding agents on SWE-bench), [4] (coding agent exploits), [2] (LLM agents with code actions), [3] (LLM agents for code refactoring). This domain is clearly covered.\n\nVERDICT purpose = 7\nVERDICT mechanism = NONE\nVERDICT evaluation = 7\nVERDICT domain = 7",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes computing per-task file allowlists from failing-test execution traces (pytest coverage + depth-2 import closure + interface/auxiliary files) and enforcing hard denial of out-of-allowlist file reads at agent inference time. Paper [7] (SWE-Pruner) does context pruning but via PPL metrics, not trace-derived allowlists. Paper [8] addresses privilege escalation via MAC but not trace-derived file gating. No other paper contains this specific combination even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 7
+      },
+      "mechanism": {
+       "covered_by": 16
+      },
+      "evaluation": {
+       "covered_by": 19
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to test whether a specific method of restricting file access can reduce token consumption for LLM agents. Paper [7] shares this objective at the problem-class level, as it aims to address how \"performance is hampered by long interaction contexts, which incur high API costs and latency\" by proposing a \"context pruning\" method. Both are trying to reduce token/API costs caused by long contexts in coding agents.\n\n**mechanism**: The contribution's mechanism is to compute a file allowlist from execution traces (`pytest coverage`) and then gate file reads. The core primitive of using an execution trace to identify a minimal, relevant subset of code artifacts is substantively equivalent to dynamic program slicing, a well-established technique described in papers like [16] (\"Program slicing\").\n\n**evaluation**: The evaluation design consists of running a coding agent on a software engineering benchmark and measuring a resource consumption metric (input tokens). This is a standard evaluation protocol. Paper [19] uses the same design, seeking to \"evaluate coding agents'task completion performance in... established SWE-bench tasks,\" which is the same benchmark family and protocol.\n\n**domain**: The contribution operates in the domain of \"LLM coding agents.\" This is a well-established application area. Multiple prior papers, including [2] (\"Executable Code Actions Elicit Better LLM Agents\"), [3] (\"LLM-based Multi-Agent System for Intelligent Refactoring\"), and [4] (\"Modern Coding Agent Exploits\"), all explicitly work within this same domain.\n\nVERDICT purpose = 7\nVERDICT mechanism = 16\nVERDICT evaluation = 19\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     8,
+     11
+    ],
+    "evaluation": [
+     8,
+     25
+    ],
+    "domain": [
+     2,
+     4
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 11
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to characterize the file-navigation behavior of modern coding agents. None of the prior papers explicitly focus on this purpose. While some papers (e.g., [4], [5], [7]) discuss coding agents and their capabilities, none of them aim to characterize file-navigation behavior specifically. For example, [4] focuses on the capabilities and risks of modern coding agents, [5] discusses LLM agents in programming environments, and [7] evaluates the utility of repository-level context files. None of these papers establish or report on file-navigation behavior.\n\n### Mechanism\nThe contribution's mechanism is the root cause analysis of denied read operations during TraceBound-gated agent runs on FeatureBench Lite. No prior paper describes a substantively equivalent mechanism. Papers like [8], [11], and [23] discuss file access behavior, provenance tracing, and dynamic taint tracking, but these mechanisms are focused on different objectives (e.g., malicious code detection, provenance tracing, or vulnerability analysis) and do not involve root cause analysis of denied read operations in a TraceBound-gated setup. The specific mechanism described here is not covered.\n\n### Evaluation\nThe evaluation reports that only 2.3% of file reads fall outside trace-derived boundaries, showing agents naturally focus on trace-relevant files. This evaluation design is not novel. Paper [8] evaluates file access behavior using a similar design, where file system call patterns are collected and analyzed to detect malicious code. Although the specific object of evaluation differs (malicious code vs. coding agents), the evaluation design — analyzing file access patterns to draw conclusions about behavior — is substantively equivalent.\n\n### Domain\nThe domain is LLM coding agents. This domain is covered by prior papers such as [4], [5], and [7], which all focus on LLM-based coding agents. For example, [4] discusses modern coding agents and their capabilities, [5] examines LLM agents in programming environments, and [7] evaluates coding agents' performance in repository-level tasks. These papers clearly establish the domain as not novel.\n\n---\n\n**VERDICT purpose = NONE**  \n**VERDICT mechanism = NONE**  \n**VERDICT evaluation = 8**  \n**VERDICT domain = 4**  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly characterizes file-navigation behavior of modern coding agents, even under different terminology or framing.  \nFACET: mechanism | FINAL: COVERED-BY 11 | reason: ProTracer alternates between logging and taint propagation, addressing root cause analysis of denied operations during controlled runs. Quote: \"alternates between system event logging and unit level taint propagation.\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Characterize the file-navigation behavior of modern coding agents.**\n\nThe purpose is to empirically characterize how coding agents navigate files — specifically, whether they stay within trace-relevant boundaries. I need to find a prior paper that establishes the same empirical relationship: measuring/characterizing file access patterns of coding agents. Paper [2] (CodeAgent) evaluates LLM-based agents for repo-level coding but focuses on task performance, not file-navigation behavior characterization. Paper [6] evaluates AGENTS.md context files for coding agents, measuring task completion, not file navigation patterns. Paper [8] studies file access behavior of malicious code using LSTM, but the purpose is malicious code detection, not characterizing coding agent navigation. No prior paper characterizes the file-navigation behavior of coding agents as its stated purpose.\n\n**MECHANISM: Root cause analysis of denied read operations during TraceBound-gated agent runs on FeatureBench Lite.**\n\nThe mechanism involves gating file reads with trace-derived boundaries and analyzing denied operations. This is a form of dynamic monitoring/sandboxing of agent file access. Papers [8], [10], [11], [18], [22], [23] involve dynamic taint tracking and file access monitoring, but these are for malicious code detection or information flow control, not for analyzing coding agent behavior. Paper [29] (Leash) implements capability-based sandboxing that denies file accesses and could log denied operations, but the purpose is security enforcement, not root cause analysis of agent behavior. None of these papers use trace-derived boundaries to gate and analyze coding agent file reads specifically. The TraceBound-gating mechanism as an analysis tool for agent behavior characterization appears absent.\n\n**EVALUATION: Only 2.3% of file reads fall outside trace-derived boundaries.**\n\nThe evaluation design involves measuring the rate of out-of-bounds file accesses during agent runs on a benchmark (FeatureBench Lite). This is a quantitative measurement of agent behavior on a coding benchmark. Paper [2] evaluates coding agents on repo-level benchmarks. Paper [6] evaluates coding agents on SWE-bench. These use benchmark-based evaluation of coding agents, but the specific design of measuring denied/out-of-bounds file access rates is not present in any prior paper. No prior paper uses this evaluation design (measuring file access boundary violations as a metric for coding agent behavior). This appears genuinely new as an evaluation design.\n\n**DOMAIN: LLM coding agents.**\n\nPapers [2], [3], [4], [5], [6], [9] all work in the domain of LLM coding agents. Paper [2] explicitly presents \"CODEAGENT, a novel LLM-based agent framework.\" Paper [6] evaluates \"coding agents' task completion performance.\" This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = NONE\nVERDICT domain = 2",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper characterizes file-navigation behavior of modern coding agents; the closest candidates (CodeAgent [2], AGENTS.md [7]) study task performance or context files, not systematic characterization of which files agents navigate during execution.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper performs root cause analysis of denied read operations during trace-gated agent runs on any benchmark; this specific analytical mechanism appears in none of the 34 papers under any terminology.\n\nFACET: evaluation | FINAL: NONE | reason: No prior paper reports a quantitative finding that agent file reads fall within trace-derived boundaries at any percentage; the 2.3% out-of-bounds figure and the underlying claim about natural agent focus on trace-relevant files appear nowhere in the prior literature."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 25
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to characterize the inherent file-navigation behavior of LLM coding agents, establishing the empirical relationship that they naturally tend to stay within trace-relevant files. No prior paper appears to establish or investigate this specific relationship; they focus on building, improving, attacking, or evaluating specific interventions for coding agents, rather than characterizing their baseline navigational tendencies.\n**mechanism**: The mechanism is to run an agent within a policy-gated environment (TraceBound) and analyze the boundary violations (denied reads). This is a standard analysis design used in prior work, such as in [8] which \"runs actual malicious codes on an isolated virtual machine and collects file system call patterns and behavior\" or [10] which defines a policy and then \"dynamically tracked\" violations.\n**evaluation**: The evaluation design is to quantitatively measure the rate of policy violations (out-of-trace reads) to assess the agent's alignment with a principle (trace relevance). This design is covered by prior work that uses quantitative metrics to assess adherence to a principle, such as [25] which \"defines several concepts to quantitatively measure how well a user-role assignment meets the principle of least privilege\".\n**domain**: The domain is LLM coding agents. This general application area is explicitly the focus of several prior papers, including [2] (\"CODEAGENT, a novel LLM-based agent framework that employs external tools for effective repo-level code generation\") and [3], [4], [5], [7], and [9].\n\nVERDICT purpose = NONE\nVERDICT mechanism = 8\nVERDICT evaluation = 25\nVERDICT domain = 2",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the objective of empirically observing and describing the file-navigation patterns of coding agents. Paper [8] studies file access behavior, but for traditional malware with the goal of detection, not for modern coding agents with the goal of characterization. Other papers on coding agents ([2], [3], [7]) build or evaluate them on task performance, but do not characterize their internal navigation process."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     8,
+     13
+    ],
+    "evaluation": [
+     5,
+     13
+    ],
+    "domain": [
+     3,
+     5
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe purpose of the contribution is to report the negative result that binary file-access restriction cannot deliver token savings. None of the prior papers explicitly report or establish this specific empirical relationship. While some papers discuss file access characteristics (e.g., [25]) or token-related optimizations (e.g., [6], [23], [24]), none of them address the specific claim that binary file-access restriction fails to achieve token savings. Therefore, no prior paper covers this purpose.\n\n### Mechanism\nThe mechanism involves an analysis concluding that there is no headroom for restriction-based context reduction, while noting that TraceBound improves average test pass rate by +5.76 percentage points, suggesting file-access guidance may still aid task completion. Paper [25] discusses file-access characteristics in distributed systems but does not analyze the headroom for restriction-based context reduction or its implications for token savings. Similarly, papers like [6], [23], and [24] focus on context compression and token pruning but do not address file-access restriction as a mechanism. Thus, no prior paper contains a substantively equivalent mechanism.\n\n### Evaluation\nThe evaluation design involves measuring the median input token increase (+25.72%) and pass rate improvement (+5.76 percentage points), with future work pointed at content-level filtering. Paper [5] introduces LoCoBench-Agent, which evaluates LLM agents in long-context software engineering tasks, including multi-turn interactions and tool usage patterns. This evaluation design aligns with the contribution's focus on measuring task performance (e.g., pass rate) and token usage in coding agents. While the specific metrics and benchmarks differ, the evaluation design (measuring task performance and token usage in LLM coding agents) is substantively equivalent. Therefore, the evaluation facet is covered.\n\n### Domain\nThe domain is LLM coding agents. Several prior papers, including [3], [5], [8], [10], [11], and [13], explicitly address LLM coding agents or agentic coding systems. For example, [3] discusses LLM-based multi-agent systems for software engineering, and [5] evaluates LLM agents in long-context software engineering tasks. These papers clearly operate in the same general application area. Therefore, the domain facet is covered.\n\n---\n\n**VERDICT purpose = NONE**  \n**VERDICT mechanism = NONE**  \n**VERDICT evaluation = 5**  \n**VERDICT domain = 3**  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly reports the negative result that binary file-access restriction cannot deliver token savings, even under different terminology or framing.  \nFACET: mechanism | FINAL: COVERED-BY 8 | reason: Paper [8] notes \"LLM agents could be sensitive to length, type, and structure of context,\" which aligns with the analysis of headroom for restriction-based context reduction and the impact of file-access guidance on task completion."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 5
+      },
+      "domain": {
+       "covered_by": 5
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Report the negative result that binary file-access restriction cannot deliver token savings.**\n\nThe purpose is specifically to demonstrate that restricting file access (as a context-reduction strategy for LLM coding agents) fails to reduce tokens — a negative finding about a specific mechanism's effectiveness. I need to find a prior paper that reports or establishes the same empirical relationship: that access restriction does not reduce context/token usage. None of the prior papers address this specific relationship. Papers [4] and [6] deal with context compression/reduction but don't report negative results about file-access restriction. No prior paper establishes the same variables-and-direction relationship.\n\n**MECHANISM: Analysis concluding there is no headroom for restriction-based context reduction, while noting pass rate improvement.**\n\nThe mechanism is an analytical/empirical method examining whether restricting file access creates token savings headroom, combined with measuring task completion rates. This is essentially a controlled ablation/measurement study on a specific intervention. Papers [6] discusses context compression evaluation, [4] discusses context management for LLM agents. However, none specifically use the mechanism of analyzing \"restriction-based context reduction headroom\" — this is a specific analytical primitive about access restriction as a compression strategy. No prior paper uses this specific analytical approach.\n\n**EVALUATION: Median input tokens increase 25.72% instead of decreasing; pass rate improves +5.76 percentage points.**\n\nThe evaluation design uses token count metrics and pass rate metrics on coding agent benchmarks. Paper [5] (LoCoBench-Agent) evaluates LLM agents on software engineering tasks with pass rate metrics. Paper [19] (LongCodeBench) evaluates coding LLMs with context window metrics. Paper [13] evaluates coding agents' task completion performance. These papers use the same evaluation design family: pass rate metrics on coding agent benchmarks. The design (measuring pass rate and token counts on coding tasks) is covered by [5] and [13].\n\n**DOMAIN: LLM coding agents.**\n\nPapers [5], [10], [11], [13], [19] all operate in the domain of LLM coding agents. Paper [5] explicitly studies \"LLM Agents in Long-Context Software Engineering.\" Paper [13] evaluates \"coding agents' task completion performance.\" This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 5\nVERDICT domain = 5",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper reports the negative result that binary file-access restriction cannot deliver token savings in LLM agent contexts; papers on context compression (e.g., [6], [23], [24]) target different mechanisms and never frame a null finding around file-access restriction as a token-reduction strategy.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper performs an analysis concluding there is no headroom for restriction-based context reduction while simultaneously reporting a pass-rate improvement (e.g., +5.76 pp) attributable to file-access guidance; the combination of a null compression finding with a positive task-completion signal from TraceBound is absent across all prior works."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose:** The contribution reports the specific negative empirical finding that binary file-access restriction fails to reduce token count for LLM coding agents. No prior paper investigates this specific relationship (file-access restriction as a context reduction method) and reports this outcome; papers on context reduction ([6], [21], [23]) propose methods that work, and papers on access control ([9]) focus on security, not token savings.\n\n**mechanism:** The mechanism is a controlled analysis that applies an intervention (file-access restriction) and measures its effect on token count and task success rate. This experimental design is covered by prior work, such as [13], which evaluates the effect of providing repository-level context files on \"coding agents' task completion performance.\"\n\n**evaluation:** The evaluation design measures two key metrics: input token count and task pass rate. Measuring task completion or pass rate for coding agents is a standard evaluation design, used in papers like [13] (\"evaluate coding agents' task completion performance\") and forming the basis of benchmarks like [5].\n\n**domain:** The application area is \"LLM coding agents\" or LLM agents for software engineering. This domain is explicitly addressed by numerous prior papers, including [3] (\"LLM-Based Multi-Agent Systems for Software Engineering\"), [5] (\"An Interactive Benchmark for LLM Agents in Long-Context Software Engineering\"), and [10] (\"Agent READMEs: An Empirical Study of Context Files for Agentic Coding\").\n\nVERDICT purpose = NONE\nVERDICT mechanism = [13]\nVERDICT evaluation = [13]\nVERDICT domain = [3]",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper investigates the specific relationship between restricting binary file access and its effect on token consumption for an LLM agent, let alone reports the negative result that it is an ineffective strategy for token savings."
+     }
+    }
+   }
+  }
+ ]
+}

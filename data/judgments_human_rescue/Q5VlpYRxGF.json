@@ -1,0 +1,189 @@
+{
+ "paper_id": "Q5VlpYRxGF",
+ "title": "Model Tells You Where to Merge: Adaptive KV Cache Merging for LLMs on Long-Context Tasks",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     4
+    ],
+    "mechanism": [
+     4,
+     14
+    ],
+    "evaluation": [
+     4,
+     16
+    ],
+    "domain": [
+     1,
+     4,
+     5,
+     6,
+     7
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        1,
+        4
+       ]
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": [
+        1,
+        4,
+        5,
+        6,
+        7
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to compress the KV cache of LLMs for long-context inference under constrained memory budgets without significant performance degradation. This objective is shared by multiple prior papers that address KV cache compression to reduce memory consumption while maintaining performance. For example, [1] explicitly states, \"Existing methods rely on dropping unimportant tokens or quantizing all entries uniformly... to accelerate generation speed for large language models (LLMs) inference.\" Similarly, [4] discusses adaptive KV cache merging for long-context tasks to mitigate memory consumption. Both papers aim to address the same problem-class level objective of efficient KV cache compression for constrained memory budgets.\n\n### Mechanism\nThe mechanism, KVMerger, formulates KV cache merging as a constrained clustering problem solved by a specialized greedy merging-set identification algorithm, followed by a Gaussian kernel weighted merging function. This specific approach is not covered by any prior paper. While [4] introduces adaptive KV cache merging, it does not employ constrained clustering or Gaussian kernel-based merging. Papers like [14] and [18] discuss token merging methods, but these are applied to different domains (e.g., vision transformers) and do not involve constrained clustering or Gaussian kernel-based merging. Papers such as [13] and [21] discuss Gaussian kernels and clustering, but they are unrelated to KV cache compression in LLMs.\n\n### Evaluation\nThe evaluation design uses benchmarks like LongBench, ZeroScrolls, and Needle-in-a-Haystack, comparing KVMerger against H2O, CaM, and full cache setups. LongBench is explicitly mentioned in [16], which introduces it as a benchmark for long-context understanding. ZeroScrolls and Needle-in-a-Haystack are part of the same benchmark family for long-context tasks. The evaluation design (benchmark family and metric semantics) is therefore covered by [16].\n\n### Domain\nThe domain is efficient LLM inference, specifically KV cache compression. This application area is extensively covered by prior papers, including [1], [4], [5], [6], and [7], all of which focus on KV cache compression for LLM inference. While the specific sub-problems, datasets, or instances may differ, the general application area is the same.\n\n---\n\nVERDICT purpose = 1, 4  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 16  \nVERDICT domain = 1, 4, 5, 6, 7  ",
+      "stage2": "FACET: mechanism | FINAL: COVERED-BY 4 | reason: Paper [4] describes \"adaptive KV cache merging\" and mentions \"merging key-value states\" using a model-guided approach, which aligns with the constrained clustering and merging concept, albeit without Gaussian kernel specifics."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Compress the KV cache of LLMs for long-context inference under constrained memory budgets without significant performance degradation.**\n\nPapers [1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11] all explicitly target KV cache compression/reduction for LLM inference to reduce memory consumption. For example, [1] states \"the growing cache demand with increasing sequence length has transformed LLM inference to be a memory bound problem\"; [4] directly addresses \"KV Cache Merging for LLMs on Long-Context Tasks.\" The purpose is clearly covered by multiple papers.\n\n**MECHANISM: Formulates KV cache merging as a constrained clustering problem solved by a greedy merging-set identification algorithm, then applies a Gaussian kernel weighted merging function (as opposed to eviction/quantization).**\n\nPaper [4] (CaM) is the closest — it proposes \"Adaptive KV Cache Merging\" for LLMs, merging rather than evicting KV states. However, the specific primitive of formulating it as a constrained clustering problem solved by a greedy algorithm with Gaussian kernel weighted merging is distinct. Paper [4] uses a different merging strategy (model-guided similarity-based merging). No prior paper combines: (a) greedy merging-set identification as constrained clustering + (b) Gaussian kernel weighted merging function for KV states. Paper [13] covers hierarchical Gaussian kernels but in a completely different context (SVM kernels). Paper [5] uses recurrence/merging but via different primitives. The specific combination of constrained clustering formulation + greedy set identification + Gaussian kernel weighted merging for KV cache appears absent from prior work. Paper [4] covers KV merging broadly but not this specific algorithmic primitive.\n\n**EVALUATION: Llama2/Mistral models, 50%/35% KV budgets, LongBench, ZeroScrolls, Needle-in-a-Haystack, compared vs H2O and CaM.**\n\nPaper [16] introduces LongBench as a benchmark. Papers [1], [4], [5] use LongBench or similar long-context benchmarks for KV cache compression evaluation. Paper [4] explicitly compares against H2O and uses LongBench. The evaluation design (LongBench + ZeroScrolls + Needle-in-a-Haystack, comparing KV compression methods at fixed budget ratios) is substantively the same design used in [4] and [1]. The benchmark family (LongBench) and metric semantics (performance at fixed KV budget vs baselines) are covered by [4].\n\n**DOMAIN: Efficient LLM inference / KV cache compression.**\n\nPapers [1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11] all operate in the domain of efficient LLM inference with KV cache compression. This is clearly covered.\n\nVERDICT purpose = 1\nVERDICT mechanism = NONE\nVERDICT evaluation = 4\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: COVERED-BY 4 | reason: Paper [4] is literally \"KVMerger\" (\"Model Tells You Where to Merge: Adaptive KV Cache Merging for LLMs on Long-Context Tasks\") and describes the exact mechanism in question — the constrained clustering / greedy merging-set identification and Gaussian kernel weighted merging function. However, re-reading the task: the facet describes KVMerger's own mechanism, and paper [4] IS KVMerger. If [4] is the target paper itself (not a prior), then it cannot be a prior covering it. Assuming [4] is the paper under review and the others are priors, none of the remaining papers describe formulating KV cache compression as a constrained clustering problem solved by a greedy merging-set identification algorithm with a Gaussian kernel weighted merging function — MiniCache [3] merges across layers by interpolation, GEAR [1] uses low-rank plus sparse approximation, and no other prior paper contains this specific algorithmic mechanism even under different terminology.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper among the listed works describes KV cache merging formulated as a constrained clustering problem with a greedy merging-set identification algorithm and Gaussian kernel weighted merging of key/value states; the closest candidates (MiniCache [3], GEAR [1]) use fundamentally different mechanisms (cross-layer interpolation and low-rank/sparse approximation respectively), and no equivalent formulation appears under alternative terminology in any other prior paper."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 14
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe purpose is to \"Compress the KV cache of LLMs for long-context inference under constrained memory budgets without significant performance degradation.\" This exact objective is shared by numerous prior works. For example, paper [1] aims for an \"Efficient KV Cache Compression Recipe for Near-Lossless Generative Inference of LLM,\" which is a substantively equivalent goal.\n\n**MECHANISM**\nThe mechanism is a clustering-based merging of KV cache states. The underlying primitive of using clustering to group tokens for merging is present in prior work, even if in a different domain. Paper [14] introduces \"Agglomerative Token Clustering (ATC), a novel token merging method that... merges clusters through bottom-up hierarchical clustering,\" which is the same primitive of clustering-based merging, here applied to vision tasks; the cross-domain rule makes this a match.\n\n**EVALUATION**\nThe evaluation uses the LongBench benchmark to measure performance on long-context tasks. According to the special rule for evaluation, using a pre-existing named benchmark family constitutes a covered evaluation design. Paper [16] is the paper that introduces \"LongBench: A Bilingual, Multitask Benchmark for Long Context Understanding,\" making the evaluation design covered.\n\n**DOMAIN**\nThe domain is \"Efficient LLM inference / KV cache compression.\" This is a well-established application area that is the explicit focus of many of the provided prior papers. For instance, paper [1] addresses \"KV Cache Compression... for... Generative Inference of LLM,\" and paper [4] targets \"KV Cache Merging for LLMs on Long-Context Tasks,\" both matching the contribution's domain.\n\nVERDICT purpose = 1\nVERDICT mechanism = 14\nVERDICT evaluation = 16\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     2,
+     8
+    ],
+    "mechanism": [
+     8
+    ],
+    "evaluation": [
+     8
+    ],
+    "domain": [
+     1,
+     2
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to provide the empirical observation that motivates and justifies the merging design. Paper [8] systematically analyzes empirical similarity across attention heads and layers, finding redundancy in pairwise attention scores. This aligns with the purpose of identifying a phenomenon (similarity) that could justify design changes (e.g., merging). Paper [9] also studies cosine similarity phenomena, but its focus is on embeddings rather than attention mechanisms, making it less directly relevant. Paper [24] observes redundancy in attention matrices, which could indirectly motivate merging designs, but it does not explicitly establish the same empirical observation. Thus, [8] is the closest match.\n\n### Mechanism\nThe contribution investigates cosine similarity of key states across attention heads and layers to identify the root cause of the similarity phenomenon. Paper [8] analyzes empirical similarity across heads and layers, specifically focusing on redundancy in pairwise attention scores, which is substantively equivalent to analyzing cosine similarity of key states. Paper [9] studies cosine similarity but in the context of embeddings rather than attention mechanisms, making it less relevant. Paper [11] introduces cosine similarity in attention mechanisms but does not investigate the root cause of similarity across heads and layers. Therefore, [8] matches the mechanism.\n\n### Evaluation\nThe contribution evaluates key states' high cosine similarity at the token level within a single sequence and KV cache sparsity across datasets and models. Paper [8] evaluates empirical similarity across heads and layers, which is substantively equivalent to evaluating redundancy or sparsity in attention mechanisms. Paper [9] evaluates cosine similarity but focuses on embeddings rather than attention mechanisms, making it less relevant. Paper [11] evaluates cosine similarity in attention mechanisms but does not address sparsity or persistence across datasets/models. Thus, [8] matches the evaluation design.\n\n### Domain\nThe contribution operates in the domain of efficient LLM inference and KV cache compression. Papers [1], [2], [3], [6], and [15] all address KV cache compression or efficient LLM inference, making this domain well-covered. For example, [1] and [6] focus on KV cache compression techniques, while [15] addresses efficient inference using KV caches. Therefore, the domain is covered by multiple prior papers.\n\n---\n\nVERDICT purpose = 8  \nVERDICT mechanism = 8  \nVERDICT evaluation = 8  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": 8
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 2
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Provide the empirical observation that motivates and justifies the merging design (i.e., demonstrate that key states are similar across heads/layers, motivating KV cache merging).**\n\nPaper [2] (\"Model Tells You Where to Merge\") explicitly motivates KV cache merging by analyzing similarity of KV states. Paper [8] (\"Leveraging redundancy in attention with Reuse Transformers\") \"systematically analyze the empirical similarity of these scores across heads and layers and find them to be considerably redundant\" — this is the same empirical relationship (similarity/redundancy of attention states across heads and layers motivates reuse/merging). Paper [3] also analyzes KV head redundancy to motivate compression. The purpose of establishing the empirical similarity observation to motivate merging is covered by [2] and [8].\n\n**MECHANISM: Analysis of cosine similarity of key states across attention heads and layers; investigate root cause of the similarity phenomenon.**\n\nPaper [8] \"systematically analyze the empirical similarity of these scores across heads and layers\" — this is the same analytical primitive (measuring similarity across heads and layers). Paper [2] uses similarity analysis of KV states to guide merging decisions. Paper [6] analyzes attention keys/values in low-rank space. However, specifically using **cosine similarity of key states** as the measurement tool: Paper [8] measures similarity of attention scores (not key states directly via cosine similarity), but the primitive is equivalent. Paper [2] explicitly discusses merging based on similarity of KV states. The cosine similarity analysis mechanism across heads/layers is most directly covered by [8].\n\n**EVALUATION: Key states exhibit high cosine similarity at the token level within a single sequence; KV cache sparsity is independent of dataset and persistent at the model level.**\n\nThis is a finding-type contribution. The evaluation design involves: (1) measuring cosine similarity across heads/layers on sequences, (2) testing across multiple datasets to show dataset-independence. Paper [8] performs systematic empirical similarity analysis across heads and layers. Paper [2] analyzes KV similarity patterns. The design of measuring similarity across heads/layers and checking consistency across datasets is a standard empirical analysis protocol present in [8] and [2]. Per the special rule for findings, the mechanism/evaluation should rarely drive novelty — the design of cross-head/layer similarity measurement appears in [8].\n\n**DOMAIN: Efficient LLM inference / KV cache compression.**\n\nPapers [1], [2], [3], [6], [15] all operate in efficient LLM inference and KV cache compression. This domain is clearly covered.\n\nVERDICT purpose = 2\nVERDICT mechanism = 8\nVERDICT evaluation = 8\nVERDICT domain = 2",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,269 @@
+{
+ "paper_id": "gV0Moskp7k",
+ "title": "Combating the Generalization-Forgetting Trade-off in Continual Learning: A Cautious Passive Low-Rank Approach",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "covered",
+   "consensus_facets": {
+    "purpose": [
+     3,
+     4
+    ],
+    "mechanism": [
+     4,
+     18
+    ],
+    "evaluation": [
+     3,
+     4,
+     16
+    ],
+    "domain": [
+     3,
+     4
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose:\nThe contribution's purpose is to balance catastrophic forgetting and new task generalization in LLM continual learning, overcoming the limitation of LoRA-based PET methods that use the same rank for all layers.  \n- **Paper [3]**: InfLoRA explicitly addresses balancing stability (avoiding catastrophic forgetting) and plasticity (adapting to new tasks) in continual learning for LLMs, which matches the purpose at the problem-class level. Quote: \"the model should possess the ability to maintain its performance on old tasks (stability) and the ability to adapt to new tasks continuously (plasticity).\"  \n- **Paper [4]**: O-LoRA also targets catastrophic forgetting and generalization in LLM continual learning, with a focus on orthogonal low-rank adaptation. Quote: \"effectively mitigating catastrophic forgetting while learning new tasks sequentially.\"  \n- **Paper [15]**: LoRA+ discusses continual learning in LLMs and explicitly mentions balancing performance retention and adaptation. Quote: \"focus on continual learning, where a pre-trained transformer is updated to perform well on new data, while retaining its performance on data it was previously trained on.\"  \n\nVerdict: **COVERED** by [3], [4], and [15].\n\n---\n\n### Mechanism:\nThe mechanism, CP-Rank, uses SVD to compute orthogonality (φ) between current and historical low-rank subspaces, cautiously increasing rank if φ < ε, otherwise passively maintaining rank, while freezing all historical LoRA.  \n- **Paper [4]**: O-LoRA employs orthogonal subspace learning for continual learning, which involves maintaining orthogonality between tasks to mitigate interference. Quote: \"orthogonal low-rank adaptation... effectively mitigating catastrophic forgetting.\" This matches the mechanism's core primitive of orthogonality-based rank adjustment.  \n- **Paper [17]**: Continual Learning in Low-rank Orthogonal Subspaces also uses orthogonal subspace learning to reduce interference among tasks. Quote: \"we propose to learn different tasks in orthogonal subspaces to reduce interference.\"  \n- **Paper [28]**: Harnessing Orthogonality to Train Low-Rank Neural Networks introduces orthogonality-informed adaptive low-rank training, leveraging SVD-based orthogonal subspaces during training. Quote: \"an orthogonal basis within each multidimensional weight's SVD representation stabilizes during training.\"  \n\nVerdict: **COVERED** by [4], [17], and [28].\n\n---\n\n### Evaluation:\nThe evaluation uses standard continual learning benchmarks with three task sequences, comparing CP-Rank against prior SOTA (O-LoRA) and MTL, and includes GSM8K/MATH for mathematical tasks.  \n- **Paper [3]**: InfLoRA evaluates continual learning methods on standard continual learning benchmarks, including task sequences. Quote: \"Experiments on standard continual learning benchmarks show...\"  \n- **Paper [4]**: O-LoRA evaluates continual learning performance on standard benchmarks, including task sequences. Quote: \"Experiments on standard continual learning benchmarks show that O-LoRA effectively mitigates catastrophic forgetting.\"  \n- **Paper [16]**: Progressive Prompts evaluates continual learning methods on standard benchmarks, including task sequences. Quote: \"Experiments on standard continual learning benchmarks show...\"  \n\nVerdict: **COVERED** by [3], [4], and [16].\n\n---\n\n### Domain:\nThe domain is continual learning for large language models (LLMs) with parameter-efficient finetuning.  \n- **Paper [3]**: InfLoRA operates in the same domain of LLM continual learning with parameter-efficient finetuning. Quote: \"parameter-efficient finetuning (PEFT)... has gained increasing popularity in continual learning.\"  \n- **Paper [4]**: O-LoRA explicitly addresses continual learning for LLMs. Quote: \"a simple and efficient approach for continual learning in language models.\"  \n- **Paper [15]**: LoRA+ focuses on continual learning for LLMs using low-rank adaptation. Quote: \"focus on continual learning, where a pre-trained transformer is updated to perform well on new data.\"  \n\nVerdict: **COVERED** by [3], [4], and [15].\n\n---\n\n### Final Verdicts:\nVERDICT purpose = 3  \nVERDICT mechanism = 4  \nVERDICT evaluation = 3  \nVERDICT domain = 3  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\n\nThe purpose is: balance catastrophic forgetting vs. new-task generalization in LLM continual learning, specifically overcoming the limitation of fixed-rank LoRA across all layers.\n\nPaper [4] (O-LoRA) explicitly addresses \"continual learning in language models, effectively mitigating catastrophic forgetting\" using orthogonal low-rank adaptation — this is the direct predecessor the contribution claims to improve upon. Paper [3] (InfLoRA) also addresses \"stability and plasticity\" in continual learning with PEFT. Paper [15] focuses on \"continual learning where a pre-trained transformer is updated to perform well on new data, while retaining its performance on data it was previously trained on\" using low-rank adaptation. All three share the same objective: balance forgetting vs. generalization in LLM/transformer continual learning with LoRA-based methods. The \"fixed rank\" limitation is a sub-aspect of the same problem class.\n\n## Mechanism\n\nThe mechanism is: start from rank=1 for each new task, compute SVD-based subspace similarity (orthogonality φ) between current and historical task subspaces, cautiously increase rank if φ<ε (subspaces are sufficiently orthogonal), otherwise passively maintain rank; freeze historical LoRA adapters.\n\nPaper [4] (O-LoRA) uses orthogonal low-rank adaptation — learning new tasks in subspaces orthogonal to previous ones — but uses fixed rank. Paper [1] (ITL) uses \"incremental rank updates\" for continual learning, incrementally updating rank during task learning. Paper [17] uses \"low-rank orthogonal subspaces\" for continual learning. Paper [28] (OIALR) uses SVD analysis of weight matrices and orthogonality-informed adaptive low-rank training. Paper [3] (InfLoRA) projects new task gradients to be interference-free with old task subspaces.\n\nThe specific combination of: (1) SVD-based orthogonality measurement between task subspaces, (2) adaptive rank growth starting from rank=1 conditioned on that orthogonality threshold, and (3) freezing historical LoRA — this specific combination does not appear in any single prior paper. Paper [1] does incremental rank updates but not via SVD orthogonality comparison between tasks. Paper [4] uses orthogonal subspaces but fixed rank. Paper [28] uses SVD + orthogonality for adaptive rank but not in a continual learning / task-subspace-comparison context. No single paper combines all three primitives in this way.\n\nHowever, examining more carefully: Paper [1] explicitly does \"incremental rank updates\" for continual learning tasks, using SVD. The abstract mentions \"Incremental Rank Updates\" for ITL (incremental task learning). This is very close. But the specific mechanism of measuring φ (orthogonality between current and historical subspaces) as the gating criterion for rank increase is not described there. Paper [4] uses orthogonality but with fixed rank. The combination is genuinely novel at the primitive level.\n\n## Evaluation\n\nThe evaluation uses standard CL benchmarks with multiple task sequences, comparing against O-LoRA (prior SOTA) and MTL upper bound, plus math benchmarks (GSM8K/MATH), and memory efficiency metrics. Paper [4] uses \"standard continual learning benchmarks\" with the same comparison structure (vs. baselines, vs. MTL). Paper [15] uses \"standard continual learning benchmarks.\" Paper [16] uses \"standard continual learning benchmarks.\" The evaluation design (standard CL benchmark suites, multiple task sequences, comparison to SOTA and MTL upper bound) is well-established and covered by [4], [15], [16].\n\n## Domain\n\nThe domain is LLM continual learning / parameter-efficient fine-tuning. Papers [4], [3], [15], [16] all work in exactly this domain — LLM/transformer continual learning with PEFT methods.\n\nVERDICT purpose = 4\nVERDICT mechanism = NONE\nVERDICT evaluation = 4\nVERDICT domain = 4",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes the specific CP-Rank mechanism of starting each new task from rank=1, computing SVD-based subspace orthogonality φ between current and historical LoRA subspaces, using φ<ε to trigger cautious rank increment versus passive rank maintenance, while freezing all historical LoRA adapters. Paper [1] does incremental rank updates but not via SVD orthogonality gating. Paper [4] (O-LoRA) uses orthogonal subspace learning but does not start from rank=1 or use φ-threshold-based cautious/passive rank decisions. Paper [15] uses LoRA for continual learning but has no such rank-growth mechanism. No paper combines all these elements even under different terminology."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": 18
+      },
+      "evaluation": {
+       "covered_by": 16
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The objective of balancing catastrophic forgetting with generalization on new tasks is the foundational goal of the continual learning field. Multiple prior papers state this exact purpose, such as [3] which aims for a model to \"maintain its performance on old tasks (stability) and the ability to adapt to new tasks continuously (plasticity)\", and [6] which seeks to \"balance opposing desiderata, such as... the ability to not catastrophically forget, and to exhibit positive transfer on new tasks.\"\n\n**mechanism**: The core technical primitive is dynamically adjusting the rank of a low-rank factorization based on some criterion during training. This is covered by [18], which introduces a method that \"dynamically adjusts the rank of factorized weight matrices during model training through Singular Value Decomposition (SVD).\" Although [18] applies this to model pruning, the mechanism of adaptive rank adjustment via SVD is substantively equivalent.\n\n**evaluation**: The evaluation design involves measuring performance on standard continual learning benchmarks, comparing against a prior state-of-the-art method (O-LoRA), and using metrics for forgetting and generalization. This is a standard evaluation protocol in the field, as seen in [16] which conducts \"Experiments on standard continual learning benchmarks\" to validate its method.\n\n**domain**: The application area is continual learning for large language models, specifically using parameter-efficient fine-tuning techniques. This domain is explicitly addressed by several prior works, including [4] (\"Orthogonal Subspace Learning for Language Model Continual Learning\") and [16] (\"Continual Learning for Language Models\").\n\nVERDICT purpose = 3\nVERDICT mechanism = 18\nVERDICT evaluation = 16\nVERDICT domain = 4",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     20
+    ],
+    "evaluation": [
+     6,
+     20
+    ],
+    "domain": [
+     1,
+     20
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 20
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to demonstrate the performance advantage of CP-Rank relative to existing state-of-the-art (SOTA) methods in continual learning for large language models (LLMs). None of the prior papers explicitly establish or report the same empirical relationship between CP-Rank and SOTA methods like O-LoRA, IncLoRA, PerTaskFT, or MTL. While several papers (e.g., [20], [28], [13]) discuss continual learning methods and their performance, they do not specifically compare CP-Rank against these methods or establish its superiority. Thus, the purpose is **not covered**.\n\n### Mechanism\nThe contribution's mechanism involves comprehensive comparisons of CP-Rank against O-LoRA, IncLoRA, PerTaskFT, and MTL on standard continual learning benchmarks and mathematical datasets, while varying fixed rank and model scale (T5-base/large). Paper [20] introduces O-LoRA, which uses orthogonal low-rank adaptation for continual learning in LLMs, and paper [28] discusses low-rank adaptation methods for continual learning in transformers. Both papers employ low-rank adaptation mechanisms, which are substantively equivalent to CP-Rank's mechanism. Therefore, the mechanism is **covered**.\n\n### Evaluation\nThe evaluation design involves measuring CP-Rank's performance across tasks and task sequences, comparing it to O-LoRA, IncLoRA, PerTaskFT, and MTL, and analyzing its robustness across model scales (T5-base/large). Paper [6] introduces TRACE, a benchmark for evaluating continual learning in LLMs, and paper [8] proposes CLLE, a benchmark for continual language learning evaluation in multilingual machine translation. Both papers use evaluation designs that involve task-sequence performance metrics and robustness analysis, which are substantively equivalent to the evaluation design in this contribution. Thus, the evaluation is **covered**.\n\n### Domain\nThe domain of this contribution is continual learning for large language models (LLMs). Papers [1], [2], [3], [5], [6], [20], and [28] all address continual learning in LLMs, which is the same general application area. While the specific datasets and tasks may differ, the domain is clearly **covered**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 20  \nVERDICT evaluation = 6  \nVERDICT domain = 1  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper explicitly demonstrates CP-Rank's performance advantage relative to existing SOTA under any terminology or framing."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 20
+      },
+      "evaluation": {
+       "covered_by": 20
+      },
+      "domain": {
+       "covered_by": 20
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of this contribution against the prior papers.\n\n**PURPOSE: 证明 CP-Rank 相对现有 SOTA 的性能优势 (demonstrating CP-Rank's performance advantage over existing SOTA)**\n\nThe purpose here is to demonstrate that a specific new method (CP-Rank) outperforms existing SOTA methods in continual learning for LLMs. Paper [20] (O-LoRA) explicitly establishes performance comparisons against SOTA continual learning methods for language models, and Paper [28] (Continual Learning with Low Rank Adaptation) similarly demonstrates performance advantages of a new low-rank adaptation method over existing CL baselines. However, the purpose is specifically to show CP-Rank's advantage — no prior paper establishes this same empirical relationship (CP-Rank doesn't exist in prior work). The purpose is to demonstrate a specific new method's superiority, which is a unique empirical relationship not covered by prior papers showing other methods' advantages.\n\n**MECHANISM: 在标准 CL benchmark 与数学数据集上与 O-LoRA、IncLoRA、PerTaskFT、MTL 等做综合对比,并测不同固定 rank、不同模型规模**\n\nThe mechanism is a comprehensive comparison on standard CL benchmarks against multiple baselines (O-LoRA, IncLoRA, PerTaskFT, MTL), with ablations over fixed ranks and model scales (T5-base/large). Paper [20] (O-LoRA) uses exactly this type of comprehensive comparison against CL baselines on standard benchmarks with multiple model configurations. Paper [28] also performs multi-baseline comparisons on CL benchmarks. This is a standard comparative evaluation design used across multiple prior papers.\n\n**EVALUATION: CP-Rank w OP 在所有任务序超 O-LoRA;wo OP 变体超其他方法但不及 O-LoRA;T5-large 上优势更明显、跨任务序更稳健**\n\nThe evaluation design involves: (1) comparison across multiple task orderings, (2) ablation of components (with/without orthogonal projection), (3) multi-scale model comparison (base/large). Paper [20] (O-LoRA) uses the same evaluation design — multiple task orderings, ablation studies, and comparisons on standard CL benchmarks with T5 models. Paper [28] also uses similar evaluation designs on CL benchmarks. The design (not the specific results) is covered.\n\n**DOMAIN: 大语言模型持续学习 (Continual Learning for Large Language Models)**\n\nPapers [1], [2], [3], [20], [28] all explicitly work in the domain of continual learning for large language models. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 20\nVERDICT evaluation = 20\nVERDICT domain = 20",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper contains the same objective of demonstrating CP-Rank's performance superiority over existing SOTA methods — the surveys and CL papers discuss methods and benchmarks but none share this specific comparative-validation purpose for CP-Rank."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "recombination",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1,
+     5
+    ],
+    "mechanism": [
+     1,
+     3,
+     5,
+     13
+    ],
+    "evaluation": [
+     1,
+     5,
+     13
+    ],
+    "domain": [
+     13,
+     18
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": [
+        1,
+        5
+       ]
+      },
+      "mechanism": {
+       "covered_by": [
+        1,
+        3,
+        5,
+        13
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        1,
+        5,
+        13
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        13,
+        18
+       ]
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Reasoning:\n\n#### Purpose:\nThe contribution aims to deepen understanding of the rank dynamics in continual learning (CL), specifically how rank affects forgetting depending on task similarity. Paper [1] explicitly examines the joint effect of task similarity and overparameterization on catastrophic forgetting in continual learning, including theoretical analysis in linear regression models. Paper [5] also provides a general theoretical analysis of forgetting in linear regression, applicable to both underparameterized and overparameterized regimes, which aligns with the goal of understanding rank dynamics. Both papers establish relationships between task similarity, rank, and forgetting, covering the purpose.\n\n#### Mechanism:\nThe contribution uses a combination of theoretical derivation (error bounds for forgetting in linear regression with rank dependence) and ablation analysis (hyperparameters, rank update rules, task sequence robustness). Paper [1] derives analytical models for forgetting in two-task continual linear regression, including the role of task similarity and rank. Paper [5] provides theoretical bounds on forgetting in linear regression models, analyzing factors like overparameterization and task similarity. Paper [3] also derives bounds on forgetting in cyclic task orders for linear subspace projections, which involves rank-related dynamics. These papers collectively cover the theoretical derivation mechanism. For ablation analysis, Paper [13] (InfLoRA) performs experiments on rank update rules and robustness in continual learning, specifically focusing on low-rank adaptation methods, which matches the ablation mechanism.\n\n#### Evaluation:\nThe contribution evaluates forgetting using quantitative ablation experiments (e.g., fixed rank experiments showing differences between O-LoRA and IncLoRA) and theoretical error bounds (Eq. 5) validated against subspace similarity metrics. Paper [1] uses similar evaluation designs, including theoretical error bounds and experiments on task similarity and rank effects in continual linear regression. Paper [5] also evaluates theoretical bounds on forgetting in linear regression models, validated through experiments. Paper [13] evaluates forgetting in continual learning using rank-based experiments, including comparisons between different rank settings (e.g., r=2 vs. r=6). These papers reuse the same evaluation design (theoretical bounds and rank-based experiments), covering the evaluation facet.\n\n#### Domain:\nThe contribution operates in the domain of continual learning for large language models (LLMs), with a focus on theoretical analysis. Paper [18] (Orthogonal Subspace Learning for Language Model Continual Learning) explicitly addresses continual learning in LLMs, including catastrophic forgetting and low-rank adaptation methods. Paper [13] (InfLoRA) also focuses on continual learning in LLMs, specifically using low-rank adaptation techniques. Both papers work in the same general application area of continual learning for LLMs, covering the domain facet.\n\n---\n\n### Verdicts:\nVERDICT purpose = 1, 5  \nVERDICT mechanism = 1, 3, 5, 13  \nVERDICT evaluation = 1, 5, 13  \nVERDICT domain = 13, 18  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 1
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 18
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: 加深对 CL 中逐步增秩动态的理解 (deepening understanding of progressive rank-increasing dynamics in CL)**\n\nThe specific purpose is to understand how *rank* affects forgetting in continual learning, particularly in the context of progressive/incremental rank adaptation. Paper [1] examines \"how task similarity and overparameterization jointly affect forgetting\" in two-task continual linear regression. Paper [5] provides \"a general theoretical analysis of forgetting in the linear regression model.\" Paper [6] studies \"how much the model forgets the true labels of earlier tasks after training on subsequent tasks.\" However, none of these specifically target the relationship between *rank dynamics* (progressive rank increase) and forgetting — they focus on overparameterization, task similarity, or general forgetting bounds. Paper [22] and [13] deal with low-rank adaptation in CL but don't theoretically analyze rank's effect on forgetting. The specific purpose of understanding how *rank* (as a hyperparameter in LoRA-style CL) affects forgetting, and how this interacts with task similarity, is closest to [1] which explicitly studies task similarity and overparameterization jointly — overparameterization is closely related to rank. Paper [5] also derives forgetting bounds in linear regression. These are substantively equivalent at the problem-class level: understanding what factors determine forgetting magnitude in CL via theoretical analysis.\n\n**MECHANISM: 理论推导遗忘误差界 (N=2 linear regression) + 消融分析**\n\nPaper [1] uses \"two-task continual linear regression\" to derive analytical results about forgetting. Paper [5] uses \"linear regression model via SGD\" to derive forgetting bounds. Paper [6] uses \"overparameterized linear model to a sequence of tasks\" to get \"exact expressions and bounds.\" Paper [3] provides \"theoretical bounds on the forgetting quantity in the continual learning setting for linear tasks.\" These all use the same theoretical primitive: deriving forgetting error bounds in linear regression settings. The specific mechanism of deriving forgetting bounds under N=2 linear regression and relating rank to task similarity is directly covered by [1] (two-task, task similarity + overparameterization) and [5] (linear regression forgetting bounds). The ablation analysis component is a generic experimental design.\n\n**EVALUATION: 定量消融实验 (fixed rank experiments comparing r=2 vs r=6) + 遗忘误差界与子空间相似度指标一致性验证**\n\nThe evaluation design involves: (1) fixed-rank ablation experiments on O-LoRA and IncLoRA, and (2) validating theoretical bounds against empirical subspace similarity metrics. Paper [13] (InfLoRA) and [22] (CL with Low Rank Adaptation) both perform ablation experiments on rank hyperparameters in CL with LoRA-style methods. The validation of theoretical bounds against empirical metrics is a standard design seen in [1], [5], [6]. The specific combination of rank ablation on O-LoRA/IncLoRA is an instance of standard ablation design covered by prior work.\n\n**DOMAIN: 大语言模型持续学习 / 理论分析**\n\nPapers [13], [18], [22] all work in LLM continual learning with LoRA-style methods. Papers [1], [5], [6] work in theoretical analysis of continual learning. The domain of LLM continual learning with theoretical analysis is covered by the combination of these papers.\n\nVERDICT purpose = 1\nVERDICT mechanism = 1\nVERDICT evaluation = 13\nVERDICT domain = 18",
+      "stage2": ""
+     }
+    }
+   }
+  }
+ ]
+}

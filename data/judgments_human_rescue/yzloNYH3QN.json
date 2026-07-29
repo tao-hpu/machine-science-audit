@@ -1,0 +1,301 @@
+{
+ "paper_id": "yzloNYH3QN",
+ "title": "Attention in Large Language Models Yields Efficient Zero-Shot Re-Rankers",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     8,
+     13
+    ],
+    "mechanism": [
+     2
+    ],
+    "evaluation": [
+     1,
+     8
+    ],
+    "domain": [
+     1,
+     8
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to enable accurate, efficient zero-shot document re-ranking with open-weight LLMs, avoiding autoregressive generation. Paper [8] (\"RankVicuna\") shares the same objective at the problem-class level: it aims to achieve zero-shot document re-ranking using open-source LLMs, explicitly addressing the inefficiencies and limitations of proprietary models. Paper [13] (\"Scaling Down, LiTting Up\") also targets efficient zero-shot listwise re-ranking, focusing on reducing computational costs and improving practicality, which aligns with the efficiency aspect of the contribution's purpose. Both papers substantively overlap with the stated objective.\n\n### Mechanism\nThe mechanism, In-Context Re-ranking (ICR), aggregates attention weights from query tokens to document tokens across all layers/heads to compute token-level ranking scores, summing them per document. Paper [2] (\"An Attention-Based Interactive Learning-to-Rank Model\") employs attention-based mechanisms for ranking, focusing on token-level interactions between queries and documents, which is substantively equivalent to the primitive of using attention weights for ranking. Paper [21] (\"Focused Attention Improves Document-Grounded Generation\") also uses focused attention mechanisms to improve document-level tasks, which aligns with the underlying primitive of leveraging attention scores for document-level ranking. Both papers cover the mechanism.\n\n### Evaluation\nThe evaluation design uses TREC and BEIR datasets for single-hop tasks and multi-hop tasks, measuring nDCG@10 and Recall@k. Paper [8] (\"RankVicuna\") evaluates zero-shot re-ranking using BEIR datasets and similar metrics (e.g., nDCG@10), which matches the benchmark family and metric semantics. Paper [13] (\"Scaling Down, LiTting Up\") also evaluates zero-shot listwise re-ranking using standard IR metrics like nDCG and Recall, applied to similar datasets. Both papers reuse the same evaluation design, covering this facet.\n\n### Domain\nThe domain is information retrieval (IR) and LLM-based document re-ranking. Paper [8] (\"RankVicuna\") explicitly operates in the same domain, focusing on LLM-based document re-ranking for IR tasks. Paper [13] (\"Scaling Down, LiTting Up\") also works in the IR domain, targeting efficient zero-shot listwise re-ranking. Both papers address the same application area, covering the domain facet.\n\n---\n\nVERDICT purpose = 8  \nVERDICT mechanism = 2  \nVERDICT evaluation = 8  \nVERDICT domain = 8  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 8
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 8
+      },
+      "domain": {
+       "covered_by": 8
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n## Purpose\n\nThe purpose is to enable accurate, efficient zero-shot document re-ranking with open-weight LLMs without autoregressive generation (avoiding O(N) forward passes, ill-formed outputs, and reliance on proprietary models).\n\nPaper [8] (RankVicuna) explicitly addresses \"reranking in an information retrieval context\" using open-source LLMs to avoid proprietary model dependence. Paper [1] investigates LLM-based re-ranking and notes \"current state-of-the-art results heavily lean on the capabilities of the LLM being used\" and proprietary models. Paper [13] addresses \"efficient zero-shot listwise reranking\" noting drawbacks of large LLMs. However, none of these specifically target the sub-objective of *avoiding autoregressive generation entirely* to enable use with weaker open-weight models via a non-generative mechanism. Paper [1] comes closest by addressing the proprietary model problem, but its solution is pre-filtering, not eliminating generation. The combination of \"no autoregressive generation + O(1) forward passes + open-weight\" as a unified purpose is not directly covered, but the high-level objective of \"efficient zero-shot re-ranking with open-weight LLMs\" is substantially covered by [8] and [13].\n\nPaper [8] states the purpose of open-source LLM re-ranking, and [13] addresses efficiency of zero-shot listwise reranking. Together these cover the purpose at the problem-class level.\n\n## Mechanism\n\nThe mechanism is: aggregate attention weights that document tokens receive from query tokens (across all layers/heads) as a relevance score, requiring only two forward passes. This is a cross-attention/self-attention aggregation approach for ranking.\n\nPaper [2] uses attention-based learning-to-rank but in a supervised interactive setting, not zero-shot attention weight aggregation. Paper [20] uses co-attention for scoring. Paper [21] uses \"focused attention\" for document-grounded generation. Paper [11] (\"Recall Aspects of Transformers for Text Ranking\") is listed without abstract but its title suggests examining transformer attention for ranking. Paper [17] precomputes term representations for efficiency but uses standard scoring, not attention weight aggregation. None of these describe the specific primitive of aggregating query-to-document attention weights from a prompted LLM as a ranking signal with O(1) forward passes. The closest is [2] (attention-based ranking) but it's supervised LTR, not zero-shot attention weight extraction from a prompted LLM. No prior paper describes this specific primitive.\n\n## Evaluation\n\nThe evaluation uses TREC + BEIR datasets with nDCG@10, re-ranking top-100 BM25, plus multi-hop tasks with Recall@k, and latency comparisons vs RankGPT.\n\nPapers [8], [1], [13], [12], [7] all use BEIR/TREC benchmarks with nDCG@10 for zero-shot re-ranking evaluation. Paper [13] uses \"competitive reranking effectiveness compared to recent state-of-the-art\" on similar benchmarks. This evaluation design (BEIR/TREC, nDCG@10, re-rank BM25 top-100) is standard in the LLM re-ranking literature and clearly covered by [8], [12], [13].\n\n## Domain\n\nThe domain is information retrieval / LLM re-ranking. Papers [1], [7], [8], [12], [13] all operate in exactly this domain.\n\nVERDICT purpose = 8\nVERDICT mechanism = NONE\nVERDICT evaluation = 8\nVERDICT domain = 8",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper describes using attention weights from document+query forward passes to aggregate token-level ranking scores per document for re-ranking. Paper [17] (PreTTR) precomputes transformer term representations for efficiency but does not use attention weights as ranking signals. Paper [2] uses attention in a learning-to-rank model but requires training and does not aggregate cross-attention weights into ranking scores via the described mechanism. No other paper contains anything equivalent to the ICR mechanism of summing query-to-document attention weights across all layers/heads to produce a ranking score in O(1) forward passes."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 13
+      },
+      "mechanism": {
+       "covered_by": 2
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**REASONING:**\n\n**purpose:** The contribution's purpose is to enable accurate and efficient zero-shot document re-ranking using open-weight LLMs, specifically by avoiding the costs and limitations of autoregressive generation. This objective is substantively equivalent to that of prior work aiming to make LLM-based re-ranking more efficient and accessible. For example, [13] introduces methods for \"efficient zero-shot listwise reranking\" to address the problem that existing methods \"rely on large LLMs,\" and [8] introduces \"the first fully open-source LLM capable of state-of-the-art listwise reranking\" to move away from proprietary models. Both share the same high-level objective of making zero-shot re-ranking practical with smaller, open models.\n\n**mechanism:** The core technical primitive is using internal model activations—specifically, aggregated attention weights between query and document tokens—as a direct measure of relevance for ranking. This primitive is not new. [2] proposes \"An Attention-Based Interactive Learning-to-Rank Model for Document Retrieval,\" which uses attention for ranking in the same domain. Similarly, [20] uses a \"co-attention based neural network\" where attention weights are used to \"learn the importance of each part of the essay,\" which is the same primitive of using attention as a relevance or importance score, just in a different domain (essay scoring).\n\n**evaluation:** The evaluation design involves re-ranking the top-100 candidates from a first-stage retriever (BM25, ColBERTv2) on standard information retrieval benchmarks (TREC, BEIR) and measuring performance with standard metrics (nDCG@10, Recall@k). This is a standard, widely-used evaluation protocol for re-ranking systems. Multiple prior papers on LLM-based re-ranking, such as [1], [8], and [13], necessarily use this same evaluation design to validate their contributions, even if the specific models or datasets differ.\n\n**domain:** The contribution's application area is \"Information retrieval / LLM re-ranking.\" This is a well-established research domain. Numerous prior papers, including [1], [3], [7], [8], and [13], explicitly operate in this same domain, addressing the problem of \"Re-Ranking with Large Language Models\" or \"Zero-shot Re-ranker\" for information retrieval.\n\nVERDICT purpose = 13\nVERDICT mechanism = 2\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     1
+    ],
+    "mechanism": [
+     20
+    ],
+    "evaluation": [
+     3,
+     9
+    ],
+    "domain": [
+     1,
+     6
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 6
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to mitigate intrinsic biases in LLMs (e.g., position bias, attention toward titles/entities/punctuation) that corrupt attention-based ranking scores. Paper [6] explicitly addresses position bias in LLMs, particularly in the context of LLM-as-a-Judge, and introduces metrics to evaluate bias effects. Paper [1] discusses mitigating intrinsic biases in LLMs, including prompt brittleness caused by formatting and example selection, which aligns with the broader goal of addressing LLM biases. Paper [15] tackles position bias in ranking systems, though it focuses on streaming media services rather than LLMs. These papers share the same problem-class objective of mitigating intrinsic biases in ranking or decision systems.\n\n### Mechanism\nThe mechanism involves a calibration method using a content-free query ('N/A') to compute attention-aggregation scores, subtracting these from actual-query scores to isolate query-semantics-driven changes in attention. Paper [20] introduces calibration techniques to improve LLM performance in few-shot learning, addressing instability caused by biases in prompt formatting and example order, which overlaps conceptually with calibration for bias mitigation. Paper [25] systematically examines calibration methods for aligned LLMs, focusing on improving reliability and confidence calibration, which is conceptually similar to the proposed calibration mechanism. Paper [16] explores classifier calibration methods, but it focuses on binary classification rather than attention-based ranking. Paper [12] discusses calibration in optical systems, which is unrelated to LLMs or ranking tasks. No prior paper explicitly uses a content-free query ('N/A') for calibration in the described manner.\n\n### Evaluation\nThe evaluation involves ablation studies on SciFact, FiQA, MuSiQue, and 2WikiMultiHopQA datasets, measuring improvements in ranking scores and calibration overhead. Papers [9] and [10] evaluate LLM-based ranking methods using similar benchmark families (e.g., multi-hop QA datasets) and metrics for ranking effectiveness, which matches the evaluation design. Paper [6] evaluates position bias in LLMs using metrics like position consistency and preference fairness, which align with the evaluation design for bias mitigation. Paper [1] evaluates LLM bias mitigation but focuses on prompt brittleness rather than ranking scores. The evaluation design (benchmark family and metrics) is covered by prior work.\n\n### Domain\nThe domain is LLM bias mitigation and re-ranking. Papers [9], [10], and [6] all operate in the domain of LLM-based ranking and bias mitigation, addressing intrinsic biases and re-ranking effectiveness. Paper [1] also addresses LLM bias mitigation but focuses on prompt brittleness rather than ranking. Paper [15] addresses position bias in ranking systems but focuses on streaming media services rather than LLMs. The domain is covered by prior work.\n\n---\n\nVERDICT purpose = 1  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 9  \nVERDICT domain = 6  ",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper explicitly describes a calibration method using a content-free query to compute attention-aggregation scores, subtract them from actual-query scores, and isolate query-semantics-driven changes in attention, with KV cache sharing between passes."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 20
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Mitigate LLMs' intrinsic biases (position bias, attention toward titles/entities/punctuation) that would corrupt attention-based ranking scores.**\n\nPaper [1] (UniBias) explicitly addresses \"unveiling and mitigating LLM bias through internal attention and FFN manipulation\" in ICL settings — it targets LLM intrinsic bias mitigation via internal mechanisms. Paper [6] addresses position bias in LLM-as-a-Judge settings. Paper [3] (LLM-RankFusion) mitigates \"intrinsic inconsistency in LLM-based ranking.\" Paper [20] (Calibrate Before Use) addresses bias in LLM few-shot predictions. The closest match is [1], which specifically targets mitigating LLM intrinsic bias through internal attention mechanisms, and [3] which targets intrinsic inconsistency in LLM-based ranking. However, the specific purpose here is mitigating attention-aggregation biases (position, title/entity/punctuation salience) that corrupt *attention-based re-ranking scores* — this is more specific than [1]'s ICL bias or [3]'s ordering inconsistency. Still, [1] covers the same objective class: mitigate LLMs' intrinsic biases via internal attention manipulation. This is substantively equivalent at the problem-class level.\n\n**MECHANISM: Content-free query ('N/A') calibration — compute attention scores with N/A query, subtract from actual-query scores to isolate query-semantics-driven attention; KV cache shared between passes.**\n\nPaper [20] (Calibrate Before Use) uses a content-free input to estimate and subtract the model's prior bias: \"we propose a simple calibration procedure that makes the model's prediction invariant to these factors... we estimate the model's bias by using a content-free input such as 'N/A'.\" This is essentially the same primitive: run the model with a content-free/null input, measure the baseline bias signal, subtract it from actual outputs. The application is different (few-shot classification vs. attention-based re-ranking), but the underlying mechanism — content-free query → measure intrinsic bias → subtract — is identical. The KV cache sharing is an efficiency detail, not a different primitive. This is clearly covered by [20].\n\n**EVALUATION: Ablation on SciFact/FiQA/MuSiQue/2WikiMultiHopQA benchmarks; measuring nDCG/recall improvements from calibration and attention aggregation components; ~30% overhead measurement.**\n\nSciFact, FiQA, MuSiQue, and 2WikiMultiHopQA are established IR/QA benchmarks used in prior retrieval/re-ranking work. Papers [9], [10], [3], [4], [5] all evaluate on standard IR benchmarks (TREC, BEIR family which includes SciFact/FiQA) with nDCG metrics. The evaluation design — ablation comparing components on standard IR benchmarks with nDCG-style metrics — is used in [9] (LRL uses TREC/BEIR benchmarks), [3] (LLM-RankFusion uses standard IR benchmarks with nDCG), and [5]. The ablation design (component A vs. A+B) is standard. SciFact and FiQA are part of the BEIR benchmark family used widely. This evaluation design (standard IR benchmark + nDCG + component ablation) is covered by [3] and [9].\n\n**DOMAIN: LLM bias mitigation / re-ranking.**\n\nPapers [1], [3], [4], [5], [9], [10] all work in LLM-based re-ranking or LLM bias mitigation. This domain is clearly covered by multiple prior papers.\n\nVERDICT purpose = 1\nVERDICT mechanism = 20\nVERDICT evaluation = 3\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 1
+      },
+      "mechanism": {
+       "covered_by": 20
+      },
+      "evaluation": {
+       "covered_by": 9
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "purpose: COVERED by [1], which has the same objective to \"Mitigating LLM Bias\" and explicitly mentions sensitivity to \"order\" as a target, which is a form of the position bias the contribution addresses.\n\nmechanism: COVERED by [20], which proposes \"contextual calibration\" using a \"content-free input\" to estimate a model's intrinsic bias, which is then used to correct the final prediction; this is the same primitive as using a content-free 'N/A' query to estimate an attention bias score and subtracting it.\n\nevaluation: COVERED by [9] (and others). The evaluation design—applying a zero-shot LLM re-ranking method to standard IR/QA benchmarks and measuring performance against baselines—is the standard protocol in this subfield and is not novel to this contribution.\n\ndomain: COVERED by [1] and [3]. The application area of \"LLM bias mitigation\" is explicitly named in [1] (\"Mitigating LLM Bias\"), and the area of \"LLM-based Ranking\" is the explicit domain of [3].\n\nVERDICT purpose = 1\nVERDICT mechanism = 20\nVERDICT evaluation = 9\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     22
+    ],
+    "evaluation": [
+     4,
+     13,
+     22
+    ],
+    "domain": [
+     4,
+     10,
+     13
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 22
+      },
+      "evaluation": {
+       "covered_by": 4
+      },
+      "domain": {
+       "covered_by": 4
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to empirically demonstrate that generation is not the optimal way to extract re-ranking signals from LLMs and characterizes which signals attention captures. No prior paper explicitly establishes this empirical relationship or investigates the comparative effectiveness of generation versus attention-based signals for re-ranking. Papers such as [1], [4], [13], [16], and [25] focus on reranking methods but do not address the specific empirical finding that generation is suboptimal for extracting re-ranking signals or analyze attention signals in this context. Papers like [24] and [26] discuss attention but do not empirically compare it to generation for re-ranking purposes. Thus, the purpose is **not covered**.\n\n### Mechanism\nThe mechanism involves comparative evaluation versus RankGPT and analysis of token-level ranking scores across claim types (support vs contradiction), contextualization cases, and multi-hop information integration. Papers such as [4], [13], [16], and [25] describe listwise reranking approaches and comparative evaluations, but none explicitly analyze token-level ranking scores across claim types or contextualization/multi-hop integration. While [24] and [26] discuss attention mechanisms, they do not apply them to token-level ranking scores or re-ranking analysis. Therefore, the mechanism is **not covered**.\n\n### Evaluation\nThe evaluation design involves metrics such as micro-average single-hop accuracy, Recall@5 for multi-hop tasks, and performance breakdowns by claim type (support vs contradiction) and contextualization complexity. Papers like [4], [13], [16], and [25] use similar evaluation designs for re-ranking tasks, including metrics like Recall@k and performance breakdowns across different datasets or task complexities. For example, [16] evaluates re-ranking performance across datasets and tasks, and [25] uses zero-shot listwise reranking metrics. These designs align with the evaluation framework used in the contribution, even if the specific datasets or claim types differ. Thus, the evaluation is **covered**.\n\n### Domain\nThe domain is IR analysis and LLM interpretability. Papers such as [4], [13], [16], and [25] operate in the same general application area of information retrieval and LLM-based re-ranking. While the contribution focuses on specific sub-problems like token-level ranking scores and claim type analysis, these are narrower instances within the broader IR domain. Therefore, the domain is **covered**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 4  \nVERDICT domain = 4  ",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper empirically shows generation is suboptimal for extracting re-ranking signals or characterizes attention-captured signals in the same way.  \nFACET: mechanism | FINAL: COVERED-BY 22 | reason: \"Comparative study between cross-encoder and LLMs rerankers\" aligns with comparative evaluation, and \"analysis on TREC Deep Learning datasets\" includes token-level ranking score analysis."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 13
+      },
+      "domain": {
+       "covered_by": 13
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Show empirically that generation is not the optimal way to extract re-ranking signals from LLMs, and characterize which signals attention captures.**\n\nThe purpose is to demonstrate that attention-based (non-generative) signals outperform generation-based re-ranking (RankGPT), and to characterize what attention captures. Paper [4] (FIRST) addresses efficiency of listwise reranking by avoiding full sequence generation, using single token decoding — but its purpose is efficiency, not demonstrating generation is suboptimal or characterizing attention signals. Paper [10] discusses interpretable contextualization for re-ranking using attention mechanisms, but doesn't compare against generation-based LLM re-ranking. No prior paper specifically pursues the objective of showing generation is suboptimal for extracting LLM re-ranking signals and characterizing what attention captures in that context. This is a genuinely new empirical relationship being established.\n\n**MECHANISM: Comparative evaluation vs RankGPT and analysis of token-level ranking scores across claim types, contextualization cases, and multi-hop information integration.**\n\nPaper [4] (FIRST) uses single-token decoding for listwise reranking and compares against RankGPT-style generation. Paper [13] (Rank-without-GPT) builds listwise rerankers on open-source LLMs and compares against GPT-based methods. Paper [17] (RankZephyr) also compares open-source rerankers against GPT-4 baselines. However, none of these analyze token-level attention scores across claim types (support vs. contradiction) or characterize multi-hop integration via attention analysis. The analysis of attention signals across semantic claim types is closer to probing/interpretability work (papers [29], [24], [26]), but those don't involve re-ranking comparisons. No single paper combines comparative evaluation against RankGPT with token-level attention analysis across claim types. NONE is appropriate.\n\n**EVALUATION: Performance comparisons on FEVER (support/contradiction breakdown), multi-hop recall metrics, micro-avg comparisons against RankGPT baselines.**\n\nPaper [13] (Rank-without-GPT) evaluates listwise rerankers on standard IR benchmarks comparing against GPT-based methods. Paper [17] (RankZephyr) similarly evaluates on TREC-style benchmarks vs GPT-4. Paper [22] compares cross-encoders and LLMs for reranking on TREC Deep Learning, BEIR, LoTTE. Paper [16] evaluates LLM re-ranking with pre-filtering steps. These papers use the same evaluation design family: benchmark-based IR evaluation (NDCG, Recall@k metrics) comparing LLM rerankers. The FEVER breakdown by claim type and multi-hop Recall@5 are specific instances of standard IR/NLP benchmark evaluation with standard metrics. The design (compare rerankers on named benchmarks with standard metrics) is covered by [13], [17], [22].\n\n**DOMAIN: IR analysis / LLM interpretability.**\n\nPapers [4], [13], [17], [22], [25] all work in IR with LLM-based reranking. Papers [24], [26], [29] work in LLM/neural network interpretability. Both sub-areas of the domain are covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 13\nVERDICT domain = 13",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper empirically argues that generation is *not* the optimal way to extract re-ranking signals from LLMs and characterizes what attention captures instead; the closest papers (FIRST, RankVicuna, etc.) optimize generation-based reranking rather than questioning generation as the signal source.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper conducts a comparative evaluation specifically against RankGPT with token-level ranking score analysis across claim types (support vs. contradiction), contextualization cases, and multi-hop information integration; these specific analytical dimensions appear in none of the listed works."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 22
+      },
+      "evaluation": {
+       "covered_by": 22
+      },
+      "domain": {
+       "covered_by": 10
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**PURPOSE**\nThe contribution's purpose is to empirically demonstrate that generation is a suboptimal method for extracting re-ranking signals from LLMs and to characterize the signals captured by attention. No prior paper establishes this specific empirical relationship. While [4] is motivated by the inefficiency of generation-based reranking, its purpose is to propose a new, more efficient method, not to provide a broad empirical finding about the suboptimality of the signal itself or to characterize the alternative attention signals. Other papers discuss interpretability generally (e.g., [24], [26]) but do not connect it to this specific finding about re-ranking signal extraction.\n\n**MECHANISM**\nThe mechanism is a comparative evaluation against a baseline (RankGPT) combined with an analysis of token-level scores broken down by different conditions (claim types, context, etc.). This is a standard analysis protocol for a finding-type contribution. The comparative evaluation design is explicitly the focus of papers like [22], which presents \"a comparative study between cross-encoder and LLMs rerankers\". The analysis of token-level relevance is a standard interpretability technique, as discussed in [26] which frames the goal as finding \"what input tokens are the most relevant to a prediction\".\n\n**EVALUATION**\nThe evaluation design consists of comparing a proposed method against a baseline on standard benchmarks (e.g., FEVER) using standard IR metrics (micro-average, Recall@k) and reporting performance lifts, including breakdowns by sub-category. This is a standard evaluation design for IR systems. For example, [22] uses this exact design, conducting \"a large evaluation on TREC Deep Learning datasets and out-of-domain datasets such as BEIR and LoTTE\" to compare different reranking models.\n\n**DOMAIN**\nThe domain is the intersection of Information Retrieval (IR) analysis and LLM interpretability. This area is well-covered by the prior work. Numerous papers focus on LLM-based re-ranking for IR, such as [4], [13], [17], and [25]. Several papers also address LLM interpretability, such as [12] (\"Probing Large Language Models\") and [26] (\"The elephant in the interpretability room\"). Paper [10] explicitly combines these, focusing on an \"Interpretable & Time-Budget-Constrained Contextualization for Re-Ranking\".\n\nVERDICT purpose = NONE\nVERDICT mechanism = 22\nVERDICT evaluation = 22\nVERDICT domain = 10",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the dual objective of both (1) empirically showing that generation is a suboptimal method for extracting re-ranking signals from LLMs, and (2) characterizing the specific re-ranking signals captured by the attention mechanism. While paper [4] addresses the first point by proposing a non-generative method and showing it is superior to \"a generated ordered sequence,\" it does not perform the second, analytical part of the objective. No other paper was found to characterize attention signals in the specific context of LLM-based re-ranking."
+     }
+    }
+   }
+  }
+ ]
+}

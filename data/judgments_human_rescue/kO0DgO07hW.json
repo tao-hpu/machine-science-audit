@@ -1,0 +1,416 @@
+{
+ "paper_id": "kO0DgO07hW",
+ "title": "Semantic Loss Guided Data Efficient Supervised Fine Tuning for Safe Responses in LLMs",
+ "contributions": [
+  {
+   "cid": "C1",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "recombination",
+   "consensus_facets": {
+    "purpose": [
+     16
+    ],
+    "mechanism": [
+     4,
+     19
+    ],
+    "evaluation": [
+     1,
+     2,
+     6
+    ],
+    "domain": [
+     1
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 16
+      },
+      "mechanism": {
+       "covered_by": 4
+      },
+      "evaluation": {
+       "covered_by": 6
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to make an LLM generate safe responses to toxic prompts during the supervised fine-tuning (SFT) stage using only a small amount of unsafe responses, without requiring high-quality human safe responses or an external safe LLM.  \n- **Paper [16]** discusses unlearning harmful responses using only negative examples, which aligns with the purpose of using small amounts of harmful data to improve safety alignment. It explicitly mentions \"removing harmful responses\" as a goal, which is substantively equivalent to the contribution's purpose.  \n- **Paper [20]** also focuses on unlearning harmful knowledge in LLMs to maintain safety alignment, using harmful examples to address jailbreak risks. This aligns with the contribution's purpose of improving safety during fine-tuning with limited harmful data.  \n\n**Conclusion**: The purpose is covered by papers [16] and [20].\n\n---\n\n### Mechanism\nThe contribution introduces Toxicity Avoiding SFT (TA-SFT), which adds a semantically-informed penalty to the SFT loss using Earth Mover Distance (EMD) to push the model's next-token distribution away from harmful responses.  \n- **Paper [4]** introduces EMD as a loss function in deep learning, specifically leveraging its ability to embed semantic relationships into training. This matches the mechanism's use of EMD to penalize harmful token distributions.  \n- **Paper [19]** applies EMD optimization for auto-regressive language modeling, using EMD as a loss to align model distributions with desired outputs. This is substantively equivalent to the mechanism's use of EMD for semantic alignment during fine-tuning.  \n- **Paper [17]** uses squared EMD loss for training deep neural networks, leveraging EMD to account for inter-class relationships. While the application differs, the mechanism of using EMD as a loss function is equivalent.  \n\n**Conclusion**: The mechanism is covered by papers [4], [19], and [17].\n\n---\n\n### Evaluation\nThe contribution evaluates TA-SFT using four harmfulness benchmarks (I-Malicious, I-CoNa, I-Controversial, HarmfulQ) and metrics like OpenAI Moderation and DeBERTa harmfulness scores.  \n- **Paper [6]** surveys evaluation methods for LLM alignment, including benchmarks and metrics for safety compliance. While the specific benchmarks differ, the evaluation design (using harmfulness benchmarks and safety metrics) is substantively equivalent.  \n- **Paper [14]** introduces the BeaverTails dataset for safety alignment evaluation, separating helpfulness and harmlessness metrics. This aligns with the contribution's use of safety-related benchmarks and metrics to validate alignment.  \n- **Paper [3]** introduces RTP-LX, a multilingual corpus for toxicity evaluation, which includes benchmarks for harmfulness assessment. The evaluation design of using benchmarks to measure safety is equivalent.  \n\n**Conclusion**: The evaluation is covered by papers [6], [14], and [3].\n\n---\n\n### Domain\nThe contribution operates in the domain of LLM safety alignment during supervised fine-tuning.  \n- **Paper [1]** discusses safety risks associated with fine-tuning LLMs, explicitly addressing safety alignment during customization.  \n- **Paper [7]** focuses on making harmful behaviors unlearnable during fine-tuning, which is directly within the domain of LLM safety alignment.  \n- **Paper [8]** addresses fine-tuning-based jailbreak attacks and proposes defenses for safety alignment, which is substantively equivalent to the domain of LLM safety alignment during fine-tuning.  \n\n**Conclusion**: The domain is covered by papers [1], [7], and [8].\n\n---\n\n### Verdicts\nVERDICT purpose = 16  \nVERDICT mechanism = 4  \nVERDICT evaluation = 6  \nVERDICT domain = 1  ",
+      "stage2": ""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 16
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE:**\nThe goal is to make an LLM generate safe responses during SFT using only a small amount of easily-obtained *unsafe* (harmful) responses — without needing high-quality safe responses or an external safe LLM. This is distinct from standard safety alignment (which uses safe responses) and from post-hoc defenses.\n\nPaper [16] (LLM Unlearning) states: \"It only requires negative (e.g. harmful) examples, which are much easier and cheaper to collect\" — this matches the purpose of using only harmful examples to achieve safety. Paper [7] (Making Harmful Behaviors Unlearnable) also aims to prevent LLMs from learning harmful behaviors during fine-tuning using harmful data signals. Paper [10] (Machine Unlearning for Safer LLMs) addresses preventing harmful content generation. However, none of these specifically target the SFT stage with *only* harmful responses (no safe responses needed). Paper [16] is the closest — it explicitly states the advantage of needing only negative/harmful examples to remove harmful behaviors, which is substantively equivalent to the purpose here.\n\n**MECHANISM:**\nThe core mechanism is adding an EMD-based penalty (with cosine/embedding cost) to the SFT loss to push the model's token distribution away from the unsafe response's token distribution. \n\nPaper [19] (EMO: Earth Mover Distance Optimization for Auto-Regressive Language Modeling) uses EMD optimization for language model training, specifically computing EMD between model distributions and reference distributions at the token level. This is very close — it applies EMD between distributions in autoregressive LM training. However, EMO uses EMD to *align* with human text, not to *repel* from harmful text. The direction is opposite (attraction vs. repulsion), and the semantic cost matrix using embeddings for safety purposes is not present. Paper [24] (Unlikelihood Training) uses a penalty to push generation away from certain tokens, which is mechanistically similar in spirit (repulsion from undesired tokens), but uses likelihood rather than EMD. No prior paper combines EMD-based repulsion with embedding-based cost in the SFT safety context. The combination of EMD as a repulsion loss with semantic cost in SFT for safety appears genuinely absent.\n\n**EVALUATION:**\nThe evaluation uses multiple base LLMs (Llama, Mistral) with LoRA fine-tuning, evaluated on harmfulness benchmarks (I-Malicious, I-CoNa, I-Controversial, HarmfulQ) with OpenAI Moderation API and DeBERTa classifiers as metrics. Papers [1], [2], [7], [8] all evaluate LLM safety alignment using similar setups: multiple base models, LoRA fine-tuning, harmfulness benchmarks, and automated classifiers (including OpenAI Moderation). Paper [1] uses similar harmful prompt benchmarks and safety evaluation metrics. Paper [2] uses similar fine-tuning setups with safety evaluation. The evaluation design (LLM safety benchmarks + automated classifier metrics + LoRA fine-tuning setup) is well-covered.\n\n**DOMAIN:**\nThe domain is LLM safety alignment / supervised fine-tuning. Papers [1], [2], [7], [8], [10], [14], [16], [18], [20] all operate in LLM safety alignment. This is clearly covered.\n\nVERDICT purpose = 16\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper combines an EMD-based semantic penalty on the next-token distribution (using embedding/cosine cost) with SFT loss to push generation away from harmful token semantics. Paper [19] (EMO) uses EMD for language model training but optimizes alignment between human and model distributions for text quality, not safety avoidance. Paper [7] addresses making harmful behaviors unlearnable but via gradient-based unlearning, not an EMD penalty. No paper matches the specific mechanism of a semantically-informed EMD divergence penalty between the model's next-token distribution and an unsafe response's next-token distribution combined with standard SFT."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "recombination",
+     "facets": {
+      "purpose": {
+       "covered_by": 16
+      },
+      "mechanism": {
+       "covered_by": 19
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to achieve safety alignment during supervised fine-tuning using only a small set of negative (unsafe) examples, without requiring positive (safe) examples. This is substantively equivalent to the purpose of paper [16], which studies unlearning for LLMs and explicitly states one of its advantages is that it \"only requires negative (e.g. harmful) examples, which are much easier and cheaper to collect\" to achieve alignment goals like \"removing harmful responses\".\n\n**mechanism**: The contribution's mechanism is to add a penalty term to the standard SFT loss, where the penalty is based on maximizing the Earth Mover's Distance (EMD) between the model's next-token distribution and that of a harmful response. The core technical primitive here is using EMD as a loss function over next-token distributions for an auto-regressive language model. This primitive is present in paper [19], which proposes \"Earth Mover Distance Optimization for Auto-Regressive Language Modeling\" by using EMD as the primary training objective to align the model with the data distribution. While [19] uses EMD for attraction (minimizing distance), the contribution uses it for repulsion (maximizing distance), but this is a sign-flip on the same underlying technical primitive.\n\n**evaluation**: The evaluation design consists of applying the proposed fine-tuning method to a set of base LLMs and then measuring the safety of their outputs on a collection of harmful prompt benchmarks, using automated classifiers (OpenAI Moderation, DeBERTa) as judges. This \"apply method, then test on harmful benchmarks\" protocol is the standard validation framework for LLM safety alignment methods. For example, paper [2] proposes a defense and states \"our evaluation shows that existing defenses fail,\" which necessarily implies it uses this same evaluation design to test its own method and others.\n\n**domain**: The contribution operates in the domain of LLM safety alignment, specifically during the supervised fine-tuning (SFT) stage. This is a well-established research area. Paper [1] directly addresses this domain by investigating how \"Fine-tuning Aligned Language Models Compromises Safety,\" and numerous other papers ([2], [7], [8], [10], [16], [20]) also operate within this same general application area.\n\nVERDICT purpose = 16\nVERDICT mechanism = 19\nVERDICT evaluation = 2\nVERDICT domain = 1",
+      "stage2": ""
+     }
+    }
+   }
+  },
+  {
+   "cid": "C2",
+   "type": "method",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": [
+     2,
+     3
+    ],
+    "mechanism": null,
+    "evaluation": [
+     2
+    ],
+    "domain": null
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": null
+      },
+      "domain": {
+       "covered_by": null
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism",
+      "evaluation",
+      "domain"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution's purpose is to make optimization of the EMD-based safety penalty tractable, addressing the computational intensity of exact EMD and the inadequacy of the cosine (squared-norm) cost as a proper distance metric. None of the prior papers explicitly address this specific objective. Papers [2], [3], and [6] discuss computational challenges of EMD and propose approximations or optimizations, but they do not target the specific problem of tractable optimization for EMD-based safety penalties under the squared-norm/cosine cost. Thus, the purpose is **not covered**.\n\n### Mechanism\nThe mechanism involves deriving and proving a novel lower bound for EMD under the squared-norm/cosine cost and optimizing this bound instead of exact EMD. Papers [3] and [4] discuss parametric bounds for approximate EMD, but they do not derive or prove a lower bound specific to the squared-norm/cosine cost. Paper [6] proposes an EMD metric learning algorithm but does not involve deriving a lower bound for optimization. Therefore, the mechanism is **not covered**.\n\n### Evaluation\nThe evaluation is qualitative/theoretical, involving a proof in Appendix A.3 and empirical safety/quality gains reported using the bound as a training loss. Papers [3] and [4] also evaluate EMD bounds theoretically and empirically, but their evaluation designs do not involve using the bound as a training loss for safety/quality gains. Thus, the evaluation design is **not covered**.\n\n### Domain\nThe domain is LLM safety alignment/optimization. None of the prior papers explicitly address this domain. Papers [2], [3], and [6] apply EMD in deep learning, multimedia, and computer vision, but these are distinct from LLM safety alignment. Therefore, the domain is **not covered**.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = NONE  \nVERDICT domain = NONE  ",
+      "stage2": "- **FACET: purpose** | **FINAL: NONE** | reason: No prior paper addresses making EMD optimization tractable under the squared-norm/cosine cost or critiques existing EMD lower bounds for this cost.  \n- **FACET: mechanism** | **FINAL: NONE** | reason: No prior paper derives or proves the specific lower bound for EMD under squared-norm/cosine cost or optimizes it.  \n- **FACET: evaluation** | **FINAL: NONE** | reason: No prior paper provides theoretical proof or empirical safety/quality gains using the derived bound as a training loss.  \n- **FACET: domain** | **FINAL: NONE** | reason: No prior paper applies EMD optimization to LLM safety alignment or optimization.  "
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 3
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": null
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism",
+      "domain"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE:**\nThe purpose is to make EMD-based safety penalty optimization tractable by deriving a lower bound for EMD under the squared-norm/cosine cost (since exact EMD is expensive and existing bounds don't apply to this cost). Papers [3] and [4] address \"answering approximate Earth Mover's Distance with parametric bounds\" and note \"EMD is a computationally intensive operation, many efficient lower and upper bound functions of EMD have been developed.\" Paper [2] addresses \"EMD is computationally expensive\" and proposes relaxed EMD for deep learning. However, none of these papers address the specific sub-problem of making EMD tractable under the squared-norm/cosine cost in a safety penalty context — but at the problem-class level, the objective \"make EMD tractable via bounding\" is covered by [3]/[4]. The specific motivation about cosine cost lacking proper metric properties is a nuance, but the overarching purpose (tractable EMD optimization via lower bounds) is substantively equivalent to [3]/[4].\n\n**MECHANISM:**\nThe mechanism is deriving a specific novel lower bound: EMD(P,Q;d_c) >= (1/2|V|²)||Σ P(w)e_w - Σ Q(w)e_w||², i.e., a lower bound on EMD under squared-norm cost expressed as a squared difference of mean embeddings. Papers [3] and [4] develop parametric lower bounds for EMD, but these are for standard metric costs (not squared-norm/cosine). Paper [2] proposes relaxed EMD approximations for chain/tree spaces. Paper [21] approximates Wasserstein distance via embeddings. None of the prior papers derive this specific lower bound for the squared-norm/cosine cost. The mathematical primitive — bounding EMD by a function of the difference of mean embeddings under a non-metric cost — does not appear in any prior paper listed.\n\n**EVALUATION:**\nThe evaluation design involves: (1) a theoretical proof in an appendix, and (2) using the bound as a training loss and measuring empirical safety/quality gains across multiple LLM models. The empirical evaluation uses LLM safety benchmarks with standard metrics (safety rate, quality metrics). Papers [2] and [9] use EMD-based losses in deep learning and measure empirical performance. The evaluation design of \"use a derived bound as a training loss and measure downstream task performance\" is a standard design seen in [2] (EMD loss in deep learning, measuring performance). The LLM-as-judge or safety benchmark evaluation design is not explicitly matched, but the generic \"use derived loss, measure benchmark performance\" design appears in [2].\n\n**DOMAIN:**\nThe domain is LLM safety alignment/optimization. None of the prior papers operate in LLM safety alignment — they cover computer vision, data mining, optimal transport theory, deep learning for classification, etc. This is a genuinely new application area not addressed by any prior paper.\n\nVERDICT purpose = 3\nVERDICT mechanism = NONE\nVERDICT evaluation = 2\nVERDICT domain = NONE",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: Papers [3] and [4] discuss EMD lower bounds but none derive or prove a lower bound specifically for EMD under the squared-norm/cosine cost of the form EMD(P,Q;d_c) >= (1/2|V|^2)||sum_w P(w)e_w - sum_w Q(w)e_w||^2 — no paper contains a quoted phrase establishing this specific algebraic lower bound tied to mean embedding differences under that cost function.\n\nFACET: domain | FINAL: NONE | reason: No prior paper among the 26 addresses LLM safety alignment or optimization as an application domain; the papers cover computer vision, optimal transport theory, deep learning generalization, and unrelated fields, with no quoted content connecting EMD or distributional optimization to LLM safety alignment."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 2
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 2
+      },
+      "domain": {
+       "covered_by": null
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "mechanism",
+      "domain"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution's purpose is to make the optimization of an EMD-based penalty tractable for a specific cost function (cosine/squared-norm) where existing methods are unsuitable. This falls under the general objective of making EMD computationally tractable for use in machine learning optimization, which is covered by several prior papers. For example, [2] addresses the problem that \"EMD is computationally expensive\" and proposes \"Relaxed Earth Mover's Distances\" to enable its \"use as a Loss Function in Deep Learning\".\n\n**mechanism**: The contribution's mechanism is a specific, derived lower bound for EMD under the squared-norm/cosine cost: `EMD(P,Q;d_c) >= (1/2|V|^2)||sum_w P(w)e_w - sum_w Q(w)e_w||^2`. The purpose statement explicitly claims that existing EMD lower bounds do not apply due to the cost function not being a proper distance metric. None of the provided abstracts describe or derive this specific mathematical bound, which relates the EMD to the squared L2 distance between the distributions' mean embeddings under this specific cost.\n\n**evaluation**: The evaluation design consists of a theoretical proof for the derived bound, followed by an empirical validation where the bound is used as a training loss (`L_EMD`) and its effect on model performance is measured. This design is covered by prior work; for instance, [2] proposes a tractable EMD-based loss and evaluates it by showing it \"helps in achieving better output smoothness and generalization,\" which is the same evaluation design of proposing a new loss and measuring its empirical benefits.\n\n**domain**: The contribution is applied to the domain of LLM safety alignment and optimization. None of the provided prior papers operate in this application area; they cover topics like general deep learning, computer vision, data mining, and optimal transport theory, but not the specific challenges of aligning large language models for safety.\n\nVERDICT purpose = 2\nVERDICT mechanism = NONE\nVERDICT evaluation = 2\nVERDICT domain = NONE",
+      "stage2": "FACET: mechanism | FINAL: NONE | reason: No prior paper proposes optimizing a lower bound of EMD as a surrogate loss function. While papers discuss EMD as a loss [2] and using bounds to approximate EMD values for queries [3, 4], none propose the specific mechanism of replacing the EMD optimization problem with the optimization of its analytical lower bound.\nFACET: domain | FINAL: NONE | reason: No prior paper applies its methods to the domain of Large Language Model (LLM) safety, alignment, or optimization. The application domains mentioned are computer vision [3, 4, 6], general deep learning [2, 5], collider physics [14], structural health monitoring [16], and others, none of which are LLM safety."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C3",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "facet-novel",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     3
+    ],
+    "evaluation": [
+     3,
+     19
+    ],
+    "domain": [
+     1,
+     3
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": 15
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 3
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "### Purpose:\nThe contribution aims to demonstrate that the semantically-informed EMD loss is more data-efficient and preserves response quality better than likelihood-based penalties (NLCL) and other baselines (KTO, STL). No prior paper explicitly establishes this empirical relationship between EMD loss and data efficiency or response quality preservation. While papers like [3] and [6] discuss safety alignment and mitigation strategies for harmful fine-tuning, they do not report or establish the same empirical relationship between EMD loss and the stated metrics. Papers like [25], [28], and [31] discuss Wasserstein distances or optimal transport methods, but none of them address the specific purpose of comparing EMD loss to NLCL, KTO, or STL in the context of LLM safety alignment.\n\n### Mechanism:\nThe mechanism involves comparative ablation experiments varying the number of harmful examples and measuring harmful responses per benchmark, alongside response quality metrics like AlpacaEval and BoolQ/PIQA/OpenBookQA. Papers [3], [6], and [4] use ablation studies and comparative evaluations in the context of LLM safety alignment, but none employ the exact mechanism of comparing EMD loss against NLCL, KTO, and STL across harmful example counts and response quality metrics. Papers like [25], [28], and [32] discuss Wasserstein distances and their applications, but they do not use the same experimental design or ablation setup for LLM safety alignment.\n\n### Evaluation:\nThe evaluation design uses AlpacaEval, BoolQ, PIQA, and OpenBookQA benchmarks to measure response quality and harmful responses across methods. Papers [3], [6], and [4] employ similar evaluation designs, including benchmark-based comparisons and metrics for safety alignment, making the evaluation facet covered. For example, [3] evaluates safety alignment methods under harmful fine-tuning scenarios, and [6] measures safety performance under few-shot harmful examples. While the specific benchmarks differ, the evaluation design (benchmark-based comparison and metric-driven validation) is substantively equivalent.\n\n### Domain:\nThe domain is LLM safety alignment. Papers [3], [6], and [4] explicitly address LLM safety alignment, including post-fine-tuning safety alignment and mitigation strategies against harmful fine-tuning. This makes the domain facet covered, as the contribution operates within the same general application area.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = NONE  \nVERDICT evaluation = 3  \nVERDICT domain = 3  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 15 | reason: The purpose aligns with \"extending the recently introduced unlikelihood loss\" to improve response quality, which is conceptually equivalent to comparing semantically-informed EMD loss against likelihood-based penalties like NLCL.  \nFACET: mechanism | FINAL: NONE | reason: No prior paper explicitly describes comparative ablation with harmful examples and benchmarks using EMD, NLCL, KTO, and STL."
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 3
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet of the contribution against the prior papers.\n\n**PURPOSE: Show that semantically-informed EMD loss is more data-efficient and preserves response quality better than likelihood-based penalty (NLCL) and other baselines (KTO, STL).**\n\nThe purpose is to demonstrate data efficiency of a specific safety alignment loss (EMD) compared to alternatives. Papers [1], [3], [4], [6] deal with LLM safety alignment, but none specifically pursue the objective of comparing data efficiency of a semantically-informed loss vs. likelihood-based penalty for safety alignment. Paper [20] addresses few-shot unlearning (data efficiency in a related sense), but the specific relationship being established — EMD loss is more data-efficient than NLCL/KTO/STL for safety — is not reported by any prior paper. No prior paper establishes this same empirical relationship (same variables and direction of effect).\n\n**MECHANISM: Comparative ablation varying number of harmful examples (1000/500/300/100), counting harmful responses, measuring quality via AlpacaEval and BoolQ/PIQA/OpenBookQA, comparing EMD vs NLCL vs KTO vs STL.**\n\nThis is a controlled ablation/comparative experiment varying data quantity and measuring safety + quality metrics. Papers [1], [3], [6] perform ablations in LLM safety settings, comparing methods across conditions. The generic shape (vary data size, compare methods on safety + quality benchmarks) is a standard comparative ablation design. However, the specific protocol — varying harmful example count as the independent variable to test data efficiency — is a design choice. Papers [3] and [6] do compare defense methods under varying hyperparameters/conditions. This is a standard comparative ablation design that appears broadly in prior work.\n\n**EVALUATION: AlpacaEval, BoolQ/PIQA/OpenBookQA as quality metrics; harmful response counts as safety metric; varying data sizes.**\n\nAlpacaEval is a named benchmark family used in prior LLM work. BoolQ/PIQA/OpenBookQA are standard NLP benchmarks. Papers [1], [3], [6] use harmful response counts and quality benchmarks to evaluate safety alignment methods. The evaluation design (LLM safety evaluation using harmful response counts + standard NLP benchmarks for quality preservation) matches the design used in papers like [3] and [6]. AlpacaEval as an evaluation instrument appears in LLM alignment literature broadly. The design of measuring both safety (harmful responses) and quality (standard benchmarks) is covered by [3] and [6].\n\n**DOMAIN: LLM safety alignment.**\n\nPapers [1], [3], [4], [6] all work in LLM safety alignment — specifically the problem of maintaining/restoring safety alignment in large language models. This domain is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = 3\nVERDICT evaluation = 3\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper compares a semantically-informed EMD loss against NLCL, KTO, and STL baselines specifically on the grounds of data efficiency and response quality preservation during safety-constrained fine-tuning. The closest papers (e.g., [1], [3], [6]) address harmful fine-tuning defenses but none propose or evaluate an EMD-based semantic loss in this comparative framing."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 3
+      },
+      "evaluation": {
+       "covered_by": 19
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "purpose: The contribution's purpose is to establish a specific empirical relationship: that a semantically-informed EMD loss is more data-efficient for safety alignment and better preserves quality than a likelihood-based penalty (NLCL) and other baselines. While prior works introduce components like unlikelihood training ([15], [16]) or discuss semantic loss in other contexts ([9], [17]), none report or establish this specific comparative finding regarding data efficiency for LLM safety.\n\nmechanism: The mechanism is a comparative analysis where different alignment methods are evaluated under varying data conditions (number of harmful examples) to measure their impact on safety and response quality. This is a standard experimental design. Paper [3] uses the same design primitive by evaluating \"existing defenses... when some specific training hyper-parameters are chosen,\" which is also a comparative analysis of methods under varying resource/training conditions.\n\nevaluation: The evaluation design involves jointly measuring safety (by counting harmful responses on a benchmark) and utility (performance on a suite of standard NLP benchmarks like AlpacaEval and BoolQ). This dual-pronged evaluation design is standard. Paper [19] explicitly states that its models \"demonstrate strong performance across academic benchmarks for language understanding, reasoning, and safety,\" which is the same evaluation design.\n\ndomain: The contribution operates in the domain of LLM safety alignment. Multiple prior papers work in this exact same general area. For example, paper [1] investigates how \"Fine-tuning Aligned Language Models Compromises Safety,\" and paper [3] proposes a method for \"Post-fine-tuning Safety Alignment for Large Language Models.\"\n\nVERDICT purpose = NONE\nVERDICT mechanism = 3\nVERDICT evaluation = 19\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: The objective is to show a specific method (semantically-informed EMD loss) is superior to a specific set of baselines (NLCL, KTO, STL) on specific metrics (data-efficiency, quality preservation). No prior paper shares this comparative goal. Papers introducing baselines (e.g., [15], [16] on unlikelihood/NLCL) have the purpose of establishing their own method's value, not comparing it to the target paper's novel method. Papers on Wasserstein distance ([25], [27], [28]) do not share this specific comparative objective in the context of LLM alignment."
+     }
+    }
+   }
+  },
+  {
+   "cid": "C4",
+   "type": "finding",
+   "prompt_version": "v7",
+   "consensus_state": "split",
+   "consensus_state_v2": "facet-novel",
+   "consensus_facets": {
+    "purpose": null,
+    "mechanism": [
+     4,
+     6,
+     13
+    ],
+    "evaluation": [
+     1,
+     4,
+     12
+    ],
+    "domain": [
+     1,
+     4,
+     6,
+     12
+    ]
+   },
+   "per_model": {
+    "gpt-4o": {
+     "state": "covered",
+     "facets": {
+      "purpose": {
+       "covered_by": 4
+      },
+      "mechanism": {
+       "covered_by": [
+        4,
+        6
+       ]
+      },
+      "evaluation": {
+       "covered_by": [
+        4,
+        12
+       ]
+      },
+      "domain": {
+       "covered_by": [
+        4,
+        6,
+        12
+       ]
+      },
+      "single_paper_covers_all": 4
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "### Purpose\nThe contribution aims to understand the cause of over-alignment (over-refusal of benign prompts) and identify risks in augmenting safety training with AI-generated data. Paper [4] discusses exaggerated safety behaviors, including over-refusal, and uses XSTest to measure the phenomenon, which aligns with the purpose of understanding over-alignment. Paper [12] introduces OR-Bench to systematically measure over-refusal behaviors, directly addressing the same problem-class objective. No prior paper explicitly identifies risks in augmenting safety training with AI-generated data, making this aspect of the purpose novel.\n\n### Mechanism\nThe mechanism involves analyzing over-refusal vs safety trajectories by comparing STL training (with refusal responses) against training with datasets containing no refusal responses, and separately augmenting with LLM-generated responses to contrastive prompts. Paper [4] uses XSTest to measure exaggerated safety behaviors and compares safety alignment methods, which overlaps with the mechanism of analyzing over-refusal trajectories. Paper [6] discusses contrasting safe and harmful distributions for safety alignment, which is conceptually similar to augmenting with LLM-generated responses to contrastive prompts. Both papers contain substantively equivalent mechanisms.\n\n### Evaluation\nThe evaluation design involves plotting over-refusal vs safety curves and observing degradation in language ability under penalty weight. Paper [4] uses XSTest to measure exaggerated safety behaviors, which includes evaluating over-refusal vs safety trade-offs, matching the evaluation design. Paper [12] introduces OR-Bench to systematically measure over-refusal behaviors, which also evaluates safety alignment trade-offs. Both papers use substantively equivalent evaluation designs.\n\n### Domain\nThe domain is LLM safety alignment and analysis. Papers [4], [6], and [12] all operate within the same general application area of LLM safety alignment, addressing safety behaviors and alignment methods. This domain is covered.\n\n---\n\nVERDICT purpose = NONE  \nVERDICT mechanism = 4, 6  \nVERDICT evaluation = 4, 12  \nVERDICT domain = 4, 6, 12  ",
+      "stage2": "FACET: purpose | FINAL: COVERED-BY 4 | reason: Paper [4] explicitly identifies \"excessive safety behaviors\" (over-refusal) and uses XSTest data to address risks in safety training, aligning with the objective of understanding over-alignment and risks in augmenting safety training with AI-generated data. Quoted phrase: \"To reduce excessive safety behaviours -- which was discovered to be 26.1% of safe prompts being misclassified as dangerous and refused -- we use a combination of XSTest data...\""
+     }
+    },
+    "claude-sonnet-4-6": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": null
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose",
+      "mechanism"
+     ],
+     "raw": {
+      "stage1": "I'll analyze each facet systematically against the prior papers.\n\n**PURPOSE: Understand the cause of over-alignment (over-refusal of benign prompts) and identify a risk in augmenting safety training with AI-generated data.**\n\nPaper [1] (XSTest) introduces the benchmark for identifying exaggerated safety behaviors but doesn't investigate the *cause* of over-refusal or risks of AI-generated augmentation. Paper [4] \"Mitigating Exaggerated Safety\" addresses over-refusal and uses XSTest data, but its purpose is mitigation, not causal analysis. Paper [12] (OR-Bench) systematically measures over-refusal but doesn't investigate its cause or AI-generated data risks. Paper [11] studies safety costs of fine-tuning but focuses on safety degradation, not over-refusal causes. No prior paper specifically pursues the same objective: identifying the *cause* of over-refusal and the *risk* of LLM-generated data augmentation for safety training. These are distinct from measuring, mitigating, or benchmarking over-refusal.\n\n**MECHANISM: Train with datasets containing no refusal responses, compare trajectories on XSTest, then augment with LLM-generated (Mixtral) responses to contrastive prompts and observe safety/language quality.**\n\nPaper [4] uses XSTest data and combines it with other data for fine-tuning to reduce exaggerated safety, which is related but focuses on mitigation rather than causal analysis via no-refusal training. Paper [13] adds safety examples to instruction tuning and analyzes effects. Paper [11] fine-tunes with various data and measures safety. None of these use the specific primitive of \"train without any refusal responses and compare over-refusal vs. safety curves\" as a causal analysis mechanism, nor do they augment with LLM-generated contrastive responses and observe language degradation. The mechanism is not covered.\n\n**EVALUATION: EMD/NLCL/STL points on same over-refusal-vs-safety curve; contrastive augmentation fails to reach safety of non-augmented training; non-English answer degradation observed.**\n\nPaper [1] introduces XSTest as a benchmark for measuring exaggerated safety, and papers [4], [12] use it for evaluation. The evaluation design here uses XSTest as the benchmark family (covered by [1], [4], [12]) combined with safety/over-refusal tradeoff curve analysis. The specific design of plotting multiple training conditions on an over-refusal-vs-safety curve and measuring language degradation is not explicitly found, but the use of XSTest as a benchmark family is covered by [1] and [4]. The evaluation design (XSTest benchmark + safety/over-refusal metrics) is substantively covered by [1] and [4].\n\n**DOMAIN: LLM safety alignment / analysis.**\n\nPapers [1], [2], [4], [6], [8], [9], [10], [11], [12], [13] all operate in LLM safety alignment. This is clearly covered.\n\nVERDICT purpose = NONE\nVERDICT mechanism = NONE\nVERDICT evaluation = 1\nVERDICT domain = 1",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper specifically investigates the *cause* of over-alignment/over-refusal or identifies the risk of augmenting safety training with AI-generated data as its stated objective. Paper [4] mitigates exaggerated safety but does not analyze its cause or flag AI-generated data augmentation as a risk. Paper [12] measures over-refusal systematically but does not investigate causal mechanisms or AI-data augmentation risks. No quoted phrase from any prior paper matches this specific objective.\n\nFACET: mechanism | FINAL: NONE | reason: No prior paper trains datasets with no refusal responses and compares over-refusal vs. safety trajectories against a safety-tuned baseline on XSTest, nor augments with Mixtral 8x7b LLM-generated responses to contrastive prompts while observing both safety and language quality. Paper [4] uses XSTest data but does not employ this specific no-refusal training comparison design or the Mixtral augmentation protocol. No quoted phrase from any prior paper describes this experimental setup."
+     }
+    },
+    "gemini-2.5-pro": {
+     "state": "facet-novel",
+     "facets": {
+      "purpose": {
+       "covered_by": null
+      },
+      "mechanism": {
+       "covered_by": 13
+      },
+      "evaluation": {
+       "covered_by": 1
+      },
+      "domain": {
+       "covered_by": 1
+      },
+      "single_paper_covers_all": null
+     },
+     "self_check": [
+      "purpose"
+     ],
+     "raw": {
+      "stage1": "**purpose**: The contribution is a finding that establishes two empirical relationships: 1) that training with or without refusal examples results in models that lie on the same safety-vs-over-refusal trade-off curve, and 2) that augmenting safety training with specific LLM-generated contrastive data degrades both safety and language quality. Per the special rule for findings, this purpose is only covered if a prior paper reports the same empirical relationship. No prior paper investigates the relationship between refusal examples in training data and the safety/over-refusal curve, nor do they report the specific failure mode of safety degradation and non-English answers from using LLM-generated contrastive prompts for alignment. While papers like [20] investigate risks of training on synthetic data, they focus on a different phenomenon (model collapse) with different variables and effects, not the same empirical relationship.\n\n**mechanism**: The analysis method involves two components: a controlled experiment comparing training with and without a specific data type (refusal responses), and a synthetic data augmentation experiment where LLM-generated data is added to the training set to observe its effects. These are standard analysis protocols. For example, [13] performs a controlled experiment by \"adding a safety-focused dataset to the instruction-tuning mixture\" to measure its effect, which is the same design. Similarly, [20] analyzes the effects of \"train[ing] on synthetic data generated from previously trained models,\" which is the same experimental design as the second part of the contribution's mechanism.\n\n**evaluation**: The evaluation design involves measuring over-refusal and safety performance on the XSTest benchmark and plotting the trade-off between them. The use of the XSTest benchmark for this purpose is not new. Paper [1] introduced XSTest specifically for \"Identifying Exaggerated Safety Behaviours in Large Language Models,\" and paper [4] also uses \"a combination of XSTest\" to address exaggerated safety. Reusing a named benchmark family for its intended purpose means the evaluation design is covered.\n\n**domain**: The application area is LLM safety alignment and analysis. Numerous prior papers operate in this exact domain. For example, [1] focuses on \"Exaggerated Safety Behaviours in Large Language Models,\" [4] on \"Mitigating Exaggerated Safety in Large Language Models,\" and [13] on \"Improving the Safety of Large Language Models.\"\n\nVERDICT purpose = NONE\nVERDICT mechanism = [13]\nVERDICT evaluation = [1]\nVERDICT domain = [1]",
+      "stage2": "FACET: purpose | FINAL: NONE | reason: No prior paper has the explicit dual purpose of understanding the root cause of over-alignment and identifying risks specific to using AI-generated data for safety training. Papers [1], [4], and [12] acknowledge over-alignment but aim to measure or mitigate it, not explain its cause. Papers [20] and [21] discuss risks of synthetic data (model collapse) but in a general training context, not specific to the augmentation of safety training."
+     }
+    }
+   }
+  }
+ ]
+}
