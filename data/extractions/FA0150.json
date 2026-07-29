@@ -1,46 +1,51 @@
 {
   "paper_id": "FA0150",
-  "title": "Training-Free Motion-Bias Calibration for Precipitation Nowcasting: A Negative Result",
+  "title": "ShallowPPL: Investigating Early-Exit Logit Lens for Code Context Compression",
   "contributions": [
     {
       "id": "C1",
-      "purpose": "Formalize the motion-bias hypothesis so that post-processing corrections can be rigorously tested.",
-      "mechanism": "Defines motion bias via a speed-scale parameter alpha with pre-defined success criteria (|alpha - 1| >= 0.1 indicating correctable bias).",
-      "evaluation": "Provides a testable formulation used to evaluate whether EarthFormer's motion is systematically biased.",
-      "domain": "Precipitation nowcasting post-processing",
-      "source_quote": "We formalize motion bias as a testable hypothesis with pre-defined success criteria, enabling rigorous evaluation of post-processing methods.",
+      "purpose": "Investigate whether the expensive full-depth perplexity scoring in LongCodeZip can be replaced by cheaper intermediate-layer scoring for code context compression.",
+      "mechanism": "ShallowPPL truncates forward passes at layer L and projects intermediate representations to vocabulary space via the logit lens to approximate AMI-based code relevance scoring.",
+      "evaluation": "Evaluated on Long Code Completion and RepoQA against pre-registered criteria (>=1.5x speedup, <=1.0 point quality drop).",
+      "domain": "Repository-level code context compression",
+      "source_quote": "We propose ShallowPPL, an early-exit approach using the logit lens to approximate perplexity-based code relevance scoring at intermediate transformer layers.",
       "type": "method"
     },
     {
       "id": "C2",
-      "purpose": "Build and evaluate a training-free motion-bias correction method at scale.",
-      "mechanism": "Motion-Bias Calibration (MBC) estimates motion bias via Lucas-Kanade optical flow and corrects predictions through learned cumulative-translation warping, with Huber, OLS, and gated fitting variants.",
-      "evaluation": "Evaluated on 12,159 SEVIR test samples; all MBC variants degrade CSI by 0.0014-0.0018 relative to the raw baseline.",
-      "domain": "Precipitation nowcasting (SEVIR, EarthFormer)",
-      "source_quote": "We implement MBC with multiple fitting variants (Huber, OLS, gated) and evaluate on 12,159 SEVIR test samples.",
-      "type": "method"
+      "purpose": "Rigorously test the early-exit hypothesis under pre-committed success criteria.",
+      "mechanism": "Runs evaluation with pre-registered success thresholds for speedup and quality retention.",
+      "evaluation": "ShallowPPL achieves only 1.05x speedup while exceeding quality thresholds; the hypothesis does not hold (fails the >=1.5x speedup criterion).",
+      "domain": "Prompt/code compression efficiency",
+      "source_quote": "We conduct a rigorous evaluation with pre-registered success criteria, demonstrating that ShallowPPL fails to achieve favorable quality-speed tradeoffs.",
+      "type": "finding"
     },
     {
       "id": "C3",
-      "purpose": "Distinguish genuine motion correction from mere interpolation artifacts.",
-      "mechanism": "Designs a random-direction warp control that applies warping in a direction unrelated to estimated motion.",
-      "evaluation": "The control confirms that observed CSI changes are interpolation artifacts rather than motion-specific correction.",
-      "domain": "Nowcasting post-processing diagnostics",
-      "source_quote": "We design a random-direction warp control that isolates interpolation artifacts from motion-specific correction.",
-      "type": "method"
+      "purpose": "Localize where quality is lost in the early-exit pipeline.",
+      "mechanism": "Ablation studies isolating coarse function ranking and measuring per-layer quality contribution.",
+      "evaluation": "Coarse function ranking is the primary bottleneck (hybrid config recovers 81% of quality gap); quality scales non-linearly with depth, with the last 2 layers contributing 3.83 percentage points.",
+      "domain": "Transformer layer analysis for code relevance",
+      "source_quote": "Through ablation studies, we identify that coarse function ranking is the primary quality bottleneck (hybrid configuration recovers 81% of quality gap) and that quality scales non-linearly with depth (last 2 layers contribute 3.83 percentage points).",
+      "type": "finding"
     },
     {
       "id": "C4",
-      "purpose": "Report the empirical verdict on the motion-bias hypothesis for this model-dataset pair.",
-      "mechanism": "Measures the fitted speed-scale parameter and compares MBC-corrected CSI against the raw baseline.",
-      "evaluation": "Negative result: alpha = 0.921 (within 8% of neutral, |alpha - 1| < 0.1) indicates no systematic motion bias, and all MBC variants degrade CSI; the gap to cascaded methods (CasCast CSI-219 = 0.2841 vs EarthFormer 0.2078) needs fundamentally different approaches.",
-      "domain": "Precipitation nowcasting (SEVIR, EarthFormer)",
-      "source_quote": "We report a negative result: EarthFormer does not exhibit systematic motion bias on SEVIR, and the performance gap to cascaded methods requires fundamentally different approaches.",
+      "purpose": "Explain diagnostically why early-exit compression fails.",
+      "mechanism": "Analysis of per-forward-pass overhead and the information content of final transformer layers.",
+      "evaluation": "Per-forward-pass overhead limits speedup, and final layers encode critical code-relevance information that intermediate representations cannot approximate.",
+      "domain": "Efficient inference / interpretability",
+      "source_quote": "We provide diagnostic insights explaining why early-exit fails: per-forward-pass overhead limits speedup, and final layers encode critical information for code relevance that cannot be approximated by intermediate representations.",
       "type": "finding"
     }
   ],
-  "self_declared_provenance": [],
-  "notes": "Negative-result paper (stated in title and abstract): the hypothesis that deterministic nowcasters exhibit correctable motion bias is refuted for EarthFormer/SEVIR; all MBC variants degrade CSI by 0.0014-0.0018 vs raw baseline. Pages 1-2 contain Introduction and Method only (no Related Work section), so no explicit extend/adapt/replace positioning statement was present.",
+  "self_declared_provenance": [
+    {
+      "quote": "Our work investigates whether the computational cost of LongCodeZip's AMI scoring can be reduced through early-exit inference while maintaining compression quality.",
+      "section": "related work"
+    }
+  ],
+  "notes": "Negative-result paper: the central hypothesis (early-exit logit lens can approximate full-depth AMI scoring) is refuted; ShallowPPL achieves only 1.05x speedup vs the >=1.5x pre-registered target and fails to deliver favorable quality-speed tradeoffs.",
   "extractor": "agent-batch-12",
   "date": "2026-07-05"
 }

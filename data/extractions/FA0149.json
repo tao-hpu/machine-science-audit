@@ -1,55 +1,46 @@
 {
   "paper_id": "FA0149",
-  "title": "Quantile Remap Calibration for Precipitation Nowcasting",
+  "title": "Training-Free Motion-Bias Calibration for Precipitation Nowcasting: A Negative Result",
   "contributions": [
     {
       "id": "C1",
-      "purpose": "Identify and validate the dominant failure mode behind CSI gaps in deterministic precipitation nowcasting.",
-      "mechanism": "Near-miss analysis of false negatives at heavy-rain thresholds, testing whether predictions fall just below the threshold due to intensity underestimation.",
-      "evaluation": "38.6% of false negatives at threshold 219 (heavy rain) are intensity near-misses (predictions in [181, 219)); intensity underestimation accounts for 71.1% of all false negatives.",
-      "domain": "Precipitation nowcasting failure analysis",
-      "source_quote": "We identify intensity underestimation as a key failure mode in deterministic nowcasting models and validate this through near-miss analysis showing 38.6% of false negatives are intensity near-misses.",
-      "type": "finding"
+      "purpose": "Formalize the motion-bias hypothesis so that post-processing corrections can be rigorously tested.",
+      "mechanism": "Defines motion bias via a speed-scale parameter alpha with pre-defined success criteria (|alpha - 1| >= 0.1 indicating correctable bias).",
+      "evaluation": "Provides a testable formulation used to evaluate whether EarthFormer's motion is systematically biased.",
+      "domain": "Precipitation nowcasting post-processing",
+      "source_quote": "We formalize motion bias as a testable hypothesis with pre-defined success criteria, enabling rigorous evaluation of post-processing methods.",
+      "type": "method"
     },
     {
       "id": "C2",
-      "purpose": "Provide a training-free post-hoc method that corrects systematic intensity underestimation.",
-      "mechanism": "QRC applies a simple monotone quantile mapping from predicted intensity quantiles to observed quantiles, correcting marginal miscalibration without modifying spatial structure.",
-      "evaluation": "On SEVIR, improves CSI-M-POOL16 by 12.6% (0.4660 to 0.5249) and CSI-219-POOL16 by 29.2% (0.2083 to 0.2692).",
-      "domain": "Precipitation nowcasting calibration (SEVIR)",
-      "source_quote": "We propose QRC, a simple monotone quantile mapping that improves CSI-M-POOL16 by 12.6% and CSI-219-POOL16 by 29.2% on the SEVIR benchmark.",
+      "purpose": "Build and evaluate a training-free motion-bias correction method at scale.",
+      "mechanism": "Motion-Bias Calibration (MBC) estimates motion bias via Lucas-Kanade optical flow and corrects predictions through learned cumulative-translation warping, with Huber, OLS, and gated fitting variants.",
+      "evaluation": "Evaluated on 12,159 SEVIR test samples; all MBC variants degrade CSI by 0.0014-0.0018 relative to the raw baseline.",
+      "domain": "Precipitation nowcasting (SEVIR, EarthFormer)",
+      "source_quote": "We implement MBC with multiple fitting variants (Huber, OLS, gated) and evaluate on 12,159 SEVIR test samples.",
       "type": "method"
     },
     {
       "id": "C3",
-      "purpose": "Show post-hoc calibration can rival expensive generative post-processing without retraining.",
-      "mechanism": "Compares uncalibrated EarthFormer + QRC against the CasCast cascaded-diffusion model on CSI-M-POOL16.",
-      "evaluation": "QRC closes 104% of the gap between uncalibrated EarthFormer and CasCast on CSI-M-POOL16, using only post-hoc calibration without model retraining.",
-      "domain": "Precipitation nowcasting calibration",
-      "source_quote": "We demonstrate that QRC closes 104% of the gap between uncalibrated EarthFormer and CasCast on CSI-M-POOL16, using only post-hoc calibration without model retraining.",
-      "type": "finding"
+      "purpose": "Distinguish genuine motion correction from mere interpolation artifacts.",
+      "mechanism": "Designs a random-direction warp control that applies warping in a direction unrelated to estimated motion.",
+      "evaluation": "The control confirms that observed CSI changes are interpolation artifacts rather than motion-specific correction.",
+      "domain": "Nowcasting post-processing diagnostics",
+      "source_quote": "We design a random-direction warp control that isolates interpolation artifacts from motion-specific correction.",
+      "type": "method"
     },
     {
       "id": "C4",
-      "purpose": "Characterize the tradeoff QRC induces between threshold-based and continuous metrics.",
-      "mechanism": "Analyzes CSI (threshold-based) versus CRPS (continuous) and evaluates a blending strategy.",
-      "evaluation": "Blending mitigates CRPS degradation while maintaining most CSI gains.",
-      "domain": "Nowcasting evaluation metrics",
-      "source_quote": "We analyze the trade-off between threshold-based (CSI) and continuous (CRPS) metrics, showing that blending mitigates degradation while maintaining most CSI gains.",
+      "purpose": "Report the empirical verdict on the motion-bias hypothesis for this model-dataset pair.",
+      "mechanism": "Measures the fitted speed-scale parameter and compares MBC-corrected CSI against the raw baseline.",
+      "evaluation": "Negative result: alpha = 0.921 (within 8% of neutral, |alpha - 1| < 0.1) indicates no systematic motion bias, and all MBC variants degrade CSI; the gap to cascaded methods (CasCast CSI-219 = 0.2841 vs EarthFormer 0.2078) needs fundamentally different approaches.",
+      "domain": "Precipitation nowcasting (SEVIR, EarthFormer)",
+      "source_quote": "We report a negative result: EarthFormer does not exhibit systematic motion bias on SEVIR, and the performance gap to cascaded methods requires fundamentally different approaches.",
       "type": "finding"
     }
   ],
-  "self_declared_provenance": [
-    {
-      "quote": "Our work differs by focusing on post-hoc calibration of intensity values rather than probabilities, using quantile mapping to correct systematic marginal miscalibration.",
-      "section": "related work"
-    },
-    {
-      "quote": "Our QRC approach draws inspiration from quantile mapping in [statistical post-processing / weather forecasting]...",
-      "section": "related work"
-    }
-  ],
-  "notes": "Second provenance quote is truncated at the bottom of page 2 (Statistical Post-Processing subsection); paraphrased continuation bracketed.",
+  "self_declared_provenance": [],
+  "notes": "Negative-result paper (stated in title and abstract): the hypothesis that deterministic nowcasters exhibit correctable motion bias is refuted for EarthFormer/SEVIR; all MBC variants degrade CSI by 0.0014-0.0018 vs raw baseline. Pages 1-2 contain Introduction and Method only (no Related Work section), so no explicit extend/adapt/replace positioning statement was present.",
   "extractor": "agent-batch-12",
   "date": "2026-07-05"
 }

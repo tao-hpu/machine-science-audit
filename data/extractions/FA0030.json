@@ -1,50 +1,50 @@
 {
   "paper_id": "FA0030",
-  "title": "Output-Space Allocation Costs for Calibration-Guided LLM Compression: An Empirical Study",
+  "title": "Answerability-Gain Rewards for Evidence-Label-Free GRU-Mem Gating: An Empirical Investigation",
   "contributions": [
     {
       "id": "C1",
-      "purpose": "Test whether aligning ROCKET's global MCKP allocation cost with its output-space factorization objective improves compressed model fidelity.",
-      "mechanism": "ROCKET-ActCost, which replaces ROCKET's weight-space Frobenius allocation cost in the multi-choice knapsack problem with an output-space equivalent computed from matrices already available during profiling.",
-      "evaluation": "On Qwen3-8B at 50% compression, ROCKET-ActCost achieves +0.8 percentage points higher average accuracy across 8 zero-shot benchmarks (53.1% vs 52.3%).",
-      "domain": "training-free LLM compression",
-      "source_quote": "An empirical study of output-space MCKP allocation cost for calibration-guided LLM compression, testing whether aligning the allocation objective with the factorization objective improves model fidelity.",
-      "type": "finding"
+      "purpose": "Replace expensive evidence-position labels for training GRU-Mem update/exit gates in recurrent memory agents.",
+      "mechanism": "Answerability-gain rewards, a dense per-chunk signal measuring the change in answer confidence (teacher-forced log-likelihood of the correct answer) after each memory update, combined with per-step cost penalties for early exit.",
+      "evaluation": "Evaluated on RULER-QA across context lengths from 28K to 224K tokens against outcome-only reward baselines.",
+      "domain": "long-context recurrent memory agents",
+      "source_quote": "We propose answerability-gain rewards as a dense, evidence-label-free signal for training GRU-Mem gating mechanisms, measuring the change in answer confidence after each memory update.",
+      "type": "method"
     },
     {
       "id": "C2",
-      "purpose": "Characterize the downstream effects of switching the allocation objective.",
-      "mechanism": "Joint measurement of zero-shot task accuracy and WikiText language modeling perplexity under aggressive compression with output-space vs weight-space costs.",
-      "evaluation": "Accuracy-perplexity tradeoff on Qwen3-8B at 50% compression: task accuracy improves (+0.8pp) but WikiText perplexity worsens by 16% (61.46 vs 52.98); on Llama-3.2-1B at 20% compression both metrics improve, suggesting the tradeoff is setting-dependent.",
-      "domain": "training-free LLM compression",
-      "source_quote": "Discovery of an accuracy-perplexity tradeoff: output-space cost improves task accuracy but worsens language modeling perplexity under aggressive compression.",
+      "purpose": "Rigorously test whether dense answerability-gain rewards outperform simpler outcome-only rewards.",
+      "mechanism": "Comprehensive experiments on RULER-QA (28K-224K tokens) comparing answerability-gain against outcome-only reward training across eight evaluation conditions.",
+      "evaluation": "Negative result: 63.19% vs 63.48% average exact match with a 4-4 win/loss split, showing no consistent improvement over outcome-only rewards.",
+      "domain": "long-context recurrent memory agents",
+      "source_quote": "We conduct comprehensive experiments showing that this approach does not consistently improve over outcome-only rewards, providing a rigorous negative result that informs future research directions.",
       "type": "finding"
     },
     {
       "id": "C3",
-      "purpose": "Explain why the allocation-cost change produces only a modest effect.",
-      "mechanism": "Correlation analysis between weight-space and output-space per-layer errors and the resulting divergence in MCKP allocations.",
-      "evaluation": "Error correlation exceeds 0.99, with only 70 of 252 layers receiving different allocations, fundamentally limiting allocation divergence and explaining the modest effect size.",
-      "domain": "training-free LLM compression",
-      "source_quote": "Analysis showing that high error correlation (>0.99) between weight-space and output-space metrics fundamentally limits allocation divergence, explaining the modest effect size.",
+      "purpose": "Explain why the dense reward fails and point to remedies.",
+      "mechanism": "Analysis identifying an early-exit bias: the answerability-gain signal biases the agent toward exiting after encountering the first piece of evidence, hurting multi-hop questions requiring integration of multiple evidence pieces.",
+      "evaluation": "The identified limitation explains the negative result; the paper suggests multi-step lookahead rewards or evidence-diversity bonuses as alternatives.",
+      "domain": "long-context recurrent memory agents",
+      "source_quote": "We identify an architectural limitation—early-exit bias after first evidence—that explains the negative result and suggests alternative approaches such as multi-step lookahead rewards or evidence-diversity bonuses.",
       "type": "finding"
     }
   ],
   "self_declared_provenance": [
     {
-      "quote": "ROCKET (Ali et al., 2026) is a recent training-free compression method that combines sparse-dictionary factorization with global budget allocation via a multi-choice knapsack problem (MCKP). ... However, when allocating compression budgets across layers, ROCKET uses weight-space Frobenius error as the MCKP cost rather than the output-space error that motivated the factorization.",
-      "section": "intro"
+      "quote": "Our work builds on the GRU-Mem architecture but investigates alternative reward signals for training the gating mechanisms without requiring evidence-position labels.",
+      "section": "related work"
     },
     {
-      "quote": "Activation-aware methods such as AWQ (Lin et al., 2023) and ASVD (Yuan et al., 2023) have demonstrated that accounting for activation statistics improves compression quality. We hypothesize that using output-space error as the MCKP allocation cost—which directly measures the impact of compression on layer outputs for the calibration distribution—may yield better downstream performance than weight-space error.",
-      "section": "intro"
+      "quote": "Our answerability-gain reward follows this line of research by providing per-chunk feedback based on answer confidence changes, though our results suggest this particular formulation does not consistently improve gate training.",
+      "section": "related work"
     },
     {
-      "quote": "We investigate this hypothesis empirically by proposing ROCKET-ActCost, which replaces the weight-space allocation cost with an output-space equivalent computed from matrices already available during profiling.",
-      "section": "intro"
+      "quote": "Our exit gate mechanism shares conceptual similarities with these approaches but operates at the chunk level rather than the layer level, deciding when sufficient evidence has been gathered to answer a question.",
+      "section": "related work"
     }
   ],
-  "notes": "Self-labeled 'empirical study' with mixed/modest results: small accuracy gain traded against 16% perplexity degradation, and the paper itself explains why the effect is small (>0.99 error correlation). No separate related-work section on pages 1-2 (page 2 goes directly to Method); provenance quotes are all from the introduction. All three contributions are framed as study/finding rather than a headline new method, though ROCKET-ActCost is a concrete method variant of ROCKET (Ali et al., 2026).",
+  "notes": "Explicit self-declared negative-result paper: the proposed dense reward does not consistently beat outcome-only rewards (63.19% vs 63.48%, 4-4 win/loss split). Builds directly on GRU-Mem (Sheng et al., 2026).",
   "extractor": "agent-batch-3",
   "date": "2026-07-05"
 }

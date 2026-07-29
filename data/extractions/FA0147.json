@@ -1,51 +1,55 @@
 {
   "paper_id": "FA0147",
-  "title": "ShallowPPL: Investigating Early-Exit Logit Lens for Code Context Compression",
+  "title": "Quantile Remap Calibration for Precipitation Nowcasting",
   "contributions": [
     {
       "id": "C1",
-      "purpose": "Investigate whether the expensive full-depth perplexity scoring in LongCodeZip can be replaced by cheaper intermediate-layer scoring for code context compression.",
-      "mechanism": "ShallowPPL truncates forward passes at layer L and projects intermediate representations to vocabulary space via the logit lens to approximate AMI-based code relevance scoring.",
-      "evaluation": "Evaluated on Long Code Completion and RepoQA against pre-registered criteria (>=1.5x speedup, <=1.0 point quality drop).",
-      "domain": "Repository-level code context compression",
-      "source_quote": "We propose ShallowPPL, an early-exit approach using the logit lens to approximate perplexity-based code relevance scoring at intermediate transformer layers.",
-      "type": "method"
-    },
-    {
-      "id": "C2",
-      "purpose": "Rigorously test the early-exit hypothesis under pre-committed success criteria.",
-      "mechanism": "Runs evaluation with pre-registered success thresholds for speedup and quality retention.",
-      "evaluation": "ShallowPPL achieves only 1.05x speedup while exceeding quality thresholds; the hypothesis does not hold (fails the >=1.5x speedup criterion).",
-      "domain": "Prompt/code compression efficiency",
-      "source_quote": "We conduct a rigorous evaluation with pre-registered success criteria, demonstrating that ShallowPPL fails to achieve favorable quality-speed tradeoffs.",
+      "purpose": "Identify and validate the dominant failure mode behind CSI gaps in deterministic precipitation nowcasting.",
+      "mechanism": "Near-miss analysis of false negatives at heavy-rain thresholds, testing whether predictions fall just below the threshold due to intensity underestimation.",
+      "evaluation": "38.6% of false negatives at threshold 219 (heavy rain) are intensity near-misses (predictions in [181, 219)); intensity underestimation accounts for 71.1% of all false negatives.",
+      "domain": "Precipitation nowcasting failure analysis",
+      "source_quote": "We identify intensity underestimation as a key failure mode in deterministic nowcasting models and validate this through near-miss analysis showing 38.6% of false negatives are intensity near-misses.",
       "type": "finding"
     },
     {
+      "id": "C2",
+      "purpose": "Provide a training-free post-hoc method that corrects systematic intensity underestimation.",
+      "mechanism": "QRC applies a simple monotone quantile mapping from predicted intensity quantiles to observed quantiles, correcting marginal miscalibration without modifying spatial structure.",
+      "evaluation": "On SEVIR, improves CSI-M-POOL16 by 12.6% (0.4660 to 0.5249) and CSI-219-POOL16 by 29.2% (0.2083 to 0.2692).",
+      "domain": "Precipitation nowcasting calibration (SEVIR)",
+      "source_quote": "We propose QRC, a simple monotone quantile mapping that improves CSI-M-POOL16 by 12.6% and CSI-219-POOL16 by 29.2% on the SEVIR benchmark.",
+      "type": "method"
+    },
+    {
       "id": "C3",
-      "purpose": "Localize where quality is lost in the early-exit pipeline.",
-      "mechanism": "Ablation studies isolating coarse function ranking and measuring per-layer quality contribution.",
-      "evaluation": "Coarse function ranking is the primary bottleneck (hybrid config recovers 81% of quality gap); quality scales non-linearly with depth, with the last 2 layers contributing 3.83 percentage points.",
-      "domain": "Transformer layer analysis for code relevance",
-      "source_quote": "Through ablation studies, we identify that coarse function ranking is the primary quality bottleneck (hybrid configuration recovers 81% of quality gap) and that quality scales non-linearly with depth (last 2 layers contribute 3.83 percentage points).",
+      "purpose": "Show post-hoc calibration can rival expensive generative post-processing without retraining.",
+      "mechanism": "Compares uncalibrated EarthFormer + QRC against the CasCast cascaded-diffusion model on CSI-M-POOL16.",
+      "evaluation": "QRC closes 104% of the gap between uncalibrated EarthFormer and CasCast on CSI-M-POOL16, using only post-hoc calibration without model retraining.",
+      "domain": "Precipitation nowcasting calibration",
+      "source_quote": "We demonstrate that QRC closes 104% of the gap between uncalibrated EarthFormer and CasCast on CSI-M-POOL16, using only post-hoc calibration without model retraining.",
       "type": "finding"
     },
     {
       "id": "C4",
-      "purpose": "Explain diagnostically why early-exit compression fails.",
-      "mechanism": "Analysis of per-forward-pass overhead and the information content of final transformer layers.",
-      "evaluation": "Per-forward-pass overhead limits speedup, and final layers encode critical code-relevance information that intermediate representations cannot approximate.",
-      "domain": "Efficient inference / interpretability",
-      "source_quote": "We provide diagnostic insights explaining why early-exit fails: per-forward-pass overhead limits speedup, and final layers encode critical information for code relevance that cannot be approximated by intermediate representations.",
+      "purpose": "Characterize the tradeoff QRC induces between threshold-based and continuous metrics.",
+      "mechanism": "Analyzes CSI (threshold-based) versus CRPS (continuous) and evaluates a blending strategy.",
+      "evaluation": "Blending mitigates CRPS degradation while maintaining most CSI gains.",
+      "domain": "Nowcasting evaluation metrics",
+      "source_quote": "We analyze the trade-off between threshold-based (CSI) and continuous (CRPS) metrics, showing that blending mitigates degradation while maintaining most CSI gains.",
       "type": "finding"
     }
   ],
   "self_declared_provenance": [
     {
-      "quote": "Our work investigates whether the computational cost of LongCodeZip's AMI scoring can be reduced through early-exit inference while maintaining compression quality.",
+      "quote": "Our work differs by focusing on post-hoc calibration of intensity values rather than probabilities, using quantile mapping to correct systematic marginal miscalibration.",
+      "section": "related work"
+    },
+    {
+      "quote": "Our QRC approach draws inspiration from quantile mapping in [statistical post-processing / weather forecasting]...",
       "section": "related work"
     }
   ],
-  "notes": "Negative-result paper: the central hypothesis (early-exit logit lens can approximate full-depth AMI scoring) is refuted; ShallowPPL achieves only 1.05x speedup vs the >=1.5x pre-registered target and fails to deliver favorable quality-speed tradeoffs.",
+  "notes": "Second provenance quote is truncated at the bottom of page 2 (Statistical Post-Processing subsection); paraphrased continuation bracketed.",
   "extractor": "agent-batch-12",
   "date": "2026-07-05"
 }
