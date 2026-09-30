@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """Camera-ready robustness analyses on the frozen judgments (no new model calls).
 
-Answers the AI4MetaScience reviewer questions that the frozen data can settle:
-  1. claim-type stratification and direct standardization (AI Reader Q2);
+Answers the workshop reviewers' questions that the frozen data can settle:
+  1. claim-type stratification and direct standardization;
   2. how many facet-novel verdicts rest on the purpose facet alone, and the
-     machine-vs-human gap under stricter derivation rules (86x2);
-  3. the gap after dropping weakly matched pairs (YfjD Q1, 86x2);
-  4. search failure vs. judge failure on the gold prior-art sample (86x2 Q2);
-  5. pair recall if cross-contribution misallocation were fixed (YfjD Q2).
+     machine-vs-human gap under stricter derivation rules;
+  3. the gap after dropping weakly matched pairs;
+  4. search failure vs. judge failure on the gold prior-art sample;
+  5. pair recall if cross-contribution misallocation were fixed.
 
 Usage: python3 scripts/cr_robustness.py [--out data/cr_robustness.json]
 """
