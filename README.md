@@ -21,6 +21,18 @@ through a local `.env` file; copy `.env.example` and fill in your own values.
 Restricted source corpora are not redistributed in this repository: the scripts
 fetch them from their original venues under the appropriate licenses.
 
+Two follow-up analyses run on top of the frozen judgments:
+
+- `scripts/mirage_audit.py --auditor <model> [--variant harsh]` repeats the
+  adversarial prior-art audit with a different auditor model. Outputs go to
+  `data/mirage_audit[_harsh]_<model>.json`; the committed files cover
+  `claude-sonnet-4-6` and `gemini-2.5-pro`.
+- `scripts/cr_robustness.py` makes no model calls. It recomputes the
+  machine-vs-human gap under claim-type stratification, stricter facet-novel
+  derivation rules, and match-similarity filtering, and splits gold prior-art
+  misses into search failures and judge failures. Output:
+  `data/cr_robustness.json`.
+
 ## Retrieval backends: API or local snapshot
 
 Prior-art retrieval supports two interchangeable backends. Pick whichever fits
