@@ -107,7 +107,7 @@ def audit_one(contrib, neighbors, prompt=PROMPT):
                        for i, n in enumerate(neighbors))
     raw = J.chat(AUDITOR, prompt.format(papers=papers, ctype=contrib.get('type', 'method'),
                                         **{k: contrib[k] for k in ('purpose', 'mechanism', 'evaluation', 'domain')}),
-                 max_tokens=1200)
+                 max_tokens=J.mt(AUDITOR, 1200))
     verdict = 'REFUTED' if 'VERDICT: REFUTED' in raw.upper().replace('**', '') else \
               ('HOLDS' if 'HOLDS' in raw.upper() else 'PARSE-FAIL')
     return verdict, raw
@@ -119,11 +119,16 @@ def main():
     ap.add_argument('--seed', type=int, default=42)
     ap.add_argument('--variant', choices=['strict', 'harsh'], default='strict',
                     help='strict=对齐 panel 标准+反拉伸护栏;harsh=裸敌意(贴近原版)')
+    ap.add_argument('--auditor', default='gpt-4o',
+                    help='审计员模型;非 gpt-4o 时输出文件名带模型后缀(2026-09-09 跨模型复核用)')
     ap.add_argument('--out', default='')
     a = ap.parse_args()
+    global AUDITOR
+    AUDITOR = a.auditor
     prompt = PROMPT if a.variant == 'strict' else PROMPT_HARSH
-    out_path = pathlib.Path(a.out or ('data/mirage_audit.json' if a.variant == 'strict'
-                                      else f'data/mirage_audit_{a.variant}.json'))
+    suffix = '' if a.auditor == 'gpt-4o' else '_' + a.auditor.replace('.', '')
+    out_path = pathlib.Path(a.out or ('data/mirage_audit%s.json' % suffix if a.variant == 'strict'
+                                      else f'data/mirage_audit_{a.variant}{suffix}.json'))
     results = json.load(open(out_path)) if out_path.exists() else {'meta': {}, 'items': []}
     done = {(r['arm'], r['pid'], r['cid']) for r in results['items']}
     results['meta'] = {'auditor': AUDITOR, 'k': a.k, 'seed': a.seed, 'variant': a.variant,
